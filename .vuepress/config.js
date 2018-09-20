@@ -1,8 +1,7 @@
 module.exports = {
-    title: 'Apache Ignite中文主站',
-    base:'https://liyuj.gitee.io/',
+    title: 'Apache Ignite中文主站',    
     description: 'Ignite内存计算平台的中文文档及相关资料',
-    dest: "dist",    
+    dest: "dist",
     head: [
         ['link', {
             rel: 'shortcut icon',
@@ -101,7 +100,7 @@ module.exports = {
                 'In-MemoryFileSystem',
                 'HadoopAccelerator',
                 'IgniteForSpark'
-            ],            
+            ],
             '/doc/tools/': [
                 '',
                 'IgniteWebConsoleAbilities',
@@ -109,7 +108,7 @@ module.exports = {
                 'ControlScript'
             ],
             '/': [
-                ''                
+                ''
             ]
         }
     }
