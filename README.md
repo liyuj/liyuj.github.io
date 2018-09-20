@@ -1,37 +1,13 @@
-# liyuj
-
-#### 项目介绍
-Apache Ignite中文资料
-
-#### 软件架构
-软件架构说明
-
-
-#### 安装教程
-
-1. xxxx
-2. xxxx
-3. xxxx
-
-#### 使用说明
-
-1. xxxx
-2. xxxx
-3. xxxx
-
-#### 参与贡献
-
-1. Fork 本项目
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
-
-
-#### 码云特技
-
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+---
+home: true
+actionText: 点此入门 →
+actionLink: /doc/java/
+features:
+- title: 以内存为中心
+  details: 强大的以内存为中心的架构，作为缓存层为已有的各种类型应用加速
+- title: 全功能方案
+  details: 作为全功能的分布式架构解决方案，功能强大，开发容易，总体架构变得简单
+- title: 综合成本低
+  details: 解决大型企业的各种系统面临的复杂问题，对已有系统无需推倒重来甚至无需做大的调整，综合成本低
+footer: Apache License 2.0 | Copyright © 2015 - 2018 李玉珏
+---
