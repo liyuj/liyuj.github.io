@@ -1,6 +1,7 @@
 # 2.集群化
 ## 2.1.集群化
 Ignite具有非常先进的集群能力，包括逻辑集群组和自动发现。
+
 Ignite节点之间会自动发现对方，这有助于必要时扩展集群，而不需要重启整个集群。开发者可以利用Ignite的混合云支持，允许公有云（比如AWS）和私有云之间建立连接,向他们提供两者的好处。
 ![](https://files.readme.io/9287d3c-ignite-deploy.png)
 
@@ -42,7 +43,9 @@ Collection<ClusterNode> nodes = workers.nodes();
 
 ### 2.2.4.集群节点指标数据
 Ignite自动收集集群中所有节点的指标数据，指标数据是在后台收集的并且被集群节点之间的每一次心跳消息交换所更新。
+
 节点的指标数据是通过`ClusterMetrics`接口体现的，他包括至少50种指标（注意，同样的指标也可以用于集群组）。
+
 下面是一个获取一些指标数据的示例，包括本地节点的平均CPU负载，已用堆大小：
 ```java
 // Local Ignite node.
@@ -59,6 +62,7 @@ int activeJobs = metrics.getCurrentActiveJobs();
 ```
 ### 2.2.5.本地集群节点
 本地集群节点是`ClusterNode`的一个实例，表示当前的Ignite节点。
+
 下面的例子显示如何获得本地节点：
 ```java
 ClusterNode localNode = ignite.cluster().localNode();
@@ -70,6 +74,7 @@ ClusterNode localNode = ignite.cluster().localNode();
 > 注意`IgniteCluster`接口也是一个集群组，只不过包括集群内的所有节点。
 
 可以限制作业执行、服务部署、消息、事件以及其他任务只在部分集群组内执行，比如，下面这个例子只把作业广播到远程节点（除了本地节点）：
+
 Java8：
 ```java
 final Ignite ignite = Ignition.ignite();
@@ -104,6 +109,7 @@ compute.broadcast(new IgniteRunnable() {
 ```
 ### 2.3.1.预定义集群组
 可以基于任何谓词创建集群组，为了方便Ignite也提供了一些预定义的集群组。
+
 下面的示例显示了`ClusterGroup`接口中定义的部分集群组：
 **远程节点**
 ```java
@@ -184,8 +190,10 @@ ClusterGroup serverGroup = cluster.forServers();
 ```
 
 ### 2.3.2.带节点属性的集群组
-Ignite的唯一特点是所有节点都是平等的。没有master节点或者server节点，也没有worker节点或者client节点，按照Ignite的观点所有节点都是平等的。但是，可以将节点配置成master，worker，或者client以及data节点。
+Ignite的唯一特点是所有节点都是平等的。没有master节点或者server节点，也没有worker节点或者client节点，按照Ignite的观点所有节点都是平等的。但是，可以将节点配置成主节点，工作节点，或者客户端以及数据节点。
+
 所有集群节点启动时都会自动将所有的环境和系统属性注册为节点的属性，但是也可以通过配置自定义节点属性。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration">
@@ -223,6 +231,7 @@ Collection<GridNode> workerNodes = workerGroup.nodes();
 ```
 ### 2.3.3.自定义集群组
 可以基于一些谓词定义动态集群组，这个集群组只会包含符合该谓词的节点。
+
 下面是一个例子，一个集群组只会包括CPU利用率小于50%的节点，注意这个组里面的节点会随着CPU负载的变化而改变。
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -256,7 +265,9 @@ node = remoteGroup.node(myId);
 ```
 ### 2.3.6.集群组指标数据
 Ignite自动收集所有集群节点的指标数据，很酷的事是集群组会自动地收集组内所有节点的指标数据，然后提供组内正确的平均值，最小值，最大值等信息。
+
 集群组指标数据是通过`ClusterMetrics`接口体现的，他包括了超过50个指标（注意，同样的指标单独的集群节点也有）。
+
 下面的例子是获取一些指标数据，包括所有远程节点的平均CPU利用率以及可用堆大小：
 ```java
 // Cluster group with remote nodes, i.e. other than this node.
@@ -275,6 +286,7 @@ int activeJobs = metrics.getCurrentActiveJobs();
 ### 2.4.1.摘要
 当工作在分布式环境中时，有时需要确保有这么一个节点，不管网络是否发生变化，这个节点通常被叫做`leader（领导者）`。
 很多系统选举领导者通常要处理数据一致性，然后通常是通过收集集群成员的选票处理的。而在Ignite中，数据一致性是通过数据网格的类似功能处理的（Rendezvous Hashing或者HRW哈希），选择领导者在传统意义上的数据一致性，在数据网格以外就不是真的需要了。
+
 然而，可能还是希望有一个`协调员`节点来处理某些任务，为了这个，Ignite允许在集群中自动地选择最老的或者最新的节点。
 
 > **使用服务网格**
@@ -282,6 +294,7 @@ int activeJobs = metrics.getCurrentActiveJobs();
 
 ### 2.4.2.最老的节点
 每当新节点加入时，最老的节点都有一个保持不变的属性，集群中的最老节点唯一发生变化的时间点就是它从集群中退出或者该节点故障。
+
 下面的例子显示了如何选择一个集群组，他只包含了最老的节点。
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -293,6 +306,7 @@ ClusterGroup oldestNode = cluster.forOldest();
 ```
 ### 2.4.3.最新的节点
 最新的节点，与最老的节点不同，每当新节点加入集群时都会不断发生变化，然而，有时他也会变得很灵活，尤其是如果希望只在最新的节点上执行一些任务时。
+
 下面的例子显示了如何选择一个集群组，他只包含了最新的节点。
 ```
 IgniteCluster cluster = ignite.cluster();
@@ -316,9 +330,11 @@ Ignite中，通过`DiscoverySpi`节点可以彼此发现对方，Ignite提供了
 
 #### 2.5.1.2.组播IP探测器
 `TcpDiscoveryMulticastIpFinder`使用组播来发现网格内的每个节点。他也是默认的IP搜索器。除非打算覆盖默认的设置否则不需要指定他。
+
 下面的例子显示了如何通过Spring XML配置文件或者通过Java代码编程式地进行配置：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
   <property name="discoverySpi">
@@ -333,7 +349,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
  
 TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder();
@@ -352,13 +368,15 @@ Ignition.start(cfg);
 ```
 #### 2.5.1.3.静态IP探测器
 对于组播被禁用的情况，`TcpDiscoveryVmIpFinder`会使用预配置的IP地址列表。
+
 唯一需要提供的就是至少一个远程节点的IP地址，但是为了保证冗余一个比较好的做法是在未来的某些时间点提供2-3个计划启动的网格节点的IP地址。只要建立了与任何一个已提供的IP地址的连接，Ignite就会自动地发现其他的所有节点。
 
 > `TcpDiscoveryVmIpFinder`默认用的是`非共享`模式，如果希望启动一个服务端节点，那么在该模式中的IP地址列表同时也要包含本地节点的一个IP地址。当其他节点加入集群过程中时，他会使该节点不用等待而是成为集群的第一个节点，并且正常运行。
 
 下面的例子显示了如何通过Spring XML配置文件或者通过Java代码编程式地进行配置：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
   <property name="discoverySpi">
@@ -409,7 +427,9 @@ Ignition.start(cfg);
 
 #### 2.5.1.4.组播和静态IP探测器
 可以同时使用基于组播和静态IP的发现，这种情况下，除了通过组播接受地址以外，如果有的话，`TcpDiscoveryMulticastIpFinder`也可以与预配置的静态IP地址列表一起工作，就像上面描述的基于静态IP的发现一样。
+
 下面的例子显示了如何配置使用了静态IP地址的组播IP搜索器。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -439,7 +459,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
 
 TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder();
@@ -463,9 +483,11 @@ Ignition.start(cfg);
 ```
 #### 2.5.1.5.在同一个机器组中隔离Ignite集群
 Ignite可以在同一组机器中启动两个隔离的集群，对于`TcpDiscoverySpi`和`TcpCommunicationSpi`，不同集群的节点使用不交叉的本地端口范围就可以了。
+
 为了测试，假设需要在一台机器上启动两个互相隔离的集群，那么对于第一个集群的节点，需要使用如下的`TcpDiscoverySpi`和`TcpCommunicationSpi`配置：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     ...
     <!--
@@ -511,7 +533,7 @@ XML：
 </bean>
 ```
 Java:
-```
+```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
 // Explicitly configure TCP discovery SPI to provide list of initial nodes
@@ -550,8 +572,9 @@ cfg.setCommunicationSpi(commSpi);
 Ignition.start(cfg);
 ```
 而对于第二个集群的节点，配置看起来是这样的：
+
 XML：
-```
+```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
     <!--
     Explicitly configure TCP discovery SPI to provide list of initial
@@ -594,7 +617,7 @@ XML：
 </bean>
 ```
 Java:
-```
+```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
 // Explicitly configure TCP discovery SPI to provide list of initial nodes
@@ -641,6 +664,7 @@ Ignition.start(cfg);
 
 #### 2.5.1.6.JDBC探测器
 可以用数据库作为通用共享存储来保存初始的IP地址，通过这个搜索器这些节点会在启动时将IP地址写入数据库，这是通过`TcpDiscoveryJdbcIpFinder`实现的。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -684,6 +708,7 @@ Ignition.start(cfg);
 ```
 #### 2.5.1.7.基于共享文件系统探测器
 一个共享文件系统可以用于节点IP地址的存储，节点会在启动时将他们的IP地址写入文件系统，这样的行为是由`TcpDiscoverySharedFsIpFinder`支持的。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -721,6 +746,7 @@ Ignition.start(cfg);
 ```
 #### 2.5.1.8.基于ZooKeeper的发现
 如果使用[ZooKeeper ](https://zookeeper.apache.org/)来整合分布式环境，也可以利用它进行Ignite节点的发现，这是通过`TcpDiscoveryZookeeperIpFinder`实现的（注意需要启用`ignite-zookeeper`模块）。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -757,7 +783,9 @@ Ignition.start(cfg);
 ```
 #### 2.5.1.9.故障检测超时
 故障检测超时用于确定一个集群节点在与远程节点连接失败时可以等待多长时间。
+
 集群中的每个节点都是与其他节点连接在一起的，在发现SPI这个层级，NodeA会向NodeB发送心跳消息（还有其它在集群内传输的系统消息），如果后者在`failureDetectionTimeout`指定的时间范围内没有反馈，那么NodeB会被从集群中踢出。
+
 根据集群的硬件和网络条件，这个超时时间是调整发现SPI的故障检测功能的最简单的方式。
 
 > 这些`TcpDiscoverySpi`的超时配置参数是自动控制的，比如套接字超时，消息确认超时以及其他的，如果显式地设置了这些参数中的任意一个，故障超时设置都会被忽略掉。
@@ -783,12 +811,15 @@ Ignition.start(cfg);
 ### 2.5.2.ZooKeeper发现
 #### 2.5.2.1.摘要
 Ignite使用TCP/IP发现机制，将集群节点组织成环状拓扑结构有其优点，也有缺点。比如在一个有上百个节点的网络中，系统消息遍历所有的节点需要花很多秒，就结果来说，基本的事件处理，比如新节点加入或者故障节点检测，就会影响整个集群的响应能力和性能。
+
 ZooKeeper发现机制就是为大规模的Ignite集群而设计的，它会在保持扩展的便利性以及性能的线性增长前提下，将集群扩至百级甚至千级节点，代价就是引入了另一个分布式系统，配置和管理需要将两者结合起来。因此，如果集群节点数成百上千，可以考虑这个发现机制，否则还是使用默认的TCP/IP发现机制较好。
+
 ZooKeeper发现使用ZooKeeper作为同步的单点，然后将Ignite集群组织成一个星型拓扑，这时ZooKeeper集群位于中心，然后Ignite节点通过它进行数据的交换。
 ![1](https://files.readme.io/2f3c49e-Zookeeper_Discovery_SPI_-_ZooKeeper_Cluster.png)
 值得一提的是，ZooKeeper发现仅仅是发现机制的一个实现，不会影响Ignite节点间的通信（可以看2.8.网络配置章节）。节点之间一旦通过ZooKeeper发现机制彼此探测到，它们就会使用Communication SPI进行点对点的通信。
 #### 2.5.2.2.配置
 要启用ZooKeeper发现，需要配置`ZookeeperDiscoverySpi`：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -830,10 +861,13 @@ Ignition.start(cfg);
 #### 2.5.2.3.故障和脑裂处理
 ZooKeeper发现机制使用如下的方式来处理网络分区（或者叫脑裂）以及节点间的通信故障。
 假定集群的所有节点仍然可以访问ZooKeeper集群，实际上，如果一个节点断开与ZooKeeper的连接，它已经宕机，然后其他节点会将其视为故障或者连接断开。
+
 如果发生了网络分区，节点没有断开与ZooKeeper的连接，对于发现机制来说仍然可见，因为它们仍然可以接入ZooKeeper。但是，因为这是一个脑裂场景，部分节点无法相互通信，因为他们位于独立的网络段中。
+
 这时，节点通过向ZooKeeper集群推送特别的请求，发起一个通信故障检测进程，进程启动后，所有节点都会试图连接对方，然后将结果反馈给协调器节点。根据这个信息，协调器会生成一个连接图谱，查找并且确定那些节点故障，那些仍然存活。
 #### 2.5.2.4.自定义发现事件
 将环形拓扑变更为星型拓扑，影响了发现SPI处理自定义发现事件的方式。因为环形拓扑是线性的，这意味着每个发现消息是被节点顺序处理的，因此在某个特定时间，只会有一个节点在处理消息。
+
 而在ZooKeeper发现机制中，协调器会同时将发现消息发送给所有节点，结果就是消息的并行处理。
 这种并行处理的结果就是，ZooKeeper发现机制不允许对自定义发现事件的修改，比如，节点不允许为发现消息添加任何负载。
 #### 2.5.2.4.Ignite和ZooKeeper的配置一致性
@@ -848,13 +882,16 @@ tickTime=2000
 syncLimit=5
 ```
 如果这样配置的话，只有过了`tickTime * syncLimit`时限，ZooKeeper服务器才会发觉它是否与剩余的ZooKeeper集群分割，在ZooKeeper的这段时间之内，所有的Ignite节点都会接入该已分割的ZooKeeper服务器，而不会与其它的ZooKeeper服务器进行连接。
+
 另一方面，在Ignite端有一个`sessionTimeout`参数，它定义了如果节点与ZooKeeper集群断开，多长时间ZooKeeper会关闭Ignite节点的会话，如果`sessionTimeout`比`tickTime * syncLimit`小，那么Ignite节点就会被分割的ZooKeeper服务器过早地通知，即会话会在其试图连接其他的ZooKeeper服务器之前过期。
+
 要避免这种情况发生，`sessionTimeout`要比`tickTime * syncLimit`大。
 ## 2.6.零部署
 ### 2.6.1.摘要
 计算所需的闭包和任务可能是任意自定义的类，也包括匿名类。Ignite中，远程节点会自动感知这些类，不需要显式地将任何jar文件部署或者移动到任何远程节点上。
 ### 2.6.2.对等类加载
 这个行为是通过对等类加载（P2P类加载）实现的，他是Ignite中的一个特别的**分布式类加载器**，实现了节点间的字节码交换。当对等类加载启用时，不需要在网格内的每个节点上手工地部署Java或者Scala代码，也不需要每次在发生变化时重新部署。
+
 下面的代码由于对等类加载会在所有的远程节点上运行，不需要任何的显式部署步骤：
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -899,17 +936,24 @@ Ignite ignite = Ignition.start(cfg);
 对等类加载行为的特性是由不同的部署模式控制的。特别地，当发起节点或者主节点离开网格时的卸载行为也会依赖于部署模式。另一方面，部署模式控制的，还有用户资源管理和类版本管理。在下面的章节中会更详细地描述每个部署模式。
 **PRIVATE和ISOLATED**
 在主节点，同一个类加载器部署的类，还会在worker节点远程共享同一个类加载器。然而，从不同主节点部署的任务不会在worker节点共享同一个类加载器，这对于开发很有用，这时不同的开发者可以工作于同一个类的不同版本上。
+
 自从`@UserResource`注解删除后，PRIVATE和ISOLATED部署模式就没有不同了。这两个常量都因为后向兼容的原因保留了，并且这两个之一可能在未来的大版本中被删除。
+
 这个模式中，当主节点离开集群时，类会卸载。
 **SHARED**
 这是默认的部署模式。这个模式中，来自不同主节点的、用户版本相同的类会在worker节点上共享同一个类加载器。当所有主节点离开网格或者用户版本发生变化时，类会卸载。这个模式可以使来自不同主节点的类在远程节点上共享用户资源的同一个实例（见下面）。这个模式对于产品环境特别有用，与`ISOLATED`模式相比，它在单一主节点上有一个单一类加载器的作用域，`SHARED`模式会向所有主节点扩展部署作用域。
+
 这个模式中，当所有的主节点离开集群时，类会卸载。
+
 **CONTINUOUS**
+
 在`CONTINUOUS`模式中，当主节点离开网格时类不会卸载。卸载只会发生于类的用户版本发生变化时。这个方式的优势是可以使来自不同主节点的任务在worker节点共享同一个用户资源的实例（参见资源注入），这使得在worker节点上执行的所有任务可以复用，比如，连接池或者缓存的同一个实例。当用这个模式时，可以启动多个独立的worker节点，在主节点定义用户资源并且在worker节点上初始化一次，不管他们来自那个主节点。与`ISOLATED`部署模式相比，它在单一主节点上有一个单一类加载器的作用域，`CONTINUOUS`模式会向所有主节点扩展部署作用域，这对于产品模式非常有用。
 这个模式中，即使所有的主节点离开集群，类都不会卸载。
 ### 2.7.2.卸载和用户版本
 通过对等类加载获得的类定义，有他们自己的生命周期。在特定的事件中（当主节点离开或者用户版本变化，依赖于部署模式），类信息会从集群中卸载，类定义会从网格中的所有节点和用户资源抹掉，与该类链接的，也会有选择地抹掉（还是依赖于部署模式）。对于内存数据网格，还意味着一个卸载的类的所有缓存条目都会从缓存删除。然而，如果使用了二进制编组器，后者并不适用，它允许以二进制的形式存储缓存数据来避免从一个主节点加载条目的必要性。
+
 当部署于`SHARED`和`CONTINUOUS`模式时，如果想重新部署类，用户版本来了。Ignite默认会自动检测类加载器是否改变或者一个节点是否重新启动。然而，如果希望在节点的一个子集上改变或者重新部署代码，或者在`CONTINUOUS`模式中，杀掉所有的现存部署，那么需要修改用户版本。
+
 用户版本是在类路径的`META-INF/ignite.xml`中指定的，像下面这样：
 ```xml
 <!-- User version. -->
@@ -979,7 +1023,9 @@ Ignition.start(cfg);
 ## 2.8.网络配置
 ### 2.8.1.TcpCommunicationSpi
 `CommunicationSpi`为发送和接收网格消息提供了基本的管道，他也被用于所有的分布式网格操作，比如执行任务，监控数据交换，分布式事件查询以及其他的。Ignite提供了`TcpCommunicationSpi`作为`CommunicationSpi`的默认实现，它使用TCP/IP协议来进行节点间的通信。
+
 要启用节点间的通信，`TcpCommunicationSpi`增加了`TcpCommuncationSpi.ATTR_ADDRS`和`TcpCommuncationSpi.ATTR_PORT`本地节点属性。启动时，这个SPI会监听由`TcpCommuncationSpi.setLocalPort(int)`方法设置的本地端口。如果端口被占用，SPI会自动增加端口号直到成功绑定监听。
+
 `TcpCommuncationSpi.setLocalPortRange(int)`配置参数控制了SPI可以尝试的最大端口数量。
 > **本地端口范围**
 当在一台机器上甚至是在同一个JVM上启动多个网格节点时，端口范围会非常方便，这样的话所有的节点都会启动而不用一个个地进行单独的配置。
@@ -1009,7 +1055,9 @@ Ignition.start(cfg);
 |`setSocketSendBuffer(int)`|设置这个SPI创建或者接收的套接字的发送缓冲区大小，如果未指定，默认值为0，它会导致套接字创建之后缓冲区无法交换（即使用操作系统默认值）。|0|
 
 **示例**
-下面的例子显示了如何调整`TcpCommunicationSpi`的参数：
+
+下面的示例显示了如何调整`TcpCommunicationSpi`的参数：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
