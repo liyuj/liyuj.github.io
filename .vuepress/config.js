@@ -17,6 +17,7 @@ module.exports = {
     },
     evergreen: true,
     themeConfig: {
+        lastUpdated: '最后更新时间：',
         sidebarDepth: 2,
         nav: [{
                 text: '首页',
