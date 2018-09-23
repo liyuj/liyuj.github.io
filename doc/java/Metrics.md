@@ -2,9 +2,13 @@
 ## 18.1.内存指标
 ### 18.1.1.数据区指标
 Ignite的固化内存可以通过`DataRegionMetrics`接口以及JMX Bean暴露的一些参数进行监控，通过这些指标，可以跟踪所有的内存使用，度量性能，以及执行必要的优化。
+
 对于和某个特定节点有关的指标，`DataRegionMetrics`接口是主要的入口点，因为一个节点可以配置多个区域，因此每个区域的指标都是单独收集和获取的。
+
 **启用数据区指标**
+
 可以为希望收集指标的区域配置`DataRegionConfiguration.setMetricsEnabled(true)`，已开启指标收集：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -57,7 +61,9 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 // Apply the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
+
 **获取指标**
+
 使用`Ignite.dataRegionMetrics()`接口的方法或者对应的JMX Bean可以获得最新的指标快照然后进行迭代，如下所示：
 ```java
 // Get the metrics of all the data regions configured on a node.
@@ -92,13 +98,19 @@ for (DataRegionMetrics metrics : regionsMetrics) {
 |`getPageSize()`|获取内存页面大小。|
 
 **使用JMX Bean**
+
 所有本地节点的`DataRegionMetrics`，都是可以通过JMX接口`DataRegionMetricsMXBean`访问的，可以通过任何兼容JMX的工具或者API接入。
+
 使用特定JMX bean暴露的`DataRegionMetricsMXBean.enableMetrics()`方法可以激活数据区的指标收集。
+
 JMX bean暴露了与`DataRegionMetrics`相同的指标集合，然后还有些其它的，具体可以看[DataRegionMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/DataRegionMetricsMXBean.html)的javadoc。
 ### 18.1.2.Ignite原生持久化指标
 Ignite还为原生持久化提供了一组指标，这些指标在`DataStorageMetrics`接口中分组。
+
 **启用数据存储指标**
+
 通过配置`DataStorageConfiguration.setMetricsEnabled(true)`可以启用相关的指标收集，如下：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -133,7 +145,9 @@ storageCfg.setMetricsEnabled(true);
 // Apply the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
+
 **获取指标**
+
 调用`Ignite.dataStorageMetrics()`方法可以获取最新的持久化指标快照，如下所示：
 ```java
 // Getting metrics.
@@ -148,7 +162,7 @@ System.out.println("Checkpoint duration:" + pm.getLastCheckpointDuration());
 下面是和数据存储有关的可用指标列表：
 
 |`方法名`|`描述`|
-|||
+|---|---|
 |`getWalWritingRate()`|获取在最后配置的时间间隔内，每秒写入WAL的平均记录数。|
 |`getWalArchiveSegments()`|获取目前WAL归档中的段数量。|
 |`getWalFsyncTimeAverage()`|获取在最后配置的时间间隔内，以微妙计的平均WAL FSYNC模式持续时间。|
@@ -158,9 +172,13 @@ System.out.println("Checkpoint duration:" + pm.getLastCheckpointDuration());
 具体可以看[DataStorageMetrics](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/DataStorageMetrics.html)的javadoc。
 
 **使用JMX Bean**
+
 原生持久化的指标，也可以通过JMX接口`DataStorageMetricsMXBean`收集的，可以通过任何兼容JMX的工具或者API接入。
+
 使用特定JMX bean暴露的`DataStorageMetricsMXBean.enableMetrics()`方法可以激活持久化相关的指标收集。
+
 JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些其它的，具体可以看[DataStorageMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/DataStorageMetricsMXBean.html)的javadoc。
+
 >**启用指标收集**
 指标收集不是一个无代价的操作，会影响应用的性能，因此默认是关闭的。
 如果要打开，可以使用下面的方式：
@@ -171,11 +189,14 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
 
 ### 18.1.3.内存使用量计算
 还可以获得与特定`CacheGroup`有关的缓存的指标，目前这些指标只能通过`CacheGroupMetricsMXBean`JMX接口访问，具体的可用指标列表，可以看[CacheGroupMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/CacheGroupMetricsMXBean.html)的javadoc。
+
 **单节点内存使用**
+
 下面的示例显示如何计算*当前节点大小*，即当前节点的总体数据量（MB/GB），以及*当前缓存大小*，即缓存的数据大小（MB/GB）。
 
  1. 当前节点大小：`DataStorageMetricsMXBean#getTotalAllocatedSize`；
  2. 某个节点的特定缓存的当前大小：`CacheGroupMetricsMXBean#getTotalAllocatedSize`，注意，这个指标只是一个缓存组内一个缓存（默认行为）。
+
 **集群范围内存使用**
 
  1. 要计算整个集群的大小，可以对所有节点的`DataStorageMetricsMXBean#getTotalAllocatedSize`进行汇总；
@@ -183,10 +204,13 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
 
 ## 18.2.缓存指标
 通过`CacheMetrics`接口，Ignite还可以监测和分布式缓存有关的统计数据。
+
 `CacheMetrics`接口有各种指标，比如：缓存处理的put和get操作的总数，平均put和get时间，退出总数量，当前后写缓存存储缓冲区大小，以及更多。
 ### 18.2.1.启用缓存指标
 要启用缓存指标，可以将希望收集指标缓存的`CacheConfiguration.setStatisticsEnabled(boolean)`配置为`true`。
+
 下面以名为`test-cache`的缓存为例：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -234,5 +258,7 @@ System.out.println("Avg get time: " + cm.getAverageGetTime());
 查看[CacheMetrics](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/cache/CacheMetrics.html)的javadoc，可以了解完整的可用指标列表。
 ### 18.2.3.使用JMX Bean
 通过`CacheMetricsMXBean`接口也可以用于访问缓存的指标，可以通过任意兼容JMX的工具或者API接入bean。如果要在应用中处理bean，通过`IgniteCache.mxBean()`或者`IgniteCache.localMxBean()`可以获得bean的引用。
+
 使用特定JMX Bean暴露的`CacheMetricsMXBean.enableMetrics()`方法，可以激活缓存指标收集。
+
 查看[CacheMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/CacheMetricsMXBean.html)的javadoc，可以了解完整的可用指标列表。
