@@ -14,7 +14,9 @@ Ignite*固化内存*的操作方式类似于操作系统的*虚拟内存*，比�
 
 ### 10.1.2.持久化特性
 本章节会概述Ignite可用的持久化选项。
+
 **Ignite原生持久化**
+
 Ignite的数据持久化方面，原生持久化是最灵活、扩展性最强、最方便的方式，如果需要分布式的内存数据库，这个功能是要广泛使用的，它具有如下优势：
  
  - **数据弹性**：原生持久化层存储了完整的数据集，因此不会受到集群故障或者重启的影响，数据不会丢失并且保证事务强一致性；
@@ -23,15 +25,20 @@ Ignite的数据持久化方面，原生持久化是最灵活、扩展性最强�
  - **集群即时重启**：如果整个集群故障，它可以立即重启并且可用，随着开始访问数据，内存缓存会自动地预热。
 
 **第三方持久化**
+
 Ignite可以为已有的第三方数据库提供一个缓存层，比如RDBMS、NoSQL或者HDFS，这个模式可以对保存数据的底层数据库进行加速，Ignite将数据保存在内存中，分布到多个节点，提供了更快的数据访问速度，减少了因为应用和数据库之间频繁的数据移动导致的网络负载。
+
 但是，和原生持久化相比，也有很多的限制，比如，SQL只会在内存中执行，因此需要事先将所有的数据预加载到内存中。
+
 **交换空间**
+
 如果不想使用Ignite的持久化机制，也可以使用交换，这时，如果内存不足，内存中的数据会被移动到磁盘上的交换空间。如果启用交换空间，Ignite会将数据保存在内存映射文件（MMF）中，根据内存的消耗量，操作系统会将它的内容交换到磁盘。
+
 由于内存过载，需要更多时间来对集群进行缩放，从而对数据集进行更平均的分布，这时交换空间可以避免内存溢出错误（OOME）。
 
 ## 10.2.内存架构
 Ignite固化内存是一个基于页面的内存架构，它会将内存拆分成固定大小的页面。这些页面会被存储于内存的*堆外受管内存区*（Java堆外）中，然后在磁盘上以特定的层次结构进行组织。
->**数据格式**
+>**数据格式**<br>
 Ignite在内存和磁盘上维护了同样的二进制格式，这样就不需要花费在内存和磁盘之间移动数据时进行序列化的开销。
 
 下面描述的是Ignite固化内存架构的结构图：
@@ -39,9 +46,11 @@ Ignite在内存和磁盘上维护了同样的二进制格式，这样就不需�
 
 ### 10.2.1.内存区
 固化内存由一个或者多个堆外内存区组成，一个内存区是通过内存策略配置的逻辑可扩展区域，这个区域大小可变，退出策略以及其他的参数在下面的内存策略中会详述。
+
 固化内存默认只会分配一个内存区，它会占用本地集群节点可用内存的20%。
 ### 10.2.2.操作型数据和历史数据
 基于性能的考虑，需要尽可能地将操作型数据保持在内存中，这时需要配置多个内存区。
+
 比如，假设有*Person*、*Purchases*和*Records*实体，它们分别存储于*PersonsCache*、*PurchasesCache*和*RecordsCache*缓存中。Person和Purchases的数据是操作型的，即这些数据会被频繁访问，而Records是访问量较少的历史数据。
 假定我们只有200GB的可用内存空间，那么在这个场景中，会按照如下方式分配物理内存：
 
@@ -52,24 +61,27 @@ Ignite在内存和磁盘上维护了同样的二进制格式，这样就不需�
 
 ### 10.2.3.内存段
 每个内存区都开始于初始值，然后有一个可增长的最大值。这个区域扩展至其最大值的过程中，都会被分配连续的内存段。内存区的最大值默认为系统可用物理内存的20%。
-> **默认最大值**
+> **默认最大值**<br>
 如果内存区的最大值没有显式地配置（通过`org.apache.ignite.configuration.MemoryPolicyConfiguration.setMaxSize()`），那么它会使用机器可用RAM的20%。
 
 一个内存块是从操作系统获得的连续字节数组或者物理内存，这个块会被分为固定大小的页面，该块中可以驻留若干种不同类型的页面，如下图所示：
 ![](https://files.readme.io/65ced5a-page-memory-pages.png)
 ### 10.2.4.数据页面
 数据页面存储的是从应用端插入Ignite缓存中的缓存条目（数据页面在上图中标注为绿色）。
+
 通常，一个数据页面持有多个键-值条目，以更高效地利用内存避免内存碎片化。当新的键-值条目加入缓存时，页面内存机制会查找适合该条目的页面然后加入里面。但是，当条目的总大小达到通过`MemoryConfiguration.setPageSize(..)`参数配置的页面大小时，该条目会占据多于一个数据页面。
+
 >如果有很多的缓存条目都不适合单个页面，那么就需要增加配置参数中的页面大小。
 
 如果在更新期间条目的大小超过了它所属的数据页面的可用空间，那么Ignite会搜索一个有足够空间容纳更新后的条目的新数据页面，然后将数据移动到那里。
 ### 10.2.5.B+树和索引页面
 应用定义和使用的SQL索引是以**B+树数据结构**的形式进行维护的。对于一个SQL模式中声明的每个唯一索引，Ignite会实例化并且管理一个专用的B+树实例。
 ![](https://files.readme.io/e0e9141-page-memory-b-tree.png)
->**哈希索引**
+>**哈希索引**<br>
 缓存的键也会存储于B+树，它们通过哈希值进行排序。
 
 如上图所示，整个B+树的目的就是链接和排序在固化内存中分配和存储的索引页面。从内部来说，索引页面包括了定位索引值、索引指向的缓存条目在数据页面中的偏移量、还有到其他索引页面的引用（用来遍历树）等所有必要的信息，索引页面在上图中标注为紫色。
+
 B+树的元页面需要获得特定B+树的根和它的层次，以高效地执行范围查询。比如，当执行`myCache.get(keyA)`操作时，在一个节点上它会触发下面的操作流程：
 
  1. Ignite会查找`myCache`属于那个内存区；
@@ -81,6 +93,7 @@ B+树的元页面需要获得特定B+树的根和它的层次，以高效地执�
 
 ### 10.2.6.空闲列表
 前述章节的执行流程描述的是当应用希望获取缓存时在页面内存中如何检索缓存的条目。下面的内容是当调用像`myCache.put(keyA,valueA)`这样的操作时，Ignite如何存储一个新的条目。
+
 在这个场景中，固化内存依赖的是空闲列表数据结构。空闲列表是一个双向链表，它存储了到大致相当于空闲空间的内存页面的引用。比如，有一个空闲列表，它存储了所有的数据页面，它占用了最多75%的空闲空间，还有一个列表来跟踪索引页面，它占用了剩余的25%的容量，数据和索引页面是由独立的空闲列表来跟踪的。
 ![](https://files.readme.io/4494e51-page-memory-free-list.png)
 下面是`myCache.put(keyA,valueA)`操作的执行流程：
@@ -94,8 +107,9 @@ B+树的元页面需要获得特定B+树的根和它的层次，以高效地执�
 
 ## 10.3.内存配置
 Ignite节点默认会至多消费本地可用内存的20%，大多数情况下这也是唯一需要调整的参数，要修改默认内存区大小，代码如下所示：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
 <property name="memoryConfiguration">
@@ -109,7 +123,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
 // Changing total RAM size to be used by Ignite Node.
@@ -137,8 +151,9 @@ Ignition.start(cfg);
 
 在Ignite的[javadoc](https://ignite.apache.org/releases/latest/javadoc/index.html)中可以看到`DataStorageConfiguration`的完整参数列表。
 下面是使用`DataStorageConfiguration`如何修改页面大小和并发级别的示例代码：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="dataStorageConfiguration">
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
@@ -154,7 +169,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -172,9 +187,11 @@ cfg.setDataStorageConfiguration(storageCfg);
 ```
 ### 10.3.2.内存区
 固化内存默认会初始化一个单一的可扩展内存区，它会占用禁用持久化的本地主机上20%的可用内存。也可以使用`org.apache.ignite.configuration.DataRegionConfiguration`类，定义多个数据区，它们可以有不同的参数，比如区大小、持久化和退出策略。
+
 比如，要配置一个500MB的内存区并且开启持久化，那么就需要定义一个如下所示的配置：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <!-- Durable memory configuration. -->
   <property name="dataStorageConfiguration">
@@ -207,7 +224,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -236,8 +253,9 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 cfg.setDataStorageConfiguration(storageCfg);
 ```
 下一步，要使用这个配置好的区域，使得Ignite缓存将数据存储于其中，需要将区域的名字（`500MB_Region`）传递给`org.apache.ignite.configuration.CacheConfiguration.setDataRegionName(...)`方法：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     <!-- Durable Memory and other configuration parameters. -->
     <!-- ....... -->
@@ -264,7 +282,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -284,6 +302,7 @@ cacheCfg.setName("SampleCache");
 cfg.setCacheConfiguration(cacheCfg);
 ```
 用这个配置启动Ignite集群后，固化内存会分配一个初始大小为100MB的内存区，然后它可以增长到500MB。数据的超集会一直存储于磁盘上，确保即使内存空间不足也不会出现数据丢失的情况。如果开启了持久化，Ignite会自动地使最近最少使用的数据退出。这个区域只会存储`SampleCache`的所有数据，除非通过前述的方式显式地指定其它的内存区，其他的缓存都会绑定到默认的内存区。
+
 如果**禁用**了持久化并且所有的内存使用量超过了500MB，那么会抛出内存溢出异常，要避免这个问题，可以采用如下的办法来解决：
 
  - 开启Ignite的持久化存储；
@@ -292,8 +311,9 @@ cfg.setCacheConfiguration(cacheCfg);
 
 ### 10.3.3.堆内缓存
 固化内存是堆外的内存，它是在Java堆之外分配的内存区，然后将数据条目存储在其中。但是，通过将`org.apache.ignite.configuration.CacheConfiguration.setOnheapCacheEnabled(...)`配置为`true`为缓存条目开启堆内缓存。
+
 当以二进制形式处理缓存条目或者调用缓存的反序列化时在服务端节点有大量的读操作，堆内缓存对这样的场景非常有用。比如，当一个分布式计算或者部署的服务为下一步处理从缓存中获取一些数据时，就会发生这样的情况。
->**堆内缓存大小**
+>**堆内缓存大小**<br>
 要管理堆内缓存的大小，避免其不断增长，一定要配置一个可用的`基于缓存条目的退出策略`。
 
 ## 10.4.退出策略
@@ -304,15 +324,17 @@ Ignite支持两种数据退出策略：
  - **基于缓存条目的退出**：针对可选的堆内缓存。
 
 ### 10.4.2.堆外内存
->**如果开启了Ignite持久化本策略不生效**
+>**如果开启了Ignite持久化本策略不生效**<br>
 注意如果开启了Ignite持久化，那么基于页面的退出策略是无效的，因为最旧的页面会自动地从内存中清除。
 
 对于存储于堆外内存中的数据，Ignite支持基于页面的退出。当达到最大内存使用量时，堆外内存中的一个页面就会退出。
+
 每个数据区都可以配置基于页面的退出，Ignite的固化内存是由通过`DataRegionConfiguration`配置的一个或者多个数据区组成的。默认情况下一个区域会一直增长直到达到最大值，为避免可能的内存区溢出，需要设置一个数据页面的退出模式：`Random-LRU`或者`Random-2-LRU`，通过`DataRegionConfiguration.setPageEvictionMode(...)`配置参数进行设定，退出模式会跟踪数据页面的使用然后根据模式的实现退出部分数据。
 #### 10.4.2.1.Random-LRU
 要启用Random-LRU退出算法，可以将`DataPageEvictionMode.RANDOM_LRU`传递给相应的`DataRegionConfiguration`，如下所示：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <!-- Durable memory configuration. -->
   <property name="dataStorageConfiguration">
@@ -344,7 +366,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -380,8 +402,9 @@ Random-LRU算法工作方式如下：
 
 #### 10.4.2.2.Random-2-LRU
 Random-2-LRU退出算法是Random-LRU算法的抗扫描版，要启用这个算法，将`DataPageEvictionMode.RANDOM_2_LRU`传递给相应的`DataRegionConfiguration`即可，如下所示：
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <!-- Durable memory configuration. -->
   <property name="dataStorageConfiguration">
@@ -413,7 +436,7 @@ XML：
 </bean>
 ```
 Java:
-```
+```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -442,14 +465,18 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 cfg.setDataStorageConfiguration(storageCfg);
 ```
 在Random-2-LRU算法中，每个数据页面会存储两个最近访问时间戳，退出时，算法会随机地从跟踪数组中选择5个索引值，然后两个最近时间戳中的最小值会被用来和另外四个候选页面中的最小值进行比较。
+
 Random-2-LRU比Random-LRU要好，因为它解决了`昙花一现`的问题，即一个页面很少被访问，但是偶然地被访问了一次，然后就会被退出策略保护很长时间。
->**Random-LRU与Random-2-LRU的对比**
+>**Random-LRU与Random-2-LRU的对比**<br>
 Random-LRU退出模式中，一个数据页面只会保存一份最近访问时间戳，而Random-2-LRU模式会为每个数据页面保存两份最近访问时间戳。
+
 **退出的触发**
+
 一个数据页面退出算法的触发默认是当内存区的总消耗量达到了90%，如果要调整的话，可以使用`DataRegionConfiguration.setEvictionThreshold(...)`参数。
 
 ### 10.4.3.堆内缓存
 如果通过`CacheConfiguration.setOnheapCacheEnabled(...)`开启了堆内缓存，那么固化内存是可以将热数据存储于Java堆中的。开启了堆内缓存之后，就可以使用一个缓存条目退出策略来管理不断增长的堆内缓存了。
+
 退出策略控制着一个缓存对应的堆内内存可以存储的条目的最大数量，当达到堆内缓存数量的最大值之后，条目就会从Java堆中退出。
 >堆内退出策略只是将缓存条目从Java堆中删除，存储在堆外内存区中的条目不受影响。
 
@@ -462,8 +489,9 @@ LRU退出策略基于最近最少使用算法，他会确保最近最少使用�
 > LRU退出策略适用于堆内缓存的大多数使用场景，不确定时可以优先使用。
 
 这个策略通过`LruEvictionPolicy`实现，通过`CacheConfiguration`进行配置，支持批量退出以及受到内存大小限制的退出。
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
   <property name="name" value="myCache"/>
   
@@ -482,7 +510,7 @@ XML：
 </bean>
 ```
 Java:
-```
+```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
 
 cacheCfg.setName("cacheName");
@@ -502,7 +530,9 @@ Ignition.start(cfg);
 ```
 #### 10.4.3.2.先进先出（FIFO）
 FIFO退出策略基于先进先出算法，他确保缓存中保存时间最久的数据会被首先退出，它与`LruEvictionPolicy`不同，因为它忽略了数据的访问顺序。
+
 这个策略通过`FifoEvictionPolicy`实现，通过`CacheConfiguration`进行配置,支持批量退出以及受到内存大小限制的退出。
+
 XML:
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
@@ -543,10 +573,13 @@ Ignition.start(cfg);
 ```
 #### 10.4.3.3.有序
 有序退出策略和FIFO退出策略很像，不同点在于通过默认或者用户定义的比较器定义了数据的顺序，然后确保最小的数据（即排序数值最小的数据）会被退出。
+
 默认的比较器用缓存条目的键作为比较器，它要求键必须实现`Comparable`接口。也可以提供自定义的比较器实现，可以通过键，值或者两者都用来进行条目的比较。
+
 这个策略通过`SortedEvictionPolicy`实现，通过`CacheConfiguration`进行配置，支持批量退出以及受到内存大小限制的退出。
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
   <property name="name" value="myCache"/>
   
@@ -568,7 +601,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
 
 cacheCfg.setName("cacheName");
@@ -588,9 +621,11 @@ Ignition.start(cfg);
 ```
 #### 10.4.3.4.随机
 随机退出策略会随机地选择条目退出，这个退出策略主要用于调试或者基准测试的目的。
+
 这个策略通过`RandomEvictionPolicy`实现，通过`CacheConfiguration`进行配置。
+
 XML：
-```
+```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
   <property name="name" value="myCache"/>
   
@@ -608,7 +643,7 @@ XML：
 </bean>
 ```
 Java：
-```
+```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
 
 cacheCfg.setName("cacheName");
@@ -628,6 +663,7 @@ Ignition.start(cfg);
 ```
 ## 10.5.过期策略
 过期策略指定了在缓存条目过期之前必须经过的时间量，时间可以从创建，最后访问或者修改时间开始计算。
+
 过期策略的工作方式依赖于环境的内存配置：
 
  - **内存模式**：数据仅保存在内存中，过期的条目会完全从内存中清除；
@@ -658,6 +694,7 @@ IgniteCache<Object, Object> cache = cache.withExpiryPolicy(
 此策略将用于在返回的缓存实例上调用的每个操作。
 ### 10.5.1.Eager TTL（热生存时间）
 过期的条目从缓存中删除，既可以马上删除，也可以通过不同的缓存操作涉及它们再删除。只要有一个缓存配置启用了Eager TTL，Ignite就会创建一个线程在后台清理过期的数据。
+
 Eager TTL可以通过`CacheConfiguration.eagerTtl`属性启用或者禁用（默认值是`true`）。
 XML:
 ```xml
@@ -666,17 +703,21 @@ XML:
 </bean>
 ```
 ## 10.6.内存碎片整理
->**自动碎片整理**
+>**自动碎片整理**<br>
 在Ignite中内存碎片整理是自动进行的，不需要人工干预。
 
 固化内存会将数据全部保存在叫做*数据页面*的特定类型页面中，这样随着时间的推移，频繁的CRUD操作，会导致每个独立的页面都可能被更新多次，这就会导致页面和整个内存的碎片化。
+
 为了最小化内存碎片，当页面发生严重碎片化时，Ignite会进行页面的**压缩**。
 压缩后的数据页面大体如下所示：
 ![](https://files.readme.io/1242707-defragmented.png)
 页面有一个头部，保存了所有的必要信息，所有的键-值条目都是从右往左添加的，在上图的页面中有三个条目（分别为1,2,3）,这些条目大小可能不同。
+
 保存页面中键-值条目位置的偏移量（或者引用）是从左往右保存的，并且大小是固定的，偏移量作为指针用于定位页面中的键-值条目。
 中间的区域都是空闲空间，当新的数据进入集群时就会被填充进去。
+
 下一步，假设随着时间推移条目2被删除，这就导致了页面中空闲空间的不连续。
 ![](https://files.readme.io/883eb56-fragmented.png)
 碎片化的页面大概就是这样的。
+
 但是，当空闲空间需要或者碎片化达到了一个阈值，压缩进程就会进行碎片整理，然后使其达到上面第一张图片的状态-即空闲空间连续。这个进程是自动的，不需要人工干预。
