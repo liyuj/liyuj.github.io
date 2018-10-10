@@ -52,7 +52,7 @@ cfg.setDataStorageConfiguration(storageCfg);
 ```
 持久化开启之后，所有的数据和索引都会存储在所有集群节点的内存和磁盘上，下图描述了在单独的集群节点的文件系统层看到的持久化结构：
 >**每个数据区和每个缓存的持久化**<br>
-Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[10.3.2.内存区](/doc/java/DurableMemory.md#10.3.2.内存区)。
+Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[10.3.2.内存区](/doc/java/DurableMemory.md#_10-3-2-内存区)。
 
 ![](https://files.readme.io/74a2aac-persistent_store_structure_final.png)
 首先，节点中的每个缓存都要有一个唯一的目录，从上图可知，可以看到至少两个缓存（Cache_A和Cache_B），由节点来维护他们的数据和索引。
