@@ -396,7 +396,7 @@ KMeansModel knnMdl = trainer.fit(
 ### 15.6.1.摘要
 Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过模拟生物进化过程来解决优化问题的一种方法。 遗传算法非常适合于以最优的方式检索大量复杂的数据集，在现实世界中，遗传算法的应用包括：汽车设计、计算机游戏、机器人、投资、交通和运输等等。
 
-所有的遗传操作，比如适应性计算、交叉和突变，都会被建模为分布式的ComputeTask。此外，这些ComputeTask会通过Ignite的关系并置，将ComputeJob分发到染色体实际存储的节点。
+所有的遗传操作，比如适应度计算、交叉和变异，都会被建模为分布式的ComputeTask。此外，这些ComputeTask会通过Ignite的关系并置，将ComputeJob分发到染色体实际存储的节点。
 
 下图是遗传算法的架构：
 ![](https://files.readme.io/07790ee-GAGrid_Overview.png)
@@ -435,15 +435,15 @@ gaConfig.setGenePool(genePool);
 // Set the Chromosome Length to '11' since 'HELLO WORLD' contains 11 characters.
 gaConfig.setChromosomeLength(11);
 ```
-在遗传算法的执行过程中，染色体通过交叉和变异的过程演化为最优解，然后，根据一个适应性的得分，会选择一个最优解。
+在遗传算法的执行过程中，染色体通过交叉和变异的过程演化为最优解，然后，根据一个适应度得分，会选择一个最优解。
 > 遗传算法从内部来说，会将染色体存储在染色体缓存中。
 
 最优解：
 ![](https://files.readme.io/baca393-helloworld_genes.png)
 
-**实现适应性函数**
+**实现适应度函数**
 
-遗传算法可以智能地执行自然选择的大部分过程，但是遗传算法是不了解具体的问题域的，因此需要定义一个适应性函数，它需要扩展自遗传算法的`IFitnessFunction`类，然后为每个染色体计算适应性得分，这个适应性得分用于决定各个解之间的优化程度，下面的代码会演示这个适应性函数：
+遗传算法可以智能地执行自然选择的大部分过程，但是遗传算法是不了解具体的问题域的，因此需要定义一个适应度函数，它需要扩展自遗传算法的`IFitnessFunction`类，然后为每个染色体计算适应度得分，这个适应度得分用于决定各个解之间的优化程度，下面的代码会演示这个适应度函数：
 ```java
 public class HelloWorldFitnessFunction implements IFitnessFunction {
 
@@ -473,7 +473,7 @@ gaConfig.setFitnessFunction(function);
 
 **定义终止条件**
 
-下一步需要为遗传算法指定一个合适的终止条件，终止条件依赖于问题域，对于本示例来说，当染色体的适应性得分为11时，遗传算法就应该终止了。终止条件是通过实现`ITerminateCriteria`接口实现的，它只有一个方法`isTerminateConditionMet()`。
+下一步需要为遗传算法指定一个合适的终止条件，终止条件依赖于问题域，对于本示例来说，当染色体的适应度得分为11时，遗传算法就应该终止了。终止条件是通过实现`ITerminateCriteria`接口实现的，它只有一个方法`isTerminateConditionMet()`。
 ```java
 public class HelloWorldTerminateCriteria implements ITerminateCriteria {
 
@@ -614,8 +614,8 @@ Zeppelin启动之后，会看到下面的首页：
 
 |函数名|描述|
 |---|---|
-|`getSolutionsDesc()`|获得优化解，按照适应性得分倒序排列。|
-|`getSolutionsAsc()`|获得优化解，按照适应性得分升序排列。|
+|`getSolutionsDesc()`|获得优化解，按照适应度得分倒序排列。|
+|`getSolutionsAsc()`|获得优化解，按照适应度得分升序排列。|
 |`getSolutionById(key)`|通过染色体键获取优化解。|
 
 要使用`GAGridNotebook`，可以启动一个独立的Ignite节点：
@@ -642,14 +642,14 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 ```shell
 %jdbc_ignite_sql select * from "geneCache".getSolutionsDesc();
 ```
-若干代之后，会发现解已经演变到最后的短语"HELLO WORLD"，对于HellowWorldGAExample这个示例，遗传算法会为每一代维护一个500个解的种群，另外，本示例的解会包含总共11个基因，适应性得分最高的，会被认为是“最适合”。
+若干代之后，会发现解已经演变到最后的短语"HELLO WORLD"，对于HellowWorldGAExample这个示例，遗传算法会为每一代维护一个500个解的种群，另外，本示例的解会包含总共11个基因，适应度得分最高的，会被认为是“最适合”。
 ![](https://files.readme.io/52055cb-Zeppelin_HelloWorldGATest.png)
 ### 15.6.5.词汇表
 **染色体**：是一系列基因，一个染色体代表一个潜在的解；
 
 **交叉**：是染色体内的基因结合以获得新染色体的过程；
 
-**适应性得分**：是一个数值评分，测量一个特定染色体（即：解）相对于种群中其他染色体的价值；
+**适应度得分**：是一个数值评分，测量一个特定染色体（即：解）相对于种群中其他染色体的价值；
 
 **基因**：是组成染色体的离散构建块；
 
