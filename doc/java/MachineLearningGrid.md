@@ -2,6 +2,7 @@
 ## 15.1.机器学习网格
 ### 15.1.1.摘要
 Ignite的机器学习（ML）是一组简单的、可扩展以及高效的工具，在不需要成本高昂的数据转换的前提下，就可以构建可预测的机器学习模型。
+
 将机器和深度学习加入Ignite的原理是很简单的，当前，如果要想让机器学习成为主流，数据科学家要解决两个主要的问题： 
 
  - 首先，模型是在不同的系统中训练和部署（训练结束之后）的，数据科学家需要等待ETL或者其他的数据传输过程，来将数据移至比如Apache Mahout或者Apache Spark这样的系统进行训练，然后还要等待这个过程结束并且将模型部署到生产环境。在系统间移动TB级的数据可能花费数小时的时间，此外，训练部分通常发生在旧的数据集上；
@@ -10,7 +11,7 @@ Ignite的机器学习（ML）是一组简单的、可扩展以及高效的工具
 
 **无ETL和大规模可扩展性**
 
-Ignite的机器学习依赖于Ignite基于内存的存储，这给机器学习和深度学习任务带来了大规模的扩展性，并且取消了在不同系统间进行ETL产生的等待。比如，在Ignite集群的内存和磁盘中存储的数据上，开发者可以直接进行深度学习和机器学习的训练和推理，然后，Ignite提供了一系列的机器学习和深度学习算法，对Ignite的分布式并置处理进行优化，这样在处理大规模的数据集或者不断增长的输入数据流时，这样的实现提供了内存级的速度和近乎无限的扩展性，而不需要将数据移到另外的存储。通过消除数据的移动以及长时间的处理等待，Ignite的机器学习可以持续地进行学习，可以在最新数据到来之时实时地对决策进行改进。 
+Ignite的机器学习依赖于Ignite基于内存的存储，这给机器学习和深度学习任务带来了大规模的扩展性，并且取消了在不同系统间进行ETL产生的等待。比如，在Ignite集群的内存和磁盘中存储的数据上，开发者可以直接进行深度学习和机器学习的训练和推理，然后，Ignite提供了一系列的机器学习和深度学习算法，对Ignite的分布式并置处理进行优化，这样在处理大规模的数据集或者不断增长的输入数据流时，这样的实现提供了内存级的速度和近乎无限的扩展性，而不需要将数据移到另外的存储。通过消除数据的移动以及长时间的处理等待，Ignite的机器学习可以持续地进行学习，可以在最新数据到来之时实时地对决策进行改进。
 
 **容错和持续学习**
 
@@ -20,29 +21,38 @@ Ignite的机器学习能够对节点的故障容错。这意味着如果在学�
 **分类**
 
 根据训练的数据集，对标的的种类进行标识。
+
 *适用领域*：垃圾邮件检测、图像识别、信用评分、疾病识别。
+
 *算法*：支持向量机（SVM）、最近邻、决策树分类和神经网络。
 
 **回归**
 
 对因变量y与一个或多个解释变量（或自变量）x之间的关系进行建模。
+
 *适用领域*：药物反应，股票价格，超市收入。
+
 *算法*：线性回归、决策树回归、最近邻和神经网络。
 
 **聚类**
 
 对对象进行分组的方式，即在同一个组（叫做簇）中的对象（某种意义上）比其它簇中的对象更相似。
+
 *适用领域*：客户细分、实验结果分组、购物项目分组。
+
 *算法*：K均值
 
 **预处理**
 
 特征提取和规范化。
+
 *适用领域*：对比如文本这样的输入数据进行转换，以便用于机器学习算法，然后提取需要拟合的特征，对数据进行规范化。
+
 *算法*：Ignite的机器学习支持使用基于分区的数据集自定义预处理，同时也有默认的预处理器。
 
 ### 15.1.3.入门
 机器学习入门的最快方式是构建和运行示例代码，学习它的输出和代码，机器学习的的示例代码位于Ignite发行版的`examples`文件夹中。
+
 下面是相关的步骤：
 
  1. 下载Ignite的2.4及以后的版本；
@@ -161,7 +171,9 @@ double prediction = mdl.apply(coordinates);
 ## 15.3.基于分区的数据集
 ### 15.3.1.摘要
 基于分区的数据集是在Ignite的计算和存储能力之上构建的抽象层，可以在遵循无ETL和容错的原则下，进行算法运算。
+
 基于分区的数据集的主要原理是Ignite的计算网格实现的经典MapReduce范式。
+
 MapReduce的主要优势在于，可以在分布于整个集群的数据上执行运算，而不需要大量的网络数据传输，这个想法对应于基于分区的数据集，采用如下的方式：
 
  - 每个数据集都是分区的；
@@ -239,8 +251,11 @@ double prediction = model.predict(observation);
 线性回归是一种监督学习算法，这意味着为了找到参数（向量b），需要在训练数据集上进行训练，并且使损失函数最小化。
 ![](https://files.readme.io/b20f1ce-222.gif)
 Ignite支持两种线性回归训练法，基于LSQR算法的训练法以及另一个基于随机梯度下降法的训练法。
+
 **LSQR训练法**
+
 LSQR算法是为线性方程组找到大的、稀疏的最小二乘解，Ignite实现了这个算法的分布式版本。
+
 基于缓存的数据集：
 ```java
 // Create linear regression trainer.
@@ -277,6 +292,7 @@ double prediction = mdl.apply(coordinates);
 **SGD训练法**
 
 另一个线性回归训练法会使用随机梯度下降法来寻找损失函数的最小值。该训练法的配置类似于多层感知训练法的配置，可以指定更新类型（`Nesterov`的SGD，RProp）、最大迭代次数、批量大小、局部迭代次数和种子。
+
 基于缓存的数据集：
 ```java
 // Create linear regression trainer.
@@ -335,7 +351,9 @@ double prediction = mdl.apply(coordinates);
 在Ignite的机器学习组件中，提供了一个K-均值聚类算法的实现。
 ### 15.5.1.模型
 K-均值聚类的目标是，将n个待观测值分为k个簇，这里每个观测值和所属的簇都有最近的均值，这被称为簇的原型。
+
 该模型持有一个k中心向量以及距离指标，这些由比如Euclidean、Hamming或者Manhattan这样的机器学习框架提供。
+
 通过如下的方式，可以预测给定的特征向量：
 ```java
 MeansModel mdl = ...;
@@ -344,7 +362,9 @@ double prediction = model.predict(observation);
 ```
 ### 15.5.2.训练法
 K均值是一种无监督学习算法，它解决了将对象分组的聚类问题，即在同一个组（叫做簇）中的对象（某种意义上）比其它簇中的对象更相似。
+
 K均值是一种参数化的迭代算法，在每个迭代中，计算每个簇中的新的均值，作为观测值的质心。
+
 目前，Ignite为K均值分类算法支持若干个参数：
 
  - `k`：可能的簇的数量；
@@ -521,6 +541,7 @@ Chromosome fittestChromosome = gaGrid.evolve();
 $ bin/ignite.sh examples/config/example-ignite.xml
 ```
 在集群的每个节点中重复这个步骤。
+
 然后打开另一个命令终端，转到`IGNITE_HOME`目录，然后输入：
 ```shell
 mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld.HelloWorldGAExample"
@@ -542,6 +563,7 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 53.883 sec
 ```
 ### 15.6.4.Apache Zeppelin集成
 Apache Zeppelin是一个基于Web的笔记本，可以进行交互式的数据分析。下面会介绍如何利用Zeppelin的可视化特性来显示由遗传算法生成的优化解。
+
 >下面的步骤，对所有遗传算法的示例都有效。
 
 **Zeppelin的安装和配置**
@@ -633,7 +655,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 
 **遗传算法（GA）**：是通过模拟生物进化过程来求解优化问题的一种方法。遗传算法持续增强种群潜在的解。在每次迭代中，遗传算法从当前种群中选择最合适的个体，为下一代创造后代。在随后的世代中，遗传算法将种群进化为最优解；
 
-**突变**：是染色体内的基因被随机更新以产生新特性的过程；
+**变异**：是染色体内的基因被随机更新以产生新特性的过程；
 
 **种群**：是潜在的解或染色体的集合；
 
@@ -968,6 +990,7 @@ SVMLinearBinaryClassificationModel mdl = trainer.fit(
 训练数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载，其是Iris数据集的子集（具有标签1和标签2的分类，它们是线性可分离的两类数据集）。
 ## 15.12.SVM多类分类
 多类SVM的目的是通过使用支持向量机将标签分配给样本，其中标签是从多个元素的有限集合中提取的。
+
 这个实现方法是通过一对所有的方法将单个多类问题总结成多个二进制分类问题。
 
 一对所有的方法是建立二进制分类器的过程，它将一个标签和其余的区分开。
@@ -1004,4 +1027,5 @@ SVMLinearMultiClassClassificationModel mdl = trainer.fit(
 要了解SVM线性多类分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/multiclass/SVMMultiClassClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
 
 预处理的分类数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
+
 共有三个带标签的分类：1 (building_windows_float_processed)，3 (vehicle_windows_float_processed)，7 (headlamps) 以及特征名：'Na-Sodium'，'Mg-Magnesium'，'Al-Aluminum'，'Ba-Barium'，'Fe-Iron'。
