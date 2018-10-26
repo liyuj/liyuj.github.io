@@ -1,5 +1,5 @@
 module.exports = {
-    title: 'Apache Ignite中文主站',    
+    title: 'Apache Ignite中文站',
     description: 'Ignite内存计算平台的中文文档及相关资料',
     dest: "dist",
     head: [
