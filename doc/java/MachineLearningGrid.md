@@ -352,7 +352,7 @@ double prediction = mdl.apply(coordinates);
 ### 15.5.1.模型
 K-均值聚类的目标是，将n个待观测值分为k个簇，这里每个观测值和所属的簇都有最近的均值，这被称为簇的原型。
 
-该模型持有一个k中心向量以及距离指标，这些由比如Euclidean、Hamming或者Manhattan这样的机器学习框架提供。
+该模型持有一个k中心向量以及距离指标，这些由比如欧几里得、海明或曼哈顿这样的机器学习框架提供。
 
 通过如下的方式，可以预测给定的特征向量：
 ```java
@@ -370,7 +370,7 @@ K均值是一种参数化的迭代算法，在每个迭代中，计算每个簇�
  - `k`：可能的簇的数量；
  - `maxIterations`：终止条件（另一个是ε）；
  - ε-δ收敛（新旧质心值之间的增量）；
- - 距离：机器学习框架提供的距离指标之一，例如Euclidean、Hamming或者Manhattan；
+ - 距离：机器学习框架提供的距离指标之一，例如欧几里得、海明或曼哈顿；
  - 种子：一个初始化参数，有助于重现模型（该训练法有一个随机初始化步骤，以获得第一个质心）。
 
 ```java
@@ -391,7 +391,7 @@ KMeansModel knnMdl = trainer.fit(
 ### 15.5.3.示例
 要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/clustering)，该实例也会随着每个Ignite发行版进行发布。
 
-训练数据集是Iris数据集的一个子集（具有标签1和标签2，它们是线性可分离的两类数据集），可以从[UCL机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
+训练数据集是鸢尾花数据集的一个子集（具有标签1和标签2，它们是线性可分离的两类数据集），可以从[UCL机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
 ## 15.6.遗传算法
 ### 15.6.1.摘要
 Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过模拟生物进化过程来解决优化问题的一种方法。 遗传算法非常适合于以最优的方式检索大量复杂的数据集，在现实世界中，遗传算法的应用包括：汽车设计、计算机游戏、机器人、投资、交通和运输等等。
@@ -871,7 +871,7 @@ K-NN算法是一种非参数方法，其输入由特征空间中的K-最近训�
 目前，Ignite为k-NN分类算法提供了若干参数：
 
   - `k`：最近邻数量；
-  - `distanceMeasure`：ML框架提供的距离度量之一，例如欧几里德、海明或曼哈顿；
+  - `distanceMeasure`：ML框架提供的距离度量之一，例如欧几里得、海明或曼哈顿；
   - `KNNStrategy`：可以为`SIMPLE`或者`WEIGHTED`（开启加权k-NN算法）；
   - `dataCache`：持有一组已知分类的对象的训练集。
 
@@ -896,7 +896,7 @@ double prediction = knnMdl.apply(vectorizedData);
 ### 15.9.2.示例
 要了解k-NN分类在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/classification)，该实例也会随着每个Ignite发行版进行发布。
 
-训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的Iris数据集。
+训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
 ## 15.10.k-NN回归
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
@@ -909,7 +909,7 @@ K-NN算法使用所有训练集来预测给定测试样本的属性值，这个�
 目前，Ignite为k-NN分类算法提供了若干参数：
 
   - `k`：最近邻数量；
-  - `distanceMeasure`：ML框架提供的距离度量之一，例如欧几里德、海明或曼哈顿；
+  - `distanceMeasure`：ML框架提供的距离度量之一，例如欧几里得、海明或曼哈顿；
   - `KNNStrategy`：可以为`SIMPLE`或者`WEIGHTED`（开启加权k-NN算法）；
   - `datasetBuilder`：帮助访问已知类的对象的训练集。
 
@@ -932,7 +932,7 @@ double prediction = knnMdl.apply(vectorizedData);
 ### 15.10.2.示例
 要了解k-NN回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/regression)，该实例也会随着每个Ignite发行版进行发布。
 
-训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的Iris数据集。
+训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
 ## 15.11.SVM二进制分类
 支持向量机（SVM）是相关数据分析学习算法中的监督学习模型，用于分类和回归分析。
 
@@ -987,7 +987,7 @@ SVMLinearBinaryClassificationModel mdl = trainer.fit(
 ### 15.11.3.示例
 要了解SVM线性分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/binary/SVMBinaryClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
 
-训练数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载，其是Iris数据集的子集（具有标签1和标签2的分类，它们是线性可分离的两类数据集）。
+训练数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载，其是鸢尾花数据集的子集（具有标签1和标签2的分类，它们是线性可分离的两类数据集）。
 ## 15.12.SVM多类分类
 多类SVM的目的是通过使用支持向量机将标签分配给样本，其中标签是从多个元素的有限集合中提取的。
 
