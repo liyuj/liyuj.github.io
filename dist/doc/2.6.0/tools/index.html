@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>1.Ignite Web控制台 | Apache Ignite中文站</title>
+    <meta name="description" content="Ignite内存计算平台的中文文档及相关资料">
+    <link rel="shortcut icon" type="image/x-icon" href="https://ignite.apache.org/favicon.ico">
+  <script src="https://hm.baidu.com/hm.js?03f40be28ff9a31fd798fd6b9dac0946"></script>
+    
+    <link rel="preload" href="/assets/css/0.styles.2f07efcc.css" as="style"><link rel="preload" href="/assets/js/app.1263e41e.js" as="script"><link rel="preload" href="/assets/js/48.6826af3c.js" as="script"><link rel="prefetch" href="/assets/js/10.60912227.js"><link rel="prefetch" href="/assets/js/11.112220d4.js"><link rel="prefetch" href="/assets/js/12.096c3f0f.js"><link rel="prefetch" href="/assets/js/13.84b45d53.js"><link rel="prefetch" href="/assets/js/14.775279aa.js"><link rel="prefetch" href="/assets/js/15.3feeb0d0.js"><link rel="prefetch" href="/assets/js/16.ce9ac455.js"><link rel="prefetch" href="/assets/js/17.4a4f1e7f.js"><link rel="prefetch" href="/assets/js/18.38b977c5.js"><link rel="prefetch" href="/assets/js/19.b9e36588.js"><link rel="prefetch" href="/assets/js/2.c0136d60.js"><link rel="prefetch" href="/assets/js/20.f7249e87.js"><link rel="prefetch" href="/assets/js/21.2a814a4f.js"><link rel="prefetch" href="/assets/js/22.3b6738b6.js"><link rel="prefetch" href="/assets/js/23.2525050a.js"><link rel="prefetch" href="/assets/js/24.ea66fb7e.js"><link rel="prefetch" href="/assets/js/25.6ccf99b8.js"><link rel="prefetch" href="/assets/js/26.abc96dd1.js"><link rel="prefetch" href="/assets/js/27.8e13a920.js"><link rel="prefetch" href="/assets/js/28.fe0af10c.js"><link rel="prefetch" href="/assets/js/29.b9eae778.js"><link rel="prefetch" href="/assets/js/3.b582b299.js"><link rel="prefetch" href="/assets/js/30.b1cd2a0a.js"><link rel="prefetch" href="/assets/js/31.e8419146.js"><link rel="prefetch" href="/assets/js/32.fc892370.js"><link rel="prefetch" href="/assets/js/33.ee94a9bf.js"><link rel="prefetch" href="/assets/js/34.cb1e0d31.js"><link rel="prefetch" href="/assets/js/35.07475a6b.js"><link rel="prefetch" href="/assets/js/36.1440c090.js"><link rel="prefetch" href="/assets/js/37.e6bc2960.js"><link rel="prefetch" href="/assets/js/38.07272dbb.js"><link rel="prefetch" href="/assets/js/39.e6b10ad6.js"><link rel="prefetch" href="/assets/js/4.6368427a.js"><link rel="prefetch" href="/assets/js/40.963d3b41.js"><link rel="prefetch" href="/assets/js/41.bfa43b33.js"><link rel="prefetch" href="/assets/js/42.285a7cab.js"><link rel="prefetch" href="/assets/js/43.2e017276.js"><link rel="prefetch" href="/assets/js/44.a7115d8b.js"><link rel="prefetch" href="/assets/js/45.7cdbdfe8.js"><link rel="prefetch" href="/assets/js/46.2aa3d999.js"><link rel="prefetch" href="/assets/js/47.8ef51e53.js"><link rel="prefetch" href="/assets/js/49.47b46ed8.js"><link rel="prefetch" href="/assets/js/5.c90f3650.js"><link rel="prefetch" href="/assets/js/50.c70aa03c.js"><link rel="prefetch" href="/assets/js/51.f57160c0.js"><link rel="prefetch" href="/assets/js/52.4fcac289.js"><link rel="prefetch" href="/assets/js/53.7c7f06e5.js"><link rel="prefetch" href="/assets/js/54.6e65cf7f.js"><link rel="prefetch" href="/assets/js/55.d95a2312.js"><link rel="prefetch" href="/assets/js/56.0ab7fb98.js"><link rel="prefetch" href="/assets/js/57.edacf517.js"><link rel="prefetch" href="/assets/js/58.a0534115.js"><link rel="prefetch" href="/assets/js/59.a1c54c3b.js"><link rel="prefetch" href="/assets/js/6.56ec278a.js"><link rel="prefetch" href="/assets/js/60.aba7056a.js"><link rel="prefetch" href="/assets/js/61.361d72ff.js"><link rel="prefetch" href="/assets/js/62.acb3a2d1.js"><link rel="prefetch" href="/assets/js/63.18ce9524.js"><link rel="prefetch" href="/assets/js/64.f69bcdef.js"><link rel="prefetch" href="/assets/js/65.53a8d561.js"><link rel="prefetch" href="/assets/js/66.820dc75a.js"><link rel="prefetch" href="/assets/js/67.39e6f2c4.js"><link rel="prefetch" href="/assets/js/68.5475c75c.js"><link rel="prefetch" href="/assets/js/69.b50af59e.js"><link rel="prefetch" href="/assets/js/7.337629ed.js"><link rel="prefetch" href="/assets/js/70.9fd002e2.js"><link rel="prefetch" href="/assets/js/71.7db0da1c.js"><link rel="prefetch" href="/assets/js/72.4fc17802.js"><link rel="prefetch" href="/assets/js/73.433afd5a.js"><link rel="prefetch" href="/assets/js/74.cb477902.js"><link rel="prefetch" href="/assets/js/75.20b11026.js"><link rel="prefetch" href="/assets/js/76.b9ea1faa.js"><link rel="prefetch" href="/assets/js/77.96d9f0a6.js"><link rel="prefetch" href="/assets/js/78.573aa5df.js"><link rel="prefetch" href="/assets/js/79.f11e960d.js"><link rel="prefetch" href="/assets/js/8.cdf084fa.js"><link rel="prefetch" href="/assets/js/80.e0252fb7.js"><link rel="prefetch" href="/assets/js/81.ac4c87d1.js"><link rel="prefetch" href="/assets/js/82.21fbfa8d.js"><link rel="prefetch" href="/assets/js/83.fda46de9.js"><link rel="prefetch" href="/assets/js/84.33ee7094.js"><link rel="prefetch" href="/assets/js/85.1ad4ac8d.js"><link rel="prefetch" href="/assets/js/86.fc28936f.js"><link rel="prefetch" href="/assets/js/87.44b17cee.js"><link rel="prefetch" href="/assets/js/88.0289b4e0.js"><link rel="prefetch" href="/assets/js/89.dc2312fa.js"><link rel="prefetch" href="/assets/js/9.b059c6fb.js"><link rel="prefetch" href="/assets/js/90.640404f0.js"><link rel="prefetch" href="/assets/js/91.03838532.js"><link rel="prefetch" href="/assets/js/92.95179e8e.js"><link rel="prefetch" href="/assets/js/93.32e599d1.js"><link rel="prefetch" href="/assets/js/94.01a47336.js"><link rel="prefetch" href="/assets/js/95.3ee1c517.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.2f07efcc.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/doc/2.6.0/" class="home-link router-link-active"><!----> <span class="site-name">Apache Ignite中文站</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/doc/2.6.0/" class="nav-link">首页</a></div><div class="nav-item"><a href="/doc/2.6.0/java/" class="nav-link">Java</a></div><div class="nav-item"><a href="/doc/2.6.0/sql/" class="nav-link">SQL</a></div><div class="nav-item"><a href="/doc/2.6.0/integration/" class="nav-link">集成</a></div><div class="nav-item"><a href="/doc/2.6.0/spark/" class="nav-link">Ignite&amp;Spark</a></div><div class="nav-item"><a href="/doc/2.6.0/tools/" class="nav-link router-link-exact-active router-link-active">工具</a></div><div class="nav-item"><a href="https://my.oschina.net/liyuj" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  博客
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="http://www.gridgainchina.com" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GridGain中国官网
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title">2.6.0</span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/" class="nav-link">2.7.0</a></li><li class="dropdown-item"><!----> <a href="/doc/2.6.0/tools/" class="nav-link router-link-exact-active router-link-active">2.6.0</a></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/doc/2.6.0/" class="nav-link">首页</a></div><div class="nav-item"><a href="/doc/2.6.0/java/" class="nav-link">Java</a></div><div class="nav-item"><a href="/doc/2.6.0/sql/" class="nav-link">SQL</a></div><div class="nav-item"><a href="/doc/2.6.0/integration/" class="nav-link">集成</a></div><div class="nav-item"><a href="/doc/2.6.0/spark/" class="nav-link">Ignite&amp;Spark</a></div><div class="nav-item"><a href="/doc/2.6.0/tools/" class="nav-link router-link-exact-active router-link-active">工具</a></div><div class="nav-item"><a href="https://my.oschina.net/liyuj" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  博客
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="http://www.gridgainchina.com" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GridGain中国官网
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title">2.6.0</span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/" class="nav-link">2.7.0</a></li><li class="dropdown-item"><!----> <a href="/doc/2.6.0/tools/" class="nav-link router-link-exact-active router-link-active">2.6.0</a></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/doc/2.6.0/tools/" class="active sidebar-link">1.Ignite Web控制台</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-1-ignite-web控制台" class="sidebar-link">1.1.Ignite Web控制台</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-2-入门" class="sidebar-link">1.2.入门</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-2-1-安装" class="sidebar-link">1.2.1.安装</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-2-2-ignite-web代理" class="sidebar-link">1.2.2.Ignite Web代理</a></li></ul></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-3-构建和部署" class="sidebar-link">1.3.构建和部署</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-3-1-先决条件" class="sidebar-link">1.3.1.先决条件</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-3-2-构建ignite-web代理" class="sidebar-link">1.3.2.构建Ignite Web代理</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-3-3-在开发模式中运行ignite的web控制台" class="sidebar-link">1.3.3.在开发模式中运行Ignite的Web控制台</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-3-4-在生产模式中运行ignite的web控制台" class="sidebar-link">1.3.4.在生产模式中运行Ignite的Web控制台</a></li></ul></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-4-演示模式" class="sidebar-link">1.4.演示模式</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-4-1-摘要" class="sidebar-link">1.4.1.摘要</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-4-2-启动演示模式" class="sidebar-link">1.4.2.启动演示模式</a></li></ul></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-5-docker部署" class="sidebar-link">1.5.Docker部署</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-5-1-启动web代理" class="sidebar-link">1.5.1.启动Web代理</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-5-2-部署web控制台" class="sidebar-link">1.5.2.部署Web控制台</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-5-3-更新到新版" class="sidebar-link">1.5.3.更新到新版</a></li><li class="sidebar-sub-header"><a href="/doc/2.6.0/tools/#_1-5-4-为web控制台添加https支持" class="sidebar-link">1.5.4.为Web控制台添加HTTPS支持</a></li></ul></li></ul></li><li><a href="/doc/2.6.0/tools/IgniteWebConsoleAbilities.html" class="sidebar-link">2.Ignite Web控制台的功能</a></li><li><a href="/doc/2.6.0/tools/VisorManagementConsole.html" class="sidebar-link">3.Visor管理控制台</a></li><li><a href="/doc/2.6.0/tools/ControlScript.html" class="sidebar-link">4.控制脚本</a></li></ul> </div> <div class="page"> <div class="content"><h1 id="_1-ignite-web控制台"><a href="#_1-ignite-web控制台" aria-hidden="true" class="header-anchor">#</a> 1.Ignite Web控制台</h1> <h2 id="_1-1-ignite-web控制台"><a href="#_1-1-ignite-web控制台" aria-hidden="true" class="header-anchor">#</a> 1.1.Ignite Web控制台</h2> <p><code>Ignite Web控制台</code>是一个交互式的配置向导、管理和监控工具。它可以：</p> <ul><li>创建和下载Ignite集群使用的各种配置：
+<img src="https://files.readme.io/f5eeab2-cluster.png" alt></li> <li>从任意RDBMS的模式中自动化构造Ignite的SQL元数据：
+<img src="https://files.readme.io/16d8b74-model.png" alt></li> <li>在内存缓存中执行SQL查询，以及查看执行计划。
+<img src="https://files.readme.io/0383009-Screen_Shot_2017-02-02_at_12.47.09_PM.png" alt></li></ul> <p>Ignite的<strong>Web控制台</strong>，是一个可以部署在系统环境中的Web应用。它可以配置所有的集群属性，从数据库中导入模式用于与持久化存储集成。它可以接入特定的数据库然后生成所有必要的OR映射配置（XML以及纯Java）以及Java领域模型POJOs。Web控制台还有集群监控的功能（使用GridGain单独的插件实现），它会显示各种缓存以及节点的指标数据，比如CPU和堆的使用情况等。</p> <h2 id="_1-2-入门"><a href="#_1-2-入门" aria-hidden="true" class="header-anchor">#</a> 1.2.入门</h2> <h3 id="_1-2-1-安装"><a href="#_1-2-1-安装" aria-hidden="true" class="header-anchor">#</a> 1.2.1.安装</h3> <p>Ignite的Web控制台是一个WEB应用，需要构建、打包然后部署在自己的环境上。另外，它需要安装NodeJS，MongoDB以及Ignite的Web代理。
+参照<code>构建和部署</code>章节的文档，然后按照步骤操作即可。</p> <blockquote><p><strong>一个免费已部署的Ignite Web控制台实例</strong>
+在构建和部署自己的本地Ignite Web控制台实例之前，可以看一下一个免费已部署的<a href="https://console.gridgain.com/" target="_self" rel="noopener noreferrer">Web控制台实例</a>，利用这个站点，花几分钟就可以大概了解控制台的已有功能。</p></blockquote> <p>Ignite的Web控制台启动运行之后，需要按照下面章节的步骤配置并且启动Web代理，代理是Ignite的Web控制台和Ignite集群之间的媒介。</p> <h3 id="_1-2-2-ignite-web代理"><a href="#_1-2-2-ignite-web代理" aria-hidden="true" class="header-anchor">#</a> 1.2.2.Ignite Web代理</h3> <p>Ignite的Web代理是一个独立的Java应用，它可以建立Ignite集群与Web控制台之间的连接。Web Agent与集群节点间采用REST接口进行通信，而与Web控制台之间采用WebSocket进行通信。
+<img src="https://files.readme.io/924bc44-Apache-Ignite-Cluster.png" alt>
+举例来说，Ignite的Web Agent功能如下：</p> <ul><li>Web控制台与Ignite集群之间执行SQL查询的代理；</li> <li>Web控制台与RDBMS之间的代理。</li></ul> <p><img src="https://files.readme.io/7affb9b-ignite-web-console-schema-import.png" alt></p> <p><strong>使用</strong></p> <p>Ignite Web代理的zip压缩包中的<code>ignite-web-agent.{sh|bat}</code>脚本可用于启动这个代理。一定要满足下面的必要条件，使得代理可以在Ignite集群和Ignite Web控制台之间建立连接。</p> <p>1.为了与Web代理通信，Ignite节点需要开启REST服务模式（将<code>ignite-rest-http</code>文件夹从<code>lib/optional/</code>移动到<code>lib/</code>中）。如果是从IDE启动节点，那么需要将下面的依赖加入pom.xml文件；</p> <div class="language-xml line-numbers-mode"><pre class="language-xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">&gt;</span></span>org.apache.ignite<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">&gt;</span></span>ignite-rest-http<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">&gt;</span></span>{ignite.version}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">&gt;</span></span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p>2.配置Web代理的<code>serverURI</code>属性，将其指向Ignite节点的REST服务的URL，代理默认会连接<code>http://localhost:8080</code>。</p> <p><strong>配置</strong></p> <p><em>配置文件</em>
+Ignite的Web代理默认会试图从<code>default.properties</code>文件中加载配置。这个文件的内容需要遵循一个简单的基于行的格式。
+可用的属性名包括：<code>tokens</code>，<code>server-uri</code>，<code>node-uri</code>，<code>driver-folder</code>。</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>tokens=1a2b3c4d5f,2j1s134d12
+serverURI=https://console.example.com:3001
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p><em>命令行参数</em>
+要获得帮助，可以在终端中执行<code>ignite-web-agent.{sh|bat} -h</code>或者<code>ignite-web-agent.{sh|bat} --help</code>。
+可用的属性如下：</p> <ul><li><code>-h</code>,<code>--help</code>：输出帮助信息；</li> <li><code>-c</code>,<code>--config</code>：配置文件路径；</li> <li><code>-d</code>,<code>--driver-folder</code>：JDBC驱动所在文件夹路径，默认值是<code>./jdbc-drivers</code>；</li> <li><code>-n</code>,<code>--node-uri</code>：要接入的Ignite REST服务端的URI，默认值是<code>http://localhost:8080</code>；</li> <li><code>-s</code>,<code>--server-uri</code>：要接入的Ignite Web控制台的URI，默认值是<code>http://localhost:3001</code>;</li> <li><code>-t</code>,<code>--tokens</code>：用户的安全令牌。</li></ul> <p><strong>代理配置</strong></p> <p>代理可以通过将系统属性、<code>JVM_OPTS</code>环境变量的方式传给Web代理。
+在如下文档中可以找到详细的描述：
+<a href="http://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html" target="_self" rel="noopener noreferrer">http://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html</a>。</p> <p><em>HTTP</em> <code>http.proxyHost</code>：代理服务器的主机名或者地址；
+<code>http.proxyPort</code>：代理服务器的端口号。</p> <p>如果代理需要认证的话，还需要提供如下的系统属性：
+<code>http.proxyUsername</code>：用户名；
+<code>http.proxyPassword</code>：密码。
+Shell：</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>JVM_OPTS<span class="token operator">=</span><span class="token string">&quot;-Dhttp.proxyHost=&lt;proxy-hostname&gt; -Dhttp.proxyPort=&lt;proxy-port&gt; -Dhttp.proxyUsername=&lt;proxy-username&gt; -Dhttp.proxyPassword=&lt;proxy-password&gt;&quot;</span> ./ignite-web-agent.sh
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>CMD：</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token keyword">set</span> JVM_OPTS<span class="token operator">=</span>-Dhttp.proxyHost<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-hostname<span class="token operator">&gt;</span> -Dhttp.proxyPort<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-port<span class="token operator">&gt;</span> -Dhttp.proxyUsername<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-username<span class="token operator">&gt;</span> -Dhttp.proxyPassword<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-password<span class="token operator">&gt;</span>
+./ignite-web-agent.bat
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p><em>HTTPS</em> <code>https.proxyHost</code>：代理服务器的主机名或者地址；
+<code>https.proxyPort</code>：代理服务器的端口号。</p> <p>如果代理需要认证的话，还需要提供如下的系统属性：
+<code>https.proxyUsername</code>：用户名；
+<code>https.proxyPassword</code>：密码。
+Shell：</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>JVM_OPTS<span class="token operator">=</span><span class="token string">&quot;-Dhttps.proxyHost=&lt;proxy-hostname&gt; -Dhttps.proxyPort=&lt;proxy-port&gt; -Dhttps.proxyUsername=&lt;proxy-username&gt; -Dhttps.proxyPassword=&lt;proxy-password&gt;&quot;</span> ./ignite-web-agent.sh
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>CMD：</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token keyword">set</span> JVM_OPTS<span class="token operator">=</span>-Dhttps.proxyHost<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-hostname<span class="token operator">&gt;</span> -Dhttps.proxyPort<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-port<span class="token operator">&gt;</span> -Dhttps.proxyUsername<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-username<span class="token operator">&gt;</span> -Dhttps.proxyPassword<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-password<span class="token operator">&gt;</span>
+./ignite-web-agent.bat
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p><em>SOCKS</em> <code>socksProxyHost</code>：代理服务器的主机名或者地址；
+<code>socksProxyPort</code>：代理服务器的端口号。</p> <p>如果代理需要认证的话，还需要提供如下的系统属性：
+<code>java.net.socks.username</code>：用户名；
+<code>java.net.socks.password</code>：密码。
+Shell:</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>JVM_OPTS<span class="token operator">=</span><span class="token string">&quot;-DsocksProxyHost=&lt;proxy-hostname&gt; -DsocksProxyPort=&lt;proxy-port&gt; -Djava.net.socks.username=&lt;proxy-username&gt; -Djava.net.socks.password=&lt;proxy-password&gt;&quot;</span> ./ignite-web-agent.sh
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>CMD:</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token keyword">set</span> JVM_OPTS<span class="token operator">=</span> -DsocksProxyHost<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-hostname<span class="token operator">&gt;</span> -DsocksProxyPort<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-port<span class="token operator">&gt;</span> -Djava.net.socks.username<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-username<span class="token operator">&gt;</span> -Djava.net.socks.password<span class="token operator">=</span><span class="token operator">&lt;</span>proxy-password<span class="token operator">&gt;</span>
+./ignite-web-agent.bat
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><h2 id="_1-3-构建和部署"><a href="#_1-3-构建和部署" aria-hidden="true" class="header-anchor">#</a> 1.3.构建和部署</h2> <h3 id="_1-3-1-先决条件"><a href="#_1-3-1-先决条件" aria-hidden="true" class="header-anchor">#</a> 1.3.1.先决条件</h3> <p>为了在本地部署Ignite的Web控制台，需要先安装：</p> <ul><li>MongoDB（3.2.0以上版本），具体可以参照<a href="http://docs.mongodb.org/manual/installation" target="_self" rel="noopener noreferrer">文档</a>；</li> <li>NodeJS（6.5.X以上版本），可以从<a href="https://nodejs.org/en/download/current" target="_self" rel="noopener noreferrer">https://nodejs.org/en/download/current</a>针对具体的OS找到相对应的安装文件。</li></ul> <p>开始之前需要下载依赖：</p> <ul><li>后台：</li></ul> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">cd</span> <span class="token variable">$IGNITE_HOME</span>/modules/web-console/backend
+<span class="token function">npm</span> <span class="token function">install</span> --no-optional
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><ul><li>前台：</li></ul> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">cd</span> <span class="token variable">$IGNITE_HOME</span>/modules/web-console/frontend
+<span class="token function">npm</span> <span class="token function">install</span> --no-optional
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><h3 id="_1-3-2-构建ignite-web代理"><a href="#_1-3-2-构建ignite-web代理" aria-hidden="true" class="header-anchor">#</a> 1.3.2.构建Ignite Web代理</h3> <p>要从源代码构建Ignite的Web代理，需要在<code>$IGNITE_HOME</code>文件夹中执行如下的命令：</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests<span class="token operator">=</span>true
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>构建过程完成后，会在<code>$IGNITE_HOME/modules/web-console/web-agent/taget</code>中找到<code>ignite-web-agent-x.x.x.zip</code>。</p> <h3 id="_1-3-3-在开发模式中运行ignite的web控制台"><a href="#_1-3-3-在开发模式中运行ignite的web控制台" aria-hidden="true" class="header-anchor">#</a> 1.3.3.在开发模式中运行Ignite的Web控制台</h3> <p>要在开发模式中运行Ignite的Web控制台，可以按照如下步骤操作：</p> <ul><li>配置MongoDB以服务的模式运行，或者在终端中执行<code>mongod</code>命令来启动MongoDB；</li> <li>将<code>ignite-web-agent-x.x.x.zip</code>复制到<code>$IGNITE_HOME/modules/web-console/backend/agent_dists</code>文件夹；</li> <li>在终端中切换到<code>$IGNITE_HOME/modules/web-console/backend</code>，如果需要，运行<code>npm install --no-optional</code>(如果依赖改变)，然后运行<code>npm start</code>启动后台；</li> <li>在另一个终端中切换到<code>$IGNITE_HOME/modules/web-console/frontend</code>，如果需要，运行<code>npm install --no-optional</code>(如果依赖改变)，然后运行<code>npm run dev</code>以开发模式启动webpack；</li> <li>在浏览器中打开：<code>http://localhost:9000</code>；</li> <li>在<code>2.2.入门</code>章节中可以看到如何将部署的控制台接入一个远程集群，或者如何在远程主机上访问控制台。</li></ul> <h3 id="_1-3-4-在生产模式中运行ignite的web控制台"><a href="#_1-3-4-在生产模式中运行ignite的web控制台" aria-hidden="true" class="header-anchor">#</a> 1.3.4.在生产模式中运行Ignite的Web控制台</h3> <p><strong>前提条件</strong></p> <ul><li>安装了Apache HTTP Server的2.2及更新的版本或者nginx；</li> <li>为Ignite的Web控制台分配一个专用的主机名（可选）。</li></ul> <p><strong>启动后台</strong></p> <ul><li>配置MongoDB以服务的模式运行，或者在终端中执行<code>mongod</code>命令来启动MongoDB；</li> <li>将<code>ignite-web-agent-x.x.x.zip</code>复制到<code>$IGNITE_HOME/modules/web-console/backend/agent_dists</code>文件夹；</li> <li>在终端中切换到<code>$IGNITE_HOME/modules/web-console/backend</code>；</li> <li>运行<code>npm start</code>启动后台。</li></ul> <blockquote><p>如果希望以守护进程模式运行后台，需要为NodeJS应用使用进程管理器：pm2，forever等。</p></blockquote> <p><strong>构建前台</strong></p> <ul><li>在另一个终端中切换到<code>$IGNITE_HOME/modules/web-console/frontend</code>;</li> <li>运行<code>npm run build</code>为Web服务器生成文件（html、js、css）；</li> <li>生成的文件位于<code>$IGNITE_HOME/modules/web-console/frontend/build</code>。</li></ul> <p><strong>配置Apache HTTP Server</strong></p> <ul><li>将<code>$IGNITE_HOME/modules/web-console/frontend/build</code>文件夹的内容复制到<code>$IGNITE_HOME/modules/web-console/frontend/build</code>;</li> <li>如果Apache HTTP Server为多个站点提供服务，那么需要将下面的虚拟主机添加到<code>/etc/httpd/conf/httpd.conf</code>：
+httpd.conf:</li></ul> <div class="language- line-numbers-mode"><pre class="language-text"><code>&lt;VirtualHost *:80&gt;
+  ServerName www.WEB_CONSOLE_HOSTNAME
+  ServerAlias WEB_CONSOLE_HOSTNAME
+
+  DocumentRoot &quot;/var/www/web-console-static&quot;
+
+  RewriteEngine on
+
+  &lt;Directory &quot;/var/www/web-console-static&quot;&gt;
+  AllowOverride All
+  Allow from all
+  &lt;/Directory&gt;
+
+  ProxyRequests off
+
+  &lt;proxy *&gt;
+  Order deny,allow
+  Allow from all
+  &lt;/proxy&gt;
+
+  ProxyPreserveHost On
+  RequestHeader set Host &quot;WEB_CONSOLE_HOSTNAME&quot;
+
+  RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
+  RewriteRule ^ - [L]
+
+  RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC]
+  RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+  RewriteRule .* ws://localhost:3000%{REQUEST_URI} [P,L]
+
+  RewriteCond %{REQUEST_URI} ^/agents/.* [OR]
+  RewriteCond %{REQUEST_URI} ^/socket.io/.*
+  RewriteRule ^ http://localhost:3000%{REQUEST_URI} [P,L]
+
+  RewriteCond %{REQUEST_URI} ^/api/v1/.*$
+  RewriteRule ^/api/v1/(.*)$ http://localhost:3000/$1 [P,L]
+
+  RewriteRule ^ /index.html [L]
+&lt;/VirtualHost&gt;
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br></div></div><blockquote><p>上面文件中的<strong>WEB_CONSOLE_HOSTNAME</strong>，需要替换为部署Web控制台实例的机器的主机名。</p></blockquote> <p>如果Apache HTTP Server还用于部署的Web控制台，那么下面的配置也需要添加到<code>/etc/httpd/conf/httpd.conf</code>:
+httpd.conf:</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>ServerName localhost
+
+DocumentRoot &quot;/var/www/web-console-static&quot;
+
+RewriteEngine on
+
+&lt;Directory &quot;/var/www/web-console-static&quot;&gt;
+AllowOverride All
+Allow from all
+&lt;/Directory&gt;
+
+ProxyRequests off
+
+&lt;proxy *&gt;
+Order deny,allow
+Allow from all
+&lt;/proxy&gt;
+
+ProxyPreserveHost On
+RequestHeader set Host &quot;EXTERNAL_SERVER_IP&quot;
+
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
+RewriteRule ^ - [L]
+
+RewriteCond %{REQUEST_URI} ^/agents/.* [OR]
+RewriteCond %{REQUEST_URI} ^/socket.io/.*
+RewriteRule ^ http://localhost:3000%{REQUEST_URI} [P,L]
+
+RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC]
+RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+RewriteRule .* ws://localhost:3000%{REQUEST_URI} [P,L]
+
+RewriteCond %{REQUEST_URI} ^/api/v1/.*$
+RewriteRule ^/api/v1/(.*)$ http://localhost:3000/$1 [P,L]
+
+RewriteRule ^ /index.html [L]  
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br></div></div><blockquote><p>上面的<strong>EXTERNAL_SERVER_IP</strong>，需要替换为部署Web控制台实例的机器的主机名。</p></blockquote> <p>执行<code>sudo apachectl restart</code>重启Apache HTTP Server以使配置生效。
+打开浏览器，根据部署类型打开下面的地址中的一个：<code>http://WEB_CONSOLE_HOSTNAME</code>或<code>http://EXTERNAL_SERVER_IP</code>。</p> <p><strong>配置nginx HTTP Server</strong></p> <ul><li>将<code>$IGNITE_HOME/modules/web-console/frontend/build</code>文件夹中的内容复制到<code>/var/www/web-console-static</code>;</li> <li>如果一个nginx HTTP Server为多个站点提供服务，需要为虚拟主机创建一个配置。比如创建一个配置文件<code>/etc/nginx/conf.d/web-console.conf</code>，内容如下：
+/etc/nginx/conf.d/web-console.conf：</li></ul> <div class="language- line-numbers-mode"><pre class="language-text"><code>upstream backend-api {
+  server localhost:3000;
+}
+
+server {
+  listen 80;
+  server_name EXTERNAL_SERVER_IP WEB_CONSOLE_HOSTNAME;
+
+  set $ignite_console_dir /var/www/web-console-static;
+
+  root $ignite_console_dir;
+
+  error_page 500 502 503 504 /50x.html;
+
+  location / {
+    try_files $uri /index.html = 404;
+  }
+
+  location /api/v1 {
+    rewrite /api/v1/(.*) /$1 break;
+    proxy_set_header Host $http_host;
+    proxy_pass http://backend-api;
+  }
+
+  location /socket.io {
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection &quot;upgrade&quot;;
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+    proxy_pass http://backend-api;
+  }
+
+  location /agents {
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection &quot;upgrade&quot;;
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+    proxy_pass http://backend-api;
+  }
+
+  location = /50x.html {
+    root $ignite_console_dir/error_page;
+  }
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br></div></div><blockquote><p>上面的<strong>EXTERNAL_SERVER_IP</strong>，需要替换为部署Web控制台实例的机器的主机名。
+<strong>WEB_CONSOLE_HOSTNAME</strong>，需要替换为部署Web控制台实例的机器的主机名。</p></blockquote> <p>执行<code>sudo service nginx restart</code>重启Nginx HTTP Server以使配置生效。
+打开浏览器，根据部署类型打开下面的地址中的一个：<code>http://WEB_CONSOLE_HOSTNAME</code>或<code>http://EXTERNAL_SERVER_IP</code>。</p> <p><strong>问题解决</strong></p> <p>如果在浏览器中出现了<code>Forbidden</code>这样的错误，那么需要检查操作系统中所有的安全策略都配置正确了。</p> <h2 id="_1-4-演示模式"><a href="#_1-4-演示模式" aria-hidden="true" class="header-anchor">#</a> 1.4.演示模式</h2> <h3 id="_1-4-1-摘要"><a href="#_1-4-1-摘要" aria-hidden="true" class="header-anchor">#</a> 1.4.1.摘要</h3> <p>可以使用Web控制台的演示模式来研究和评估它有关配置和管理集群的各种功能，这个模式中，可以检查预定义的集群、缓存以及领域模型，它还启动了一个内置的H2数据库实例，可以执行各种SQL查询以及查看数据报表，还可以监控各种缓存和节点的指标，比如集群的CPU和堆使用量等。</p> <h3 id="_1-4-2-启动演示模式"><a href="#_1-4-2-启动演示模式" aria-hidden="true" class="header-anchor">#</a> 1.4.2.启动演示模式</h3> <p>要开启演示模式，需要点击控制台顶部菜单的<code>Start demo</code>按钮。</p> <ul><li>下载然后解压Ignite的Web代理；
+<img src="https://files.readme.io/037ccba-download-web-agent.png" alt></li> <li>打开命令行终端，假定当前在<code>ignite-web-agent</code>目录，运行如下的命令：</li></ul> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>./ignite-web-agent.sh
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p><img src="https://files.readme.io/ca768c5-start-ignite-web-agent.png" alt>
+启动Web代理之后，回到浏览器中就可以：</p> <p><strong>配置集群和缓存</strong></p> <p>点击控制台侧边栏上的<code>Clusters</code>和<code>Caches</code>，可以查看和设定Ignite的配置参数，点击<code>Summary</code>可以下载这些配置的XML和Java格式文件，这个页面还可以下载一个可用的基于Maven的工程。
+<img src="https://files.readme.io/857edc8-summary.png" alt></p> <p><strong>导入领域模型</strong></p> <p>演示模式中，已连接的Web代理中已经启动了H2数据库实例，如下方法可以验证：</p> <ul><li>打开控制台的<code>Domain model</code>界面；</li> <li>点击<code>Import from database</code>，可以看到一个描述Demo的模态窗口；</li> <li>点击<code>Next</code>会看到一个可用模式的列表；</li> <li>点击<code>Next</code>会看到一个可用表的列表；</li> <li>点击<code>Next</code>会看到导入的选项；</li> <li>选择之后点击<code>Save</code>。
+<img src="https://files.readme.io/fbf02ed-domain-model.png" alt></li></ul> <p><strong>执行SQL查询</strong></p> <p>该模式中，会启动一个客户端和三个服务端节点，会创建一些缓存并且注入了数据，如下方法可以验证：</p> <ul><li>点击Web控制台顶层菜单的<code>Queries</code>选项卡；</li> <li>会打开预配置<code>SQL Demo</code>查询的笔记本；</li> <li>在demo数据库中，可以执行SQL查询，其中有表：<code>Country, Department, Employee, Parking, Car</code>；</li></ul> <p>比如输入如下的SQL：</p> <div class="language-sql line-numbers-mode"><pre class="language-sql"><code><span class="token keyword">SELECT</span> p<span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span> <span class="token keyword">AS</span> cnt <span class="token keyword">FROM</span> <span class="token string">&quot;ParkingCache&quot;</span><span class="token punctuation">.</span>Parking p<span class="token punctuation">`</span>
+<span class="token punctuation">`</span><span class="token keyword">INNER</span> <span class="token keyword">JOIN</span> <span class="token string">&quot;CarCache&quot;</span><span class="token punctuation">.</span>Car c <span class="token keyword">ON</span> <span class="token punctuation">(</span>p<span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token punctuation">(</span>c<span class="token punctuation">.</span>parkingId<span class="token punctuation">)</span><span class="token punctuation">`</span>
+<span class="token punctuation">`</span><span class="token keyword">GROUP</span> <span class="token keyword">BY</span> P<span class="token punctuation">.</span>NAME
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><ul><li>点击<code>Execute</code>按钮，会获得表中的若干数据；</li> <li>点击<code>charts</code>按钮，可以看到自动生成的图表。</li></ul> <p><img src="https://files.readme.io/5b5cdc8-sql-queries.png" alt></p> <h2 id="_1-5-docker部署"><a href="#_1-5-docker部署" aria-hidden="true" class="header-anchor">#</a> 1.5.Docker部署</h2> <p>在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker映像，如果基于Docker的方式不可行，那么可以参照<code>2.3.构建和部署</code>章节的内容。</p> <h3 id="_1-5-1-启动web代理"><a href="#_1-5-1-启动web代理" aria-hidden="true" class="header-anchor">#</a> 1.5.1.启动Web代理</h3> <p>如<code>2.2.入门</code>章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的Web代理，下面是步骤：</p> <ul><li>启动开启REST服务的Ignite节点，将<code>ignite-rest-http</code>目录从<code>IGNITE_HOME/libs/optional/</code>移动到<code>IGNITE_HOME/lib/</code>，或者如果从IDE启动节点，则需要将下面的依赖加入pom.xml文件：</li></ul> <div class="language-xml line-numbers-mode"><pre class="language-xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">&gt;</span></span>org.apache.ignite<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">&gt;</span></span>ignite-rest-http<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">&gt;</span></span>{ignite.version}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">&gt;</span></span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><ul><li>在<code>ignite-web-agent-{version}</code>目录下的<code>default.properties</code>文件中，需要配置Web代理的<code>serverURI</code>属性，这样它就可以访问Ignite节点的REST服务。如果不配置，代理默认会连接<code>http://localhost:8080</code>。代理会尝试从<code>default.properties</code>文件中加载配置参数，该文件的内容格式比较简单，有效的属性名为：<code>tokens</code>，<code>server-uri</code>，<code>node-uri</code>，<code>driver-folder</code>。</li></ul> <p>default.properties：</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>tokens=1a2b3c4d5f,2j1s134d12
+serverURI=https://console.example.com:3001
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><ul><li>在终端中，在Web代理的目录中使用<code>ignite-web-agent.{sh|bat}</code>脚本启动Web代理，如下：</li></ul> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>$ ./ignite-web-agent.sh
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h3 id="_1-5-2-部署web控制台"><a href="#_1-5-2-部署web控制台" aria-hidden="true" class="header-anchor">#</a> 1.5.2.部署Web控制台</h3> <p>下面是部署的完整步骤：</p> <ul><li>拉取Ignite Web控制台的Docker映像:<code>docker pull apacheignite/web-console-standalone</code>;</li> <li>启动Web控制台：<code>docker run -d -p 80:80 -v &lt;host_absolute_path&gt;:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone</code>。</li></ul> <blockquote><p><strong>注意</strong>
+1.需要使用<code>sudo</code>来运行docker命令；
+2.如果<code>80</code>端口已被占用，那么容器端口需要映射到其他的可用端口。比如，下面的命令将容器的<code>80</code>端口绑定的宿主机的<code>8080</code>端口：<code>sudo docker run -d -p 8080:80 -v &lt;host_absolute_path&gt;:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone</code>;
+3.<code>&lt;host_absolute_path&gt;</code>：是宿主机中MongoDB创建数据库文件的路径。这个文件夹应该在docker运行前创建好，打开<code>Docker-&gt;Preferences-&gt;File Sharing</code>然后在那里创建目录，或者使用其他的方式也行；</p></blockquote> <ul><li>在浏览器中打开Web控制台：<code>http://localhost</code>或者<code>http://host-ip-of-computer-with-docker-image</code>，如果默认端口有变，那么地址为：<code>http://localhost:&lt;host_port&gt;</code>。</li></ul> <h3 id="_1-5-3-更新到新版"><a href="#_1-5-3-更新到新版" aria-hidden="true" class="header-anchor">#</a> 1.5.3.更新到新版</h3> <p>Docker更新容器的方式如下：
+<code>docker pull apacheignite/web-console-standalone</code> <code>docker stop apacheignite/web-console-standalone</code> <code>docker rm apacheignite/web-console-standalone</code> <code>docker run -d -p 80:80 -v &lt;host_absolute_path&gt;:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone</code></p> <h3 id="_1-5-4-为web控制台添加https支持"><a href="#_1-5-4-为web控制台添加https支持" aria-hidden="true" class="header-anchor">#</a> 1.5.4.为Web控制台添加HTTPS支持</h3> <ul><li>创建<code>web-console.conf</code>文件，内容如下：</li></ul> <p>web-console.conf：</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>upstream backend-api {
+  server localhost:3000;
+}
+
+# redirect http to https
+server {
+  listen 80 default_server;
+
+  return 301 https://&lt;your-web-console-domain-name&gt;$request_uri;
+}
+
+# https server settings
+server {
+  listen 443 ssl;
+  server_name _;
+  ssl_certificate     server.crt;
+  ssl_certificate_key server.key;
+  ssl_protocols       SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers         HIGH:!aNULL:!MD5;
+
+  set $ignite_console_dir /opt/web-console/static;
+
+  root $ignite_console_dir;
+
+  error_page 500 502 503 504 /50x.html;
+
+  location / {
+    try_files $uri /index.html = 404;
+  }
+
+  location /api/v1 {
+    proxy_set_header Host $http_host;
+    proxy_pass http://backend-api;
+  }
+
+  location /socket.io {
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection &quot;upgrade&quot;;
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+    proxy_pass http://backend-api;
+  }
+
+  location /agents {
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection &quot;upgrade&quot;;
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+    proxy_pass http://backend-api;
+  }
+
+  location = /50x.html {
+    root $ignite_console_dir/error_page;
+  }
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br><span class="line-number">47</span><br><span class="line-number">48</span><br><span class="line-number">49</span><br><span class="line-number">50</span><br><span class="line-number">51</span><br><span class="line-number">52</span><br><span class="line-number">53</span><br><span class="line-number">54</span><br><span class="line-number">55</span><br><span class="line-number">56</span><br><span class="line-number">57</span><br></div></div><blockquote><p>将web-console.conf中的占位符<code>&lt;your-web-console-domain-name&gt;</code>替换为自己的域名，以便浏览器正确地从HTTP跳转到HTTPS。</p></blockquote> <ul><li>准备名为<code>server.crt</code>，<code>server.key</code>的证书文件；</li> <li>启动Web控制台：</li></ul> <p><code>docker run -d -p 80:80 -p 443:443 -v &lt;host_absolute_path&gt;:/var/lib/mongodb -v &lt;web-console.conf_absolute_path&gt;:/etc/nginx/web-console.conf -v &lt;server.crt_absolute_path&gt;:/etc/nginx/server.crt -v &lt; server.key_absolute_path&gt;:/etc/nginx/server.key --name web-console-standalone apacheignite/web-console-standalone</code></p></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><!----> <span class="next"><a href="/doc/2.6.0/tools/IgniteWebConsoleAbilities.html">
+          2.Ignite Web控制台的功能
+        </a>
+        →
+      </span></p></div> </div> <!----></div></div>
+    <script src="/assets/js/48.6826af3c.js" defer></script><script src="/assets/js/app.1263e41e.js" defer></script>
+  </body>
+</html>
