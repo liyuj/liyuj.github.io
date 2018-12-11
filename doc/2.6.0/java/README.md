@@ -106,11 +106,11 @@ Apache Ignite官方在如下环境中进行的测试：
 使用默认的配置启动集群，打开命令行，转到`IGNITE_HOME`（Ignite安装文件夹），然后输入：
 
 Linux：
-```shell
+```bash
 $ bin/ignite.sh
 ```
 Windows：
-```bat
+```batch
 $ bin\ignite.bat
 ```
 输出大致如下：
@@ -125,11 +125,11 @@ $ bin\ignite.bat
 如果要使用一个定制配置文件，可以将其作为参数传给`ignite.sh/bat`，如下：
 
 Linux：
-```shell
+```bash
 $ bin/ignite.sh examples/config/example-ignite.xml
 ```
 Windows：
-```bat
+```batch
 $ bin\ignite.bat examples\config\example-ignite.xml
 ```
 配置文件的路径，可以是绝对路径，也可以是相对于`IGNITE_HOME`（Ignite安装文件夹）的相对路径，也可以是类路径中的`META-INF`文件夹。
@@ -566,7 +566,7 @@ ignite.compute().affinityRun("SQL_PUBLIC_CITY", cityId, new IgniteRunnable() {
 我们再来一个小例子，它从/往分布式缓存中获取/添加数据，并且执行基本的事务。
 
 因为在应用中使用了缓存，要确保他是经过配置的，我们可以用Ignite自带的示例配置，他已经做了一些缓存的配置。
-```shell
+```bash
 $ bin/ignite.sh examples/config/example-cache.xml
 ```
 Put和Get：
@@ -764,7 +764,7 @@ Ignite可以通过官方的[RPM](https://www.apache.org/dist/ignite/rpm)和[DEB]
 1. 配置Ignite的仓库（如有必要，还需要导入GPG key）：
 
 *RPM仓库配置*：
-```shell
+```bash
 sudo bash -c 'cat <<EOF > /etc/yum.repos.d/ignite.repo
 [ignite]
 name=Apache Ignite
@@ -777,7 +777,7 @@ EOF'
 sudo yum check-update
 ```
 *DEB仓库配置*：
-```shell
+```bash
 sudo bash -c 'cat <<EOF > /etc/apt/sources.list.d/ignite.list
 deb http://apache.org/dist/ignite/deb/ apache-ignite main
 EOF'
@@ -787,25 +787,25 @@ sudo apt update
 2.安装Ignite的最新版：
 
 *安装RPM包*：
-```shell
+```bash
 sudo yum install apache-ignite
 ```
 *安装DEB包*
-```shell
+```bash
 sudo apt install apache-ignite --no-install-recommends
 ```
 3.使用`sudo systemctl start apache-ignite@<config_name>`这样的命令，通过配置文件启动Ignite节点：
-```shel
+```bash
 sudo systemctl start apache-ignite@default-config.xml
 ```
 这里`<config_name>`参数是相对于`/etc/apache-ignite`文件夹的。
 
 1. `/var/log/apache-ignite`中可以看到Ignite的日志，或者使用命令：
-```shell
+```bash
 journalctl -fe
 ```
 如果需要在系统启动是启动节点，可以这样：
-```shell
+```bash
 sudo systemctl enable apache-ignite@<config name>
 ```
 >**通过包模式安装的Ignite以独立Java应用模式运行**
@@ -816,7 +816,7 @@ sudo systemctl enable apache-ignite@<config name>
 **通过源代码构建**
 
 如果下载了源代码，可以使用下面的命令构建二进制包：
-```shell
+```bash
 # Unpack the source package
 $ unzip -q apache-ignite-{version}-src.zip
 $ cd apache-ignite-{version}-src
@@ -908,7 +908,7 @@ Ignite强依赖于`ignite-core.jar`。
  - `ignite-schedule`
 
 要使用这些模块，需要手工从源代码进行构建然后加入自己的项目，比如，要将`ignite-hibernate`安装到本地库，可以在Ignite的源代码包中运行如下的命令：
-```shell
+```bash
 mvn clean install -DskipTests -Plgpl -pl modules/hibernate -am
 ```
 

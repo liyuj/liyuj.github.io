@@ -33,7 +33,7 @@ Ignite Hadoop加速器MapReduce引擎在Ignite集群中处理Hadoop作业，必�
 ```
 ### 3.2.2.运行Ignite
 配置Ignite节点后用如下方法启动：
-```shell
+```bash
 $ bin/ignite.sh
 ```
 ### 3.2.3.配置Hadoop
@@ -76,11 +76,11 @@ Job job = new Job(conf, "word count");
 ### 3.2.4.运行Hadoop
 如何运行一个作业取决于如何配置Hadoop：
 如果配置了独立的`mapred-site.xml`：
-```shell
+```bash
 hadoop --config [path_to_config] [arguments]
 ```
 如果修改了默认的`mapred-site.xml`，那么`--config`选项就不是必要的了：
-```shell
+```bash
 hadoop [arguments]
 ```
 如果通过编程方式启动作业，那么像下面这样提交他：
@@ -130,14 +130,14 @@ job.submit();
 </bean>
 ```
  - 到这一步，Ignite节点已经配置好可以启动了：
-```shell
+```bash
 $IGNITE_HOME/bin/ignite.sh
 ```
 ### 3.3.2.Hadoop
 
  - 确保设置`IGNITE_HOME`环境变量，指向Ignite Hadoop加速器的解压目录；
  - 拷贝或者符号链接Ignite的jar文件到Hadoop的类路径，这可以使Hadoop在运行时加载Ignite的类；
-```shell
+```bash
 cd $HADOOP_HOME/share/hadoop/common/lib
 ln -s $IGNITE_HOME/libs/ignite-core-[version].jar
 ln -s $IGNITE_HOME/libs/ignite-shmem-1.0.0.jar
@@ -146,7 +146,7 @@ ln -s $IGNITE_HOME/libs/ignite-hadoop/ignite-hadoop-[version].jar
  - 创建Hadoop配置；
 Hadoop会根据配置文件，分别为`core-site.xml`和`mapred-site.xml`，确定使用那个文件系统和作业跟踪器。
 设置这个配置的建议方式是创建单独的目录，拷贝已有的`core-site.xml`和`mapred-site.xml`文件到那里，然后应用必要的配置变更，比如：
-```shell
+```bash
 mkdir ~/ignite_conf
 cd ~/ignite_conf
 cp $HADOOP_HOME/etc/hadoop/core-site.xml .
@@ -197,11 +197,11 @@ cp $HADOOP_HOME/etc/hadoop/mapred-site.xml .
 ### 3.3.3.使用Ignite Hadoop加速器
 到这一步安装已经完成然后就可以启动运行作业或者处理IGFS了。
 查询IGFS：
-```shell
+```bash
 hadoop --config ~/ignite_conf fs -ls /
 ```
 运行一个作业：
-```shell
+```bash
 hadoop --config ~/ignite_conf jar [your_job]
 ```
 
@@ -218,7 +218,7 @@ hadoop --config ~/ignite_conf jar [your_job]
  - 下载最新版本的Ignite Hadoop加速器然后解压到某处；
  - 设置`IGNITE_HOME`环境变量，指向上一步Ignite Hadoop加速器的解压目录；
  - 确保正确设置了如下的Hadoop环境变量，假定CDH安装于`usr/lib`目录：
-```shell
+```bash
 export HADOOP_HOME=/usr/lib/hadoop/
 export HADOOP_COMMON_HOME=/usr/lib/hadoop/
 export HADOOP_HDFS_HOME=/usr/lib/hadoop-hdfs/ 
@@ -251,14 +251,14 @@ export HADOOP_MAPRED_HOME=/usr/lib/hadoop-mapreduce/
 </bean>
 ```
  - 到这一步，Ignite已经配置好了：
-```shell
+```bash
 $IGNITE_HOME/bin/ignite.sh
 ```
 ### 3.4.2.CDH
 
  - 确保设置IGNITE_HOME环境变量，指向Ignite Hadoop加速器的解压目录；
  - 拷贝或者符号链接Ignite的jar文件到Hadoop的类路径，这可以使Hadoop在运行时加载Ignite的类；
-```shell
+```bash
 cd /usr/lib/hadoop/lib
 ln -s $IGNITE_HOME/libs/ignite-core-[version].jar
 ln -s $IGNITE_HOME/libs/ignite-shmem-1.0.0.jar
@@ -267,7 +267,7 @@ ln -s $IGNITE_HOME/libs/ignite-hadoop/ignite-hadoop-[version].jar
  - 创建Hadoop配置；
 Hadoop会根据配置文件，分别为`core-site.xml`和`mapred-site.xml`，确定使用那个文件系统和作业跟踪器。
 设置这个配置的建议方式是创建单独的目录，拷贝已有的`core-site.xml`和`mapred-site.xml`文件到那里，然后应用必要的配置变更，比如：
-```shell
+```bash
 mkdir ~/ignite_conf
 cd ~/ignite_conf
 cp /usr/hdp/current/hadoop-client/etc/core-site.xml .
@@ -318,11 +318,11 @@ cp /usr/hdp/current/hadoop-client/etc/mapred-site.xml .
 ### 3.4.3.使用Ignite Hadoop加速器
 到这一步安装已经完成然后就可以启动运行作业或者处理IGFS了。
 查询IGFS：
-```shell
+```bash
 hadoop --config ~/ignite_conf fs -ls /
 ```
 运行一个作业：
-```shell
+```bash
 hadoop --config ~/ignite_conf jar [your_job]
 ```
 ## 3.5.在Hortonworks HDP上安装
@@ -338,7 +338,7 @@ hadoop --config ~/ignite_conf jar [your_job]
  - 下载最新版本的Ignite Hadoop加速器然后解压到某处；
  - 设置`IGNITE_HOME`环境变量，指向上一步Ignite Hadoop加速器的解压目录；
  - 确保正确设置了如下的Hadoop环境变量，假定HDP安装于`usr/hdp/current`目录：
-```shell
+```bash
 export HADOOP_HOME=/usr/hdp/current/
 export HADOOP_COMMON_HOME=/usr/hdp/current/hadoop-client/
 export HADOOP_HDFS_HOME=/usr/hdp/current/hadoop-hdfs-client/ 
@@ -371,14 +371,14 @@ export HADOOP_MAPRED_HOME=/usr/hdp/current/hadoop-mapreduce-client/
 </bean>
 ```
  - 到这一步，Ignite已经配置好了：
-```shell
+```bash
 $IGNITE_HOME/bin/ignite.sh
 ```
 ### 3.5.2.HDP
 
  - 确保设置IGNITE_HOME环境变量，指向Ignite Hadoop加速器的解压目录；
  - 拷贝或者符号链接Ignite的jar文件到Hadoop的类路径，这可以使Hadoop在运行时加载Ignite的类；
-```shell
+```bash
 cd /usr/hdp/current/hadoop-client/lib
 ln -s $IGNITE_HOME/libs/ignite-core-[version].jar
 ln -s $IGNITE_HOME/libs/ignite-shmem-1.0.0.jar
@@ -387,7 +387,7 @@ ln -s $IGNITE_HOME/libs/ignite-hadoop/ignite-hadoop-[version].jar
  - 创建Hadoop配置；
 Hadoop会根据配置文件，分别为`core-site.xml`和`mapred-site.xml`，确定使用那个文件系统和作业跟踪器。
 设置这个配置的建议方式是创建单独的目录，拷贝已有的`core-site.xml`和`mapred-site.xml`文件到那里，然后应用必要的配置变更，比如：
-```shell
+```bash
 mkdir ~/ignite_conf
 cd ~/ignite_conf
 cp /usr/hdp/current/hadoop-client/etc/core-site.xml .
@@ -438,11 +438,11 @@ cp /usr/hdp/current/hadoop-client/etc/mapred-site.xml .
 ### 3.5.3.使用Ignite Hadoop加速器
 到这一步安装已经完成然后就可以启动运行作业或者处理IGFS了。
 查询IGFS：
-```shell
+```bash
 hadoop --config ~/ignite_conf fs -ls /
 ```
 运行一个作业：
-```shell
+```bash
 hadoop --config ~/ignite_conf jar [your_job]
 ```
 ## 3.6.Ignite和Apache Hive
@@ -462,7 +462,7 @@ hadoop --config ~/ignite_conf jar [your_job]
 > 有一个与Hive和Hadoop中的不同`jline`库版本有关的潜在[问题](http://stackoverflow.com/questions/28997441/hive-startup-error-terminal-initialization-failed-falling-back-to-unsupporte)，他可以通过设置`HADOOP_USER_CLASSPATH_FIRST=true`环境变量来解决。
 
 为了方便，也可以创建一个简单的脚本来正确地设置所有必要的变量然后启动Hive，像下面这样：
-```shell
+```bash
 # Specify Hive home directory:
 export HIVE_HOME=<Hive installation directory>
 
@@ -478,7 +478,7 @@ export HADOOP_USER_CLASSPATH_FIRST=true
 ${HIVE_HOME}/bin/hive "${@}"
 ```
 这个脚本可以用于在交互式控制台上启动Hive：
-```shell
+```bash
 $ hive-ig cli
 hive> show tables;
 OK
@@ -489,11 +489,11 @@ $
 ```
 ### 3.6.3.启动HiveServer2
 如果为了增强的客户端功能希望使用[HiveServer2](https://cwiki.apache.org/confluence/display/Hive/Setting+Up+HiveServer2)，要启动它也可以使用上面创建的脚本。
-```shell
+```bash
 hive-ig --service hiveserver2
 ```
 服务启动之后，可以使用任何有效的[客户端](https://cwiki.apache.org/confluence/display/Hive/HiveServer2+Clients)（比如beeline）连接它。作为一个远程客户端，`beeline`可以在任意主机运行，他也不需要任何特别的环境来与`Ignited`Hive一起工作，下面是示例：
-```shell
+```bash
 $ ./beeline 
 Beeline version 1.2.1 by Apache Hive
 beeline> !connect jdbc:hive2://localhost:10000 scott tiger org.apache.hive.jdbc.HiveDriver

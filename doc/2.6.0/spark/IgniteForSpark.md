@@ -354,7 +354,7 @@ Spark应用部署模型可以在应用启动期间动态地发布jar，但是这
 
  1. 定位到`$SPARK_HOME/conf/spark-env.sh`文件，如果该文件不存在，用`$SPARK_HOME/conf/spark-env.sh.template`这个模板创建它；
  2. 将下面的行加入`spark-env.sh`文件的末尾（如果没有全局定义`IGNITE_HOME`的话，需要将设置`IGNITE_HOME`的行的注释去掉）。
-```shell
+```bash
 # Optionally set IGNITE_HOME here.
 # IGNITE_HOME=/path/to/ignite
 
@@ -371,7 +371,7 @@ export SPARK_CLASSPATH=$IGNITE_LIBS
 ```
 从`$IGNITE_HOME/libs/optional`文件夹中复制必要的库文件，比如`ignite-log4j`，到`$IGNITE_HOME/libs`文件夹。
 也可以验证Spark的类路径是否被运行`bin/spark-shell`所改变，然后输入一个简单的import语句：
-```shell
+```bash
 scala> import org.apache.ignite.configuration._
 import org.apache.ignite.configuration._
 ```
@@ -415,7 +415,7 @@ libraryDependencies += "org.apache.ignite" % "ignite-spark_2.10" % "ignite.versi
 **参数配置**
 通过使用比如`spark.driver.extraClassPath`以及`spark.executor.extraClassPath`这样的参数，可以将Ignite的jar包加入Spark，具体可以看Spark的[官方文档](https://spark.apache.org/docs/latest/configuration.html#runtime-environment)。
 下面的片段演示了如何使用`spark.driver.extraClassPath`参数：
-```shell
+```bash
 spark.executor.extraClassPath /opt/ignite/libs/*:/opt/ignite/libs/optional/ignite-spark/*:/opt/ignite/libs/optional/ignite-log4j/*:/opt/ignite/libs/optional/ignite-yarn/*:/opt/ignite/libs/ignite-spring/* 
 ```
 **源代码配置**
@@ -448,17 +448,17 @@ spark.sparkContext.addJar(MAVEN_HOME + "/com/h2database/h2/1.4.195/h2-1.4.195.ja
  1. 下载和解压Spark二进制发行版到所有节点的同一个位置（将其设为`SPARK_HOME`）；
  2. 下载和解压Ignite二进制发行版到所有节点的同一个位置（将其设为`IGNITE_HOME`）；
  3. 转到`$SPARK_HOME`然后执行如下的命令：
-```shell
+```bash
 sbin/start-master.sh
 ```
 这个脚本会输出启动过程的日志文件的路径，可以在日志文件中查看master的URL，他的格式是：`spark://master_host:master_port`。也可以在日志文件中查看WebUI的URL（通常是`http://master_host:8080`）。
  4. 转到每个worker节点的`$SPARK_HOME`然后执行如下的命令：
-```shell
+```bash
 bin/spark-class org.apache.spark.deploy.worker.Worker spark://master_host:master_port
 ```
 这里的`spark://master_host:master_port`就是从上述的master的日志文件中抓取的master的URL。在所有的worker节点都启动之后可以查看master的WebUI界面，他会显示所有的处于`ALIVE`状态的已经注册的worker。
  5. 转到每个worker节点的`$IGNITE_HOME`目录然后通过运行如下的命令启动一个Ignite节点：
-```shell
+```bash
 bin/ignite.sh
 ```
 这时可以看到通过默认的配置Ignite节点会彼此发现对方。如果网络不允许多播通信，那么需要修改默认的配置文件然后配置TCP发现。
@@ -467,19 +467,19 @@ bin/ignite.sh
 **1.启动spark-shell**
 
  - 还可能需要提供Ignite部件的Maven坐标（如果需要，可以使用`--repositories`参数，但是他可能会被忽略）：
-```shell
+```bash
 ./bin/spark-shell 
 	--packages org.apache.ignite:ignite-spark:1.8.0
   --master spark://master_host:master_port
   --repositories http://repo.maven.apache.org/maven2/org/apache/ignite
 ```
  - 或者也可以通过`--jars`参数提供指向Ignite的jar文件的路径：
-```shell
+```bash
 ./bin/spark-shell --jars path/to/ignite-core.jar,path/to/ignite-spark.jar,path/to/cache-api.jar,path/to/ignite-log4j.jar,path/to/log4j.jar --master spark://master_host:master_port
 ```
 这时可以看到Spark shell已经启动了。
 注意，如果打算使用Spring的配置进行加载的话，那么需要同时添加`ignite-spring`的依赖。
-```shell
+```bash
 ./bin/spark-shell 
 	--packages org.apache.ignite:ignite-spark:1.8.0,org.apache.ignite:ignite-spring:1.8.0
   --master spark://master_host:master_port

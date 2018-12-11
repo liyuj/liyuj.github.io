@@ -98,11 +98,11 @@ alert -r -n=Nodes -t=15 -nc=gte3 -s=/home/user/scripts/alert.sh -i=300
 注册一个报警，如果网格内有大于等于3个节点每隔15秒会发送通知，并且每隔不小于5分钟重复执行脚本“/home/user/scripts/alert.sh”。
 ### 3.2.3.自定义脚本
 注册下面这个报警，每隔15秒，如果网格内有大于等于2个节点，并且CPU数小于等于16，重复间隔不能小于5分钟，执行如下脚本`/home/user/myScript.sh`：
-```shell
+```bash
 alert -r -t=5 -n=MyAlert -nc=gte2 -cc=lte16 -i=15 -s=/home/user/myScript.sh
 ```
 报警处理脚本：
-```shell
+```bash
 echo ALERT [$1] CONDITION [$2] alarmed with node count [$3] and cpu count [$4]
 ```
 会在终端生成如下输出:

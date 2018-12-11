@@ -23,7 +23,7 @@ jre-1.8= \
 ### 4.1.3.安装Ignite特性库
 使用Apache Karaf Shell中的如下命令来安装Ignite特性库，确保容器可以连接到互联网或者一个包含Ignite组件的备用Maven仓库。
 将Ignite特性库加入Karaf：
-```shell
+```bash
 karaf@root()> feature:repo-add mvn:org.apache.ignite/ignite-osgi-karaf/${ignite.version}/xml/features
 Adding feature url mvn:org.apache.ignite/ignite-osgi-karaf/${ignite.version}/xml/features
 karaf@root()>
@@ -72,7 +72,7 @@ Error executing command: Resource has no uri
 Apache Karaf捆绑了[Pax Logging](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging),他是一个从其他组件收集和汇总日志输出（通过不同的框架输出，比如slf4j，log4j，JULI，commons-logging等）然后用一个典型的log4j配置处理的框架。
 `ignite-log4j `模块依赖于log4j，Pax Logging默认不输出它，因此我们开发了一个OSGi片段，SymbolicName为`ignite-osgi-paxlogging`，他加入了`ignite-core`然后输出了缺失的包。
 `ignite-log4j`特性也安装了这个片段，但是需要用`org.ops4j.pax.logging.pax-logging-api`这个名字强制刷新：
-```shell
+```bash
 karaf@root()> feature:install ignite-log4j
 karaf@root()> refresh org.ops4j.pax.logging.pax-logging-api
 karaf@root()>

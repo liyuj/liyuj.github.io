@@ -46,23 +46,23 @@ ODBC连接也是接入本地localhost，端口是10800，具体可以查看`ODBC
 
 不管选择哪种方式，都需要打开一个命令行工具，然后转到`{apache-ignite-version}/bin`，然后执行`ignite.sh`或者`ignite.bat`脚本，这样可以启动一个或者多个节点，如果使用了Ignite.NET或者Ignite.C++，那么也可以使用对应的可执行文件启动一个节点。
 **Unix：**
-```shell
+```bash
 ./ignite.sh
 ```
 **Windows：**
-```shell
+```bash
 ignite.bat
 ```
 **.NET：**
-```shell
+```bash
 platforms\dotnet\bin\Apache.Ignite.exe
 ```
 **C++ Windows**
-```shell
+```bash
 modules\platforms\cpp\project\vs\x64\Release\ignite.exe
 ```
 **C++ Unix:**
-```shell
+```bash
 ./modules/platforms/cpp/ignite/ignite
 ```
 如果节点是通过Java应用启动，要保证在Maven的`pom.xml`文件中包含`ignite-indexing`模块依赖：

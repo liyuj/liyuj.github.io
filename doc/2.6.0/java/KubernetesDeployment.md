@@ -91,30 +91,30 @@ spec:
 Kubernetes支持Ignite的1.9及其以后的版本，一定要使用有效的Docker映像版本，完整的标签列表在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)。
 
 下一步，在Kubernetes中使用上述的配置部署Ignite配置组：
-```shell
+```bash
 kubectl create -f ignite-deployment.yaml
 ```
 检查配置组是否启动运行：
-```shell
+```bash
 kubectl get pods
 ```
 选择一个可用的配置组的名字：
-```shell
+```bash
 NAME                              READY     STATUS    RESTARTS   AGE
 ignite-cluster-3454482164-d4m6g   1/1       Running   0          25m
 ignite-cluster-3454482164-w0xtx   1/1       Running   0          25m
 ```
 可以获取日志，确认配置组之间可以在集群内相互发现：
-```shell
+```bash
 kubectl logs ignite-cluster-3454482164-d4m6g
 ```
 #### 20.2.1.4.调整Ignite集群大小
 可以使用标准的Kubernetes API随时调整Ignite集群的大小。比如，如果想把集群从2个节点扩容到5个节点，那么可以使用下面的命令：
-```shell
+```bash
 kubectl scale --replicas=5 -f ignite-deployment.yaml
 ```
 再次检查集群已经成功扩容：
-```shell
+```bash
 kubectl get pods
 ```
 输出会显示有5个配置组正在运行：
@@ -133,7 +133,7 @@ ignite-cluster-3454482164-w0xtx   1/1       Running   0          34m
 #### 20.2.1.7.在OpenShift环境中部署
 对于使用Docker容器的Kubernetes，[OpenShift](https://www.openshift.com/)也是支持的，但是它有自己的RBAC（基于角色的访问控制）特性，这与Kubernetes直接提供的机制不完全兼容，这也是为什么部分命令会导致`拒绝访问`错误的原因，这时就需要一些额外的配置，如下：
 1.使用OpenShift的CLI创建一个具有`view`角色的服务账户；
-```shell
+```bash
 $ oc create sa ignite
 $ oc policy add-role-to-user view system:serviceaccount:<project>:ignite
 ```
@@ -279,31 +279,31 @@ spec:
 Kubernetes支持Ignite的1.9及其以后的版本，一定要使用有效的Docker映像版本，完整的标签列表在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)。
 
 下一步，在Kubernetes中使用上述的配置部署有状态集（确保事先配置好了唯一的命名空间和RBAC）：
-```shell
+```bash
 # Create the stateful set
 kubectl create -f ignite-stateful-set.yaml
 ```
 确认Ignite配置组正在运行：
-```shell
+```bash
 kubectl get pods --namespace=ignite
 ```
 选择一个可用的配置组的名字：
-```shell
+```bash
 NAME       READY     STATUS    RESTARTS   AGE
 ignite-0   1/1       Running   0          7m
 ignite-1   1/1       Running   0          4m
 ```
 然后看下日志，确认配置组之间可以彼此发现：
-```shell
+```bash
 kubectl logs ignite-0 --namespace=ignite
 ```
 #### 20.2.2.4.调整Ignite集群大小
 属于标准的Kubernetes API，可以随时调整Ignite集群的大小。比如希望将集群从2个节点扩容到4个节点，可以使用下面的命令：
-```shell
+```bash
 kubectl scale sts ignite --replicas=4 --namespace=ignite
 ```
 再次确认集群扩容成功：
-```shell
+```bash
 kubectl get pods --namespace=ignite
 ```
 输出显示有4个Ignite配置组正在运行：
@@ -316,15 +316,15 @@ ignite-3   1/1       Running   0          9m
 ```
 #### 20.2.2.5.Ignite集群激活
 因为部署使用了Ignite的原生持久化，因此启动之后集群需要激活，怎么做呢，接入一个配置组：
-```shell
+```bash
 kubectl exec -it ignite-0 --namespace=ignite -- /bin/bash
 ```
 转到下面的目录：
-```shell
+```bash
 cd /opt/ignite/apache-ignite-fabric/bin/
 ```
 然后使用下面的命令可以激活集群：
-```shell
+```bash
 ./control.sh --activate
 ```
 ### 20.2.3.RBAC授权
@@ -344,7 +344,7 @@ metadata:
   name: ignite
 ```
 执行下面的命令配置命名空间：
-```shell
+```bash
 kubectl create -f ignite-namespace.yaml
 ```
 #### 20.2.3.4.创建服务账户
@@ -358,7 +358,7 @@ metadata:
   namespace: ignite
 ```
 执行下面的命令创建账户：
-```shell
+```bash
 kubectl create -f ignite-service-account.yaml
 ```
 #### 20.2.3.5.创建角色
@@ -384,7 +384,7 @@ rules:
 >注意，如果不打算将Ignite服务用作外部应用的负载平衡器，那么建议赋予其更少的权限，具体见[这里](https://stackoverflow.com/a/49634686/5515526)。
 
 执行下面的命令创建角色：
-```shell
+```bash
 kubectl create -f ignite-account-role.yaml
 ```
 下一步，使用下面的配置将该角色绑定到服务账户和命名空间上：
@@ -404,11 +404,11 @@ subjects:
   namespace: ignite
 ```
 执行下面的命令执行绑定：
-```shell
+```bash
 kubectl create -f ignite-role-binding.yaml
 ```
 最后，将命名空间切换到`ignite`，然后就可以看到所有所属的资源：
-```shell
+```bash
 kubectl config set-context $(kubectl config current-context) --namespace=ignite
 ```
 ### 20.2.4.Ignite服务
@@ -446,11 +446,11 @@ spec:
     app: ignite
 ```
 然后使用如下的命令将其部署进Kubernetes（确认事先已经配置好了命名空间和RBAC）：
-```shell
+```bash
 kubectl create -f ignite-service.yaml
 ```
 确认服务已经正在运行：
-```shell
+```bash
  kubectl get svc ignite --namespace=ignite
 ```
 ### 20.2.5.Kubernetes IP探测器
@@ -559,22 +559,22 @@ Kubernetes仪表盘是一个有助于从本地或者其它环境监控Kubernetes
 如果要使用仪表盘，需要安装Azone CLI，如果未安装，可以参照这个[文档](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)。
 Azone CLI安装完成之后，按照下面的步骤操作：
 首先，通过下面的命令获取集群的凭据：
-```shell
+```bash
 az aks get-credentials --resource-group IgniteCluster --name IgniteCluster
 ```
 下一步，通过下面的命令检查所有的节点是否处于`Ready`状态：
-```shell
+```bash
 kubectl get nodes
 ```
 输出大致如下：
-```shell
+```bash
 aks-agentpool-41298956-0   Ready     agent     1m        v1.10.3
 aks-agentpool-41298956-1   Ready     agent     1m        v1.10.3
 aks-agentpool-41298956-2   Ready     agent     1m        v1.10.3
 aks-agentpool-41298956-3   Ready     agent     1m        v1.10.3
 ```
 最后，通过下面的命令启动Kubernetes仪表盘：
-```shell
+```bash
 az aks browse --resource-group IgniteCluster --name IgniteCluster
 ```
 打开仪表盘之后，转到`Cluster`->`Nodes`，确认是否可以看到正在运行的AKS集群的所有节点。
@@ -591,7 +591,7 @@ az aks browse --resource-group IgniteCluster --name IgniteCluster
 配置RBAC之后打开Kubernetes仪表盘，转到`Cluster`->`Roles`，确认哪有一个Ignite专用的角色。
 ![](https://files.readme.io/f515543-Screen_Shot_2018-06-28_at_3.49.31_PM.png)
 通过选择`Namespace`->`ignite`，在Kubernetes仪表盘中切换当前命名空间到`ignite`。还有，通过下面的命令，也可以通过Azone CLI切换命名空间：
-```shell
+```bash
 kubectl config set-context $(kubectl config current-context) --namespace=ignite
 ```
 **Ignite服务部署**
@@ -603,33 +603,33 @@ Ignite有状态集部署可以用于将Ignite部署为开启持久化的、以�
 常规的文档假定AKS会提供存储空间，用于Ignite的数据持久化。转到`Cluster`->`Persistence Volumes`，可以看到为集群分配的驱动类型，比如，页面大体如下：
 ![](https://files.readme.io/28062de-Screen_Shot_2018-06-28_at_5.05.45_PM.png)
 配置组部署之后，可以尝试如下的命令对集群进行扩容：
-```shell
+```bash
 kubectl scale sts ignite --replicas=4
 ```
 集群扩容并且磁盘加载之后，就会在Kubernetes仪表盘的`Workloads`->`Pods`页面看到如下内容：
 ![](https://files.readme.io/e2108a4-Screen_Shot_2018-06-28_at_5.10.04_PM.png)
 **Ignite集群激活**
 因为集群使用了Ignite的原生持久化，因此启动之后需要对集群进行激活，怎么弄呢？接入其中任意一个配置组：
-```shell
+```bash
 kubectl exec -it ignite-0 --namespace=ignite -- /bin/bash
 ```
 转到如下的目录：
-```shell
+```bash
 cd /opt/ignite/apache-ignite-fabric/bin/
 ```
 然后通过执行如下的命令激活集群：
-```shell
+```bash
 ./control.sh --activate
 ```
 ### 20.3.3.从外部应用接入
 下面会从外部应用（未部署在Kubernetes中）接入集群，本示例会使用SQL接口通过JDBC驱动接入Ignite。
 首先，找到Ignite服务的外部地址，比如，转到`Discovery and Load Balancing`->`Services`，然后通过端口号10800选择一个外部端点（这是IgniteSQL驱动的默认端口）。
 下一步，下载一个Ignite版本，转到`{ignite_release}/bin`然后使用SQLline工具通过如下的命令可以接入集群：
-```shell
+```bash
 ./sqlline.sh --verbose=true -u jdbc:ignite:thin://{EXTERNAL_IP}:10800
 ```
 接入之后，使用SQLLine工具，通过下面的命令进行数据预加载：
-```shell
+```bash
 !run ../examples/sql/world.sql
 ```
 之后，就可以使用SQL与集群进行交互了，比如：
@@ -671,11 +671,11 @@ Google云SDK CLI安装完之后，可以按照下面的步骤操作。
 在[这里](https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards)可以看到Google云平台控制台仪表盘的更多信息。
 
 下一步，通过下面的命令检查所有的节点是否处于`Ready`状态：
-```shell
+```bash
 kubectl get nodes
 ```
 输出大体如下：
-```shell
+```bash
 NAME                                          STATUS    ROLES     AGE       VERSION
 gke-ignitecluster-default-pool-4b1a4860-nb1f   Ready     <none>    1m       v1.10.4-gke.2
 gke-ignitecluster-default-pool-4b1a4860-v719   Ready     <none>    1m       v1.10.4-gke.2
@@ -692,12 +692,12 @@ gke-ignitecluster-default-pool-4b1a4860-z9vs   Ready     <none>    1m       v1.1
 **RBAC授权**
 根据`20.2.3.RBAC授权`章节介绍的内容，创建一个Ignite专用的命名空间、服务账号和角色。
 对于GKE部署，首先执行下面的命令：
-```shell
+```bash
 kubectl create clusterrolebinding cluster-admin-binding \
   --clusterrole cluster-admin --user [YOUR_USERNAME]
 ```
 通过运行下面的命令，可以将当前的命名空间切换到`ignite`：
-```shell
+```bash
 kubectl config set-context $(kubectl config current-context) --namespace=ignite
 ```
 **Ignite服务部署**
@@ -712,33 +712,33 @@ Ignite有状态集部署可以用于将Ignite部署为开启持久化的、以�
 常规的文档假定GKE会提供存储空间，用于Ignite的数据持久化。转到`Kubernetes Engine`->`Storage`，可以看到为集群分配的驱动类型，比如，页面大体如下：
 ![](https://files.readme.io/df8a665-storage.png)
 配置组部署之后，可以尝试如下的命令对集群进行扩容：
-```shell
+```bash
 kubectl scale sts ignite --replicas=4
 ```
 集群扩容并且磁盘加载之后，就会在Google云平台控制台的`Kubernetes Engine`->`Workloads`页面看到如下内容：
 ![](https://files.readme.io/9201088-stateful_deployment.png)
 **Ignite集群激活**
 因为集群使用了Ignite的原生持久化，因此启动之后需要对集群进行激活，怎么弄呢？接入其中任意一个配置组：
-```shell
+```bash
 kubectl exec -it ignite-0 --namespace=ignite -- /bin/bash
 ```
 转到如下的目录：
-```shell
+```bash
 cd /opt/ignite/apache-ignite-fabric/bin/
 ```
 然后通过执行如下的命令激活集群：
-```shell
+```bash
 ./control.sh --activate
 ```
 ### 20.4.3.从外部应用接入
 下面会从外部应用（未部署在Kubernetes中）接入集群，本示例会使用SQL接口通过JDBC驱动接入Ignite。
 首先，找到Ignite服务的外部地址，比如，转到`Kubernetes Engine` > `Services`，然后通过端口号10800选择一个外部端点（这是IgniteSQL驱动的默认端口）。
 下一步，下载一个Ignite版本，转到`{ignite_release}/bin`然后使用SQLline工具通过如下的命令可以接入集群：
-```shell
+```bash
 ./sqlline.sh --verbose=true -u jdbc:ignite:thin://{EXTERNAL_IP}:10800
 ```
 接入之后，使用SQLLine工具，通过下面的命令进行数据预加载：
-```shell
+```bash
 !run ../examples/sql/world.sql
 ```
 之后，就可以使用SQL与集群进行交互了，比如：

@@ -296,14 +296,14 @@ public static void main(String[] args) {
 #### 19.3.1.3.启动集群
 在本地主机上启动集群：
 Unix：
-```shell
+```bash
 $IGNITE_HOME/bin/ignite.sh $IGNITE_HOME/examples/config/example-ignite.xml
 
 ...
 [27-02-2018 19:21:00][INFO ][main][GridDiscoveryManager] Topology snapshot [ver=1, servers=1, clients=0, CPUs=8, offheap=1.0GB, heap=1.0GB]
 ```
 Windows：
-```shell
+```bash
 %IGNITE_HOME%\bin\ignite.bat %IGNITE_HOME%\examples\config\example-ignite.xml
 
 ...
@@ -314,7 +314,7 @@ Windows：
 
 #### 19.3.1.4.启动应用
 在IDE中运行程序，然后会看到如下的输出：
-```shell
+```bash
 >>> Thin client put-get example started.
 >>> Created cache [put-get-example].
 >>> Saved [Address [street=1545 Jackson Street, zip=94612]] in the cache.

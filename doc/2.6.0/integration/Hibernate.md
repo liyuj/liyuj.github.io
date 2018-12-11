@@ -154,7 +154,7 @@ Hibernate4:
 Ignition.start("my-config-folder/my-ignite-configuration.xml");
 ```
 上述代码执行完毕后，内部的节点就启动了然后准备缓存数据，也可以从控制台执行如下命令来启动额外的独立的节点：
-```shell
+```bash
 $IGNITE_HOME/bin/ignite.sh my-config-folder/my-ignite-configuration.xml
 ```
 对于Windows,可以执行同一文件夹下的`.bat`脚本。

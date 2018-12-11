@@ -80,12 +80,12 @@ Ignite机器学习最新版的jar包已经上传到Maven仓库，如果需要获
  - 下载Ignite最新发行版的源代码；
  - 清空Maven的本地仓库（这个是避免旧版本的可能影响）；
  - 从工程的根目录构建并安装Ignite；
-```shell
+```bash
 mvn clean install -DskipTests -Dmaven.javadoc.skip=true
 ```
  - 在本地仓库的`{user_dir}/.m2/repository/org/apache/ignite/ignite-ml/{ignite-version}/ignite-ml-{ignite-version}.jar`中找到机器学习的jar包；
  - 如果要从源代码构建ML或者DL的示例，执行如下的命令：
-```shell
+```bash
 cd examples
 mvn clean package -DskipTests
 ```
@@ -537,22 +537,22 @@ Chromosome fittestChromosome = gaGrid.evolve();
 ```
 ### 15.6.3.启动
 如果要使用遗传算法，打开命令终端，转到`IGNITE_HOME`目录，然后执行下面的脚本：
-```shell
+```bash
 $ bin/ignite.sh examples/config/example-ignite.xml
 ```
 在集群的每个节点中重复这个步骤。
 
 然后打开另一个命令终端，转到`IGNITE_HOME`目录，然后输入：
-```shell
+```bash
 mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld.HelloWorldGAExample"
 ```
 启动之后，集群中的每个节点会看到类似下面的输出：
-```shell
+```bash
 [21:41:49,327][INFO][main][GridCacheProcessor] Started cache [name=populationCache, mode=PARTITIONED]
 [21:41:49,365][INFO][main][GridCacheProcessor] Started cache [name=geneCache, mode=REPLICATED]
 ```
 下一步，在若干代之后，会看到下面的输出：
-```shell
+```bash
 [19:04:17,307][INFO][main][] Generation: 208
 [19:04:17,307][INFO][main][] Fittest is Chromosome Key: Chromosome [fitnessScore=11.0, id=319, genes=[8, 5, 12, 12, 15, 27, 23, 15, 18, 12, 4]]
 [19:04:17,307][INFO][main][] Chromosome: Chromosome [fitnessScore=11.0, id=319, genes=[8, 5, 12, 12, 15, 27, 23, 15, 18, 12, 4]]
@@ -575,7 +575,7 @@ Apache Zeppelin是一个基于Web的笔记本，可以进行交互式的数据�
  3. 将`ignite-core-2.5.0.jar`从`IGNITE_HOME/libs`目录中复制到`ZEPPELIN_HOME/interpreter/jdbc`目录中，该包中包含Ignite的JDBC Thin模式驱动，Zeppelin会使用这个驱动从遗传算法网格中获取优化后的数据；
 
 Zeppelin安装配置好后，可以通过如下命令启动：
-```shell
+```bash
 ./bin/zeppelin-daemon.sh start
 ```
 Zeppelin启动之后，会看到下面的首页：
@@ -619,18 +619,18 @@ Zeppelin启动之后，会看到下面的首页：
 |`getSolutionById(key)`|通过染色体键获取优化解。|
 
 要使用`GAGridNotebook`，可以启动一个独立的Ignite节点：
-```shell
+```bash
 $ bin/ignite.sh IGNITE_HOME/examples/config/example-config.xml
 ```
 运行`HelloWorldGAExample`这个示例：
-```shell
+```bash
 mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld.HelloWorldGAExample"
 ```
 当遗传算法为第一代生成最优解后，就可以进行数据查询了。
 
 **第一代**
 
-```shell
+```bash
 ##########################################################################################
 [13:55:22,589][INFO][main][] Generation: 1
 [13:55:22,596][INFO][main][] Fittest is Chromosome Key: Chromosome [fitnessScore=3.0, id=460, genes=[8, 3, 21, 5, 2, 22, 1, 19, 18, 12, 9]]
@@ -639,7 +639,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 [13:55:22,598][INFO][main][] Avg Chromosome Fitness: 0.408
 ```
 在Zeppelin的窗口中，输入下面的SQL然后点击`execute`按钮：
-```shell
+```bash
 %jdbc_ignite_sql select * from "geneCache".getSolutionsDesc();
 ```
 若干代之后，会发现解已经演变到最后的短语"HELLO WORLD"，对于HellowWorldGAExample这个示例，遗传算法会为每一代维护一个500个解的种群，另外，本示例的解会包含总共11个基因，适应度得分最高的，会被认为是“最适合”。

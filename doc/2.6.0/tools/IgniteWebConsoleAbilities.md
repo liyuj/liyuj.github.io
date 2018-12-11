@@ -178,30 +178,30 @@ Ignite可以无限制地支持SQL查询，SQL语法兼容于ANSI-99标准，这�
 </bean>
 ```
 假定集群的配置位于`${IGNITE_HOME}/config`文件夹，那么可以通过如下命令启动第一个集群的节点：
-```shell
+```bash
 ignite.sh -v -J-DIGNITE_JETTY_PORT=8080 config/first-cluster.xml
 ```
 然后通过如下方式启动第二个集群：
-```shell
+```bash
 ignite.sh -v -J-DIGNITE_JETTY_PORT=9090 config/second-cluster.xml
 ```
 因为这些节点在一台主机上启动，所以需要将`JETTY_PORT`参数配置为不同的值。
 最后，启动一个Web代理，接入第一个集群节点：
-```shell
+```bash
 ignite-web-agent.sh --node-uri http://localhost:8080
 ```
 然后一个web代理接入第二个集群：
-```shell
+```bash
 ignite-web-agent.sh --node-uri http://localhost:9090
 ```
 通过浏览器打开Web控制台，然后就可以看到控制台可以处理下拉框中的两个集群。
 ### 2.5.2.不同主机的两个集群
 如果Ignite集群部署在没有交集的一组主机上，那么是不需要配置上述的`TcpDiscoverySpi`，`TcpCommunicationSpi`或者`JETTY_PORT`的。
 需要做的仅仅是启动集群然后将Web代理的实例接入第一个集群：
-```shell
+```bash
 ignite-web-agent.sh --node-uri http://host1:8080
 ```
 然后重复，接入第二个集群：
-```shell
+```bash
 ignite-web-agent.sh --node-uri http://host2:9090
 ```

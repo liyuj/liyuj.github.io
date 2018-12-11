@@ -110,12 +110,12 @@ Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之�
 为了简化安装，构建完驱动之后可能想构建安装器，Ignite使用[WiX工具包](http://wixtoolset.org/)来生成ODBC的安装器，因此需要下载并安装WiX，记得一定要把Wix工具包的`bin`目录加入PATH变量中。
 一切就绪之后，打开终端然后定位到`%IGNITE_HOME%\platforms\cpp\odbc\install`目录，按顺序执行如下的命令：
 64位：
-```shell
+```bash
 candle.exe ignite-odbc-amd64.wxs
 light.exe -ext WixUIExtension ignite-odbc-amd64.wixobj
 ```
 32位：
-```shell
+```bash
 candle.exe ignite-odbc-x86.wxs
 light.exe -ext WixUIExtension ignite-odbc-x86.wixobj
 ```
@@ -124,7 +124,7 @@ light.exe -ext WixUIExtension ignite-odbc-x86.wixobj
 在一个基于Linux的操作系统中，如果要构建及使用Ignite ODBC驱动，需要安装选择的ODBC驱动管理器，Ignite ODBC驱动已经使用[UnixODBC](http://www.unixodbc.org/)进行了测试。
 要构建驱动及其依赖，还需要额外的`GCC`,`G++`以及`Make`。
 如果所有必需的都安装好了，可以通过如下方式构建Ignite ODBC驱动：
-```shell
+```bash
 cd $IGNITE_HOME/platforms/cpp
 libtoolize && aclocal && autoheader && automake --add-missing && autoreconf
 ./configure --enable-odbc --disable-node --disable-core
@@ -134,7 +134,7 @@ make
 make install
 ```
 构建过程完成后，可以通过如下命令找到ODBC驱动位于何处：
-```shell
+```bash
 whereis libignite-odbc
 ```
 路径很可能是：`/usr/local/lib/libignite-odbc.so`。
@@ -154,11 +154,11 @@ whereis libignite-odbc
 要在Windows上手动安装驱动，首先要为驱动在文件系统中选择一个目录，选择一个位置后就可以把驱动放在哪并且确保所有的驱动依赖可以被解析，也就是说，他们要么位于`%PATH%`，要么和驱动位于同一个目录。
 之后，就需要使用`%IGNITE_HOME%/platforms/cpp/odbc/install`目录下的安装脚本之一，注意，要执行这些脚本，很可能需要管理员权限。
 X86：
-```shell
+```bash
 install_x86 <absolute_path_to_32_bit_driver>
 ```
 AMD64:
-```shell
+```bash
 install_amd64 <absolute_path_to_64_bit_driver> [<absolute_path_to_32_bit_driver>]
 ```
 **在Linux上安装**
@@ -239,7 +239,7 @@ DRIVER={Apache Ignite};ADDRESS=example.com:12901;CACHE=MyCache;PAGE_SIZE=4096
 要在Windows上配置DSN，需要使用一个叫做`odbcad32`的系统工具，这是一个ODBC数据源管理器，要启动这个工具，打开`Control panel`->`Administrative Tools`->`数据源（ODBC）`，当ODBC数据源管理器启动后，选择`Add...`->`Apache Ignite`，然后以正确的方式配置DSN。
 ![](https://files.readme.io/6255aff-DSN_configuration.png)
 在Linux上配置DSN，需要找到`odbc.ini`文件，这个文件的位置各个发行版有所不同，依赖于发行版使用的特定驱动管理器，比如，如果使用`unixODBC`，那么可以执行如下的命令来输出系统级的ODBC相关信息：
-```shell
+```bash
 odbcinst -j
 ```
 文件的路径会显示在`SYSTEM DATA SOURCES`和`USER DATA SOURCES`属性之间。
@@ -396,7 +396,7 @@ SQLExecDirect(stmt, query3, SQL_NTS);
 ### 5.3.3.接入集群
 配置好然后启动集群，就可以从ODBC驱动端接入了。如何做呢？准备一个有效的连接串然后连接时将其作为一个参数传递给ODBC驱动就可以了。
 另外，也可以像下面这样使用一个预定义的DSN来接入。
-```c++
+```cpp
 SQLHENV env;
 
 // Allocate an environment handle
@@ -441,7 +441,7 @@ if (!SQL_SUCCEEDED(ret))
 ```
 ### 5.3.4.查询数据
 都准备好后，就可以使用ODBC API执行SQL查询了。
-```c++
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -512,7 +512,7 @@ SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 
 ### 5.3.5.插入数据
 要将新的数据插入集群，ODBC端可以使用`INSERT`语句。
-```c++
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -572,7 +572,7 @@ SQLExecute(stmt);
 SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 ```
 下面，是不使用预编译语句插入Organization数据：
-```c++
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -597,7 +597,7 @@ SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 为了简化，上面的代码没有进行错误检查，但是在生产环境中不要这样做。
 ### 5.3.6.更新数据
 下面使用`UPDATE`语句更新存储在集群中的部分人员的工资信息：
-```c++
+```cpp
 void AdjustSalary(SQLHDBC dbc, int64_t key, double salary)
 {
   SQLHSTMT stmt;
@@ -625,7 +625,7 @@ AdjustSalary(dbc, 1, 2500.0);
 ```
 ### 5.3.7.删除数据
 最后，使用`DELETE`语句删除部分记录：
-```c++
+```cpp
 void DeletePerson(SQLHDBC dbc, int64_t key)
 {
   SQLHSTMT stmt;
@@ -1057,7 +1057,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
  
 ## 5.6.错误码
 要获取错误码， 可以使用`SQLGetDiagRec()`函数，它会返回一个ANSI SQL标准定义的错误码字符串，比如：
-```c++
+```cpp
 SQLHENV env;
 SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &env);
 

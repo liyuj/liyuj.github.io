@@ -7,7 +7,7 @@ Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器�
 ### 14.2.1.启动Ignite Docker容器
 要运行Docker容器，需要拉取然后启动一个Docker映像，默认会下载最新的版本，但是在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到一个完整的清单。
 可以使用如下的命令拉取Ignite docker映像：
-```shell
+```bash
 # Pull latest version.
 sudo docker pull apacheignite/ignite
 
@@ -15,7 +15,7 @@ sudo docker pull apacheignite/ignite
 sudo docker pull apacheignite/ignite:{ignite-version}
 ```
 可以使用`docker run`来运行Ignite docker容器：
-```shell
+```bash
 # Run latest version.
 sudo docker run -it --net=host 
 -e "CONFIG_URI=$CONFIG_URI" 
@@ -43,7 +43,7 @@ apacheignite/ignite:{ignite-version}
 
 ### 14.2.2.示例
 要启动Ignite的docker容器，可以使用如下的命令：
-```shell
+```bash
 sudo docker run -it --net=host -e "CONFIG_URI=https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-cache.xml" apacheignite/ignite
 ```
 之后应该看到如下的输出日志：
@@ -112,15 +112,15 @@ IGNITE_VERSION属性可以视具体情况而定。
  - 复查然后运行实例；
  - 连接实例：[http://docs.aws.amazon.com/AWSEC2/latest/UserGuide](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstances.html);
  - 要查看执行的过程，需要知道容器的id，可以使用如下命令：
-```shell
+```bash
 sudo docker ps
 ```
  - 显示日志：
-```shell
+```bash
 sudo docker logs -f CONTAINER_ID
 ```
  - 进入docker容器：
-```shell
+```bash
 sudo docker exec -it container_id /bin/bash
 ```
 ## 14.4.Google计算部署
@@ -128,7 +128,7 @@ Ignite的映像可以通过Google计算控制台配置一个简单的Ignite集�
 ### 14.4.1.Google计算部署
 
  - 要导入[Ignite映像](https://storage.googleapis.com/ignite-media/ignite-google-image.tar.gz)，执行如下的命令：
-```shell
+```bash
 gcloud compute images create ignite-image \
    --source-uri gs://ignite-media/ignite-google-image.tar.gz
 ```
@@ -158,15 +158,15 @@ IGNITE_VERSION属性可以视具体情况而定。
  - 填写必要的属性然后运行实例；
  - 连接实例;
  - 要查看执行的过程，需要知道容器的id，可以使用如下命令：
-```shell
+```bash
 sudo docker ps
 ```
  - 下面的命令会显示日志：
-```shell
+```bash
 sudo docker logs -f CONTAINER_ID
 ```
  - 使用下面的命令可以进入docker容器：
-```shell
+```bash
 sudo docker exec -it container_id /bin/bash
 ```
 ## 14.5.Mesos部署
@@ -224,7 +224,7 @@ Apache Mesos是一个集群管理器，他提供了一个通用运行环境以�
 如果集群没有额外的约束，框架会试图占用Mesos集群的所有资源。
   
  - 通过curl等工具发送应用定义的POST请求给Marathon：
-```shell
+```bash
 curl -X POST -H "Content-type: application/json" --data-binary @marathon.json http://<marathon-ip>:8080/v2/apps/
 ```
  - 为了确保Apache Mesos框架正确部署，可以这么做，打开Marathon界面` http://<marathon-ip>:8080`，确保有一个名为`ignition`的应用，而且状态是`Running`；
@@ -324,7 +324,7 @@ IGNITE_VERSION=2.3.0
 ```
 
  - 运行应用；
-```shell
+```bash
 yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar cluster.properties
 ```
  - 为了确保应用正确部署，可以这样做：打开Yarn控制台`http://<hostname>:8088/cluster`，看名字为`Ignition`的应用是否工作正常；

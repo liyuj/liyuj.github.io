@@ -403,7 +403,7 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 >如果要使用G1垃圾收集器，因为经过了不断地改进，建议使用最新版本的Oracle JDK8或者OpenJDK8。
 
 如果G1无法满足应用场景或者使用的是JDK7，那么可以参照下面的基于CMS的配置，对于开始JVM调优是比较合适的（64核CPU的机器的10GB堆举例）：
-```shell
+```bash
 -server
 -Xms10g
 -Xmx10g
@@ -429,7 +429,7 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 **I/O问题**
 如果GC日志显示：“low user time, low system time, long GC pause”，那么一个原因就是GC线程因为内核等待I/O而卡住了，发生的原因基本是日志提交或者因为日志滚动的gzip导致改变的文件系统刷新。
 作为一个解决方案，可以增加页面刷新到磁盘的频率，从默认的30秒到5秒。
-```shell
+```bash
 sysctl –w vm.dirty_writeback_centisecs=500
   sysctl –w vm.dirty_expire_centisecs=500
 ```
@@ -437,23 +437,23 @@ sysctl –w vm.dirty_writeback_centisecs=500
 如果GC日志显示“low user time, high system time, long GC pause”，那么最可能的是内存的压力触发了空闲内存的交换和扫描。
 
  - 检查并且降低‘swappiness’的设定来保护堆和匿名内存
-```shell
+```bash
 sysctl –w vm.swappiness=10
 ```
  - 启动时给JVM增加–XX:+AlwaysPreTouch参数
  - 关闭NUMA zone-reclaim优化
-```shell
+```bash
 sysctl –w vm.zone_reclaim_mode=0
 ```
  - 如果使用RedHat发行版，关闭transparent_hugepage
-```shell
+```bash
 echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled
 echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
 ```
 **页面缓存**
 当应用与底层文件系统有大量的交互时，会导致内存大量使用页面缓存的情况，如果`kswapd`进程无法跟上页面缓存使用的页面回收，在后台应用就会面临当需要新页面时的直接回收导致的高延迟，这种情况不仅影响应用的性能，也可能导致长时间的GC暂停。
 要避免内存页面直接回收导致的长时间GC暂停，在Linux的最新内核版本中，可以通过`/proc/sys/vm/extra_free_kbytes`设置在`wmark_min`和`wmark_low`之间增加额外的字节来避免前述的延迟。
-```shell
+```bash
 sysctl -w vm.extra_free_kbytes=1240000
 ```
 要获得有关本章节讨论的话题的更多信息，可以参考这个[幻灯片](http://events.linuxfoundation.org/sites/events/files/lcjp13_moriya.pdf)。
@@ -461,7 +461,7 @@ sysctl -w vm.extra_free_kbytes=1240000
 当需要调试和解决与内存使用或者长时间GC暂停有关的问题时，本章节包括了一些可能有助于解决这些问题的信息。
 **内存溢出时获得堆现场**
 当JVM抛出`OutOfMemoryException`并且JVM进程应该重启时，需要给JVM配置增加如下的属性：
-```shell
+```bash
 -XX:+HeapDumpOnOutOfMemoryError
 -XX:HeapDumpPath=/path/to/heapdump
 -XX:OnOutOfMemoryError=“kill -9 %p”
@@ -469,7 +469,7 @@ sysctl -w vm.extra_free_kbytes=1240000
 ```
 **详细的垃圾收集统计**
 为了捕获有关垃圾收集的详细信息以及它的性能，可以给JVM配置增加如下的参数：
-```shell
+```bash
 -XX:+PrintGCDetails
 -XX:+PrintGCTimeStamps
 -XX:+PrintGCDateStamps
@@ -479,20 +479,20 @@ sysctl -w vm.extra_free_kbytes=1240000
 -Xloggc:/path/to/gc/logs/log.txt
 ```
 对于G1，建议设置如下的属性，他提供了很多符合人体工程学的、明确地保持-XX:+PrintGCDetails的详细信息：
-```shell
+```bash
 -XX:+PrintAdaptiveSizePolicy
 ```
 确保修改相应的路径和文件名，并且确保对于每个调用使用一个不同的文件名来避免从多个进程覆盖日志文件。
 **FlightRecorder设置**
 当需要调试性能或者内存问题，可以依靠Java的Flight Recorder工具，他可以持续地收集底层的详细的运行时信息，来启用事后的事故分析，要开启Flight Recorder，可以使用如下的设定：
-```shell
+```bash
 -XX:+UnlockCommercialFeatures
 -XX:+FlightRecorder
 -XX:+UnlockDiagnosticVMOptions
 -XX:+DebugNonSafepoints
 ```
 要开始记录衣蛾特定的Java进程，可以使用下面的命令作为一个示例：
-```shell
+```bash
 jcmd <PID> JFR.start name=<recordcing_name> duration=60s filename=/var/recording/recording.jfr settings=profile
 ```
 关于Java的Flight Recorder的完整信息，可以查看Oracle的官方文档。
@@ -507,11 +507,11 @@ jcmd <PID> JFR.start name=<recordcing_name> duration=60s filename=/var/recording
 fs.file-max = 300000
 ```
  - 执行如下命令使改变生效：
-```shell
+```bash
 cat /proc/sys/fs/file-max
 ```
 验证这个设置可以用：
-```shell
+```bash
 sysctl fs.file-max
 ```
 
@@ -521,7 +521,7 @@ sysctl fs.file-max
 > 对于打开文件描述符，一个合理的最大值是32768。
 
 使用如下命令来设置打开文件描述符的最大值和用户进程的最大值。
-```shell
+```bash
 ulimit -n 32768 -u 32768
 ```
 或者，也可以相应地修改如下文件：

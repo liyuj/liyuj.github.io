@@ -119,22 +119,22 @@ Ignite提供了一个[SQLLine](http://sqlline.sourceforge.net/)工具，它是�
 ### 6.2.1.接入集群
 在`IGNITE_HOME/bin`目录中，执行`sqlline.sh -u jdbc:ignite:thin:[host]`命令就可以使用SQLLine接入集群，注意要将`[host]`替换为实际的值，比如：
 .sh：
-```shell
+```bash
 ./sqlline.sh --verbose=true -u jdbc:ignite:thin://127.0.0.1/
 ```
 .bat：
-```shell
+```bash
 sqlline.bat --verbose=true -u jdbc:ignite:thin://127.0.0.1/
 ```
 输入`./sqlline.sh -h`或者`./sqlline.sh --help`可以看到可用的各种选项。
 **使用认证**
 如果集群打开了认证，那么在`IGNITE_HOME/bin`目录中，通过运行`jdbc:ignite:thin://[address]:[port];user=[username];password=[password]`命令SQLLine才可以接入集群。注意要将`[address]`，`[port]`，`[username]`和`[password]替换为实际值，比如：
 .sh：
-```shell
+```bash
 ./sqlline.sh --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;password=ignite"
 ```
 .bat：
-```shell
+```bash
 sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;password=ignite"
 ```
 >**通过bash接入时JDBC URL要加引号**
@@ -285,11 +285,11 @@ Zeppelin通过Ignite的SQL解释器可以从缓存中获得分布式的数据，
 为了通过Ignite解释器启动，需要用2个简单的步骤来安装Zeppelin：
 
  - 克隆Zeppelin的Git仓库：
-```shell
+```bash
 git clone https://github.com/apache/incubator-zeppelin.git
 ```
  - 从源代码构建：
-```shell
+```bash
 cd incubator-zeppelin
 mvn clean install -Dignite-version=1.7.0 -DskipTests
 ```
@@ -303,7 +303,7 @@ Ignite和Ignite解释器默认已经在Zeppelin中配置了。另外也可以将
 **注意**第一个解释器会成为默认值。
 
 Zeppelin安装配置好了之后，可以用如下的命令来启动：
-```shell
+```bash
 ./bin/zeppelin-daemon.sh start
 ```
 然后可以在浏览器中打开启动页(默认的启动页地址是[http://localhost:8080](http://localhost:8080)).
@@ -315,7 +315,7 @@ Zeppelin安装配置好了之后，可以用如下的命令来启动：
 ![Apache Ignite interpreters settings](https://files.readme.io/bsnliQ2Rgir1zYrqUIeb_Selection_002.png)
 **配置Ignite SQL 解释器**
 Ignite SQL解释器只需要`ignite.jdbc.url`属性，他的值是JDBC连接地址，在后面的示例中会用到`words`缓存，因此像下面这样编辑`ignite.jdbc.url`属性：
-```shell
+```bash
 jdbc:ignite://localhost:11211/words
 ```
 **配置Ignite解释器**
@@ -330,7 +330,7 @@ jdbc:ignite://localhost:11211/words
 ### 6.5.4.使用Ignite解释器
 **启动Ignite集群**
 在使用Zeppelin之前需要启动Ignite集群，下载[Ignite发行版](http://ignite.apache.org/download.cgi#binaries)然后解压压缩包：
-```shell
+```bash
 unzip apache-ignite-fabric-{version}-bin.zip -d <dest_dir>
 ```
 示例是以一个单独的Maven工程的形式提供的，因此要启动运行只需要简单地导入`<dest_dir>/apache-ignite-fabric-{version}-bin/pom.xml`文件到喜欢的IDE中即可。

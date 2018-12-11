@@ -856,7 +856,7 @@ Ignite Cassandra模块的一个好处是，无需关注Cassandra的表创建DDL�
 然而，因为严格的安全策略，某些环境中这是不可能的。这个场景的唯一解决方案就是向运维团队提供DDL脚本来创建所有必要的Cassandra键空间和表。
 这就是使用DDL生成工具的确切场景，它会从一个持久化配置中生成DDL。
 语法样例：
-```shell
+```bash
 java org.apache.ignite.cache.store.cassandra.utils.DDLGenerator /opt/dev/ignite/persistence-settings-1.xml /opt/dev/ignite/persistence-settings-2.xml
 ```
 输出样例：

@@ -64,29 +64,29 @@ singleTupleExtractorCls=my.company.MyExtractor
 可以将test中的`example-ignite.xml`文件作为一个简单缓存配置文件的示例。
 
  - 启动连接器，作为一个示例，像下面这样在独立模式中：
-```shell
+```bash
 bin/connect-standalone.sh myconfig/connect-standalone.properties myconfig/ignite-connector.properties
 ```
 **流程检查**
 要执行一个非常基本的功能检查，可以这样做：
 
  - 启动Zookeeper；
-```shell
+```bash
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
 
  - 启动Kafka服务：
-```shell
+```bash
 bin/kafka-server-start.sh config/server.properties
 ```
 
  - 为Kafka服务提供一些数据：
-```shell
+```bash
 bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test --property parse.key=true --property key.separator=,
 k1,v1
 ```
  - 启动连接器：
-```shell
+```bash
 bin/connect-standalone.sh myconfig/connect-standalone.properties myconfig/ignite-connector.properties
 ```
  - 检查缓存中的值，比如，通过REST API：
@@ -411,7 +411,7 @@ Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处
  - 创建一个Ignite配置文件（可以以modules/storm/src/test/resources/example-ignite.xml文件作为示例）并且确保他可以被流处理器访问；
  - 确保输入流处理器的键值数据通过名为`ignite`的属性指定（或者通过StormStreamer.setIgniteTupleField(...)也可以指定一个不同的）。作为一个示例可以看`TestStormSpout.declareOutputFields(...)`。
  - 为流处理器创建一个网络，带有所有依赖制作一个jar文件然后运行如下的命令：
-```shell
+```bash
 storm jar ignite-storm-streaming-jar-with-dependencies.jar my.company.ignite.MyStormTopology
 ```
 ## 7.7.Flink流处理器

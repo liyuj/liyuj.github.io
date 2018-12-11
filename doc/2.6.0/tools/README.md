@@ -76,11 +76,11 @@ serverURI=https://console.example.com:3001
 `http.proxyUsername`：用户名；
 `http.proxyPassword`：密码。
 Shell：
-```shell
+```bash
 JVM_OPTS="-Dhttp.proxyHost=<proxy-hostname> -Dhttp.proxyPort=<proxy-port> -Dhttp.proxyUsername=<proxy-username> -Dhttp.proxyPassword=<proxy-password>" ./ignite-web-agent.sh
 ```
 CMD：
-```shell
+```bash
 set JVM_OPTS=-Dhttp.proxyHost=<proxy-hostname> -Dhttp.proxyPort=<proxy-port> -Dhttp.proxyUsername=<proxy-username> -Dhttp.proxyPassword=<proxy-password>
 ./ignite-web-agent.bat
 ```
@@ -92,11 +92,11 @@ set JVM_OPTS=-Dhttp.proxyHost=<proxy-hostname> -Dhttp.proxyPort=<proxy-port> -Dh
 `https.proxyUsername`：用户名；
 `https.proxyPassword`：密码。
 Shell：
-```shell
+```bash
 JVM_OPTS="-Dhttps.proxyHost=<proxy-hostname> -Dhttps.proxyPort=<proxy-port> -Dhttps.proxyUsername=<proxy-username> -Dhttps.proxyPassword=<proxy-password>" ./ignite-web-agent.sh
 ```
 CMD：
-```shell
+```bash
 set JVM_OPTS=-Dhttps.proxyHost=<proxy-hostname> -Dhttps.proxyPort=<proxy-port> -Dhttps.proxyUsername=<proxy-username> -Dhttps.proxyPassword=<proxy-password>
 ./ignite-web-agent.bat
 ```
@@ -108,11 +108,11 @@ set JVM_OPTS=-Dhttps.proxyHost=<proxy-hostname> -Dhttps.proxyPort=<proxy-port> -
 `java.net.socks.username`：用户名；
 `java.net.socks.password`：密码。
 Shell:
-```shell
+```bash
 JVM_OPTS="-DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -Djava.net.socks.username=<proxy-username> -Djava.net.socks.password=<proxy-password>" ./ignite-web-agent.sh
 ```
 CMD:
-```shell
+```bash
 set JVM_OPTS= -DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -Djava.net.socks.username=<proxy-username> -Djava.net.socks.password=<proxy-password>
 ./ignite-web-agent.bat
 ```
@@ -126,18 +126,18 @@ set JVM_OPTS= -DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -D
 开始之前需要下载依赖：
 
  - 后台：
-```shell
+```bash
 cd $IGNITE_HOME/modules/web-console/backend
 npm install --no-optional
 ```
  - 前台：
-```shell
+```bash
 cd $IGNITE_HOME/modules/web-console/frontend
 npm install --no-optional
 ```
 ### 1.3.2.构建Ignite Web代理
 要从源代码构建Ignite的Web代理，需要在`$IGNITE_HOME`文件夹中执行如下的命令：
-```shell
+```bash
 mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests=true
 ```
 构建过程完成后，会在`$IGNITE_HOME/modules/web-console/web-agent/taget`中找到`ignite-web-agent-x.x.x.zip`。
@@ -336,7 +336,7 @@ server {
  - 下载然后解压Ignite的Web代理；
 ![](https://files.readme.io/037ccba-download-web-agent.png)
  - 打开命令行终端，假定当前在`ignite-web-agent`目录，运行如下的命令：
-```shell
+```bash
 ./ignite-web-agent.sh
 ```
 ![](https://files.readme.io/ca768c5-start-ignite-web-agent.png)
@@ -403,7 +403,7 @@ serverURI=https://console.example.com:3001
 
  - 在终端中，在Web代理的目录中使用`ignite-web-agent.{sh|bat}`脚本启动Web代理，如下：
 
-```shell
+```bash
 $ ./ignite-web-agent.sh
 ```
 ### 1.5.2.部署Web控制台

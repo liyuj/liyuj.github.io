@@ -5,7 +5,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 首先，`./control.sh`用于集群基线网络的激活/冻结以及节点的管理，具体可以看相关的章节。
 ### 4.1.2.缓存状态监控
 `./control.sh`提供了若干以`--cache list`开头的命令用于缓存的监控，这些命令可以看到部署的带有关系参数的缓存的列表，及其在缓存组内的分布，还有一个命令可以看已有的原子化的序列。
-```shell
+```bash
 # Displays list of all caches with affinity parameters.
 ./control.sh --cache list .*
 
@@ -26,7 +26,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 ```
 ### 4.1.3.事务争用检测
 `contention`命令可以观测到多个事务对于同一个键的锁竞争状态，如果遇到了长时间运行或者挂起的事务，该命令会很有用，比如：
-```shell
+```bash
 # Reports all keys that are point of contention for at least 5 transactions on all cluster nodes.
 ./control.sh --cache contention 5
 
@@ -56,7 +56,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 下面会更详细地描述一些使用场景：
 **分区校验和验证**
 即使主节点和备份节点之间的更新计数器和大小相等，也可能会出现主节点和备份节点因某些严重故障而出现差异的情况。`./control.sh`工具中的`idle_verify`命令会计算和比较整个集群的分区哈希值，然后如果有不同会进行报告。它可以指定一个需要验证的缓存列表，比如：
-```shell
+```bash
 # Checks partitions of all caches that their partitions actually contain same data.
 ./control.sh --cache idle_verify
 
@@ -84,7 +84,7 @@ Partition instances: [PartitionHashRecord [isPrimary=true, partHash=97595430, up
  2. 主索引指向的所有键值条目，都可以访问，主索引中的引用不应该出现在任何地方；
  3. 二级SQL索引引用的键值条目，主索引都可以访问。
 
-```shell
+```bash
 # Checks indexes of all caches on all cluster nodes.
 ./control.sh --cache validate_indexes
 

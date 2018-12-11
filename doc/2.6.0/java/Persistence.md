@@ -838,15 +838,15 @@ ignite.cluster().setBaselineTopology(2);
 这个定义和调整基线拓扑的命令，需要提供一个节点一致性ID，这是节点在第一次启动以及重启时复用后被赋予的一个唯一ID。要获取目前正在运行节点的一致性ID，可以在`$IGNITE_HOME/bin`目录下执行`./control.sh --baseline`命令，然后获得有关集群基线拓扑的各种信息，比如：
 
 Unix：
-```shell
+```bash
 ./control.sh --baseline
 ```
 Windows：
-```shell
+```bash
 ./control.bat --baseline
 ```
 输出大致如下：
-```shell
+```bash
 Cluster state: active
 Current topology version: 4
 
@@ -867,21 +867,21 @@ Other nodes:
 要将一组节点组成基线拓扑，需要使用`./control.sh --baseline set`命令，再加上节点的一致性ID列表：
 
 Unix：
-```shell
+```bash
 ./control.sh --baseline set consistentId1[,consistentId2,....,consistentIdN]
 ```
 Windows：
-```shell
+```bash
 ./control.bat --baseline set {consistentId1[,consistentId2,....,consistentIdN]}
 ```
 另外，也可以使用数字化的集群拓扑版本来配置基线：
 
 Unix：
-```shell
+```bash
 ./control.sh --baseline topologyVersion
 ```
 Windows：
-```shell
+```bash
 ./control.bat --baseline version {topologyVersion}
 ```
 在上面的命令中，需要将`topologyVersion`替换为实际的拓扑版本。
@@ -891,20 +891,20 @@ Windows：
 要往已有的基线拓扑中添加节点，需要使用`./control.sh --baseline add`命令，它会接受一个逗号分隔节点一致性ID的列表：
 
 Unix：
-```shell
+```bash
 ./control.sh --baseline add consistentId1[,consistentId2,....,consistentIdN]
 ```
 Windows：
-```shell
+```bash
 ./control.bat --baseline add {consistentId1[,consistentId2,....,consistentIdN]}
 ```
 比如下面的命令，会将一致性ID为`5d782f5e-0d47-4f42-aed9-3b7edeb527c0`的节点加入基线拓扑：
 Unix：
-```shell
+```bash
 ./control.sh --baseline add 5d782f5e-0d47-4f42-aed9-3b7edeb527c0
 ```
 Windows：
-```shell
+```bash
 ./control.bat --baseline add eb05ce3d-f246-4b7b-8e80-91155774c20b
 ```
 *从拓扑中删除节点*
@@ -912,21 +912,21 @@ Windows：
 要从拓扑中删除节点，可以使用`./control.sh --baseline remove`命令，语法如下：
 
 Unix：
-```shell
+```bash
 ./control.sh --baseline remove consistentId1[,consistentId2,....,consistentIdN]
 ```
 Windows：
-```shell
+```bash
 ./control.bat --baseline remove {consistentId1[,consistentId2,....,consistentIdN]}
 ```
 注意要被删除的节点首先应该停止，否则会抛出一个类似`Failed to remove nodes from baseline`这样的异常。下面的示例会显示如何删除一致性ID为`fdf68f13-8f1c-4524-9102-ac2f5937c62c`的节点（假定该节点已停止）：
 
 Unix：
-```shell
+```bash
 ./control.sh --baseline remove fdf68f13-8f1c-4524-9102-ac2f5937c62c
 ```
 Windows：
-```shell
+```bash
 ./control.bat --baseline remove eb05ce3d-f246-4b7b-8e80-91155774c20b
 ```
 **使用第三方工具激活**

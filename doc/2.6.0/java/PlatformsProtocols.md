@@ -6,7 +6,7 @@ Ignite提供了一个HTTP REST客户端，可以以REST的方式通过HTTP或者
 ### 12.2.1.入门
 要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在发布版中，这意味着将其从`IGNITE_HOME\libs\optional\`拷贝到`IGNITE_HOME\libs`中。
 不需要显式地进行配置，连接器就会自动启动，然后监听`8080`端口，可以通过`curl`检测其是否工作正常。
-```shell
+```bash
 curl http://localhost:8080/ignite?cmd=version
 ```
 **安全**
@@ -1411,7 +1411,7 @@ Ignite支持[Memcached](http://memcached.org/)协议，可以通过任何Memcach
 
  - 启动配置有缓存的Ignite，比如：
 
-```shell
+```bash
 bin/ignite.sh examples/config/example-cache.xml
 ```
 

@@ -192,11 +192,11 @@ Job job = new Job(conf, "word count");
 ### 2.3.4.运行Hadoop
 如何运行一个作业取决于对Hadoop如何进行配置。
 如果创建了独立的`core-site.xml`:
-```shell
+```bash
 hadoop --config [path_to_config] [arguments]
 ```
 注意使用定制的Hadoop启动器脚本可以轻易的引用一个单独的Hadoop配置目录和Ignite库，比如`hadoop-ignited`:
-```shell
+```bash
 export IGNITE_HOME=[path_to_ignite]
 
 # Add necessary Ignite libraries to the Hadoop client classpath:

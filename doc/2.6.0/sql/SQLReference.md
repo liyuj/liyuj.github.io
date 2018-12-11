@@ -683,7 +683,7 @@ INSERT INTO City(ID, Name, CountryCode, District, Population) VALUES (5,'Amsterd
 **示例**
 
 作为示例，可以使用最新的Ignite发行版自带的`world.sql`文件，该文件位于`[IGNITE_HOME]/examples/sql/`目录。可以执行SQLLine的`run`命令，如下：
-```shell
+```bash
 !run /apache_ignite_version/examples/sql/world.sql
 ```
 执行上述命令并且关闭连接后，所有数据会加载到集群并且可以查询到：
