@@ -97,7 +97,7 @@ module.exports = {
                         'ToolsAndAnalytics',
                         'JavaDeveloperGuide',
                         'PHPDeveloperGuide',
-                        'Management&Monitoring'
+                        'ManagementMonitoring'
                     ],
                     '/doc/integration/': [
                         '',
