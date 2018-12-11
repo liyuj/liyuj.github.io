@@ -214,7 +214,7 @@ try (Statement stmt = conn.createStatement()) {
 }
 ```
 ODBC：
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle.
@@ -315,7 +315,7 @@ conn.prepareStatement("INSERT INTO Person (id, name, city_id) VALUES (?, ?, ?)")
 }
 ```
 ODBC：
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle.
@@ -422,7 +422,7 @@ try (Statement stmt = conn.createStatement()) {
 }
 ```
 ODBC：
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle

@@ -262,7 +262,7 @@ driver=Apache Ignite
 ### 5.3.2.配置Ignite集群
 第一步，需要对集群节点进行配置，这个配置需要包含缓存的配置以及定义了`QueryEntities`的属性。如果应用（当前场景是ODBC驱动）要通过SQL语句进行数据的查询和修改，`QueryEntities`是必须的，或者，也可以使用DDL创建表。
 **DDL**：
-```
+```cpp
 SQLHENV env;
 
 // Allocate an environment handle

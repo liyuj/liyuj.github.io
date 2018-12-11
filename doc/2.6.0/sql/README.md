@@ -29,7 +29,7 @@ Connection conn = DriverManager.getConnection(
     "jdbc:ignite:thin://127.0.0.1/");
 ```
 **ODBC:**
-```
+```cpp
 // Combining connect string
 std::string connectStr = "DRIVER={Apache Ignite};SERVER=localhost;PORT=10800;SCHEMA=PUBLIC;";
 
@@ -50,15 +50,15 @@ ODBC连接也是接入本地localhost，端口是10800，具体可以查看`ODBC
 ./ignite.sh
 ```
 **Windows：**
-```bash
+```batch
 ignite.bat
 ```
 **.NET：**
-```bash
+```batch
 platforms\dotnet\bin\Apache.Ignite.exe
 ```
 **C++ Windows**
-```bash
+```batch
 modules\platforms\cpp\project\vs\x64\Release\ignite.exe
 ```
 **C++ Unix:**
@@ -104,7 +104,7 @@ try (Statement stmt = conn.createStatement()) {
 }
 ```
 **ODBC:**
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -161,7 +161,7 @@ try (Statement stmt = conn.createStatement()) {
 }
 ```
 **ODBC：**
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -237,7 +237,7 @@ conn.prepareStatement("INSERT INTO Person (id, name, city_id) VALUES (?, ?, ?)")
     stmt.executeUpdate();
 }
 **ODBC：**
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -348,7 +348,7 @@ try (Statement stmt = conn.createStatement()) {
 }
 ```
 **ODBC：**
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -405,7 +405,7 @@ try (Statement stmt = conn.createStatement()) {
 }
 ```
 **ODBC：**
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
@@ -443,7 +443,7 @@ try (Statement stmt = conn.createStatement()) {
 }
 ```
 **ODBC：**
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocate a statement handle
