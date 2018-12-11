@@ -96,7 +96,8 @@ module.exports = {
                         'ODBC',
                         'ToolsAndAnalytics',
                         'JavaDeveloperGuide',
-                        'PHPDeveloperGuide'
+                        'PHPDeveloperGuide',
+                        'Management&Monitoring'
                     ],
                     '/doc/integration/': [
                         '',
