@@ -2,11 +2,14 @@
 ## 5.1.ODBC驱动
 ### 5.1.1.摘要
 Ignite包括一个ODBC驱动，可以通过标准SQL查询和原生ODBC API查询和修改存储于分布式缓存中的数据。
+
 要了解ODBC的细节，可以参照[ODBC开发者参考](https://msdn.microsoft.com/en-us/library/ms714177.aspx)。
 Apache Ignite的ODBC驱动实现了ODBC API的3.0版。
 ### 5.1.2.集群配置
 ODBC驱动在Windows中被视为一个动态库，在Linux中被视为一个共享对象，应用不会直接加载它。作为替代，必要时它会使用一个驱动加载器API来加载和卸载ODBC驱动。
+
 Ignite的ODBC驱动在内部使用TCP协议来接入Ignite集群，这个连接在Ignite中是通过一个叫做`ClientListenerProcessor`的组件来处理的。除了ODBC连接，它还处理JDBC连接以及瘦客户端连接。当节点启动时，`ClientListenerProcessor`默认是开启的，通过下面的代码可以对参数进行调整：
+
 XML:
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -14,11 +17,7 @@ XML:
   <property name="clientConnectorConfiguration">
     <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration"/>
   </property>
-  ...IgniteConfiguration cfg = new IgniteConfiguration();
-...
-ClientConnectorConfiguration clientConnectorCfg = new ClientConnectorConfiguration();
-cfg.setClientConnectorConfiguration(clientConnectorCfg);
-...
+  ...
 </bean>
 ```
 Java：
@@ -27,7 +26,6 @@ IgniteConfiguration cfg = new IgniteConfiguration();
 ...
 ClientConnectorConfiguration clientConnectorCfg = new ClientConnectorConfiguration();
 cfg.setClientConnectorConfiguration(clientConnectorCfg);
-...
 ...
 ```
 配置了`ClientListenerProcessor`之后，就会以默认的配置启动，部分列举如下：
@@ -47,6 +45,7 @@ cfg.setClientConnectorConfiguration(clientConnectorCfg);
 |`isThinClientEnabled`|是否允许通过瘦客户端访问。|`true`|
 
 可以通过如下方式修改参数：
+
 XML：
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -96,18 +95,26 @@ Ignite的ODBC驱动官方在如下环境中进行了测试：
 
 ### 5.1.5.构建ODBC驱动
 在Windows中，Ignite现在提供了预构建的32位和64位驱动的安装器，因此如果只是想在Windows中安装驱动，那么直接看下面的安装驱动章节就可以了。
+
 对于Linux环境，安装之前还是需要进行构建，因此如果使用的是Linux或者使用Windows但是仍然想自己构建驱动，那么往下看。
 Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之前可以自行进行构建。关于如何获取和设置Ignite本身，可以参照[1.基本概念](https://www.zybuluo.com/liyuj/note/757803)章节。
+
 因为ODBC驱动是用C++编写的，因此它是作为Ignite C++的一部分提供的，并且依赖于一些C++库，具体点说依赖于`utils`和`binary`Ignite库，这就意味着，在构建ODBC驱动本身之前，需要先构建它们。
+
 这里假定使用的是二进制版本，如果使用的是源代码版本，那么需要将所有使用的`%IGNITE_HOME%\platforms\cpp`替换为`%IGNITE_HOME%\modules\platforms\cpp`。
+
 **在Windows上构建**
+
 如果要在Windows上构建ODBC驱动，需要MS Visual Studio 2010及以后的版本，一旦打开了Ignite方案`%IGNITE_HOME%\platforms\cpp\project\vs\ignite.sln`(或者`ignite_86.sln`,32位平台)，在方案浏览器中左击Ignite项目，然后选择“Build”，Visual Studio会自动地检测并且构建所有必要的依赖。
 
 > 如果使用VS 2015及以后的版本（MSVC14.0及以后），需要将`legacy_stdio_definitions.lib`作为额外的库加入`odbc`项目的链接器配置以构建项目，要在IDE中将库文件加入链接器，可以打开项目节点的上下文菜单，选择`Properties`，然后在`Project Properties`对话框中，选择`Linker`，然后编辑`Linker Input`，这时就可以将`legacy_stdio_definitions.lib`加入分号分割的列表中。
 
 构建过程结束之后，会生成`ignite.odbc.dll`文件，对于64位版本，位于`%IGNITE_HOME%\platforms\cpp\project\vs\x64\Release`中，对于32位版本，位于`%IGNITE_HOME%\platforms\cpp\project\vs\Win32\Release`中。
+
 **在Windows中构建安装器**
+
 为了简化安装，构建完驱动之后可能想构建安装器，Ignite使用[WiX工具包](http://wixtoolset.org/)来生成ODBC的安装器，因此需要下载并安装WiX，记得一定要把Wix工具包的`bin`目录加入PATH变量中。
+
 一切就绪之后，打开终端然后定位到`%IGNITE_HOME%\platforms\cpp\odbc\install`目录，按顺序执行如下的命令：
 64位：
 ```bash
@@ -120,9 +127,13 @@ candle.exe ignite-odbc-x86.wxs
 light.exe -ext WixUIExtension ignite-odbc-x86.wixobj
 ```
 完成之后，目录中会出现`ignite-odbc-amd64.msi`和`ignite-odbc-x86.msi`文件，然后就可以使用它们进行安装了。
+
 **在Linux上构建**
+
 在一个基于Linux的操作系统中，如果要构建及使用Ignite ODBC驱动，需要安装选择的ODBC驱动管理器，Ignite ODBC驱动已经使用[UnixODBC](http://www.unixodbc.org/)进行了测试。
+
 要构建驱动及其依赖，还需要额外的`GCC`,`G++`以及`Make`。
+
 如果所有必需的都安装好了，可以通过如下方式构建Ignite ODBC驱动：
 ```bash
 cd $IGNITE_HOME/platforms/cpp
@@ -142,7 +153,9 @@ whereis libignite-odbc
 要使用ODBC驱动，首先要在系统中进行注册，因此ODBC驱动管理器必须能找到它。
 **在Windows上安装**
 在32位的Windows上需要使用32位版本的驱动，而在64位的Windows上可以使用64位和32位版本的驱动，也可以在64位的Windows上同时安装32位和64位版本的驱动，这样32位和64位的应用都可以使用驱动。
+
 *使用安装器进行安装*
+
 >首先要安装微软的Microsoft Visual C++ 2010 Redistributable 32位或者64位包。
 
 这是最简单的方式，也是建议的方式，只需要启动指定版本的安装器即可：
@@ -151,8 +164,11 @@ whereis libignite-odbc
  - 64位：`%IGNITE_HOME%\platforms\cpp\bin\odbc\ignite-odbc-amd64.msi`
 
 *手动安装*
+
 要在Windows上手动安装驱动，首先要为驱动在文件系统中选择一个目录，选择一个位置后就可以把驱动放在哪并且确保所有的驱动依赖可以被解析，也就是说，他们要么位于`%PATH%`，要么和驱动位于同一个目录。
+
 之后，就需要使用`%IGNITE_HOME%/platforms/cpp/odbc/install`目录下的安装脚本之一，注意，要执行这些脚本，很可能需要管理员权限。
+
 X86：
 ```bash
 install_x86 <absolute_path_to_32_bit_driver>
@@ -162,7 +178,9 @@ AMD64:
 install_amd64 <absolute_path_to_64_bit_driver> [<absolute_path_to_32_bit_driver>]
 ```
 **在Linux上安装**
+
 要在Linux上构建和安装ODBC驱动，首先需要安装ODBC驱动管理器，Ignite ODBC驱动已经使用[UnixODBC](http://www.unixodbc.org/)进行了测试。
+
 如果已经构建完成并且执行了`make install`命令，`libignite-odbc.so`很可能会位于`/usr/local/lib`，要在ODBC驱动管理器中安装ODBC驱动并且可以使用，需要按照如下的步骤进行操作：
 
  - 确保链接器可以定位ODBC驱动的所有依赖。可以使用`ldd`命令像如下这样进行检查（假定ODBC驱动位于`/usr/local/lib`）:`ldd /usr/local/lib/libignite-odbc.so`，如果存在到其他库的无法解析的链接，需要将这些库文件所在的目录添加到`LD_LIBRARY_PATH`；
@@ -208,7 +226,9 @@ Ignite的ODBC驱动可以使用一些连接串/DSN参数，所有的参数都是
 
 ### 5.2.3.连接串示例
 下面的串，可以用于`SQLDriverConnect`ODBC调用，来建立与Ignite节点的连接。
+
 **认证**
+
 DRIVER={Apache Ignite};
 ADDRESS=localhost:10800;
 SCHEMA=somecachename;
@@ -218,6 +238,7 @@ SSL_MODE=[require|disable];
 SSL_KEY_FILE=<path_to_private_key>;
 SSL_CERT_FILE=<path_to_client_certificate>;
 SSL_CA_FILE=<path_to_trusted_certificates>
+
 **指定缓存**：
 ```
 DRIVER={Apache Ignite};ADDRESS=localhost:10800;CACHE=yourCacheName
@@ -254,6 +275,7 @@ driver=Apache Ignite
 像数据库一样访问Ignite。
 ### 5.3.1.摘要
 本章会详细描述如何接入Ignite集群，如何使用ODBC驱动执行各种SQL查询。
+
 在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](https://www.zybuluo.com/liyuj/note/612268#42%E5%88%86%E5%B8%83%E5%BC%8F%E6%9F%A5%E8%AF%A2)的字段。
 另外，从Ignite的1.8.0版本开始，ODBC驱动支持DML，这意味着通过ODBC连接不仅仅可以访问数据，还可以修改网格中的数据。
 
@@ -261,6 +283,7 @@ driver=Apache Ignite
 
 ### 5.3.2.配置Ignite集群
 第一步，需要对集群节点进行配置，这个配置需要包含缓存的配置以及定义了`QueryEntities`的属性。如果应用（当前场景是ODBC驱动）要通过SQL语句进行数据的查询和修改，`QueryEntities`是必须的，或者，也可以使用DDL创建表。
+
 **DDL**：
 ```cpp
 SQLHENV env;
@@ -395,6 +418,7 @@ SQLExecDirect(stmt, query3, SQL_NTS);
 
 ### 5.3.3.接入集群
 配置好然后启动集群，就可以从ODBC驱动端接入了。如何做呢？准备一个有效的连接串然后连接时将其作为一个参数传递给ODBC驱动就可以了。
+
 另外，也可以像下面这样使用一个预定义的DSN来接入。
 ```cpp
 SQLHENV env;
@@ -650,8 +674,9 @@ DeletePerson(dbc, 4);
 ```
 ### 5.3.8.通过参数数组进行批处理
 Ignite的ODBC驱动支持在DML语句中通过[参数数组](https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/using-arrays-of-parameters)进行批处理。
+
 还是使用上述插入数据的示例，但是只调用一次`SQLExecute`:
-```
+```cpp
 SQLHSTMT stmt;
 
 // Allocating a statement handle.
