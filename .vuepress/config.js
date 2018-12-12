@@ -120,7 +120,8 @@ module.exports = {
                         '',
                         'IgniteWebConsoleAbilities',
                         'VisorManagementConsole',
-                        'ControlScript'
+                        'ControlScript',
+                        'Informatica'
                     ],
                     '/': [
                         ''
