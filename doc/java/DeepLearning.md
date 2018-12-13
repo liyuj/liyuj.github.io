@@ -28,20 +28,26 @@ Ignite Dataset表示Apache Ignite和TensorFlow之间的集成，它允许TensorF
 ## 21.2.分布式训练
 ### 21.2.1.摘要
 分布式训练可以使用整个集群的计算资源，从而加速深度学习模型的训练。TensorFlow是一个机器学习框架，原生支持分布式神经网络训练、推理和其他计算。分布式神经网络训练的主要思想是能够计算每个数据分区(按照水平分区)上的损失函数(误差的平方)的梯度，然后将它们相加以获得整个数据集的损失函数梯度：
+
 ![](https://files.readme.io/532c408-HYR7wB.png)
+
 利用这种能力，可以计算数据实际所在节点的梯度，减少这些梯度，最后更新模型参数。这避免了节点之间的数据传输，从而防止了网络阻塞。
 
 Ignite使用水平分区在分布式集群中存储数据。当创建一个Ignite缓存（或SQL表）时，可以指定数据将被分区的分区数量。例如，如果Ignite集群由10台机器组成，并且创建了10个分区的缓存，那么每台机器将维护大约一个数据分区。
+
 ![](https://files.readme.io/b49dc17-rDyWGK.png)
 TensorFlow在Ignite之上的分布式训练，是基于分布式多工作节点训练的[独立客户端模式](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/distribute#standalone-client-mode)。这个模式假设已经有一个已启动TensorFlow服务端的工作节点集群，并且有一个实际包含模型代码的客户端。当客户端调用`tf.estimator.train_and_evaluate`时，TensorFlow会使用特定的分布策略将计算分布在工作节点中，以便计算最密集的部分在工作节点上执行。
 ### 21.2.2.Ignite上的独立客户端模式
 对于运行在Ignite之上的TensorFlow，最重要的目标之一是避免冗余数据传输，并利用数据分区，这是Ignite的核心概念。Ignite提供了所谓的零ETL，为了实现这个目标，在存储数据的节点上启动并维护了TensorFlow工作节点。下图说明了这个想法：
+
 ![](https://files.readme.io/c0e311e-UzY8PO.png)
+
 如图所示，Ignite集群中的MNIST缓存分布在8个服务端（每个服务端一个分区）上，除了维护数据分区之外，每个服务端还维护一个TensorFlow工作节点。每个工作节点配置为只能访问本地数据（这种“粘性”通过一组环境变量实现）。
 
 与Ignite上的TensorFlow中的经典独立客户端模式不同，客户端进程也是在Ignite集群内作为服务启动的。这允许Ignite在任何故障情况下或在数据再平衡事件之后自动重新开始训练。
 
 当初始化完成并配置好TensorFlow集群后，Ignite并不干扰TensorFlow的工作。只有在出现故障和数据再平衡事件的情况下，Ignite才重新启动集群。在正常操作模式中，可以认为整个架构如下图所示：
+
 ![](https://files.readme.io/625b4fd-msXc7e.png)
 ## 21.3.命令行工具
 为了允许用户在Ignite集群之上对构建一个TensorFlow集群进行控制，Ignite提供了一个简单的命令行工具，支持的命令下面会介绍。
@@ -103,4 +109,5 @@ ps命令会输出所有正在运行的TensorFlow集群信息。<br>
 :::
 ### 21.3.5.集群管理器
 Ignite有一个复杂的架构来维护TensorFlow集群，下图会对这个架构做一个浓缩：
+
 ![](https://files.readme.io/ef6cbdf-F6cs3h.png)
