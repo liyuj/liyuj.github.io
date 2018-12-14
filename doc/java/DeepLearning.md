@@ -36,6 +36,7 @@ Ignite Dataset表示Apache Ignite和TensorFlow之间的集成，它允许TensorF
 Ignite使用水平分区在分布式集群中存储数据。当创建一个Ignite缓存（或SQL表）时，可以指定数据将被分区的分区数量。例如，如果Ignite集群由10台机器组成，并且创建了10个分区的缓存，那么每台机器将维护大约一个数据分区。
 
 ![](https://files.readme.io/b49dc17-rDyWGK.png)
+
 TensorFlow在Ignite之上的分布式训练，是基于分布式多工作节点训练的[独立客户端模式](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/distribute#standalone-client-mode)。这个模式假设已经有一个已启动TensorFlow服务端的工作节点集群，并且有一个实际包含模型代码的客户端。当客户端调用`tf.estimator.train_and_evaluate`时，TensorFlow会使用特定的分布策略将计算分布在工作节点中，以便计算最密集的部分在工作节点上执行。
 ### 21.2.2.Ignite上的独立客户端模式
 对于运行在Ignite之上的TensorFlow，最重要的目标之一是避免冗余数据传输，并利用数据分区，这是Ignite的核心概念。Ignite提供了所谓的零ETL，为了实现这个目标，在存储数据的节点上启动并维护了TensorFlow工作节点。下图说明了这个想法：
