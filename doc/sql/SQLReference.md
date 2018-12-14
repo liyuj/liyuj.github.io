@@ -2833,3 +2833,47 @@ Ignite直接支持ANSI-99标准的主要特性，下面的表格会显示Ignite�
 |`F812`基本标志|暂不支持|
 |`S011`明确的数据类型|Ignite不支持下面的子特性：<br>　　S011–01：USER_DEFINED_TYPES视图|
 |`T321`基本SQL调用的存储过程|Ignite不支持下面的子特性：<br>　　T321–01：无过载的用户定义函数<br>　　T321–02：无过载的用户定义存储过程<br>　　T321–03：函数调用<br>　　T321–04：CALL语句<br>　　T321–05：RETURN语句<br>　　T321–06：ROUTINES视图<br>　　T321–07：PARAMETERS视图|
+
+## 2.12.事务
+Ignite支持下面的语句，用户可以对事务进行开启、提交和回滚。
+```sql
+BEGIN [TRANSACTION]
+
+COMMIT [TRANSACTION]
+
+ROLLBACK [TRANSACTION]   
+```
+
+ - `BEGIN`语句开启一个新的事务；
+ - `COMMIT`语句提交当前事务；
+ - `ROLLBACK`语句回滚当前事务。
+
+::: warning 限制
+事务内不支持DDL语句。
+:::
+
+### 2.12.1.描述
+`BEGIN`、`COMMIT`和`ROLLBACK`命令可用于处理SQL的事务，事务是一组有序的SQL操作，通过`BEGIN`语句开始，以`COMMIT`结束，事务内的操作要么全部成功，要么全部失败。
+
+`ROLLBACK [TRANSACTION]`语句会撤销上次`COMMIT`或者`ROLLBACK`命令之后的所有更新。
+### 2.12.2.示例
+在一个事务内，插入一条Person数据，更新City的population字段：
+```sql
+BEGIN;
+
+INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
+
+Update City SET population = population + 1 where id = 3;
+
+COMMIT;
+```
+回滚之前命令的更新：
+```sql
+BEGIN;
+
+INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
+
+Update City SET population = population + 1 where id = 3;
+
+ROLLBACK;
+```
