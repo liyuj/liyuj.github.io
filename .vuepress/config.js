@@ -98,7 +98,8 @@ module.exports = {
                         'ToolsAndAnalytics',
                         'JavaDeveloperGuide',
                         'PHPDeveloperGuide',
-                        'ManagementMonitoring'
+                        'ManagementMonitoring',
+                        'SqlKeyValue'
                     ],
                     '/doc/integration/': [
                         '',
