@@ -288,6 +288,66 @@ SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象�
 :::
 
 ## 3.6.模式
+Ignite有一组默认的模式，为了更好地对表进行管理，也允许用户创建自定义的模式。
+
+默认有两个可用的模式：
+
+ - `IGNITE`模式：它包含了一组与集群节点信息有关的系统视图，具体可以参考[系统视图](/doc/sql/ManagementMonitoring.md#_9-1-系统视图)章节；
+ - `PUBLIC`模式：未指定模式时的默认模式。
+
+在如下的场景中，可以创建自定义模式：
+
+ - Ignite根据配置创建模式，具体可以看下面的`自定义模式`章节；
+ - 通过编程接口或者XML配置，Ignite会为每个缓存创建一个模式。
+
+### 3.6.1.自定义模式
+自定义模式可以通过`IgniteConfiguration`的`sqlSchemas`属性进行配置，在启动集群之前可以在配置中指定一个模式的列表，然后运行时在这些模式中创建对象。
+
+下面的配置示例会创建两个模式：
+
+**XML**：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="sqlSchemas">
+        <list>
+            <value>MY_SCHEMA</value>
+            <value>MY_SECOND_SCHEMA</value>
+        </list>
+    </property>
+</bean>
+```
+**Java**：
+```java
+IgniteConfiguration cfg = new IgniteConfiguration();
+
+cfg.setSqlSchemas("MY_SCHEMA", "MY_SECOND_SCHEMA");
+```
+要通过比如JDBC驱动接入指定的模式，需要在连接串中指定模式名，如下所示：
+```
+jdbc:ignite:thin://127.0.0.1/MY_SCHEMA
+```
+### 3.6.2.PUBLIC模式
+`PUBLIC`模式用于当需要模式而又未指定时的默认值，比如，当通过JDBC接入集群而又未显式指定模式，就会接入`PUBLIC`模式。
+### 3.6.3.缓存和模式名
+当创建缓存时（通过配置或者可用的编程接口），可以通过SQL API来对缓存的数据进行维护，在SQL层面，每个缓存对应一个独立的模式，模式的名字等同于缓存的名字。
+
+简单来说，当通过SQL API创建了一个表，可以通过编程接口将其当做键-值缓存进行访问，而对应的缓存名，可以通过`CREATE TABLE`语句的`WITH`子句中的`CACHE_NAME`参数进行指定。
+```sql
+CREATE TABLE City (
+  ID INT(11),
+  Name CHAR(35),
+  CountryCode CHAR(3),
+  District CHAR(20),
+  Population INT(11),
+  PRIMARY KEY (ID, CountryCode)
+) WITH "backups=1, CACHE_NAME=City";
+```
+具体细节，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-CREATE TABLE)的相关内容。
+
+如果未使用这个参数，缓存名为如下的形式：
+```
+SQL_<SchemaName>_<TableName>
+```
 ## 3.7.SQL事务
 ### 3.7.1.摘要
 如果使用`TRANSACTIONAL_SNAPSHOT`模式，SQL的事务也是支持的。`TRANSACTIONAL_SNAPSHOT`模式是Ignite缓存的多版本并发控制（MVCC）的实现。
