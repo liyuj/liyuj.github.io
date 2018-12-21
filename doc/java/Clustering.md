@@ -850,7 +850,7 @@ ZooKeeper发现机制是为需要保证伸缩性和线性扩展的大规模Ignit
 
 ZooKeeper发现使用ZooKeeper作为同步的单点，然后将Ignite集群组织成一个星型拓扑，这时ZooKeeper集群位于中心，然后Ignite节点通过它进行发现事件的交换。
 
-![1](https://files.readme.io/2f3c49e-ZooKeeper_Discovery_SPI_-_ZooKeeper_Cluster.png)
+![](https://files.readme.io/2f3c49e-Zookeeper_Discovery_SPI_-_ZooKeeper_Cluster.png)
 
 值得一提的是，ZooKeeper发现仅仅是发现机制的一个实现，不会影响Ignite节点间的通信（可以看[2.8.网络配置](/doc/java/Clustering.md#_2-8-网络配置)章节）。节点之间一旦通过ZooKeeper发现机制彼此探测到，它们就会使用Communication SPI进行点对点的通信。
 #### 2.5.2.2.配置
