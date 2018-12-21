@@ -68,7 +68,7 @@ module.exports = {
                 sidebar: {
                     '/doc/java/': [
                         '',
-                        //'Clustering',
+                        'Clustering',
                         'Key-ValueDataGrid',
                         //'Security',
                         //'DataLoadingStreaming',
