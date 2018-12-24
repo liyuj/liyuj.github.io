@@ -71,7 +71,7 @@ module.exports = {
                         'DistributedDataStructures',
                         'ComputeGrid',
                         'ServiceGrid',
-                        //'MessagingEvents',
+                        'MessagingEvents',
                         //'DurableMemory',
                         //'ProductionReadiness',
                         //'PlatformsProtocols',

@@ -32,7 +32,7 @@ Ignite可以与各种主要的流处理技术和kuaig进行集成，比如Kafka�
 ### 5.2.2.IgniteDataStreamer
 数据流处理器是通过`IgniteDataStreamer`API定义的，他可以将大量的连续数据注入Ignite缓存。数据流处理器以可扩展和容错的方式在数据被发送到集群节点之前通过把批量数据放在一起以获得高性能。
 
-::: tip 提示
+::: tip 注意
 数据流处理器可以用于任何时候将大量数据载入缓存，包括启动时的预加载。
 :::
 
@@ -48,7 +48,7 @@ Ignite的原生持久化不需要在重启时将数据预热到内存，因此�
 
 在所有保存该缓存的每一个集群节点上`IgniteCache.loadCache()`方法会委托给`CacheStore.loadCache()`方法，如果只想在本地节点上加载，可以用`IgniteCache.localLoadCache()`方法。
 
-::: tip 提示
+::: tip 注意
 对于分区缓存以及像关系数据库这样的第三方存储，如果键没有映射到某个节点，不管是主节点还是备份节点，都会被自动忽略。
 这与Ignite持久化存储无关，因为每个节点只会存储属于它的数据。
 :::
@@ -154,7 +154,7 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   ...
 }
 ```
-::: tip 提示
+::: tip 注意
 注意键和分区的映射依赖于affinity函数中配置的分区数量(参照org.apache.ignite.cache.affinity.AffinityFunctio)。如果affinity函数配置改变，数据库中存储的分区ID必须相应地更新。
 :::
 
@@ -201,7 +201,7 @@ try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCac
 
 流接收器可以以并置的方式直接在缓存该数据条目的节点上对数据流做出反应，可以在数据进入缓存之前修改数据或者在数据上添加任何的预处理逻辑。
 
-::: tip 提示
+::: tip 注意
 注意`StreamReceiver`不会自动地将数据加入缓存，需要显式地调用任意的`cache.put(...)`方法。
 :::
 

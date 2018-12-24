@@ -307,7 +307,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 ### 7.4.1.摘要
 `ComputeTask`是Ignite对于简化内存内MapReduce的抽象，这个也非常接近于ForkJoin范式，纯粹的MapReduce从来不是为了性能而设计，只适用于处理离线的批量业务处理(比如Hadoop MapReduce)。然而，当对内存内的数据进行计算时，实时性低延迟和高吞吐量通常具有更高的优先级。同样，简化API也变得非常重要。考虑到这一点，Ignite推出了`ComputeTask` API，它是一个轻量级的MapReduce(或ForkJoin)实现。
 
-::: tip 提示
+::: tip 注意
 只有当需要对作业到节点的映射做细粒度控制或者对故障转移进行定制的时候，才使用`ComputeTask`。对于所有其他的场景，都需要使用`8.2.分布式闭包`中介绍的集群内闭包执行来实现。
 :::
 
@@ -320,7 +320,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 
 `map(...)`方法将作业实例化然后将他们映射到工作节点，这个方法收到任务要运行的集群节点的集合还有任务的参数，该方法会返回一个map，作业为键，映射的工作节点为值。然后作业会被发送到工作节点上并且在那里执行。
 
-::: tip 提示
+::: tip 注意
 关于`map(...)`方法的简化实现，可以参照下面的`ComputeTaskSplitAdapter`。
 :::
 
@@ -642,7 +642,7 @@ for (int i = 0; i < KEY_CNT; i++) {
 }
 ```
 
-::: tip 提示
+::: tip 注意
 `affinityCall(...)`或者`affinityRun(...)`方法都有重载的版本，可以锁定分区，避免作业跨多个缓存执行时，分区的退出，要做的仅仅是将缓存的名字传递给上述方法。
 :::
 
@@ -1232,7 +1232,7 @@ Ignite提供了如下的开箱即用的`DeploymentSpi`实现：
  - UriDeploymentSpi
  - LocalDeploymentSpi
 
-::: tip 提示
+::: tip 注意
 SPI的方法不要直接使用。SPI提供了子系统的内部视图以及由Ignite内部使用。在很少的情况下可能需要访问这个SPI的特定实现，可以通过`Ignite.configuration()`方法来获得这个SPI的一个实例，来检查他的配置属性或者调用其他的非SPI方法。再次注意从获得的实例中调用接口的方法可能导致未定义的行为而且明确不会得到支持。
 :::
 

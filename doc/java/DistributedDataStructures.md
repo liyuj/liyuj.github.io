@@ -146,7 +146,7 @@ ref.compareAndSet("WRONG EXPECTED VALUE", "someNewVal"); // Won't change.
 ```
 通过`IgniteAtomicLong`和`IgniteAtomicReference`提供的所有原子性操作都是同步的，一个原子性操作花费的时间依赖于与同一个原子性long类型的实例执行并发操作的节点数量，操作的强度以及网络的延时。
 
-::: tip 提示
+::: tip 注意
 `IgniteCache`接口有`putIfAbsent()`和`replace()`方法，他们和原子类型一样提供了同样的CAS功能。
 :::
 
@@ -260,7 +260,7 @@ for (int i = 0; i < 20; i++) {
 
 `atomicSequenceReserveSize`的默认值是`1000`，这个默认值可以通过`AtomicConfiguration`的`atomicSequenceReserveSize`属性进行修改。
 
-::: tip 提示
+::: tip 注意
 要了解各种原子性配置参数的详细信息，可以参照`6.2.原子性类型`章节，以及如何配置他们的示例。
 :::
 
