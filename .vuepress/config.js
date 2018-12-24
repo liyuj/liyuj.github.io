@@ -66,7 +66,7 @@ module.exports = {
                         '',
                         'Clustering',
                         'Key-ValueDataGrid',
-                        //'Security',
+                        'Security',
                         //'DataLoadingStreaming',
                         //'DistributedDataStructures',
                         //'ComputeGrid',
