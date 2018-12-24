@@ -27,7 +27,7 @@ module.exports = {
     evergreen: true,
     themeConfig: {
         lastUpdated: '最后更新时间：',
-        sidebarDepth: 2,
+        sidebarDepth: 3,
         locales: {
             '/': {
                 selectText: '最新版本',
@@ -59,10 +59,6 @@ module.exports = {
                     {
                         text: '博客',
                         link: 'https://my.oschina.net/liyuj'
-                    },
-                    {
-                        text: 'GridGain中国官网',
-                        link: 'http://www.gridgainchina.com'
                     }
                 ],
                 sidebar: {
@@ -80,8 +76,8 @@ module.exports = {
                         //'ProductionReadiness',
                         //'PlatformsProtocols',
                         //'Plugins',
-                        'Deployment',
-                        'MachineLearningGrid',
+                        //'Deployment',
+                        //'MachineLearningGrid',
                         //'Persistence',
                         //'TestsAndBenchmarking',
                         //'Metrics',
@@ -91,12 +87,12 @@ module.exports = {
                     ],
                     '/doc/sql/': [
                         '',
-                        'SQLReference',
-                        'Architecture',
+                        //'SQLReference',
+                        //'Architecture',
                         //'JDBC',
-                        'ODBC',
+                        //'ODBC',
                         //'ToolsAndAnalytics',
-                        'JavaDeveloperGuide',
+                        //'JavaDeveloperGuide',
                         //'PHPDeveloperGuide',
                         'ManagementMonitoring',
                         'SqlKeyValue'
@@ -160,10 +156,6 @@ module.exports = {
                     {
                         text: '博客',
                         link: 'https://my.oschina.net/liyuj'
-                    },
-                    {
-                        text: 'GridGain中国官网',
-                        link: 'http://www.gridgainchina.com'
                     }
                 ],
                 sidebar: {

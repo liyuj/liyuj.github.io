@@ -342,7 +342,7 @@ CREATE TABLE City (
   PRIMARY KEY (ID, CountryCode)
 ) WITH "backups=1, CACHE_NAME=City";
 ```
-具体细节，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-CREATE TABLE)的相关内容。
+具体细节，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的相关内容。
 
 如果未使用这个参数，缓存名为如下的形式：
 ```

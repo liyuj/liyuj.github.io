@@ -26,7 +26,7 @@ CREATE TABLE City (
 ```
 注意，在语句的后面，通过`KEY_TYPE`和`VALUE_TYPE`分别指定了键类和值类。如果没指定这些参数，Ignite会使用默认的名字创建这些类。
 
-如果想进一步了解与缓存的名字及对应的键是如何生成的更多信息，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-CREATE TABLE)的文档。
+如果想进一步了解与缓存的名字及对应的键是如何生成的更多信息，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的文档。
 ### 10.1.2.使用键-值API
 `IgniteCache`接口提供了一组方法，可用于通过键-值API访问缓存。比如，`IgniteCache.get(key)`可以获得指定键对应的值，在下面的示例中，获取了`Amsterdam`记录并更新了`POPULATION`字段，该代码在客户端执行（数据从服务端获得）。
 ```java
