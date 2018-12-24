@@ -27,7 +27,7 @@ module.exports = {
     evergreen: true,
     themeConfig: {
         lastUpdated: '最后更新时间：',
-        sidebarDepth: 3,
+        sidebarDepth: 2,
         locales: {
             '/': {
                 selectText: '最新版本',
@@ -67,10 +67,10 @@ module.exports = {
                         'Clustering',
                         'Key-ValueDataGrid',
                         'Security',
-                        //'DataLoadingStreaming',
-                        //'DistributedDataStructures',
-                        //'ComputeGrid',
-                        //'ServiceGrid',
+                        'DataLoadingStreaming',
+                        'DistributedDataStructures',
+                        'ComputeGrid',
+                        'ServiceGrid',
                         //'MessagingEvents',
                         //'DurableMemory',
                         //'ProductionReadiness',
