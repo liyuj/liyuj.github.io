@@ -72,7 +72,7 @@ module.exports = {
                         'ComputeGrid',
                         'ServiceGrid',
                         'MessagingEvents',
-                        //'DurableMemory',
+                        'DurableMemory',
                         //'ProductionReadiness',
                         //'PlatformsProtocols',
                         //'Plugins',
