@@ -73,7 +73,7 @@ module.exports = {
                         'ServiceGrid',
                         'MessagingEvents',
                         'DurableMemory',
-                        //'ProductionReadiness',
+                        'ProductionReadiness',
                         //'PlatformsProtocols',
                         //'Plugins',
                         //'Deployment',

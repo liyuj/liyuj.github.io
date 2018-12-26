@@ -148,7 +148,7 @@ cfg.setDataStorageConfiguration(psCfg);
 
 //Additional parameters.
 ```
-### 16.2.3.WAL激活和非激活
+### 16.2.3.WAL激活和冻结
 WAL是Ignite持久化的一个基本组件，会在集群故障时保证持久性和一致性。
 
 但是，有时因为性能原因禁用WAL也是合理的，比如，通常在数据初始加载时禁用WAL，然后在预加载完毕后再打开它。
@@ -156,7 +156,7 @@ WAL是Ignite持久化的一个基本组件，会在集群故障时保证持久�
 通过`IgniteCluster.enableWal(cacheName)`和`IgniteCluster.disableWal(cachename)`方法可以打开和关闭WAL。如果要检查某个缓存是否开启了WAL，可以使用`IgniteCluster.isWalEnabled(cacheName)`。
 
 如果使用SQL，可以使用ALTER TABLE命令打开/关闭WAL。
-### 16.2.4.禁用WAL归档
+### 16.2.4.WAL存档
 有时可能想要禁用WAL归档，比如减少与将WAL段复制到归档文件有关的开销，当Ignite将数据写入WAL段的速度快于将段复制到归档文件的速度时，这样做就有用，因为这样会导致I/O瓶颈，从而冻结节点的操作，如果遇到了这样的问题，就可以尝试关闭WAL归档。
 
 要关闭归档，可以将WAL路径和WAL归档路径配置为同一个值，这时Ignite就不会将段复制到归档文件，而是周期性的按顺序覆盖活动段。
