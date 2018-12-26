@@ -74,7 +74,7 @@ module.exports = {
                         'MessagingEvents',
                         'DurableMemory',
                         'ProductionReadiness',
-                        //'PlatformsProtocols',
+                        'PlatformsProtocols',
                         //'Plugins',
                         //'Deployment',
                         //'MachineLearningGrid',
