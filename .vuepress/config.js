@@ -19,14 +19,18 @@ module.exports = {
         },
     },
     locales: {
-        '/': {            
-        },
-        '/doc/2.6.0/': {            
-        }
+        '/': {},
+        '/doc/2.6.0/': {}
     },
     evergreen: true,
     themeConfig: {
         lastUpdated: '最后更新时间：',
+        serviceWorker: {
+            updatePopup: {
+                message: "内容有更新。",
+                buttonText: "刷新"
+            }
+        },
         sidebarDepth: 2,
         locales: {
             '/': {
@@ -75,8 +79,8 @@ module.exports = {
                         'DurableMemory',
                         'ProductionReadiness',
                         'PlatformsProtocols',
-                        //'Plugins',
-                        //'Deployment',
+                        'Plugins',
+                        'Deployment',
                         //'MachineLearningGrid',
                         //'Persistence',
                         //'TestsAndBenchmarking',

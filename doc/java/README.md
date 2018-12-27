@@ -1153,11 +1153,11 @@ discoverySpi.setClientReconnectDisabled(true);
 cfg.setDiscoverySpi(discoverySpi);
 ```
 ### 1.7.7.客户端节点强制服务端模式
-客户端节点需要网络中有存活的服务端节点才能启动。
+客户端节点需要网络中有在线的服务端节点才能启动。
 
 然而，如果在没有运行中的服务端节点时还要启动一个客户端节点，可以通过如下方式在客户端节点强制服务端模式发现。
 
-如果不管服务端节点是否存活都要启动客户端节点非常必要，可以以如下的方式在客户端强制服务端模式发现：
+如果不管服务端节点是否在线都要启动客户端节点非常必要，可以以如下的方式在客户端强制服务端模式发现：
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 

@@ -917,7 +917,7 @@ catch (CacheException e) {
 }
 ```
 `TransactionDeadlockException`里面包含了有用的信息，有助于找到导致死锁的原因。
-```text
+```
 Deadlock detected:
 
 K1: TX1 holds lock, TX2 waits lock.
@@ -1260,9 +1260,9 @@ cfg.setCacheConfiguration(cacheCfg);
 **策略**
 Ignite支持如下的[分区丢失策略](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/cache/PartitionLossPolicy.html)：
 
- - `READ_ONLY_SAFE`：所有缓存/表的写操作都会抛出异常，存活分区的读操作是可以的，丢失分区的读操作会抛出异常；
+ - `READ_ONLY_SAFE`：所有缓存/表的写操作都会抛出异常，在线分区的读操作是可以的，丢失分区的读操作会抛出异常；
  - `READ_ONLY_ALL`：包括丢失的分区，所有分区都是可以读的，任意分区的写操作都会抛出异常，从丢失的分区读取数据的结果是未定义的，而且不同的节点返回结果可能不同；
- - `READ_WRITE_SAFE`：存活分区的读写都是可以的，丢失分区的读写操作都会抛出异常；
+ - `READ_WRITE_SAFE`：在线分区的读写都是可以的，丢失分区的读写操作都会抛出异常；
  - `READ_WRITE_ALL`：所有的读写都会继续进行，就像所有分区都处于一致状态那样（就像没有分区丢失），从丢失分区的读操作是未定义的，并且不同节点返回结果可能不同；
  - `IGNORE`：该模式不会标记丢失的分区为丢失状态，假定没有发生分区丢失，并且立即清除分区丢失状态。从技术上来说，分区不会被加入`lostPartitions`列表，这是与`READ_WRITE_ALL`模式的主要区别，`IGNORE`模式为默认模式。
 

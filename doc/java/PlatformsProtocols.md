@@ -278,8 +278,7 @@ http://host:port/ignite?cmd=cache&cacheName=partionedCache&destId=8daab5ea-af83-
 ```
 |名称|类型|描述|示例|
 |---|---|---|---|
-|response|jsonObject|JSON对象包含了缓存的指标，比如创建时间，读计数等|{
-"createTime": 1415179251551, "hits": 0, "misses": 0, "readTime":1415179251551, "reads": 0,"writeTime": 1415179252198, "writes": 2
+|response|jsonObject|JSON对象包含了缓存的指标，比如创建时间，读计数等|{"createTime": 1415179251551, "hits": 0, "misses": 0, "readTime":1415179251551, "reads": 0,"writeTime": 1415179252198, "writes": 2
 }|
 
 #### 12.2.3.7.cas

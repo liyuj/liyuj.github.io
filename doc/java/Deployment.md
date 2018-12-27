@@ -1,11 +1,14 @@
 # 14.部署
 ## 14.1.部署
 Ignite对部署没有要求，可以非常容易地部署到私有主机或者任意的云环境，比如，Ignite可以独立部署，也可以部署在Kubernetes或者Docker容器中，还有Apache Mesos以及Hadoop Yarn。它可以运行在物理主机中，也可以部署在虚拟机中。
+
 ![](https://files.readme.io/8a65d4a-ignite-deploy.png)
+
 ## 14.2.Docker部署
 Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器，Docker会自动下载Ignite发布版，将代码部署进Ignite以及配置节点，他还可以自动启动配置好的Ignite节点，这样的集成方式，使得通过简单地重启Ignite的Docker容器就可以部署新的代码。
 ### 14.2.1.启动Ignite Docker容器
 要运行Docker容器，需要拉取然后启动一个Docker映像，默认会下载最新的版本，但是在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到一个完整的清单。
+
 可以使用如下的命令拉取Ignite docker映像：
 ```bash
 # Pull latest version.
@@ -47,6 +50,7 @@ apacheignite/ignite:{ignite-version}
 sudo docker run -it --net=host -e "CONFIG_URI=https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-cache.xml" apacheignite/ignite
 ```
 之后应该看到如下的输出日志：
+
 ![](https://files.readme.io/ryYtMcSCuGiyVcXN1GCw_dock_git_repo.png)
 
 ## 14.3.AWS部署
@@ -89,7 +93,9 @@ EU-CENTRAL
 </tr>
 </table>
 或者，也可以使用`Apache Ignite`关键字在`Community AMIs`中搜索映像：
+
 ![](https://files.readme.io/faf5b14-search.png)
+
  - 选择一个`Instance Type`;
  - 打开`Configure Instance`并且展开`Advanced Details`;
  - 添加下面的任意配置参数；
@@ -103,10 +109,12 @@ EU-CENTRAL
 |`IGNITE_VERSION`|Ignite的版本|`latest`|2.1.0|
 
 如下图所示：
+
 ![](https://files.readme.io/0c08e64-advance_details.png)
 
-> **首选Ignite版本**
+::: tip 首选Ignite版本
 IGNITE_VERSION属性可以视具体情况而定。
+:::
 
  - 在`Tag Instance`，设置`name`标签，比如`ignite-node`;
  - 复查然后运行实例；
@@ -138,9 +146,11 @@ gcloud compute images create ignite-image \
  - 打开`Compute->Compute Engine->VM`实例，然后点击`New instance`；
  - 点击`Boot disk`的`Change`按钮；
  - 打开`Custom images`，然后选择已导入的映像，在下面的截图中，可以看到名为`ignite-name`的映像；
+
 ![](https://files.readme.io/e02e235-choose_image.png)
 
  - 点击`Management, disk, networking, access & security options `，然后可以添加任意的配置参数：
+
 |名称|描述|默认|示例|
 |---|---|---|---|
 |`CONFIG_URI`|Ignite配置文件的URL（也可以相对于类路径的META-INF文件夹），下载的配置文件会保存于./ignite-config.xml|无|https://raw.githubusercontent.com/apache/ignite/ master/examples/config/example-cache.xml|
@@ -150,10 +160,12 @@ gcloud compute images create ignite-image \
 |`IGNITE_VERSION`|Ignite的版本|`latest`|1.7.0|
 
 如下图所示：
+
 ![](https://files.readme.io/1945104-metadata.png)
 
-> **首选Ignite版本**
+::: tip 首选Ignite版本
 IGNITE_VERSION属性可以视具体情况而定。
+:::
 
  - 填写必要的属性然后运行实例；
  - 连接实例;
@@ -172,7 +184,9 @@ sudo docker exec -it container_id /bin/bash
 ## 14.5.Mesos部署
 ### 14.5.1.摘要
 Apache Ignite支持在Mesos集群上调度和运行Ignite节点。
+
 Apache Mesos是一个集群管理器，他提供了一个通用运行环境以及所有的必要资源来部署、运行和管理分布式应用。他对资源的管理和隔离有助于充分利用服务器资源。
+
 要了解Apache Mesos的更多信息，请参照：[http://mesos.apache.org/](http://mesos.apache.org/)
 
 ### 14.5.2.Ignite Mesos框架
@@ -184,12 +198,15 @@ Apache Mesos是一个集群管理器，他提供了一个通用运行环境以�
 ### 14.5.3.运行Ignite Mesos框架
 要运行Ignite Mesos框架需要配置好的正在运行的Apache Mesos集群，如果需要如何Apache Mesos集群的信息，请参照：[https://docs.mesosphere.com/getting-started/datacenter/install/](https://docs.mesosphere.com/getting-started/datacenter/install/)。
 
-> 确保主节点和从节点监听正确的IP地址，否则无法保证Mesos集群能正常工作。
+::: warning 注意
+确保主节点和从节点监听正确的IP地址，否则无法保证Mesos集群能正常工作。
+:::
 
 **通过Marathon运行框架**
+
 目前，建议的做法是通过Marathon运行框架。
 
- - 安装Marathon，参照：[https://docs.mesosphere.com/getting-started/datacenter/install/](https://docs.mesosphere.com/getting-started/datacenter/install/)marathon章节；
+ - 安装Marathon，参照：[https://mesosphere.github.io/marathon/docs/](https://mesosphere.github.io/marathon/docs/)marathon章节；
  - 下载Apache Ignite然后将`libs\optional\ignite-mesos\ignite-mesos-<ignite-version>-jar-with-dependencies.jar`上传到任意一个云存储（比如Amazon S3yun）；
  - 拷贝下面的应用定义（JSON格式）然后保存成`marathon.json`文件，然后对参数做必要的修改；
 ```json
@@ -246,7 +263,7 @@ java -jar ignite-mesos-<ignite-version>-jar-with-dependencies.jar
 java -jar ignite-mesos-<ignite-version>-jar-with-dependencies.jar properties.prop
 ```
 其中`properties.prop`是一个属性文件，如果不提供配置文件那么框架会试图占用Mesos集群的所有资源，下面是一个例子：
-```
+```properties
 # The number of nodes in the cluster.
 IGNITE_NODE_COUNT=1
 # Mesos ZooKeeper URL to locate leading master.
@@ -293,7 +310,9 @@ IGNITE_VERSION=1.7.0
 ## 14.6.Yarn部署
 ### 14.6.1.摘要
 与Yarn的集成可以支持在Yarn集群上调度和运行Apache Ignite节点。
+
 Yarn是一个资源管理器，他提供了一个包括所有必要资源的通用的运行环境来进行分布式应用的部署，运行和管理，他对资源的管理和隔离有助于充分利用服务器资源。
+
 要了解Yarn的信息，请参照[http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html)。
 
 ### 14.6.2.Ignite Yarn应用
@@ -309,7 +328,7 @@ Yarn是一个资源管理器，他提供了一个包括所有必要资源的通�
  - 下载Ignite；
  - 配置属性文件，修改必要的参数，可以参照下面的`配置`章节：
 
-```
+```properties
 # The number of nodes in the cluster.
 IGNITE_NODE_COUNT=2
  
@@ -351,3 +370,33 @@ yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar clu
 |`IGNITE_VERSION`|节点上运行的Ignite版本|latest|1.0.5|
 |`IGNITE_PATH`|到Ignite构建的hdfs路径，当yarn集群运行在内网无法访问互联网时，这个属性很有用。|无|/ignite/apache-ignite-fabric-1.7.0-bin.zip|
 |`IGNITE_JVM_OPTS`|JVM参数|无|-XX:+PrintGC|
+
+## 14.7.VMWare部署
+### 14.7.1.摘要
+Ignite可以部署于VMWare管理的虚拟和云环境，没有什么和VMWare有关的特性，不过建议将Ignite实例绑定到一个单一专用的主机，这样可以：
+
+ - 避免当Ignite实例与其他应用程序争用主机资源时，导致Ignite集群的性能出现峰值；
+ - 确保高可用，如果一台主机宕机并且有两个或者多个Ignite服务端节点绑定到上面，那么可能导致数据丢失。
+
+下面的内容会说明和Ignite节点迁移有关的vMotion的使用。
+### 14.7.2.使用vMotion进行节点迁移
+vMotion可以将一个在线的实例从一台主机迁移到另一台，但是迁移之后Ignite依赖的一些基本要求要得到满足：
+
+ - 新主机有相同的内存状态；
+ - 新主机有相同的磁盘状态（或新主机使用相同的磁盘）；
+ - IP地址、可用的端口以及其它的网络参数没有变化；
+ - 所有的网络资源可用，TCP连接没有中断。
+
+如果vMotion按照上述规则设置并工作，则Ignite节点将正常工作。
+
+不过vMotion迁移将影响Ignite实例的性能。在传输过程中，许多资源（主要是CPU和网络）将服务于vMotion的需要。
+
+为了避免集群一段时间内的性能下降甚至无响应，建议如下：
+
+ - 在Ignite集群的低活跃和负载期间执行迁移。这确保了更快的传输，同时对集群性能影响最小；
+ - 避免自动迁移（DRS的完全自动迁移），让IT专家决定迁移Ignite实例的最佳时机；
+ - 如果必须迁移多个节点，则需要一个个按顺序地执行节点的迁移；
+ - 将`IgniteConfiguration.failureDetectionTimeout`参数设置为高于Ignite实例的可能停机时间的值。这是因为当剩下一小块状态要传输时，vMotion将停止Ignite实例的CPU。假定传输该数据块需要`X`时间，那么`IgniteConfiguration.failureDetectionTimeout`必须大于`X`；否则节点将从集群中删除；
+ - 使用高吞吐量网络。最好vMotion迁移器和Ignite集群使用不同的网络来避免网络饱和；
+ - 优先选择内存较少的节点，较小内存的Ignite实例确保更快的vMotion迁移，更快的迁移确保Ignite集群更稳定的操作；
+ - 如果业务允许，甚至可以考虑在Ignite实例停机时进行迁移。假设集群中的其它节点上有数据的备份副本，则可以先将该节点关闭，然后在vMotion迁移结束后恢复该节点，这样和在线迁移相比，可能总体性能更好（集群的性能和vMotion传输时间）。
