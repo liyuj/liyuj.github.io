@@ -81,7 +81,7 @@ module.exports = {
                         'PlatformsProtocols',
                         'Plugins',
                         'Deployment',
-                        //'MachineLearningGrid',
+                        'MachineLearning',
                         //'Persistence',
                         //'TestsAndBenchmarking',
                         //'Metrics',
