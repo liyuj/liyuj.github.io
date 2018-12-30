@@ -1444,7 +1444,7 @@ Ignition.start(cfg);
 #### 3.8.1.8.集成JTA
 Ignite可以通过`TransactionConfiguration#setTxManagerFactory`方法配置一个JTA事务管理器搜索类，事务管理器工厂是一个工厂，他给Ignite提供了一个JTA事务管理器的实例。
 
-Ignite提供了一个`CacheJndiTmFactory`工厂，他是一个通过JNDI名字查找事务管理器的开箱即用的事务管理器工厂实现。
+Ignite提供了一个`CacheJndiTmFactory`工厂，他是一个通过JNDI名字查找事务管理器的事务管理器工厂实现。
 
 设置了之后，在事务中的每一次缓存操作，Ignite都会检查是否存在一个进行中的JTA事务。如果JTA事务开启了，Ignite也会开启一个事务然后通过他自己的一个`XAResource`的内部实现来将其加入JTA事务，Ignite事务会准备，提交或者干脆回滚相应的JTA事务。
 下面是一个在Ignite中使用JTA事务管理器的示例：

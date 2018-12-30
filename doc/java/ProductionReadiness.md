@@ -200,7 +200,7 @@ Ignition.start(cfg);
 ### 11.4.2.与原生持久化有关的调优
 本章节包含了开启Ignite原生持久化之后的建议。
 
-**页面大小**
+#### 11.4.2.1.页面大小
 
 Ignite的页面大小（`MemoryConfiguration.pageSize`）不要小于存储设备（SSD、闪存等）的页面大小以及操作系统缓存页面的大小。
 
@@ -238,7 +238,7 @@ cfg.setMemoryConfiguration(memCfg);
 // Starting the node.
 Ignition.start(cfg);
 ```
-**为WAL使用单独的磁盘设备**
+#### 11.4.2.2.为WAL使用单独的磁盘设备
 
 考虑为Ignite原生持久化的分区和索引文件以及WAL使用单独的磁盘设备。Ignite会主动地写入分区/索引文件以及WAL，因此，如果为每个使用单独的物理磁盘，可以将写入吞吐量增加一倍，下面的示例会显示如何实践：
 
@@ -294,17 +294,17 @@ storeCfg.setWalArchivePath("/wal/archive");
 Ignition.start(cfg);
 ```
 
-**增加WAL段大小**
+#### 11.4.2.3.增加WAL段大小
 
 WAL段的默认大小（64MB）在高负载情况下可能是低效的，因为它导致WAL在段之间频繁切换，并且切换是有点昂贵的操作（参照[预写日志](/doc/java/Persistence.md#_16-2-预写日志)的工作原理）。将段大小设置为较大的值（最多2GB）可能有助于减少切换操作的次数，不过这将增加预写日志的占用空间。
 
-**调整WAL模式**
+#### 11.4.2.4.调整WAL模式
 
 考虑其它WAL模式替代默认模式。每种模式在节点故障时提供不同程度的可靠性，并且可靠性与速度成反比，即，WAL模式越可靠，则速度越慢。因此，如果具体业务不需要高可靠性，那么可以切换到可靠性较低的模式。
 
 具体可以看[WAL模式](/doc/java/Persistence.md#_16-2-2-wal模式)的相关内容。
 
-**页面写入优化**
+#### 11.4.2.5.页面写入优化
 
 Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页面。这个进程在后台进行，对应用没有影响。
 
@@ -349,7 +349,7 @@ storeCfg.setWriteThrottlingEnabled(true);
 // Starting the node.
 Ignition.start(cfg);
 ```
-**检查点缓冲区大小**
+#### 11.4.2.6.检查点缓冲区大小
 
 前述章节中描述的检查点缓冲区大小，是检查点处理的触发器之一。
 
@@ -411,7 +411,7 @@ Ignition.start(cfg);
 当脏页面数超过`总页数*2/3`或者达到`DataRegionConfiguration.checkpointPageBufferSize`时，检查点处理就会被触发。但是如果使用了页面写入优化，`DataRegionConfiguration.checkpointPageBufferSize`就会失效，因为算法的原因，不会达到这个值。
 :::
 
-**启用直接I/O**
+#### 11.4.2.7.启用直接I/O
 
 通常当应用访问磁盘上的数据时，操作系统拿到数据后会将其写入一个文件缓冲区缓存，写操作也是同样，操作系统首先将数据写入缓存，然后才会传输到磁盘，要消除这个过程，可以打开**直接IO**，这时数据会忽略文件缓冲区缓存，直接从磁盘进行读写。
 
@@ -425,11 +425,11 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 
 相关的[Wiki页面](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-DirectI/O)有更多的细节。
 
-**购买产品级的SSD**
+#### 11.4.2.8.购买产品级的SSD
 
 限于[SSD的操作特性](http://codecapsule.com/2014/02/12/coding-for-ssds-part-2-architecture-of-an-ssd-and-benchmarking/)，在经历几个小时的高强度写入负载之后，Ignite原生持久化的性能可能会下降，因此需要考虑购买快速的产品级SSD来保证长时间高水平的性能。
 
-**SSD预留空间**
+#### 11.4.2.9.SSD预留空间
 
 由于SSD[预留空间](http://www.seagate.com/ru/ru/tech-insights/ssd-over-provisioning-benefits-master-ti/)的原因，50%使用率的磁盘的随机写性能要好于90%使用率的磁盘，因此需要考虑购买高预留空间比率的SSD，然后还要确保厂商能提供工具来进行相关的调整。
 

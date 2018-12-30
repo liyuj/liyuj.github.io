@@ -933,10 +933,10 @@ double prediction = knnMdl.apply(vectorizedData);
 要了解k-NN回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/regression)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
-## 15.11.SVM二进制分类
+## 15.11.SVM二元分类
 支持向量机（SVM）是相关数据分析学习算法中的监督学习模型，用于分类和回归分析。
 
-给定一组训练样本，每一个被标记为属于两个类别中的一个，SVM训练算法会建立一个模型，该模型将新的样本分配给其中一个类别，使其成为非概率二进制线性分类器。
+给定一组训练样本，每一个被标记为属于两个类别中的一个，SVM训练算法会建立一个模型，该模型将新的样本分配给其中一个类别，使其成为非概率二元线性分类器。
 
 Ignite机器学习模块只支持线性支持向量机。更多信息请参见维基百科中的[支持向量机](https://en.wikipedia.org/wiki/Support_vector_machine)。
 ### 15.11.1.模型
@@ -960,7 +960,7 @@ double prediction = model
   .predict(observation);
 ```
 ### 15.11.2.训练法
-基于具有铰链损失函数的高效通信分布式双坐标上升算法（COCOA），提供软余量SVM线性分类训练法的基类。该训练法将输入作为具有-1和+1两个分类的标签化数据集，并进行二进制分类。
+基于具有铰链损失函数的高效通信分布式双坐标上升算法（COCOA），提供软余量SVM线性分类训练法的基类。该训练法将输入作为具有-1和+1两个分类的标签化数据集，并进行二元分类。
 
 关于这个算法的论文可以在[这里](https://arxiv.org/abs/1409.1458)找到。
 
@@ -991,9 +991,9 @@ SVMLinearBinaryClassificationModel mdl = trainer.fit(
 ## 15.12.SVM多类分类
 多类SVM的目的是通过使用支持向量机将标签分配给样本，其中标签是从多个元素的有限集合中提取的。
 
-这个实现方法是通过一对所有的方法将单个多类问题总结成多个二进制分类问题。
+这个实现方法是通过一对所有的方法将单个多类问题总结成多个二元分类问题。
 
-一对所有的方法是建立二进制分类器的过程，它将一个标签和其余的区分开。
+一对所有的方法是建立二元分类器的过程，它将一个标签和其余的区分开。
 ### 15.12.1.模型
 该模型持有`<ClassLabel, SVMLinearBinaryClassificationModel>`对，它通过如下的方式对给定的特征向量进行预测：
 ```java

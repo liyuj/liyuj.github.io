@@ -938,7 +938,7 @@ private static class CheckpointsRunnable implements IgniteCallable<Object> {
 }
 ```
 ### 7.9.4.CheckpointSpi
-Ignite中，检查点功能是通过`CheckpointSpi`提供的，他有如下开箱即用的实现：
+Ignite中，检查点功能是通过`CheckpointSpi`提供的，他直接支持下面的实现：
 
 |类|描述|
 |---|---|
@@ -1227,7 +1227,7 @@ Ignition.start(cfg);
 
 如果启用了对等类加载，因为通常只会在一个网格节点上部署类加载器，一旦一个任务在集群上开始执行，所有其他的节点都会从任务初始执行的节点自动加载所有的任务类。对等类加载也支持热部署。每次任务发生变化或者在一个节点上重新部署，所有其他的节点都会侦测到然后重新部署这个任务。注意对等类加载只在任务为非本地部署时才生效，否则本地部署总是具有优先权。
 
-Ignite提供了如下的开箱即用的`DeploymentSpi`实现：
+Ignite直接支持如下的`DeploymentSpi`实现：
 
  - UriDeploymentSpi
  - LocalDeploymentSpi
@@ -1342,7 +1342,7 @@ XML配置
 
 **协议**
 
-SPI开箱即用地支持如下协议：
+SPI直接支持如下协议：
 
  - file:// - File协议
  - http:// - HTTP协议

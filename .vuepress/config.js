@@ -82,7 +82,7 @@ module.exports = {
                         'Plugins',
                         'Deployment',
                         'MachineLearning',
-                        //'Persistence',
+                        'Persistence',
                         //'TestsAndBenchmarking',
                         //'Metrics',
                         //'ThinClients',

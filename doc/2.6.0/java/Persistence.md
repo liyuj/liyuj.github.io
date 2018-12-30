@@ -276,7 +276,7 @@ Ignite有一个存储会话的概念，它可以跨越不止一个`CacheStore`�
 
 **Cassandra CacheStore**
 
-Ignite提供了将Apache Cassandra作为内存网格级`CacheStore`的开箱即用的集成，要了解更多的信息，可以查看相关的文档。
+Ignite提供了将Apache Cassandra作为内存网格级`CacheStore`的直接集成，要了解更多的信息，可以查看相关的文档。
 
 ### 16.4.5.CacheStoreSession 
 `CacheStore`会话的主要目的是当`CacheStore`用于事务中时在多个存储操作中持有一个上下文。比如，如果使用JDBC，可以通过`CacheStoreSession.attach()`方法保存数据库的连接，然后可以在`CacheStore.sessionEnd(boolean)`方法中提交这个连接。
