@@ -83,7 +83,7 @@ module.exports = {
                         'Deployment',
                         'MachineLearning',
                         'Persistence',
-                        //'TestsAndBenchmarking',
+                        'TestsAndBenchmarking',
                         //'Metrics',
                         //'ThinClients',
                         //'KubernetesDeployment',

@@ -179,13 +179,14 @@ System.out.println("Checkpoint duration:" + pm.getLastCheckpointDuration());
 
 JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些其它的，具体可以看[DataStorageMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/DataStorageMetricsMXBean.html)的javadoc。
 
->**启用指标收集**
-指标收集不是一个无代价的操作，会影响应用的性能，因此默认是关闭的。
-如果要打开，可以使用下面的方式：
-1.对于数据区可以配置`DataRegionConfiguration.setMetricsEnabled(true)`；
-2.对于原生持久化可以配置`DataStorageConfiguration.setMetricsEnabled(true)`；
-3.可以使用特定JMXbean暴露的`DataRegionMetricsMXBean.enableMetrics()`方法；
+::: tip 启用指标收集
+指标收集不是一个无代价的操作，会影响应用的性能，因此默认是关闭的。<br>
+如果要打开，可以使用下面的方式：<br>
+1.对于数据区可以配置`DataRegionConfiguration.setMetricsEnabled(true)`；<br>
+2.对于原生持久化可以配置`DataStorageConfiguration.setMetricsEnabled(true)`；<br>
+3.可以使用特定JMXbean暴露的`DataRegionMetricsMXBean.enableMetrics()`方法；<br>
 4.可以使用特定JMXbean暴露的`DataStorageMetricsMXBean.enableMetrics()`方法；
+:::
 
 ### 18.1.3.内存使用量计算
 还可以获得与特定`CacheGroup`有关的缓存的指标，目前这些指标只能通过`CacheGroupMetricsMXBean`JMX接口访问，具体的可用指标列表，可以看[CacheGroupMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/CacheGroupMetricsMXBean.html)的javadoc。
