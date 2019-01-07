@@ -63,6 +63,10 @@ module.exports = {
                     {
                         text: '博客',
                         link: 'https://my.oschina.net/liyuj'
+                    },
+                    {
+                        text: '历史版本',
+                        link: 'https://www.zybuluo.com/liyuj/note/230739'
                     }
                 ],
                 sidebar: {
@@ -84,8 +88,8 @@ module.exports = {
                         'MachineLearning',
                         'Persistence',
                         'TestsAndBenchmarking',
-                        //'Metrics',
-                        //'ThinClients',
+                        'Metrics',
+                        'ThinClients',
                         //'KubernetesDeployment',
                         'DeepLearning'
                     ],
@@ -160,6 +164,10 @@ module.exports = {
                     {
                         text: '博客',
                         link: 'https://my.oschina.net/liyuj'
+                    },
+                    {
+                        text: '历史版本',
+                        link: 'https://www.zybuluo.com/liyuj/note/230739'
                     }
                 ],
                 sidebar: {

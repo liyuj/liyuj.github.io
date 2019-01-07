@@ -1,8 +1,10 @@
 # 19.瘦客户端
 ## 19.1.瘦客户端
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
- 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
- 瘦客户端基于二进制客户端协议，这样任何语言都可以接入Ignite集群，目前如下的客户端可用：
+
+它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
+
+瘦客户端基于二进制客户端协议，这样任何语言都可以接入Ignite集群，目前如下的客户端可用：
  
   - Java瘦客户端
   - .NET瘦客户端
@@ -11,15 +13,21 @@ NodeJS、Go、Python、PHP以及其它的客户端在未来的版本中会发布
 ## 19.2.二进制客户端协议
 ### 19.2.1.摘要
 Ignite的二进制客户端协议使得应用不用启动一个全功能的节点，就可以与已有的集群进行通信。应用使用原始的TCP套接字，就可以接入集群。连接建立之后，就可以使用定义好的格式执行缓存操作。
+
 与集群通信，客户端必须遵守下述的数据格式和通信细节。
 ### 19.2.2.数据格式
 **字节序**
+
 Ignite的二进制客户端协议使用低字节序。
+
 **数据对象**
+
 用户数据，比如缓存的键和值，是以Ignite的二进制对象表示的，一个数据对象可以是标准类型（预定义），也可以是复杂对象，具体可以看数据格式的相关章节。
 ### 19.2.3.消息格式
 所有消息的请求和响应，包括握手，都以`int`类型消息长度开始（不包括开始的4个字节），后面是消息体。
+
 **握手**
+
 二进制客户端协议需要一个连接握手，来确保客户端和服务端版本的兼容性。下表会显示请求和响应握手消息的结构，下面的示例章节中还会显示如何发送和接收握手请求及其对应的响应。
 
 |请求类型|描述|
@@ -48,6 +56,7 @@ Ignite的二进制客户端协议使用低字节序。
 |`string`|错误消息|
 
 **标准消息头**
+
 客户端操作消息由消息头和与操作有关的数据的消息体组成，每个操作都有自己的数据请求和响应格式，以及一个通用头。
 下面的表格和示例显示了客户端操作消息头的请求和响应结构。
 
@@ -94,7 +103,9 @@ private static void readResponseHeader(DataInputStream in) throws IOException {
 ```
 ### 19.2.4.接入
 **TCP套接字**
+
 客户端应用接入服务端节点需要通过TCP套接字，连接器默认使用`10800`端口。可以在集群的`IgniteConfiguration`中的`clientConnectorConfiguration`属性中，配置端口号及其它的服务端连接参数，如下所示：
+
 XML：
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -127,9 +138,12 @@ cfg.setClientConnectorConfiguration(ccfg);
 Ignition.start(cfg);
 ```
 **连接握手**
+
 除了套接字连接之外，瘦客户端协议还需要连接握手，以确保客户端和服务端版本兼容。注意握手必须是连接建立后的第一条消息。
 对于握手消息的请求和响应数据结构，可以看上面的握手章节。
+
 **示例**
+
 套接字和握手连接：
 ```java
 Socket socket = new Socket();
@@ -221,13 +235,16 @@ private static byte readByteLittleEndian(DataInputStream in) throws IOException 
 
 ## 19.3.Java瘦客户端
 Java瘦客户端将二进制客户端协议暴露给Java开发者。
+
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
+
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 
 ### 19.3.1.快速入门
 按照下面的步骤操作，可以学习瘦客户端API和开发环境的基础知识。
 #### 19.3.1.1.Maven配置
 添加`ignite-core`这一个依赖就可以使用所有的瘦客户端API。
+
 Maven：
 ```xml
  <properties>
@@ -295,6 +312,7 @@ public static void main(String[] args) {
 
 #### 19.3.1.3.启动集群
 在本地主机上启动集群：
+
 Unix：
 ```bash
 $IGNITE_HOME/bin/ignite.sh $IGNITE_HOME/examples/config/example-ignite.xml
@@ -327,6 +345,7 @@ Windows：
 本章节讲述Ignite支持的Java瘦客户端API。
 #### 19.3.2.1.初始化
 `Ignition#startClient(ClientConfiguration)`方法会发起一个连接请求。
+
 `IgniteClient`是一个可以自动关闭的资源，因此可以使用**try-with-resources**语句初始化和释放`IgniteClient`。
 ```java
 try (IgniteClient client = Ignition.startClient(
@@ -352,6 +371,7 @@ ClientCache<Integer, String> cache = client.getOrCreateCache(cacheCfg);
 ```
 #### 19.3.2.3.瘦客户端和JCache
 目前，瘦客户端只实现了JCache的一个子集，因此并没有实现`javax.cache.Cache`（`ClientCacheConfiguration`也没有实现`javax.cache.configuration`）。
+
 `ClientCache<K, V>`目前支持如下的JCache API：
 
  - `V get(K key)`；
@@ -399,6 +419,7 @@ assertEquals(0, cache.size());
 ```
 #### 19.3.2.4.扫描查询
 使用`ScanQuery<K, V>`可以在服务端使用Java谓词对数据进行过滤，然后在客户端对过滤后的结果集进行迭代。
+
 过滤后的条目是按页传输到客户端的，这样每次只有一个页面的数据会被加载到客户单的内存，页面大小可以通过`ScanQuery#setPageSize(int)`进行配置。
 ```java
 Query<Cache.Entry<Integer, Person>> qry = new ScanQuery<Integer, Person>((i, p) -> p.getName().contains("Smith")).setPageSize(1000);
@@ -444,6 +465,7 @@ assertEquals(val.getName(), cachedName);
 ```
 #### 19.3.2.6.Ignite二进制对象
 瘦客户端完全支持`1.10.二进制编组器`章节中描述的Ignite二进制对象API，使用`CacheClient#withKeepBinary()`可以将缓存切换为二进制模式，然后就可以直接处理二进制对象，从而避免序列化/反序列化。
+
 使用`IgniteClient#binary()`可以获得`IgniteBinary`的实例，然后从头构建一个对象。
 ```java
 IgniteBinary binary = client.binary();
@@ -461,6 +483,7 @@ BinaryObject cachedVal = cache.get(1);
 ```
 #### 19.3.2.7.多线程
 瘦客户端是单线程且线程安全的。唯一的共享资源是底层的通信管道，同时只有一个线程对管道进行读写，这时其它线程会等待。
+
 >**使用瘦客户端连接池的多线程来改进性能**
 目前瘦客户端无法通过多线程来改进吞吐量，但是可以在应用中使用瘦客户端连接池来创建多线程，以改进吞吐量。
 
@@ -470,6 +493,7 @@ BinaryObject cachedVal = cache.get(1);
 
 #### 19.3.2.9.客户端-服务端兼容性
 客户端`ignite-core`的版本号要小于等于服务端`ignite-core`的版本号。
+
 Ignite的服务端会维持二进制协议的向后兼容性，如果两者协议版本不兼容，会抛出`RuntimeException`。
 ### 19.3.3.安全
 #### 19.3.3.1.加密
@@ -495,6 +519,7 @@ try (IgniteClient client = Ignition.startClient(clientCfg)) {
 ```
 #### 19.3.3.2.认证
 如果服务端开启认证，那么用户必须提供凭据。
+
 如果认证失败，会抛出`ClientAuthenticationException`。
 ```java
 ClientConfiguration clientCfg = new ClientConfiguration()
@@ -515,6 +540,7 @@ catch (ClientAuthenticationException e) {
 ### 19.3.4.高可用
 #### 19.3.4.1.故障转移
 Ignite不支持瘦客户端在服务端侧的故障转移，如果客户端接入的服务端下线，瘦客户端会通过重试，然后自动重连到另一个服务端节点来实现故障转移。
+
 配置多个服务端可以开启故障转移机制。
 ```java
 try (IgniteClient client = Ignition.startClient(
@@ -528,6 +554,7 @@ catch (IgniteUnavailableException ex) {
 }
 ```
 瘦客户端会随机地尝试列表中的服务端，如果所有服务端都不可用，会抛出`ClientConnectionException`。
+
 除非所有的服务端节点都不可用，否则故障转移机制对业务代码来说是透明的，唯一有牵连的就是故障转移查询会返回多个条目，这是针对缓存语义的，考虑下面的代码：
 ```java
 Query<Cache.Entry<Integer, Person>> qry = new ScanQuery<Integer, Person>((i, p) -> p.getName().contains("Smith")).setPageSize(1000);
@@ -538,6 +565,7 @@ for (Query<Cache.Entry<Integer, Person>> qry : queries) {
       // Handle the entry ...
 ```
 在`19.3.2.API`章节中说过，扫描和SQL的SELECT查询是按页返回的，如果在迭代过程中客户端接入的服务端节点下线，客户端会从头开始重试，这会导致上面的代码重复处理数据。
+
 有两种方式可以定位问题：
 
  - 如果数据很小可以放入内存，那么可以获取所有的数据然后放入一个Map：`Map<Integer, Person> res = cur.getAll().stream().collect(Collectors.toMap(Cache.Entry::getKey, Cache.Entry::getValue))`，Map可以解决重复数据的问题；
@@ -548,9 +576,8 @@ for (Query<Cache.Entry<Integer, Person>> qry : queries) {
 瘦客户端不会记录任何信息，也无法配置记录日志，处理瘦客户端的异常以及决定后续如何处理是应用本身的职责。
 #### 19.3.5.2.异常
 ![](https://files.readme.io/1d15d18-Java_Thin_Client.png)
+
 所有的客户端异常都是非检查异常：
 
  - `ClientConnectionException`：表示所有的指定服务端节点都不可用；
  - `ClientAuthenticationException`：表示服务端已经开启了认证，但是瘦客户端没有提供凭据，或者提供了无效的凭据。
-
-
