@@ -3580,3 +3580,759 @@ catch (ClientAuthenticationException e) {
 :::
 #### 19.3.6.3.授权
 目前，Ignite本身还不支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这个](https://docs.gridgain.com/docs/security-and-audit)。
+## 19.4.Node.JS瘦客户端
+### 19.4.1.Node.js瘦客户端
+#### 19.4.1.1.摘要
+这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+
+瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
+
+它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
+#### 19.4.1.2.入门
+**先决条件**
+
+ - [Node.js](https://nodejs.org/en/)的版本要求是8.0及以上，可以下载Node.js针对特定平台预编译好的[二进制安装包](https://nodejs.org/en/download/)，也可以使用[包管理器](https://nodejs.org/en/download/package-manager)安装Node.js；
+ - [最新版本](https://ignite.apache.org/download.cgi)的Ignite。
+
+`node`和`npm`安装完之后，就可以选择下面中的一个安装选项：
+
+**通过npm进行安装**
+
+通过执行下面的命令来安装Node.js的瘦客户端包：
+
+```bash
+npm install -g apache-ignite-client
+```
+**通过源代码进行安装**
+
+如果希望从Ignite的仓库构建和安装瘦客户端包，可以按照如下步骤操作：
+
+ 1. 克隆或者复制Ignite的仓库[https://github.com/apache/ignite.git](https://github.com/apache/ignite.git)到`local_ignite_path`；
+ 2. 切换到`local_ignite_path/modules/platforms/nodejs`文件夹；
+ 3. 执行`npm link`命令；
+ 4. 执行`npm link apache-ignite-client`命令（只针对示例和测试）。
+
+```bash
+cd local_ignite_path/modules/platforms/nodejs
+npm link
+npm link apache-ignite-client #linking examples (optional)
+```
+#### 19.4.1.3.运行示例
+为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://apacheignite.readme.io/v2.7/docs/[https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples])。
+
+1.运行Ignite的服务端：
+
+在用Node.js瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点。要使用默认的配置启动一个集群节点，打开终端，假定位于`IGNITE_HOME`（Ignite安装文件夹），只需要输入：
+
+Unix：
+```bash
+./ignite.sh
+```
+Windows：
+```batch
+ignite.bat
+```
+2.链接Ignite的Node.js示例（如果还没做）：
+```bash
+cd {ignite}/modules/platforms/nodejs/examples # navigate to examples folder
+npm link apache-ignite-client #link examples
+```
+必要的时候，要修改源文件中`ENDPOINT`常量，它表示一个远程的Ignite节点端点，默认值为`127.0.0.1:10800`。
+
+3.通过调用`node <example_file_name>.js`来运行这个示例，如下：
+```bash
+node CachePutGetExample.js
+```
+::: tip Node.js示例文件
+Node.js瘦客户端有完整的直接可用的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)，他们可以演示客户端的行为。
+:::
+### 19.4.2.初始化和配置
+本文会描述使用Node.js瘦客户端与Ignite集群进行交互的基本步骤。
+
+在用Node.js瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
+
+Unix：
+```bash
+./ignite.sh
+```
+Windows：
+```batch
+ignite.bat
+```
+#### 19.4.2.1.初始化IgniteClient
+客户端的使用始于`IgniteClient`类实例的创建，它会将Node.js应用接入Ignite集群。其构造函数有一个可选的参数`onStateChanged`回调函数，每次客户端跳转到新的连接状态时都会调用该回调函数（请参见下文）。
+
+可以根据需要创建尽可能多的`IgniteClient`实例，它们都将独立工作。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+
+const igniteClient = new IgniteClient(onStateChanged);
+
+function onStateChanged(state, reason) {
+    if (state === IgniteClient.STATE.CONNECTED) {
+        console.log('Client is started');
+    }
+    else if (state === IgniteClient.STATE.DISCONNECTED) {
+        console.log('Client is stopped');
+        if (reason) {
+            console.log(reason);
+        }
+    }
+}
+```
+#### 19.4.2.2.配置IgniteClient
+下一步是为客户端连接创建配置，可以通过注入`IgniteClientConfiguration`类实例实现。
+
+配置的一个必要部分（在构造函数中指定）是Ignite节点的端点列表。至少要指定一个端点。客户端只会连接到一个节点（从提供的列表中随机选一个端点）。其它节点（如果提供的话）由客户端用于`故障转移重连算法`：如果当前连接断开，客户端将尝试重连到列表中的下一个随机端点。
+
+可以使用其它方法指定配置的可选部分，这些方法包括：
+
+ - 通过用户名/密码进行认证；
+ - SSL/TLS连接；
+ - Node.js连接选项。
+
+客户端默认会使用Node.js定义的默认连接选项建立一个不安全的连接，即不使用认证。
+
+下面的示例显示了如何对客户端进行配置：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+const igniteClientConfiguration = new IgniteClientConfiguration('127.0.0.1:10800');
+```
+下一个示例显示如何在客户端配置中添加用户名/密码和额外的连接选项：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+const igniteClientConfiguration = new IgniteClientConfiguration('127.0.0.1:10800').
+    setUserName('ignite').
+    setPassword('ignite').
+    setConnectionOptions(false, { 'timeout' : 0 });
+```
+#### 19.4.2.3.接入集群
+下一步是将客户端连接到Ignite集群。在`connect`方法中指定了客户端连接的配置，其中包括要连接到的端点。
+
+客户端有三种连接状态：`CONNECTING`、`CONNECTED`、`DISCONNECTED`。如果在客户端的构造函数中有回调函数，则该状态会通过`onStateChanged`回调函数反馈。
+
+只有在`CONNECTED`状态下，才能与Ignite集群进行交互。
+
+如果客户端意外地断开连接，它会自动跳转到`CONNECTING`状态，并尝试使用`故障转移重连算法`重新连接。如果无法重连到所提供列表中的所有端点，则客户端将跳转到`DISCONNECTED`状态。
+
+应用程序随时都可以调用`disconnect`方法将客户端强制跳转到`DISCONNECTED`状态。
+
+当客户端断开连接时，应用可以使用相同或不同的配置（例如使用不同的端点列表）再次调用`connect`方法。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+async function connectClient() {
+    const igniteClient = new IgniteClient(onStateChanged);
+    try {
+        const igniteClientConfiguration = new IgniteClientConfiguration(
+          '127.0.0.1:10800', '127.0.0.1:10801', '127.0.0.1:10802');
+        // connect to Ignite node
+        await igniteClient.connect(igniteClientConfiguration);
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+}
+
+function onStateChanged(state, reason) {
+    if (state === IgniteClient.STATE.CONNECTED) {
+        console.log('Client is started');
+    }
+    else if (state === IgniteClient.STATE.CONNECTING) {
+        console.log('Client is connecting');
+    }
+    else if (state === IgniteClient.STATE.DISCONNECTED) {
+        console.log('Client is stopped');
+        if (reason) {
+            console.log(reason);
+        }
+    }
+}
+
+connectClient();
+```
+#### 19.4.2.4.配置缓存
+下一步是获取一个缓存实例，一个用于访问存储在Ignite中的数据的`CacheClient`类实例。
+
+瘦客户端提供了几种方法来处理Ignite缓存和创建缓存实例：按名称获取缓存、使用指定名称和可选缓存配置创建缓存、获取或创建缓存、销毁缓存等。
+
+对于相同或不同的Ignite缓存，可以根据需要获取任意数量的缓存实例，并且可以对它们并行处理。
+
+以下示例显示如何按名称访问缓存以及随后销毁它：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+async function getOrCreateCacheByName() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        // get or create cache by name
+        const cache = await igniteClient.getOrCreateCache('myCache');
+
+        // perform cache key-value operations
+        // ...
+
+        // destroy cache
+        await igniteClient.destroyCache('myCache');
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+getOrCreateCacheByName();
+```
+下一个示例显示如何通过名字和配置访问缓存：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const CacheConfiguration = IgniteClient.CacheConfiguration;
+
+async function createCacheByConfiguration() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        // create cache by name and configuration
+        const cache = await igniteClient.createCache(
+            'myCache',
+            new CacheConfiguration().setSqlSchema('PUBLIC'));
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+createCacheByConfiguration();
+```
+下面的示例显示如何通过名字获取一个已有的缓存：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+async function getExistingCache() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        // get existing cache by name
+        const cache = igniteClient.getCache('myCache');
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+getExistingCache();
+```
+**类型映射配置**
+
+可以为缓存的键和/或值指定具体的Ignite类型。如果键和/或值是非基础类型（如映射、集合、复杂对象等），也可以为该对象的字段指定具体的Ignite类型。
+
+如果没有为某些字段显式指定Ignite类型，客户端将尝试在JavaScript类型和Ignite对象类型之间进行自动默认映射。
+
+有关类型和映射的更多详细信息，请参见[数据类型](#_19-4-2-5-数据类型)部分。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const ObjectType = IgniteClient.ObjectType;
+const MapObjectType = IgniteClient.MapObjectType;
+
+async function setCacheKeyValueTypes() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        const cache = await igniteClient.getOrCreateCache('myCache');
+        // set cache key/value types
+        cache.setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER).
+            setValueType(new MapObjectType(
+                MapObjectType.MAP_SUBTYPE.LINKED_HASH_MAP,
+                ObjectType.PRIMITIVE_TYPE.SHORT,
+                ObjectType.PRIMITIVE_TYPE.BYTE_ARRAY));
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+setCacheKeyValueTypes();
+```
+到这里，就可以对存储的数据进行处理，或者将数据放入Ignite。
+#### 19.4.2.5.数据类型
+在二进制客户端协议中定义的Ignite类型和JavaScript类型之间，客户端支持两种映射方式：
+
+ - 显式映射；
+ - 默认映射；
+
+**显式映射**
+
+每次应用通过客户端的API向Ignite写入或读取字段时都会发生映射。这里的字段是任何存储在Ignite中的数据，包括一个Ignite条目的全部键或值、数组或集合的元素、复杂对象的字段等。
+
+使用客户端API的方法，应用可以显式指定特定字段的Ignite类型。客户端使用此信息将字段从JavaScript转换为Java类型，而在读/写操作期间反之亦然。作为读取操作的结果，该字段被转换为JavaScript类型。在写操作的输入中验证相应的JavaScript类型。
+
+如果应用没有为字段显式指定Ignite类型，则客户端在字段读/写操作期间使用默认映射。
+
+**默认映射**
+
+Ignite和JavaScript类型之间的默认映射说明在[这里](https://rawgit.com/apache/ignite/master/modules/platforms/nodejs/api_spec/ObjectType.html)。
+
+**复杂对象类型支持**
+
+客户端提供了两种操作Ignite复杂对象类型的方法：反序列化形式和二进制形式。
+
+应用可以通过`ComplexObjectType`类的实例指定字段的Ignite类型，它是一个JavaScript对象实例的引用。这时当应用读取字段的值时，客户端将反序列化接收到的Ignite复杂对象，并将其作为相应JavaScript对象的实例返回给客户端。当应用写入字段值时，客户端需要相应的JavaScript对象的实例，并将其序列化为Ignite复杂对象。
+
+如果应用没有指定字段的Ignite类型并读取字段的值，客户端会将接收到的Ignite复杂对象作为`BinaryObject`类的实例返回（Ignite复杂对象的二进制形式）。`BinaryObject`无需反序列化就可以对其内容进行处理（读取和写入对象字段的值、添加和删除字段等），而且应用还可以从JavaScript对象创建`BinaryObject`类的实例。如果该字段没有显式指定的Ignite类型，则应用程序可以将二进制对象作为字段的值写入Ignite。
+
+客户端负责从/在Ignite集群获取或注册有关Ignite复杂对象类型的信息（包括模式）。当需要从/到Ignite点读取或写入Ignite复杂对象时，这个过程由客户端自动完成。
+#### 19.4.2.6.支持的API
+客户端API的规范在[这里](https://rawgit.com/apache/ignite/master/modules/platforms/nodejs/api_spec/index.html)。
+
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+
+ - `OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作是不支持的；
+ - `OP_QUERY_SCAN`操作的过滤器对象是不支持的，`OP_QUERY_SCAN`操作本身是支持的；
+ - 无法注册一个新的Ignite枚举类型，对一个已有的Ignite枚举类型项目的读写是支持的；
+
+下面的附加特性是支持的：
+
+ - 通过用户名/密码进行认证；
+ - SSL/TLS连接；
+ - 故障转移重连算法
+
+#### 19.4.2.7.启用调试
+要打开/关闭客户端的调试输出开关（包括错误日志），可以调用`IgniteClient`实例的`setDebug()`方法，调试输出默认是关闭的。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+
+const igniteClient = new IgniteClient();
+igniteClient.setDebug(true);
+```
+### 19.4.3.键-值
+#### 19.4.3.1.键-值操作
+`CacheClient`类为缓存的键值数据提供了键值操作的方法，`put`、`get`、`putAll`、`getAll`、`replace`等，下面是一个示例：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const ObjectType = IgniteClient.ObjectType;
+const CacheEntry = IgniteClient.CacheEntry;
+
+async function performCacheKeyValueOperations() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        const cache = (await igniteClient.getOrCreateCache('myCache')).
+            setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER);
+        // put and get value
+        await cache.put(1, 'abc');
+        const value = await cache.get(1);
+
+        // put and get multiple values using putAll()/getAll() methods
+        await cache.putAll([new CacheEntry(2, 'value2'), new CacheEntry(3, 'value3')]);
+        const values = await cache.getAll([1, 2, 3]);
+
+        // removes all entries from the cache
+        await cache.clear();
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+performCacheKeyValueOperations();
+```
+#### 19.4.3.2.扫描查询
+Node.js客户端完全支持Ignite的扫描查询。查询方法会返回一个游标类，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
+
+首先，通过创建和配置一个`ScanQuery`类的实例来定义查询。
+
+然后，将`ScanQuery`实例传递给`Cache`实例并执行查询，最后使用`Cursor`实例来对返回的查询结果进行迭代或者获取所有数据。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const ObjectType = IgniteClient.ObjectType;
+const CacheEntry = IgniteClient.CacheEntry;
+const ScanQuery = IgniteClient.ScanQuery;
+
+async function performScanQuery() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        const cache = (await igniteClient.getOrCreateCache('myCache')).
+            setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER);
+
+        // put multiple values using putAll()
+        await cache.putAll([
+            new CacheEntry(1, 'value1'),
+            new CacheEntry(2, 'value2'),
+            new CacheEntry(3, 'value3')]);
+
+        // create and configure scan query
+        const scanQuery = new ScanQuery().
+            setPageSize(1);
+        // obtain scan query cursor
+        const cursor = await cache.query(scanQuery);
+        // getAll cache entries returned by the scan query
+        for (let cacheEntry of await cursor.getAll()) {
+            console.log(cacheEntry.getValue());
+        }
+
+        await igniteClient.destroyCache('myCache');
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+performScanQuery();
+```
+### 19.4.4.SQL
+#### 19.4.4.1.SQL查询
+Node.js客户端完全支持Ignite的SQL查询，查询方法会返回一个游标类，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
+
+首先，通过创建和配置一个`SqlQuery`类的实例来定义查询。
+
+然后，将`SqlQuery`实例传递给`Cache`实例并执行查询，最后使用`Cursor`实例来对返回的查询结果进行迭代或者获取所有数据。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const CacheConfiguration = IgniteClient.CacheConfiguration;
+const QueryEntity = IgniteClient.QueryEntity;
+const QueryField = IgniteClient.QueryField;
+const ObjectType = IgniteClient.ObjectType;
+const ComplexObjectType = IgniteClient.ComplexObjectType;
+const CacheEntry = IgniteClient.CacheEntry;
+const SqlQuery = IgniteClient.SqlQuery;
+
+async function performSqlQuery() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        // cache configuration required for sql query execution
+        const cacheConfiguration = new CacheConfiguration().
+            setQueryEntities(
+                new QueryEntity().
+                    setValueTypeName('Person').
+                    setFields([
+                        new QueryField('name', 'java.lang.String'),
+                        new QueryField('salary', 'java.lang.Double')
+                    ]));
+        const cache = (await igniteClient.getOrCreateCache('sqlQueryPersonCache', cacheConfiguration)).
+            setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER).
+            setValueType(new ComplexObjectType({ 'name' : '', 'salary' : 0 }, 'Person'));
+
+        // put multiple values using putAll()
+        await cache.putAll([
+            new CacheEntry(1, { 'name' : 'John Doe', 'salary' : 1000 }),
+            new CacheEntry(2, { 'name' : 'Jane Roe', 'salary' : 2000 }),
+            new CacheEntry(2, { 'name' : 'Mary Major', 'salary' : 1500 })]);
+
+        // create and configure sql query
+        const sqlQuery = new SqlQuery('Person', 'salary > ? and salary <= ?').
+            setArgs(900, 1600);
+        // obtain sql query cursor
+        const cursor = await cache.query(sqlQuery);
+        // getAll cache entries returned by the sql query
+        for (let cacheEntry of await cursor.getAll()) {
+            console.log(cacheEntry.getValue());
+        }
+
+        await igniteClient.destroyCache('sqlQueryPersonCache');
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+performSqlQuery();
+```
+#### 19.4.4.2.SQLFieldsQuery
+这种类型的查询用于获取作为SQL查询结果集一部分的部分字段，执行诸如INSERT、UPDATE、DELETE、CREATE等DML和DDL语句。
+
+首先，通过创建和配置`SqlFieldsQuery`类的实例来定义查询。然后，将`SqlFieldsQuery`传递到`Cache`实例的查询方法，并获取`SqlFieldsCursor`类的实例。最后，使用`SqlFieldsCursor`实例迭代或获取查询返回的所有元素。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const CacheConfiguration = IgniteClient.CacheConfiguration;
+const ObjectType = IgniteClient.ObjectType;
+const CacheEntry = IgniteClient.CacheEntry;
+const SqlFieldsQuery = IgniteClient.SqlFieldsQuery;
+
+async function performSqlFieldsQuery() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        const cache = await igniteClient.getOrCreateCache('myPersonCache', new CacheConfiguration().
+            setSqlSchema('PUBLIC'));
+
+        // create table using SqlFieldsQuery
+        (await cache.query(new SqlFieldsQuery(
+           'CREATE TABLE Person (id INTEGER PRIMARY KEY, firstName VARCHAR, lastName VARCHAR, salary DOUBLE)'))).getAll();
+
+        // insert data into the table
+        const insertQuery = new SqlFieldsQuery('INSERT INTO Person (id, firstName, lastName, salary) values (?, ?, ?, ?)').
+            setArgTypes(ObjectType.PRIMITIVE_TYPE.INTEGER);
+        (await cache.query(insertQuery.setArgs(1, 'John', 'Doe', 1000))).getAll();
+        (await cache.query(insertQuery.setArgs(2, 'Jane', 'Roe', 2000))).getAll();
+
+        // obtain sql fields cursor
+        const sqlFieldsCursor = await cache.query(
+            new SqlFieldsQuery("SELECT concat(firstName, ' ', lastName), salary from Person").
+                setPageSize(1));
+
+        // iterate over elements returned by the query
+        do {
+            console.log(await sqlFieldsCursor.getValue());
+        } while (sqlFieldsCursor.hasMore());
+
+        // drop the table
+        (await cache.query(new SqlFieldsQuery("DROP TABLE Person"))).getAll();
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+performSqlFieldsQuery();
+```
+### 19.4.5.二进制类型
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+
+ - `OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作是不支持的；
+ - `OP_QUERY_SCAN`操作的过滤器对象是不支持的，`OP_QUERY_SCAN`操作本身是支持的；
+ - 无法注册一个新的Ignite枚举类型，对一个已有的Ignite枚举类型项目的读写是支持的；
+
+下面的示例显示了如何处理复杂对象和二进制对象：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const ObjectType = IgniteClient.ObjectType;
+const CacheEntry = IgniteClient.CacheEntry;
+const ComplexObjectType = IgniteClient.ComplexObjectType;
+
+class Person {
+    constructor(id = null, name = null, salary = null) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+}
+
+async function putGetComplexAndBinaryObjects() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        const cache = await igniteClient.getOrCreateCache('myPersonCache');
+        // Complex Object type for JavaScript Person class instances
+        const personComplexObjectType = new ComplexObjectType(new Person(0, '', 0)).
+            setFieldType('id', ObjectType.PRIMITIVE_TYPE.INTEGER); 
+        // set cache key and value types
+        cache.setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER).
+            setValueType(personComplexObjectType);
+        // put Complex Objects to the cache
+        await cache.put(1, new Person(1, 'John Doe', 1000));
+        await cache.put(2, new Person(2, 'Jane Roe', 2000));
+        // get Complex Object, returned value is an instance of Person class
+        const person = await cache.get(1);
+        console.log(person);
+
+        // new CacheClient instance of the same cache to operate with BinaryObjects
+        const binaryCache = igniteClient.getCache('myPersonCache').
+            setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER);
+        // get Complex Object from the cache in a binary form, returned value is an instance of BinaryObject class
+        let binaryPerson = await binaryCache.get(2);
+        console.log('Binary form of Person:');       
+        for (let fieldName of binaryPerson.getFieldNames()) {
+            let fieldValue = await binaryPerson.getField(fieldName);
+            console.log(fieldName + ' : ' + fieldValue);
+        }
+        // modify Binary Object and put it to the cache
+        binaryPerson.setField('id', 3, ObjectType.PRIMITIVE_TYPE.INTEGER).
+            setField('name', 'Mary Major');
+        await binaryCache.put(3, binaryPerson);
+
+        // get Binary Object from the cache and convert it to JavaScript Object
+        binaryPerson = await binaryCache.get(3);
+        console.log(await binaryPerson.toObject(personComplexObjectType));
+
+        await igniteClient.destroyCache('myPersonCache');
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+putGetComplexAndBinaryObjects();
+```
+### 19.4.6.安全
+#### 19.4.6.1.认证
+关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_4-2-高级安全)。在Node.js端，将用户名/密码传递给`IgniteClientConfiguration`的方法如下：
+```javascript
+const ENDPOINT = 'localhost:10800';
+const USER_NAME = 'ignite';
+const PASSWORD = 'ignite';
+
+const cfg = new IgniteClientConfiguration(ENDPOINT).
+	setUserName(USER_NAME).
+  setPassword(PASSWORD);
+```
+#### 19.4.6.2.加密
+1.获取TLS所需的证书：
+
+ - 或获取指定的Ignite服务端可用的现有证书；
+ - 或者为正在使用的Ignite服务端生成新证书；
+
+2.需要以下文件：
+ 
+ - `keystore.jks`，`truststore.jks` - 用于服务端；
+ - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
+
+3.设置Ignite服务端以支持[SSL\TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书：
+4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置：
+5.根据需要，更新下面示例中的常量TLS_KEY_FILE_NAME、TLS_CERT_FILE_NAME和TLS_CA_FILE_NAME：
+6.根据需要更新下面示例中的`USER_NAME`和`PASSWORD`常量。
+
+```javascript
+const FS = require('fs');
+const IgniteClient = require('apache-ignite-client');
+const ObjectType = IgniteClient.ObjectType;
+const ComplexObjectType = IgniteClient.ComplexObjectType;
+const BinaryObject = IgniteClient.BinaryObject;
+const CacheEntry = IgniteClient.CacheEntry;
+const ScanQuery = IgniteClient.ScanQuery;
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+const ENDPOINT = 'localhost:10800';
+const USER_NAME = 'ignite';
+const PASSWORD = 'ignite';
+
+const TLS_KEY_FILE_NAME = __dirname + '/certs/client.key';
+const TLS_CERT_FILE_NAME = __dirname + '/certs/client.crt';
+const TLS_CA_FILE_NAME = __dirname + '/certs/ca.crt';
+
+const CACHE_NAME = 'AuthTlsExample_cache';
+
+// This example demonstrates how to establish a secure connection to an Ignite node and use username/password authentication,
+// as well as basic Key-Value Queries operations for primitive types:
+// - connects to a node using TLS and providing username/password
+// - creates a cache, if it doesn't exist
+//   - specifies key and value type of the cache
+// - put data of primitive types into the cache
+// - get data from the cache
+// - destroys the cache
+class AuthTlsExample {
+
+    async start() {
+        const igniteClient = new IgniteClient(this.onStateChanged.bind(this));
+        try {
+            const connectionOptions = {
+                'key' : FS.readFileSync(TLS_KEY_FILE_NAME),
+                'cert' : FS.readFileSync(TLS_CERT_FILE_NAME),
+                'ca' : FS.readFileSync(TLS_CA_FILE_NAME)
+            };
+            await igniteClient.connect(new IgniteClientConfiguration(ENDPOINT).
+                setUserName(USER_NAME).
+                setPassword(PASSWORD).
+                setConnectionOptions(true, connectionOptions));
+
+            const cache = (await igniteClient.getOrCreateCache(CACHE_NAME)).
+                setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER).
+                setValueType(ObjectType.PRIMITIVE_TYPE.SHORT_ARRAY);
+
+            await this.putGetData(cache);
+
+            await igniteClient.destroyCache(CACHE_NAME);
+        }
+        catch (err) {
+            console.log('ERROR: ' + err.message);
+        }
+        finally {
+            igniteClient.disconnect();
+        }
+    }
+
+    async putGetData(cache) {
+        let keys = [1, 2, 3];
+        let values = keys.map(key => this.generateValue(key));
+
+        // put multiple values in parallel
+        await Promise.all([
+            await cache.put(keys[0], values[0]),
+            await cache.put(keys[1], values[1]),
+            await cache.put(keys[2], values[2])
+        ]);
+        console.log('Cache values put successfully');
+
+        // get values sequentially
+        let value;
+        for (let i = 0; i < keys.length; i++) {
+            value = await cache.get(keys[i]);
+            if (!this.compareValues(value, values[i])) {
+                console.log('Unexpected cache value!');
+                return;
+            }
+        }
+        console.log('Cache values get successfully');
+    }
+
+    compareValues(array1, array2) {
+        return array1.length === array2.length &&
+            array1.every((value1, index) => value1 === array2[index]);
+    }
+
+    generateValue(key) {
+        const length = key + 5;
+        const result = new Array(length);
+        for (let i = 0; i < length; i++) {
+            result[i] = key * 10 + i;
+        }
+        return result;
+    }
+
+    onStateChanged(state, reason) {
+        if (state === IgniteClient.STATE.CONNECTED) {
+            console.log('Client is started');
+        }
+        else if (state === IgniteClient.STATE.DISCONNECTED) {
+            console.log('Client is stopped');
+            if (reason) {
+                console.log(reason);
+            }
+        }
+    }
+}
+
+const authTlsExample = new AuthTlsExample();
+authTlsExample.start();
+```
