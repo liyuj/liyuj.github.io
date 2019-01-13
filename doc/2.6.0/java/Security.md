@@ -1,6 +1,6 @@
 # 4.安全
 ## 4.1.SSL和TLS
-### 4.1.1.节点间的安全连接
+### 4.1.1.保护节点间的连接
 Ignite允许在所有节点之间使用SSL Socket进行通信。要使用SSL，需要设置`Factory<SSLContext>`以及配置Ignite配置文件的`SSL`段落，Ignite提供了一个默认的SSL上下文工厂，`org.apache.ignite.ssl.SslContextFactory`，他用一个配置好的keystore来初始化SSL上下文。
 XML：
 ```xml

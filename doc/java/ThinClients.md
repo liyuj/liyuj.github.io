@@ -3580,7 +3580,7 @@ catch (ClientAuthenticationException e) {
 :::
 #### 19.3.6.3.授权
 目前，Ignite本身还不支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这个](https://docs.gridgain.com/docs/security-and-audit)。
-## 19.4.Node.JS瘦客户端
+## 19.4.Node.js瘦客户端
 ### 19.4.1.Node.js瘦客户端
 #### 19.4.1.1.摘要
 这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
@@ -3618,7 +3618,7 @@ npm link
 npm link apache-ignite-client #linking examples (optional)
 ```
 #### 19.4.1.3.运行示例
-为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://apacheignite.readme.io/v2.7/docs/[https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples])。
+为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)。
 
 1.运行Ignite的服务端：
 
@@ -4219,8 +4219,11 @@ const cfg = new IgniteClientConfiguration(ENDPOINT).
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
 3.设置Ignite服务端以支持[SSL\TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书：
+
 4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置：
+
 5.根据需要，更新下面示例中的常量TLS_KEY_FILE_NAME、TLS_CERT_FILE_NAME和TLS_CA_FILE_NAME：
+
 6.根据需要更新下面示例中的`USER_NAME`和`PASSWORD`常量。
 
 ```javascript
@@ -4336,3 +4339,1005 @@ class AuthTlsExample {
 const authTlsExample = new AuthTlsExample();
 authTlsExample.start();
 ```
+## 19.5.Python瘦客户端
+### 19.5.1.Python瘦客户端
+#### 19.5.1.1.摘要
+Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+
+瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
+
+它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
+#### 19.5.1.2.入门
+**先决条件**
+
+ - Python的3.4及以后的版本
+ - [最新版本](https://ignite.apache.org/download.cgi)的Ignite。
+
+**安装**
+
+可以从[PYPI](https://pypi.org/project/pyignite/)中安装`pyignite`：
+```bash
+$ pip install pyignite
+```
+**运行一个示例**
+
+安装完`pyignite`之后，为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/python/examples)。
+
+1.运行Ignite的服务端：
+
+要使用默认的配置启动一个集群节点，打开终端，假定位于`IGNITE_HOME`（Ignite安装文件夹），只需要输入：
+
+Unix：
+```bash
+./ignite.sh
+```
+Windows：
+```batch
+ignite.bat
+```
+2.在另一个终端窗口，转到`IGNITE_HOME/platforms/python/examples`，调用`python <example_file_name>.py`就可以运行一个示例，比如：
+```bash
+$ cd IGNITE_HOME/platforms/python/examples
+$ python get_and_put.py
+```
+### 19.5.2.初始化和配置
+本文会描述使用Python瘦客户端与Ignite集群进行交互的基本步骤。
+
+在用Python瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
+
+Unix：
+```bash
+./ignite.sh
+```
+Windows：
+```batch
+ignite.bat
+```
+#### 19.5.2.1.接入集群
+下面的代码片段显示了如何从Python瘦客户端接入Ignite集群：
+```python
+from pyignite import Client
+
+## Open a connection
+client = Client()
+client.connect('127.0.0.1', 10800)
+```
+#### 19.5.2.2.创建缓存
+使用Python瘦客户端，可以在集群中创建缓存，比如：
+```python
+from pyignite import Client
+
+## Open a connection
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+## Create a cache
+my_cache = client.create_cache('my cache')
+```
+#### 19.5.2.3.配置缓存
+`prop_codes`模块包含表示各种缓存设置的顺序值列表。
+
+与缓存同步、再平衡、关联和其他与缓存配置相关的详细信息，可以参阅[数据网格](/doc/java/Key-ValueDataGrid.md)的相关文档。
+
+通过`create_cache()`或`get_or_create_cache()`,下面的缓存属性可用于对缓存进行配置：
+
+|属性名|顺序值|属性类型|描述|
+|---|---|---|---|
+|PROP_NAME|0|string|缓存名，这是唯一必须的属性|
+|PROP_CACHE_MODE|1|int|缓存模式。LOCAL：0，REPLICATED：1，PARTITIONED：2|
+|PROP_CACHE_ATOMICITY_MODE|2|int|缓存原子化模式。TRANSACTIONAL：0，ATOMIC：1|
+|PROP_BACKUPS_NUMBER|3|int|备份数量|
+|PROP_WRITE_SYNCHRONIZATION_MODE|4|int|写同步模式。FULL_SYNC：0，FULL_ASYNC：1，PRIMARY_SYNC：2|
+|PROP_COPY_ON_READ|5|bool|读时复制标志|
+|PROP_READ_FROM_BACKUP|6|bool|从备份读数据标志|
+|PROP_DATA_REGION_NAME|100|string|内存区名|
+|PROP_IS_ONHEAP_CACHE_ENABLED|101|bool|堆内内存标志|
+|PROP_QUERY_ENTITIES|200|list|查询实体列表|
+|PROP_QUERY_PARALLELISM|210|int|并行查询数量|
+|PROP_QUERY_DETAIL_METRIC_SIZE|202|int|查询详细指标大小|
+|PROP_SQL_SCHEMA|203|string|SQL模式|
+|PROP_SQL_INDEX_INLINE_MAX_SIZE|204|int|SQL内联索引最大值|
+|PROP_SQL_ESCAPE_ALL|205|bool|SQL转义标志|
+|PROP_MAX_QUERY_ITERATORS|206|int|查询迭代器的最大数量|
+|PROP_REBALANCE_MODE|300|int|再平衡模式。SYNC：0，ASYNC：1，NONE：2|
+|PROP_REBALANCE_DELAY|301|int|再平衡延迟时间（毫秒）|
+|PROP_REBALANCE_TIMEOUT|302|int|再平衡超时时间（毫秒）|
+|PROP_REBALANCE_BATCH_SIZE|303|int|再平衡批处理大小|
+|PROP_REBALANCE_BATCHES_PREFETCH_COUNT|304|int|再平衡批处理预取计数|
+|PROP_REBALANCE_ORDER|305|int|再平衡顺序|
+|PROP_REBALANCE_THROTTLE|306|int|再平衡调节（毫秒）|
+|PROP_GROUP_NAME|400|string|缓存组名|
+|PROP_CACHE_KEY_CONFIGURATION|401|list|缓存键配置列表|
+|PROP_DEFAULT_LOCK_TIMEOUT|402|int|默认锁超时时间（毫秒）|
+|PROP_MAX_CONCURRENT_ASYNC_OPERATIONS|403|int|最大并行异步操作数量|
+|PROP_PARTITION_LOSS_POLICY|404|int|分区丢失策略。READ_ONLY_SAFE：0，READ_ONLY_ALL：1，READ_WRITE_SAFE：2，READ_WRITE_ALL：3，IGNORE：4|
+|PROP_EAGER_TTL|405|bool|Eager TTL标志|
+|PROP_STATISTICS_ENABLED|406|bool|统计信息收集标志|
+|PROP_INVALIDATE|-1|bool|这是个只读属性，无法赋值，但是通过`settings()`可以得到|
+
+**示例**
+
+```python
+cache_config = {
+  PROP_NAME: 'my_cache',
+  PROP_CACHE_KEY_CONFIGURATION: [
+    {
+      'type_name': 'my_type',
+      'affinity_key_field_name': 'my_field',
+    },
+  ],
+}
+my_cache = client.create_cache(cache_config)
+```
+**查询实体**
+
+ - `table_name`: SQL表名；
+ - `key_field_name`: 键字段名；
+ - `key_type_name`: 键类型名（Java类型或者复杂对象）；
+ - `value_field_name`: 值字段名；
+ - `value_type_name`: 值类型名；
+ - `field_name_aliases`: 字段名别名列表；
+ - `query_fields`: 查询字段名列表；
+ - `query_indexes`: 查询索引列表。
+
+**字段名别名**
+
+ - `field_name`: 字段名；
+ - `alias`: 别名（字符串）。
+
+**查询字段**
+
+ - `name`：字段名；
+ - `type_name`：Java类型或者复杂对象名；
+ - `is_key_field`：（可选）布尔值，默认为false；
+ - `is_notnull_constraint_field`：布尔值；
+ - `default_value`：（可选）任何可以转换为前述`type_name`类型的数据，默认为空（Null）；
+ - `precision`：（可选）小数精度：小数的位数总数。默认值为-1（使用集群默认值），对于非数值SQL类型（除了`java.math.BigDecimal`）会忽略；
+ - `scale`：（可选）小数精度：小数点后的数值位数。默认值为-1（使用集群默认值），对于非数值SQL类型（除了`java.math.BigDecimal`）会忽略；
+
+**查询索引**
+
+ - `index_name`：索引名；
+ - `index_type`：索引类型代码，为无符号字节范围内的整数值；
+ - `inline_size`：整型值；
+ - `fields`：索引字段的列表。
+
+**字段**
+
+ - `name`: 字段名；
+ - `is_descending`：（可选）布尔值，默认为false；
+
+**缓存键**
+
+ - `type_name`：复杂对象名；
+ - `affinity_key_field_name`：关系键字段名；
+
+#### 19.5.2.4.数据类型
+Ignite使用一个复杂的可序列化数据类型系统来存储和检索用户数据，并通过Ignite的二进制协议管理其缓存的配置。
+
+大多数Ignite数据类型都可以用标准的Python数据类型或类来表示。但是，其中一些在概念上与Python动态类型系统不一样、过于复杂或模棱两可。
+
+下表总结了Ignite数据类型的概念，以及它们在Python中的表示和处理。注意，解析器/构造函数类是不可实例化的。因此没有必要使用这些解析器/构造函数类。Python风格类型将足以与Ignite二进制API交互。不过在一些类型不明确的罕见场景中，以及为了实现互操作性，可能需要将一个或另一个类以及数据作为类型转换提示侵入到一些API函数中。
+
+**基础数据类型**
+
+|Ignite二进制数据类型|Python类型或类|解析器/构造函数类|
+|---|---|---|
+|Byte|int|ByteObject|
+|Short|int|ShortObject|
+|Int|int|IntObject|
+|Long|int|LongObject|
+|Float|float|FloatObject|
+|Double|float|DoubleObject|
+|Char|str|CharObject|
+|Bool|bool|BoolObject|
+|Null|NoneType|Null|
+
+**标准对象**
+
+|Ignite二进制数据类型|Python类型或类|解析器/构造函数类|
+|---|---|---|
+|String|str|String|
+|UUID|uuid.UUID|UUIDObject|
+|Timestamp|tuple|TimestampObject|
+|Date|datetime.datetime|DateObject|
+|Time|datetime.timedelta|TimeObject|
+|Decimal|decimal.Decimal|DecimalObject|
+|Enum|tuple|EnumObject|
+|Binaryenum|tuple|BinaryEnumObject|
+
+**基础类型数组**
+
+|Ignite二进制数据类型|Python类型或类|解析器/构造函数类|
+|---|---|---|
+|Byte数组|iterable/list|ByteArrayObject|
+|Short数组|iterable/list|ShortArrayObject|
+|Int数组|iterable/list|IntArrayObject|
+|Long数组|iterable/list|LongArrayObject|
+|Float数组|iterable/list|FloatArrayObject|
+|Double数组|iterable/list|DoubleArrayObject|
+|Char数组|iterable/list|CharArrayObject|
+|Bool数组|iterable/list|BoolArrayObject|
+
+**标准对象数组**
+
+|Ignite二进制数据类型|Python类型或类|解析器/构造函数类|
+|---|---|---|
+|String数组|iterable/list|StringArrayObject|
+|UUID数组|iterable/list|UUIDArrayObject|
+|Timestamp数组|iterable/list|TimestampArrayObject|
+|Date数组|iterable/list|DateArrayObject|
+|Time数组|iterable/list|TimeArrayObject|
+|Decimal数组|iterable/list|DecimalArrayObject|
+
+**集合对象、特定类型以及复杂对象**
+
+|Ignite二进制数据类型|Python类型或类|解析器/构造函数类|
+|---|---|---|
+|Object数组|iterable/list|ObjectArrayObject|
+|Collection|tuple|CollectionObject|
+|Map|dict, collections.OrderedDict|MapObject|
+|Enum数组|iterable/list|EnumArrayObject|
+|复杂对象|object|BinaryObject|
+|包装数据|tuple|WrappedDataObject|
+
+#### 19.5.2.5.故障转移
+当与服务器的连接断开或超时时，`Client`对象传播原始异常（`OSError`或`SocketError`），但保持其构造函数的参数不变，并尝试透明地重新连接。
+
+当`Client`无法重新连接时，会抛出一个特殊的`ReconnectError`异常。
+
+下面的示例提供了一个简单的节点列表遍历故障转移机制。将本地主机上的3个Ignite节点组成一个集群并运行：
+```python
+from pyignite import Client
+from pyignite.datatypes.cache_config import CacheMode
+from pyignite.datatypes.prop_codes import *
+from pyignite.exceptions import SocketError
+
+
+nodes = [
+    ('127.0.0.1', 10800),
+    ('127.0.0.1', 10801),
+    ('127.0.0.1', 10802),
+]
+
+client = Client(timeout=4.0)
+client.connect(nodes)
+print('Connected to {}'.format(client))
+
+my_cache = client.get_or_create_cache({
+    PROP_NAME: 'my_cache',
+    PROP_CACHE_MODE: CacheMode.REPLICATED,
+})
+my_cache.put('test_key', 0)
+
+# abstract main loop
+while True:
+    try:
+        # do the work
+        test_value = my_cache.get('test_key')
+        my_cache.put('test_key', test_value + 1)
+    except (OSError, SocketError) as e:
+        # recover from error (repeat last command, check data
+        # consistency or just continue − depends on the task)
+        print('Error: {}'.format(e))
+        print('Last value: {}'.format(my_cache.get('test_key')))
+        print('Reconnected to {}'.format(client))
+```
+然后尝试停止和重启节点，看看发生了什么：
+```
+# Connected to 127.0.0.1:10800
+# Error: [Errno 104] Connection reset by peer
+# Last value: 6999
+# Reconnected to 127.0.0.1:10801
+# Error: Socket connection broken.
+# Last value: 12302
+# Reconnected to 127.0.0.1:10802
+# Error: [Errno 111] Client refused
+# Traceback (most recent call last):
+#     ...
+# pyignite.exceptions.ReconnectError: Can not reconnect: out of nodes
+```
+客户端重连不需要显式用户干预，例如调用特定方法或重置参数。不过要注意，重连是延迟发生的：它只在需要时才发生。在本例中，当脚本检查最后保存的值时，会自动重新连接：
+```python
+print('Last value: {}'.format(my_cache.get('test_key')))
+```
+这意味着，`pyignite`用户最好不要检查连接状态，而只是尝试假定的数据操作并捕获产生的异常。
+
+`connect()`方法接受任何`iterable`，而不仅仅是`list`。这意味着可以使用生成器实现任何重连策略（循环、节点优先级、重新连接时暂停或优雅后退）。
+
+`pyignite`附带了一个`RoundRobin`生成器示例。在上面的示例中，尝试将：
+```python
+client.connect(nodes)
+```
+替换为：
+```python
+client.connect(RoundRobin(nodes, max_reconnects=20))
+```
+这时在节点3故障后，客户端会尝试重连到节点1，然后是节点2，要让`RoundRobin`策略正常工作，要求至少有一个节点在线。
+### 19.5.3.键-值
+#### 19.5.3.1.键-值操作
+`pyignite.cache.Cache`类为缓存的键值数据提供了键值操作的方法，`put`、`get`、`putAll`、`getAll`、`replace`等，下面是一个示例：
+```python
+from pyignite import Client
+
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+#Create cache
+my_cache = client.create_cache('my cache')
+
+#Put value in cache
+my_cache.put('my key', 42)
+
+#Get value from cache
+result = my_cache.get('my key')
+print(result)  # 42
+
+result = my_cache.get('non-existent key')
+print(result)  # None
+
+#Get multiple values from cache
+result = my_cache.get_all([
+    'my key',
+    'non-existent key',
+    'other-key',
+])
+print(result)  # {'my key': 42}
+```
+**使用类型提示**
+
+当pyignite方法或函数处理单个值或键时，它有一个额外的参数，比如`value_hint`或`key_hint`，它接受解析器/构造函数类。几乎任何结构元素（在dict或list中）都可以替换为两个元组（上述元素，类型提示）。
+```python
+from pyignite import Client
+from pyignite.datatypes import CharObject, ShortObject
+
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+my_cache = client.get_or_create_cache('my cache')
+
+my_cache.put('my key', 42)
+# value ‘42’ takes 9 bytes of memory as a LongObject
+
+my_cache.put('my key', 42, value_hint=ShortObject)
+# value ‘42’ takes only 3 bytes as a ShortObject
+
+my_cache.put('a', 1)
+# ‘a’ is a key of type String
+
+my_cache.put('a', 2, key_hint=CharObject) 
+# another key ‘a’ of type CharObject was created
+
+value = my_cache.get('a')
+print(value) # 1
+
+value = my_cache.get('a', key_hint=CharObject)
+print(value) # 2
+
+# now let us delete both keys at once
+my_cache.remove([
+    'a',                # a default type key
+    ('a', CharObject),  # a key of type CharObject
+])
+```
+参见[数据类型](#_19-5-2-4-数据类型)章节，可以了解可用作类型提示的所有解析器/构造函数类列表。
+#### 19.5.3.2.扫描查询
+缓存的`scan()`查询方法可以逐元素获取缓存的全部内容。
+
+下面往缓存中注入部分数据：
+```python
+my_cache.put_all({'key_{}'.format(v): v for v in range(20)})
+# {
+#     'key_0': 0,
+#     'key_1': 1,
+#     'key_2': 2,
+#     ... 20 elements in total...
+#     'key_18': 18,
+#     'key_19': 19
+# }
+
+result = my_cache.scan()
+```
+`scan()`方法返回一个生成键和值的两个元组的生成器。可以安全地迭代生成的对：
+```python
+for k, v in result:
+    print(k, v)
+# 'key_17' 17
+# 'key_10' 10
+# 'key_6' 6,
+# ... 20 elements in total...
+# 'key_16' 16
+# 'key_12' 12
+```
+或者，也可以一次将生成器转换为字典：
+```python
+print(dict(result))
+# {
+#     'key_17': 17,
+#     'key_10': 10,
+#     'key_6': 6,
+#     ... 20 elements in total...
+#     'key_16': 16,
+#     'key_12': 12
+# }
+```
+注意：如果缓存包含大量数据，字典可能会消耗太多内存。
+#### 19.5.3.3.清理
+销毁创建的缓存并且断开连接：
+```python
+my_cache.destroy()
+client.close()
+```
+### 19.5.4.SQL
+Python瘦客户端完整支持Ignite的SQL查询，具体的示例可以看[这里](/doc/sql/README.md#_1-2-入门)。
+#### 19.5.4.1.准备
+首先建立一个连接：
+```python
+client = Client()
+client.connect('127.0.0.1', 10800)
+```
+然后创建表，先是`Country`表，然后是`City`和`CountryLanguage`表：
+```python
+COUNTRY_CREATE_TABLE_QUERY = '''CREATE TABLE Country (
+    Code CHAR(3) PRIMARY KEY,
+    Name CHAR(52),
+    Continent CHAR(50),
+    Region CHAR(26),
+    SurfaceArea DECIMAL(10,2),
+    IndepYear SMALLINT(6),
+    Population INT(11),
+    LifeExpectancy DECIMAL(3,1),
+    GNP DECIMAL(10,2),
+    GNPOld DECIMAL(10,2),
+    LocalName CHAR(45),
+    GovernmentForm CHAR(45),
+    HeadOfState CHAR(60),
+    Capital INT(11),
+    Code2 CHAR(2)
+)'''
+
+CITY_CREATE_TABLE_QUERY = '''CREATE TABLE City (
+    ID INT(11),
+    Name CHAR(35),
+    CountryCode CHAR(3),
+    District CHAR(20),
+    Population INT(11),
+    PRIMARY KEY (ID, CountryCode)
+) WITH "affinityKey=CountryCode"'''
+
+LANGUAGE_CREATE_TABLE_QUERY = '''CREATE TABLE CountryLanguage (
+    CountryCode CHAR(3),
+    Language CHAR(30),
+    IsOfficial BOOLEAN,
+    Percentage DECIMAL(4,1),
+    PRIMARY KEY (CountryCode, Language)
+) WITH "affinityKey=CountryCode"'''
+
+for query in [
+    COUNTRY_CREATE_TABLE_QUERY,
+    CITY_CREATE_TABLE_QUERY,
+    LANGUAGE_CREATE_TABLE_QUERY,
+]:
+    client.sql(query)
+```
+创建索引：
+```python
+CITY_CREATE_INDEX = '''
+CREATE INDEX idx_country_code ON city (CountryCode)'''
+
+LANGUAGE_CREATE_INDEX = '''
+CREATE INDEX idx_lang_country_code ON CountryLanguage (CountryCode)'''
+
+for query in [CITY_CREATE_INDEX, LANGUAGE_CREATE_INDEX]:
+    client.sql(query)
+```
+注入数据：
+```python
+COUNTRY_INSERT_QUERY = '''INSERT INTO Country(
+    Code, Name, Continent, Region,
+    SurfaceArea, IndepYear, Population,
+    LifeExpectancy, GNP, GNPOld,
+    LocalName, GovernmentForm, HeadOfState,
+    Capital, Code2
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
+
+CITY_INSERT_QUERY = '''INSERT INTO City(
+    ID, Name, CountryCode, District, Population
+) VALUES (?, ?, ?, ?, ?)'''
+
+LANGUAGE_INSERT_QUERY = '''INSERT INTO CountryLanguage(
+    CountryCode, Language, IsOfficial, Percentage
+) VALUES (?, ?, ?, ?)'''
+
+for row in COUNTRY_DATA:
+    client.sql(COUNTRY_INSERT_QUERY, query_args=row)
+
+for row in CITY_DATA:
+    client.sql(CITY_INSERT_QUERY, query_args=row)
+
+for row in LANGUAGE_DATA:
+    client.sql(LANGUAGE_INSERT_QUERY, query_args=row)
+```
+具体的数据示例，在[GitHub](https://github.com/apache/ignite/blob/master/examples/sql/world.sql)上可以获得。
+
+到这里准备工作就完成了。
+#### 19.5.4.2.SQL查询
+显示指定城市的所有信息：
+```python
+CITY_INFO_QUERY = '''SELECT * FROM City WHERE id = ?'''
+
+result = client.sql(
+    CITY_INFO_QUERY,
+    query_args=[3802],
+    include_field_names=True,
+)
+field_names = next(result)
+field_data = list(*result)
+
+print('City info:')
+for field_name, field_value in zip(field_names*len(field_data), field_data):
+    print('{}: {}'.format(field_name, field_value))
+# City info:
+# ID: 3802
+# NAME: Detroit
+# COUNTRYCODE: USA
+# DISTRICT: Michigan
+# POPULATION: 951270
+```
+#### 19.5.4.3.SQL字段查询
+在样本数据中，最大的10个城市是什么？
+```python
+MOST_POPULATED_QUERY = '''
+SELECT name, population FROM City ORDER BY population DESC LIMIT 10'''
+
+result = client.sql(MOST_POPULATED_QUERY)
+print('Most 10 populated cities:')
+for row in result:
+    print(row)
+    
+# Most 10 populated cities:
+# ['Mumbai (Bombay)', 10500000]
+# ['Shanghai', 9696300]
+# ['New York', 8008278]
+# ['Peking', 7472000]
+# ['Delhi', 7206704]
+# ['Chongqing', 6351600]
+# ['Tianjin', 5286800]
+# ['Calcutta [Kolkata]', 4399819]
+# ['Wuhan', 4344600]
+# ['Harbin', 4289800]
+```
+`sql()`函数会返回一个生成器函数，然后对结果集进行迭代。
+#### 19.5.4.4.SQL关联查询
+在3个指定的国家中，人口最多的10个城市是什么？
+
+注意，如果配置了`include_field_names`参数为`true`，`sql()`方法会在第一次迭代时返回一个字段名的列表，然后可以使用Python内置的`next`函数访问它们。
+```python
+MOST_POPULATED_IN_3_COUNTRIES_QUERY = '''
+SELECT country.name as country_name, city.name as city_name, MAX(city.population) AS max_pop FROM country
+    JOIN city ON city.countrycode = country.code
+    WHERE country.code IN ('USA','IND','CHN')
+    GROUP BY country.name, city.name ORDER BY max_pop DESC LIMIT 10
+'''
+
+result = client.sql(
+    MOST_POPULATED_IN_3_COUNTRIES_QUERY,
+    include_field_names=True,
+)
+print('Most 10 populated cities in USA, India and China:')
+print(next(result))
+print('----------------------------------------')
+for row in result:
+    print(row)
+# Most 10 populated cities in USA, India and China:
+# ['COUNTRY_NAME', 'CITY_NAME', 'MAX_POP']
+# ----------------------------------------
+# ['India', 'Mumbai (Bombay)', 10500000]
+# ['China', 'Shanghai', 9696300]
+# ['United States', 'New York', 8008278]
+# ['China', 'Peking', 7472000]
+# ['India', 'Delhi', 7206704]
+# ['China', 'Chongqing', 6351600]
+# ['China', 'Tianjin', 5286800]
+# ['India', 'Calcutta [Kolkata]', 4399819]
+# ['China', 'Wuhan', 4344600]
+# ['China', 'Harbin', 4289800]
+```
+最后，使用下面的样例代码删除表：
+```python
+DROP_TABLE_QUERY = '''DROP TABLE {} IF EXISTS'''
+
+for table_name in [
+    CITY_TABLE_NAME,
+    LANGUAGE_TABLE_NAME,
+    COUNTRY_TABLE_NAME,
+]:
+    result = client.sql(DROP_TABLE_QUERY.format(table_name))
+```
+### 19.5.5.二进制类型
+复杂对象（通常称为`二进制对象`）是一个Ignite的数据类型，设计为表示Java类。它具有以下特点：
+
+ - 一个唯一ID（类型ID），由类名（类型名）派生；
+ - 描述其内部结构（字段的顺序、名称和类型）的一个或多个关联模式，每个模式都有自己的ID；
+ - 一个可选的版本号，旨在帮助用户区分同一类型、使用不同模式序列化的对象。
+
+不过复杂对象的这些区别性特征在Java语言之外几乎没有意义。Python类不能通过其名称（它不是唯一的）、ID（Python中的对象ID是易失性的；在CPython中，它只是解释器内存堆中的一个指针）或其复杂字段（它们没有关联的数据类型，而且可以在运行时添加或删除）来定义。对于`pyignite`用户来说，这意味着为了存储本地Python数据，最好使用Ignite的`CollectionObject`或`MapObject`数据类型。
+
+但是，为了实现互操作性，`pyignite`有一种机制，可以创建特殊的Python类来读取或写入复杂的对象。这些类有一个接口，它模拟复杂对象的所有特性：类型名、类型ID、模式、模式ID和版本号。
+
+假设表示一个复杂对象的一个具体类会严重限制用户的数据操作能力，那么上面提到的所有功能都是通过元类型`GenericObjectMeta`实现的，读取复杂对象时会自动使用。
+```python
+from pyignite import Client, GenericObjectMeta
+from pyignite.datatypes import *
+
+client = Client()
+client.connect('localhost', 10800)
+
+person_cache = client.get_or_create_cache('person')
+
+person = person_cache.get(1)
+print(person.__class__.__name__)
+# Person
+
+print(person)
+# Person(first_name='Ivan', last_name='Ivanov', age=33, version=1)
+```
+这里可以看到`GenericObjectMeta`在内部如何使用`attrs`包来创建`__init__()`和`__repr__()`方法。
+
+这些自动生成的类，在之后的写操作中可以复用。
+```python
+Person = person.__class__
+
+person_cache.put(
+    1, Person(first_name='Ivan', last_name='Ivanov', age=33)
+)
+
+```
+`GenericObjectMeta`也可以用于直接创建自定义的类：
+```python
+class Person(metaclass=GenericObjectMeta, schema=OrderedDict([
+    ('first_name', String),
+    ('last_name', String),
+    ('age', IntObject),
+])):
+    pass
+```
+注意`Person`类是如何定义的。`schema`是`GenericObjectMeta`元类参数。另一个重要的`GenericObjectMeta`参数是一个类型名，但它是可选的，并且默认为类名（在我们的示例中是`person`）。
+
+还要注意，这个`Person`不需要定义自己的属性、方法，尽管这是完全可能的。
+
+当自定义的`Person`类创建完成后，就可以使用其对象发送数据到Ignite服务端了。在发送第一个复杂对象是，客户端将隐式地将其注册。如果打算先使用自定义类读取现有复杂对象的值，则必须在客户端显式注册该类：
+```python
+client.register_binary_type(Person)
+```
+如果已经了解了复杂对象的`pyignite`实现的基本概念，下一步就会讨论更详细的示例。
+#### 19.5.5.1.读
+Ignite SQL在内部使用复杂对象来表示SQL表中的键和行。通常来说SQL数据是通过查询访问的，因此只需考虑下面的示例就可以了解二进制对象（而不是Ignite SQL）是如何工作的。
+
+在前面的示例中创建了一些SQL表。这里再做一次，然后检查Ignite存储：
+```python
+result = client.get_cache_names()
+print(result)
+# [
+#     'SQL_PUBLIC_CITY',
+#     'SQL_PUBLIC_COUNTRY',
+#     'PUBLIC',
+#     'SQL_PUBLIC_COUNTRYLANGUAGE'
+# ]
+```
+可以看到Ignite为每个表创建了一个缓存。缓存的命名统一为`SQL_<schema name>_<table name>`模式。
+
+下面会通过`settings`属性来显示缓存的配置：
+```python
+city_cache = client.get_or_create_cache('SQL_PUBLIC_CITY')
+print(city_cache.settings[PROP_NAME])
+# 'SQL_PUBLIC_CITY'
+
+print(city_cache.settings[PROP_QUERY_ENTITIES])
+# {
+#     'key_type_name': (
+#         'SQL_PUBLIC_CITY_9ac8e17a_2f99_45b7_958e_06da32882e9d_KEY'
+#     ),
+#     'value_type_name': (
+#         'SQL_PUBLIC_CITY_9ac8e17a_2f99_45b7_958e_06da32882e9d'
+#     ),
+#     'table_name': 'CITY',
+#     'query_fields': [
+#         ...
+#     ],
+#     'field_name_aliases': [
+#         ...
+#     ],
+#     'query_indexes': []
+# }
+```
+`value_type_name`和`key_type_name`的值是二进制类型的名称。City表的键字段使用`key_type_name`类型存储，其它字段使用`value_type_name`类型存储。
+
+在有了存储数据的缓存，以及键和值数据类型的名称后，就可以不使用SQL函数来读取数据，并验证结果的正确性。
+
+可以看到的是从缓存中提取的键和值的元组，键和值都表示为复杂对象。数据类名称与`value_type_name`和`key_type_name`缓存设置相同。对象的字段对应于SQL查询。
+```python
+result = city_cache.scan()
+print(next(result))
+# (
+#     SQL_PUBLIC_CITY_6fe650e1_700f_4e74_867d_58f52f433c43_KEY(
+#         ID=1890,
+#         COUNTRYCODE='CHN',
+#         version=1
+#     ),
+#     SQL_PUBLIC_CITY_6fe650e1_700f_4e74_867d_58f52f433c43(
+#         NAME='Shanghai',
+#         DISTRICT='Shanghai',
+#         POPULATION=9696300,
+#         version=1
+#     )
+# )
+```
+#### 19.5.5.2.创建
+现在，在了解了Ignite SQL存储的内部结构后，就可以创建一个表，只使用键-值函数将数据放入其中。
+
+例如创建一个表来注册高中生：大致相当于以下SQL DDL语句：
+```sql
+CREATE TABLE Student (
+    sid CHAR(9),
+    name VARCHAR(20),
+    login CHAR(8),
+    age INTEGER(11),
+    gpa REAL
+)
+```
+为了完成这个任务，如下的步骤必不可少：
+1.创建缓存：
+```python
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+student_cache = client.create_cache({
+        PROP_NAME: 'SQL_PUBLIC_STUDENT',
+        PROP_SQL_SCHEMA: 'PUBLIC',
+        PROP_QUERY_ENTITIES: [
+            {
+                'table_name': 'Student'.upper(),
+                'key_field_name': 'SID',
+                'key_type_name': 'java.lang.Integer',
+                'field_name_aliases': [],
+                'query_fields': [
+                    {
+                        'name': 'SID',
+                        'type_name': 'java.lang.Integer',
+                        'is_key_field': True,
+                        'is_notnull_constraint_field': True,
+                    },
+                    {
+                        'name': 'NAME',
+                        'type_name': 'java.lang.String',
+                    },
+                    {
+                        'name': 'LOGIN',
+                        'type_name': 'java.lang.String',
+                    },
+                    {
+                        'name': 'AGE',
+                        'type_name': 'java.lang.Integer',
+                    },
+                    {
+                        'name': 'GPA',
+                        'type_name': 'java.math.Double',
+                    },
+                ],
+                'query_indexes': [],
+                'value_type_name': 'SQL_PUBLIC_STUDENT_TYPE',
+                'value_field_name': None,
+            },
+        ],
+    })
+```
+2.定义复杂对象数据类：
+```python
+class Student(
+    metaclass=GenericObjectMeta,
+    type_name='SQL_PUBLIC_STUDENT_TYPE',
+    schema=OrderedDict([
+        ('NAME', String),
+        ('LOGIN', String),
+        ('AGE', IntObject),
+        ('GPA', DoubleObject),
+    ])
+):
+    pass
+```
+3.插入数据：
+```python
+student_cache.put(
+    1,
+    Student(LOGIN='jdoe', NAME='John Doe', AGE=17, GPA=4.25),
+    key_hint=IntObject
+)
+```
+现在要确认SQL函数已经可以使用这个缓存了：
+```python
+result = client.sql(
+    r'SELECT * FROM Student',
+    include_field_names=True
+)
+print(next(result))
+# ['SID', 'NAME', 'LOGIN', 'AGE', 'GPA']
+
+print(*result)
+# [1, 'John Doe', 'jdoe', 17, 4.25]
+```
+不过，这个缓存无法使用DDL命令进行删除。
+```python
+# DROP_QUERY = 'DROP TABLE Student'
+# client.sql(DROP_QUERY)
+#
+# pyignite.exceptions.SQLError: class org.apache.ignite.IgniteCheckedException:
+# Only cache created with CREATE TABLE may be removed with DROP TABLE
+# [cacheName=SQL_PUBLIC_STUDENT]
+```
+它可以使用`destroy`方法进行删除：
+```python
+student_cache.destroy()
+```
+#### 19.5.5.3.迁移
+假设有一个会计应用程序，它以键-值格式存储数据。目标是对原始费用凭证的格式和数据进行以下更改：
+
+ - 将`date`重命名为`expense_date`；
+ - 添加`report_date`；
+ - 如果`reported`为`true`，则将`report_date`设置为当前日期，否则设置为空；
+ - 删除`reported`。
+
+首先获取优惠券的缓存：
+```python
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+accounting = client.get_or_create_cache('accounting')
+```
+如果代码中没有存储复杂对象的模式，可以使用`query_binary_type()`方法获取并将其作为数据类：
+```python
+data_classes = client.query_binary_type('ExpenseVoucher')
+print(data_classes)
+# {
+#     -231598180: <class '__main__.ExpenseVoucher'>
+# }
+
+s_id, data_class = data_classes.popitem()
+schema = data_class.schema
+```
+下面会修改模式，并通过更新后的模式来创建一个新的复杂对象：
+```python
+schema['expense_date'] = schema['date']
+del schema['date']
+schema['report_date'] = DateObject
+del schema['reported']
+schema['sum'] = DecimalObject
+
+
+# define new data class
+class ExpenseVoucherV2(
+    metaclass=GenericObjectMeta,
+    type_name='ExpenseVoucher',
+    schema=schema,
+):
+    pass
+```
+下面将数据从旧模式迁移到新的：
+```python
+def migrate(cache, data, new_class):
+    """ Migrate given data pages. """
+    for key, old_value in data:
+        # read data
+        print(old_value)
+        # ExpenseVoucher(
+        #     date=datetime(2017, 9, 21, 0, 0),
+        #     reported=True,
+        #     purpose='Praesent eget fermentum massa',
+        #     sum=Decimal('666.67'),
+        #     recipient='John Doe',
+        #     cashier_id=8,
+        #     version=1
+        # )
+
+        # create new binary object
+        new_value = new_class()
+
+        # process data
+        new_value.sum = old_value.sum
+        new_value.purpose = old_value.purpose
+        new_value.recipient = old_value.recipient
+        new_value.cashier_id = old_value.cashier_id
+        new_value.expense_date = old_value.date
+        new_value.report_date = date.today() if old_value.reported else None
+
+        # replace data
+        cache.put(key, new_value)
+
+        # verify data
+        verify = cache.get(key)
+        print(verify)
+        # ExpenseVoucherV2(
+        #     purpose='Praesent eget fermentum massa',
+        #     sum=Decimal('666.67'),
+        #     recipient='John Doe',
+        #     cashier_id=8,
+        #     expense_date=datetime(2017, 9, 21, 0, 0),
+        #     report_date=datetime(2018, 8, 29, 0, 0),
+        #     version=1,
+        # )
+
+
+# migrate data
+result = accounting.scan()
+migrate(accounting, result, ExpenseVoucherV2)
+
+# cleanup
+accounting.destroy()
+client.close()
+```
+此时，在两个模式中定义的所有字段都可以在生成的二进制对象中使用，这取决于使用`put()`或类似方法写入时使用的模式。Ignite二进制API没有删除复杂对象模式的方法，所有定义过的模式都将保留在集群中，直到关闭。
+
+这个版本控制机制非常简单和健壮，但是它有其局限性。主要是：不能更改现有字段的类型。如果做了，将会收到以下消息：`org.apache.ignite.binary.BinaryObjectException: Wrong value has been set [typeName=SomeType, fieldName=f1, fieldType=String, assignedValueType=int]`
+
+或者，可以重命名字段或创建新的复杂对象。
+### 19.5.6.安全
+#### 19.5.6.1.SSL/TLS
+测试SSL连接有一些特殊的要求。
+
+Ignite服务端必须配置为保护二进制协议端口，服务端配置过程可以分为以下若干个基本步骤：
+
+ 1. 使用Java的[keytool](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html)创建密钥存储和信任存储。创建信任存储时，可能需要客户端X.509证书。还需要导出服务端X.509证书以包含在客户端信任链中；
+ 2. 根据本文档：[保护节点之间的连接](/doc/java/Security.md#_4-1-1-保护节点间的连接)，打开Ignite集群的`SSLContextFactory`；
+ 3. 通知Ignite使用[ClientConnectorConfiguration](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/configuration/ClientConnectorConfiguration.html)的配置在其瘦客户端端口上加密数据。如果只想加密连接，而不是验证客户端的证书，请将`sslClientAuth`属性设置为`false`。不过，还是需要在步骤1中设置信任存储。
+
+客户端SSL设置的总结在[这里](https://apache-ignite-binary-protocol-client.readthedocs.io/en/latest/source/pyignite.client.html#pyignite.client.Client)。
+
+要在没有证书验证的情况下使用SSL加密，只需将`use_ssl`配置为`true`：
+```python
+from pyignite import Client
+
+client = Client(use_ssl=True)
+client.connect('127.0.0.1', 10800)
+```
+要识别客户端，请使用[openssl](https://www.openssl.org/docs/manmaster/man1/openssl.html)命令创建一个SSL密钥对和一个证书，并以下面的方式使用它们：
+```python
+from pyignite import Client
+
+client = Client(
+    use_ssl=True,
+    ssl_keyfile='etc/.ssl/keyfile.key',
+    ssl_certfile='etc/.ssl/certfile.crt',
+)
+client.connect('ignite-example.com', 10800)
+```
+要检查服务端的真实性，请获取服务端证书或证书链，并在`ssl_ca_certfile`参数中提供其路径：
+```python
+import ssl
+
+from pyignite import Client
+
+client = Client(
+    use_ssl=True,
+    ssl_ca_certfile='etc/.ssl/ca_certs',
+    ssl_cert_reqs=ssl.CERT_REQUIRED,
+)
+client.connect('ignite-example.com', 10800)
+```
+如果默认值（ssl._DEFAULT_CIPHERS和TLS 1.1）不适合，还可以提供诸如密码集（ssl_ciphers）和SSL版本（ssl_version）等参数。
+#### 19.5.6.2.密码认证
+要进行身份验证，必须在Ignite的XML配置文件中将`authenticationEnabled`属性设置为`true`，并启用持久化，具体请参见[认证](/doc/java/Security.md#_4-2-1-认证)中的相关内容。
+
+请注意，不鼓励通过开放通道发送凭据，因为它们很容易被拦截。提供凭据会自动从客户端打开SSL。强烈建议保护到Ignite服务端的连接，如[SSL/TLS](#_19-5-6-1-ssl/tls)示例中所述，以便使用密码验证。
+
+然后只需向`Client`构造函数提供用户名和密码参数即可：
+```python
+from pyignite import Client
+
+client = Client(username='ignite', password='ignite')
+client.connect('ignite-example.com', 10800)
+```
+如果仍然不希望保护连接，可以在创建`Client`对象时显式禁用SSL，尽管会出现警告：
+```python
+client = Client(username='ignite', password='ignite', use_ssl=False)
+```
+注意，Ignite瘦客户端无法通过二进制协议获得集群的身份验证设置。服务端会简单地忽略意外的凭据。在相反的情况下，用户会收到以下消息：`pyignite.exceptions.HandshakeError: Handshake error: Unauthenticated sessions are prohibited. Expected protocol version: 0.0.0`。
