@@ -3683,9 +3683,9 @@ function onStateChanged(state, reason) {
 #### 19.4.2.2.配置IgniteClient
 下一步是为客户端连接创建配置，可以通过注入`IgniteClientConfiguration`类实例实现。
 
-配置的一个必要部分（在构造函数中指定）是Ignite节点的端点列表。至少要指定一个端点。客户端只会连接到一个节点（从提供的列表中随机选一个端点）。其它节点（如果提供的话）由客户端用于`故障转移重连算法`：如果当前连接断开，客户端将尝试重连到列表中的下一个随机端点。
+必须要配置（在构造函数中指定）的是Ignite节点的端点列表。至少要指定一个端点。客户端只会连接到一个节点（从提供的列表中随机选一个端点）。其它节点（如果提供的话）由客户端用于`故障转移重连算法`：如果当前连接断开，客户端将尝试重连到列表中的下一个随机端点。
 
-可以使用其它方法指定配置的可选部分，这些方法包括：
+可以使用其它方法指定其它的可选配置，这些方法包括：
 
  - 通过用户名/密码进行认证；
  - SSL/TLS连接；
@@ -4071,7 +4071,7 @@ async function performSqlQuery() {
 
 performSqlQuery();
 ```
-#### 19.4.4.2.SQLFieldsQuery
+#### 19.4.4.2.SQL字段查询
 这种类型的查询用于获取作为SQL查询结果集一部分的部分字段，执行诸如INSERT、UPDATE、DELETE、CREATE等DML和DDL语句。
 
 首先，通过创建和配置`SqlFieldsQuery`类的实例来定义查询。然后，将`SqlFieldsQuery`传递到`Cache`实例的查询方法，并获取`SqlFieldsCursor`类的实例。最后，使用`SqlFieldsCursor`实例迭代或获取查询返回的所有元素。
@@ -4210,7 +4210,7 @@ const cfg = new IgniteClientConfiguration(ENDPOINT).
 #### 19.4.6.2.加密
 1.获取TLS所需的证书：
 
- - 或获取指定的Ignite服务端可用的现有证书；
+ - 或着获取指定的Ignite服务端可用的现有证书；
  - 或者为正在使用的Ignite服务端生成新证书；
 
 2.需要以下文件：
@@ -4218,11 +4218,11 @@ const cfg = new IgniteClientConfiguration(ENDPOINT).
  - `keystore.jks`，`truststore.jks` - 用于服务端；
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
-3.设置Ignite服务端以支持[SSL\TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书：
+3.设置Ignite服务端以支持[SSL\TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
 
-4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置：
+4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置；
 
-5.根据需要，更新下面示例中的常量TLS_KEY_FILE_NAME、TLS_CERT_FILE_NAME和TLS_CA_FILE_NAME：
+5.根据需要，更新下面示例中的常量`TLS_KEY_FILE_NAME`、`TLS_CERT_FILE_NAME`和`TLS_CA_FILE_NAME`；
 
 6.根据需要更新下面示例中的`USER_NAME`和`PASSWORD`常量。
 
@@ -5341,3 +5341,700 @@ client.connect('ignite-example.com', 10800)
 client = Client(username='ignite', password='ignite', use_ssl=False)
 ```
 注意，Ignite瘦客户端无法通过二进制协议获得集群的身份验证设置。服务端会简单地忽略意外的凭据。在相反的情况下，用户会收到以下消息：`pyignite.exceptions.HandshakeError: Handshake error: Unauthenticated sessions are prohibited. Expected protocol version: 0.0.0`。
+## 19.6.PHP瘦客户端
+### 19.6.1.PHP瘦客户端
+#### 19.6.1.1.摘要
+这个瘦客户端使得PHP应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+
+瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
+
+它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
+#### 19.6.1.2.入门
+**先决条件**
+
+ - [PHP](http://php.net/manual/en/install.php)的7.2及其以后的版本和[Composer依赖管理器](https://getcomposer.org/download/)；
+ - [PHP多字节字符串扩展](http://php.net/manual/en/mbstring.installation.php)，根据PHP的配置，可能需要额外地安装/配置这个扩展；
+ - [最新版本](https://ignite.apache.org/download.cgi)的Ignite。
+
+**从PHP包仓库进行安装**
+
+在应用的根目录执行：
+```bash
+composer require apache/apache-ignite-client
+```
+如果要在应用中使用这个客户端，源代码中需要包含Composer生成的`vendor/autoload.php`文件，比如：
+```
+require_once __DIR__ . '/vendor/autoload.php';
+```
+**从源代码进行安装**
+
+ 1. 克隆或者下载Ignite的仓库到`local_ignite_path`；
+ 2. 切换到`local_ignite_path/modules/platforms/php`文件夹；
+ 3. 执行`composer install --no-dev`命令。
+
+```bash
+cd local_ignite_path/modules/platforms/php
+composer install --no-dev
+```
+如果要在应用中使用这个客户端，源代码中需要包含Composer生成的`vendor/autoload.php`文件，比如：
+```
+require_once "<local_ignite_path>/vendor/autoload.php";
+```
+**运行一个示例**
+
+安装完PHP瘦客户端后，为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/php/examples)。
+
+1.运行Ignite的服务端：
+
+要使用默认的配置启动一个集群节点，打开终端，假定位于`IGNITE_HOME`（Ignite安装文件夹），只需要输入：
+
+Unix：
+```bash
+./ignite.sh
+```
+Windows：
+```batch
+ignite.bat
+```
+2.在另一个终端窗口，转到`IGNITE_HOME/platforms/php/examples`，调用`php <example_file_name>.php`就可以运行一个示例，比如：
+```bash
+cd IGNITE_HOME/platforms/php/examples
+php CachePutGetExample.php
+```
+### 19.6.2.初始化和配置
+本文会描述使用PHP瘦客户端与Ignite集群进行交互的基本步骤。
+
+在用PHP瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
+
+Unix：
+```bash
+./ignite.sh
+```
+Windows：
+```batch
+ignite.bat
+```
+#### 19.6.2.1.实例化Ignite客户端
+这个客户端的使用，是以`Client`对象的创建开始的，它负责将一个PHP应用接入Ignite集群。
+
+如果需要，可以创建很多个客户端对象，它们之间互相独立。
+```php
+use Apache\Ignite\Client;
+
+$client = new Client();
+```
+#### 19.6.2.2.配置Ignite客户端
+下一步是通过注入`ClientConfiguration`对象来定义客户端连接的配置。
+
+必须要配置（在构造函数中指定）的是Ignite节点的端点列表。必须至少指定一个端点。客户端只会从提供的列表中随机选一个端点连接。其它节点（如果提供）由客户端用于`故障转移重连算法`：如果当前连接丢失，客户端将尝试重连到列表中的下一个随机端点。
+
+可以使用其它方法指定其它的可选配置，包括：
+
+ - 使用用户名/密码进行身份验证；
+ - SSL/TLS连接；
+ - PHP连接选项。默认情况下，客户端使用默认连接选项建立的是非安全连接，不使用身份验证；
+
+
+下面的示例显示如何配置客户端：
+```php
+use Apache\Ignite\ClientConfiguration;
+
+$clientConfiguration = new ClientConfiguration('127.0.0.1:10800');
+```
+下一个示例显示如何使用用户名/密码身份验证和其它连接选项来配置Ignite客户端：
+```php
+use Apache\Ignite\ClientConfiguration;
+
+$clientConfiguration = (new ClientConfiguration('127.0.0.1:10800'))->
+    setUserName('ignite')->
+    setPassword('ignite')->
+    setTimeout(5000);
+```
+#### 19.6.2.3.接入集群
+下一步是将客户端接入Ignite集群。在`connect`方法中指定了客户端连接的配置，其中包括要连接到的端点。
+
+如果客户端无法连接（包括使用`故障转移重连算法`无法成功重连的情况），则会针对Ignite集群的任何操作抛出`NoConnectionException`。
+
+如果客户端在操作之前或期间意外断开连接，则会抛出`OperationStatusUnknownException`异常。这时不知道该操作是否已在集群中实际执行。注意，`故障转移重连算法`将在应用调用下一个操作时才会执行。
+
+应用随时都可以通过调用`disconnect`方法强制断开客户端的连接。
+
+当客户端断开连接时，应用可以使用相同或不同的配置（例如使用不同的端点列表）再次调用`connect`方法。
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Exception\ClientException;
+
+function connectClient(): void
+{
+    $client = new Client();
+    try {
+        $clientConfiguration = new ClientConfiguration(
+            '127.0.0.1:10800', '127.0.0.1:10801', '127.0.0.1:10802');
+        // connect to Ignite node
+        $client->connect($clientConfiguration);
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    }
+}
+
+connectClient();
+```
+#### 19.6.2.4.缓存的使用和配置
+下一步是获取一个表示Ignite缓存的对象。它是一个具有`CacheInterface`的PHP类的实例。
+
+瘦客户端提供了若干方法来处理Ignite缓存和使用`CacheInterface`获取对象：按名称获取缓存、使用指定名称和可选缓存配置创建缓存、获取或创建缓存、销毁缓存等。
+
+对于相同或不同的Ignite缓存，可以根据需要使用`CacheInterface`获取任意数量的对象，并并行处理它们。
+
+下面的示例显示如何通过名称访问缓存并在以后销毁它：
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Exception\ClientException;
+
+function getOrCreateCacheByName(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        // get or create cache by name
+        $cache = $client->getOrCreateCache('myCache');
+
+        // perform cache key-value operations
+        // ...
+
+        // destroy cache
+        $client->destroyCache('myCache');
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+getOrCreateCacheByName();
+```
+下一个示例显示如何通过名称和配置访问缓存：
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Cache\CacheConfiguration;
+use Apache\Ignite\Exception\ClientException;
+
+function createCacheByConfiguration(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        // create cache by name and configuration
+        $cache = $client->createCache(
+            'myCache',
+            (new CacheConfiguration())->setSqlSchema('PUBLIC'));
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+createCacheByConfiguration();
+```
+下面的示例显示如何通过名称获取已有缓存：
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Cache\CacheConfiguration;
+use Apache\Ignite\Exception\ClientException;
+
+function getExistingCache(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        // create cache by name and configuration
+        $cache = $client->getCache('myCache');
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+getExistingCache();
+```
+**类型映射配置**
+
+可以为键和/或值指定具体的Ignite类型。如果键和/或值是非基础类型（如映射、集合、复杂对象等），也可以为该对象的字段指定具体的Ignite类型。
+
+如果没有为某些字段显式指定Ignite类型，客户端将尝试在PHP类型和Ignite对象类型之间进行默认的自动映射。
+
+有关类型和映射的更多详细信息，请参见数据类型映射部分。
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Type\ObjectType;
+use Apache\Ignite\Type\MapObjectType;
+use Apache\Ignite\Exception\ClientException;
+
+function setCacheKeyValueTypes(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        $cache = $client->getOrCreateCache('myCache');
+        $cache->setKeyType(ObjectType::INTEGER)->
+            setValueType(new MapObjectType(
+                MapObjectType::LINKED_HASH_MAP,
+                ObjectType::SHORT,
+                ObjectType::BYTE_ARRAY));
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+setCacheKeyValueTypes();
+```
+#### 19.6.2.5.数据类型
+每当应用通过客户端的API在Ignite中写入或读取字段时，都会在二进制客户端协议定义的Ignite类型和PHP类型之间进行映射。这里的字段是任何存储在Ignite中的数据，包括Ignite条目的全部键或值、数组或集合的元素、复杂对象的字段等。
+
+客户端支持两种映射模式：
+
+ - 显式映射：使用客户端的API方法，应用可以显式指定特定字段的Ignite类型。在读/写操作期间，客户端使用这些信息将字段从PHP类型转换为Ignite类型，反之亦然；
+ - 默认映射：它定义如果应用不为字段使用显式类型映射时会发生什么。
+
+[这里](https://rawgit.com/nobitlost/ignite/ignite-7783-docs/modules/platforms/php/api_docs/html/class_apache_1_1_ignite_1_1_type_1_1_object_type.html)描述了在读/写操作期间，Ignite和PHP类型之间的映射关系。
+
+**复杂对象类型支持**
+
+客户端提供了两种处理Ignite复杂对象类型的方法：反序列化形式和二进制形式。
+
+应用可以通过引用PHP类的`ComplexObjectType`类的实例来指定字段的Ignite类型。当应用程序读取字段的值时，客户端会反序列化接收到的Ignite复杂对象，并将其作为引用的PHP类的实例返回给客户端。当应用程序写入字段值时，客户端需要引用的PHP类的一个实例，并将其序列化为Ignite复杂对象。
+
+如果应用没有指定字段的Ignite类型并读取字段的值，客户端将返回接收到的Ignite复杂对象作为`BinaryObject`类（Ignite复杂对象的二进制形式）的实例。`BinaryObject`不需要反序列化就可以对其内容（对象字段值的读写、添加和删除字段等）进行处理。此外，如果该字段没有显式指定的Ignite类型，应用可以从PHP对象创建`BinaryObject`类的实例，也可以将二进制对象作为字段的值写入Ignite。
+
+客户端负责从/在Ignite集群获取或注册有关Ignite复杂对象类型的信息，包括模式。当需要从/往Ignite读取或写入Ignite复杂对象时，这个过程由客户端自动完成。
+#### 19.6.2.6.支持的API
+客户端API规范可以在[这里](https://rawgit.com/nobitlost/ignite/ignite-7783-docs/modules/platforms/php/api_docs/html/index.html)找到。
+
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+
+ - 不支持`OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作；
+ - 不支持`OP_QUERY_SCAN`操作的过滤器对象，但是`OP_QUERY_SCAN`操作本身是支持的；
+ - 无法注册新的Ignite枚举类型。支持对已有的Ignite枚举类型的项目进行读写；
+ - 复杂对象中不支持原始数据；
+
+以下的附加功能是支持的：
+
+ - SSL/TLS连接；
+ - 故障转移重连算法；
+ - 所有API方法调用都是同步的。
+
+#### 19.6.2.7.开启调试
+要打开/关闭客户端的调试输出（包括错误日志记录），请调用Ignite客户端对象的`setDebug()`方法。默认情况下调试输出是禁用的：
+```php
+use Apache\Ignite\Client;
+
+$client = new Client();
+$client->setDebug(true);
+```
+### 19.6.3.键-值
+#### 19.6.3.1.键-值操作
+`CacheInterface`为缓存的键值数据提供了键值操作的方法，`put`、`get`、`putAll`、`getAll`、`replace`等，下面是一个示例：
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Type\ObjectType;
+use Apache\Ignite\Cache\CacheEntry;
+use Apache\Ignite\Exception\ClientException;
+
+function performCacheKeyValueOperations(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        $cache = $client->getOrCreateCache('myCache')->
+            setKeyType(ObjectType::INTEGER);
+        
+        // put and get value
+        $cache->put(1, 'abc');
+        $value = $cache->get(1);
+
+        // put and get multiple values using putAll()/getAll() methods
+        $cache->putAll([new CacheEntry(2, 'value2'), new CacheEntry(3, 'value3')]);
+        $values = $cache->getAll([1, 2, 3]);
+
+        // removes all entries from the cache
+        $cache->clear();
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+performCacheKeyValueOperations();
+```
+#### 19.6.3.2.扫描查询
+PHP客户端支持Ignite扫描查询。查询方法返回一个带有标准PHP迭代器接口的游标对象，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
+
+首先，通过创建和配置`ScanQuery`类的实例来定义查询；
+
+然后，将`ScanQuery`实例传递给`CacheInterface`的查询方法；
+
+最后，将返回的对象与`CursorInterface`一起使用，以迭代或获取查询返回的所有缓存项。
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Type\ObjectType;
+use Apache\Ignite\Cache\CacheEntry;
+use Apache\Ignite\Query\ScanQuery;
+use Apache\Ignite\Exception\ClientException;
+
+function performScanQuery(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        $cache = $client->getOrCreateCache('myCache')->
+            setKeyType(ObjectType::INTEGER);
+        
+        // put multiple values using putAll()
+        $cache->putAll([
+            new CacheEntry(1, 'value1'),
+            new CacheEntry(2, 'value2'), 
+            new CacheEntry(3, 'value3')]);
+        
+        // create and configure scan query
+        $scanQuery = (new ScanQuery())->
+            setPageSize(1);
+        // obtain scan query cursor
+        $cursor = $cache->query($scanQuery);
+        // getAll cache entries returned by the scan query
+        foreach ($cursor->getAll() as $cacheEntry) {
+            echo($cacheEntry->getValue() . PHP_EOL);
+        }
+        
+        $client->destroyCache('myCache');
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+performScanQuery();
+```
+### 19.6.4.SQL
+#### 19.6.4.1.SQL查询
+PHP客户端支持Ignite的SQL查询。查询方法返回一个带有标准PHP迭代器接口的游标对象，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
+
+首先，通过创建和配置`SqlQuery`类的实例来定义查询；
+
+然后，将`SqlQuery`实例传递给`CacheInterface`的查询方法；
+
+最后，将返回的对象与`CursorInterface`一起使用，以迭代或获取查询返回的所有缓存项。
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Cache\CacheConfiguration;
+use Apache\Ignite\Type\ObjectType;
+use Apache\Ignite\Query\SqlFieldsQuery;
+use Apache\Ignite\Exception\ClientException;
+
+function performSqlFieldsQuery(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        $cache = $client->getOrCreateCache('myPersonCache', (new CacheConfiguration())->
+        setSqlSchema('PUBLIC'));
+
+        // create table using SqlFieldsQuery
+        $cache->query(new SqlFieldsQuery(
+            'CREATE TABLE Person (id INTEGER PRIMARY KEY, firstName VARCHAR, lastName VARCHAR, salary DOUBLE)'))->getAll();
+
+        // insert data into the table
+        $insertQuery = (new SqlFieldsQuery('INSERT INTO Person (id, firstName, lastName, salary) values (?, ?, ?, ?)'))->
+            setArgTypes(ObjectType::INTEGER);
+        $cache->query($insertQuery->setArgs(1, 'John', 'Doe', 1000))->getAll();
+        $cache->query($insertQuery->setArgs(2, 'Jane', 'Roe', 2000))->getAll();
+
+        // obtain sql fields cursor
+        $sqlFieldsCursor = $cache->query(
+            (new SqlFieldsQuery("SELECT concat(firstName, ' ', lastName), salary from Person"))->
+                setPageSize(1));
+
+        // iterate over elements returned by the query
+        foreach ($sqlFieldsCursor as $fields) {
+            print_r($fields);
+        }
+
+        // drop the table
+        $cache->query(new SqlFieldsQuery("DROP TABLE Person"))->getAll();
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+performSqlFieldsQuery();
+```
+#### 19.6.4.2.SQL字段查询
+这种类型的查询用于获取作为SQL查询结果集一部分的各个字段，执行诸如INSERT、UPDATE、DELETE、CREATE等DML和DDL语句。
+
+首先，通过创建和配置`SqlFieldsQuery`类的实例来定义查询；
+
+然后，将`SqlFieldsQuery`实例传递给`CacheInterface`的查询方法；
+
+最后，将返回的对象与`SqlFieldsCursorInterface`一起使用，以迭代或获取查询返回的所有元素。
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Cache\CacheConfiguration;
+use Apache\Ignite\Type\ObjectType;
+use Apache\Ignite\Query\SqlFieldsQuery;
+use Apache\Ignite\Exception\ClientException;
+
+function performSqlFieldsQuery(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        $cache = $client->getOrCreateCache('myPersonCache', (new CacheConfiguration())->
+        setSqlSchema('PUBLIC'));
+
+        // create table using SqlFieldsQuery
+        $cache->query(new SqlFieldsQuery(
+            'CREATE TABLE Person (id INTEGER PRIMARY KEY, firstName VARCHAR, lastName VARCHAR, salary DOUBLE)'))->getAll();
+
+        // insert data into the table
+        $insertQuery = (new SqlFieldsQuery('INSERT INTO Person (id, firstName, lastName, salary) values (?, ?, ?, ?)'))->
+            setArgTypes(ObjectType::INTEGER);
+        $cache->query($insertQuery->setArgs(1, 'John', 'Doe', 1000))->getAll();
+        $cache->query($insertQuery->setArgs(2, 'Jane', 'Roe', 2000))->getAll();
+
+        // obtain sql fields cursor
+        $sqlFieldsCursor = $cache->query(
+            (new SqlFieldsQuery("SELECT concat(firstName, ' ', lastName), salary from Person"))->
+                setPageSize(1));
+
+        // iterate over elements returned by the query
+        foreach ($sqlFieldsCursor as $fields) {
+            print_r($fields);
+        }
+
+        // drop the table
+        $cache->query(new SqlFieldsQuery("DROP TABLE Person"))->getAll();
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+performSqlFieldsQuery();
+```
+### 19.6.5.二进制对象
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+
+ - 不支持`OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作；
+ - 不支持`OP_QUERY_SCAN`操作的过滤器对象，但是`OP_QUERY_SCAN`操作本身是支持的；
+ - 无法注册新的Ignite枚举类型。支持对已有的Ignite枚举类型的项目进行读写；
+ - 复杂对象中不支持原始数据；
+
+下面的示例显示了如何获取/保存复杂对象和二进制对象：
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Type\ObjectType;
+use Apache\Ignite\Type\ComplexObjectType;
+use Apache\Ignite\Exception\ClientException;
+
+class Person
+{
+    public $id;
+    public $name;
+    public $salary;
+            
+    public function __construct(int $id = 0, string $name = null, float $salary = 0)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->salary = $salary;
+    }
+}
+
+function putGetComplexAndBinaryObjects(): void
+{
+    $client = new Client();
+    try {
+        $client->connect(new ClientConfiguration('127.0.0.1:10800'));
+        $cache = $client->getOrCreateCache('myPersonCache')->
+            setKeyType(ObjectType::INTEGER);
+        // Complex Object type for PHP Person class instances
+        $personComplexObjectType = (new ComplexObjectType())->
+            setFieldType('id', ObjectType::INTEGER); 
+        // set cache key and value types
+        $cache->setKeyType(ObjectType::INTEGER)->
+            setValueType($personComplexObjectType);
+        // put Complex Objects to the cache
+        $cache->put(1, new Person(1, 'John Doe', 1000));
+        $cache->put(2, new Person(2, 'Jane Roe', 2000));
+        // get Complex Object, returned value is an instance of Person class
+        $person = $cache->get(1);
+        print_r($person);
+
+        // new CacheClient instance of the same cache to operate with BinaryObjects
+        $binaryCache = $client->getCache('myPersonCache')->
+            setKeyType(ObjectType::INTEGER);
+        // get Complex Object from the cache in a binary form, returned value is an instance of BinaryObject class
+        $binaryPerson = $binaryCache->get(2);
+        echo('Binary form of Person:' . PHP_EOL);
+        foreach ($binaryPerson->getFieldNames() as $fieldName) {
+            $fieldValue = $binaryPerson->getField($fieldName);
+            echo($fieldName . ' : ' . $fieldValue . PHP_EOL);
+        }
+        // modify Binary Object and put it to the cache
+        $binaryPerson->setField('id', 3, ObjectType::INTEGER)->
+            setField('name', 'Mary Major');
+        $binaryCache->put(3, $binaryPerson);
+
+        // get Binary Object from the cache and convert it to PHP object
+        $binaryPerson = $binaryCache->get(3);
+        print_r($binaryPerson->toObject($personComplexObjectType));
+
+        $client->destroyCache('myPersonCache');
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    } finally {
+        $client->disconnect();
+    }
+}
+
+putGetComplexAndBinaryObjects();
+```
+### 19.6.6.安全
+#### 19.6.6.1.认证
+关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_4-2-高级安全)。在PHP端，将用户名/密码传递给`ClientConfiguration`的方法如下：
+```php
+const ENDPOINT = 'localhost:10800';
+const USER_NAME = 'ignite';
+const PASSWORD = 'ignite';
+
+$config = (new ClientConfiguration(AuthTlsExample::ENDPOINT))->
+    setUserName(AuthTlsExample::USER_NAME)->
+    setPassword(AuthTlsExample::PASSWORD);
+```
+#### 19.6.6.2.加密
+1.获取TLS所需的证书：
+
+ - 或着获取指定的Ignite服务端可用的现有证书；
+ - 或者为正在使用的Ignite服务端生成新证书；
+
+2.需要以下文件：
+ 
+ - `keystore.jks`，`truststore.jks` - 用于服务端；
+ - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
+
+3.设置Ignite服务端以支持[SSL\TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
+
+4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置；
+
+5.根据需要，更新下面示例中的常量`TLS_KEY_FILE_NAME`、`TLS_CERT_FILE_NAME`和`TLS_CA_FILE_NAME`；
+
+6.根据需要更新下面示例中的`USER_NAME`和`PASSWORD`常量。
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Cache\CacheInterface;
+use Apache\Ignite\Exception\ClientException;
+use Apache\Ignite\Type\ObjectType;
+
+class AuthTlsExample
+{
+    const ENDPOINT = 'localhost:10800';
+    const USER_NAME = 'ignite';
+    const PASSWORD = 'ignite';
+    const TLS_CLIENT_CERT_FILE_NAME = __DIR__ . '/certs/client.pem';
+    const TLS_CA_FILE_NAME = __DIR__ . '/certs/ca.pem';
+    const CACHE_NAME = 'AuthTlsExample_cache';
+    public function start(): void
+    {
+        $client = new Client();
+        try {
+            $tlsOptions = [
+                'local_cert' => AuthTlsExample::TLS_CLIENT_CERT_FILE_NAME,
+                'cafile' => AuthTlsExample::TLS_CA_FILE_NAME
+            ];
+            
+            $config = (new ClientConfiguration(AuthTlsExample::ENDPOINT))->
+                setUserName(AuthTlsExample::USER_NAME)->
+                setPassword(AuthTlsExample::PASSWORD)->
+                setTLSOptions($tlsOptions);
+                    
+            $client->connect($config);
+            echo("Client connected successfully (with TLS and authentication enabled)" . PHP_EOL);
+            $cache = $client->getOrCreateCache(AuthTlsExample::CACHE_NAME)->
+                setKeyType(ObjectType::BYTE)->
+                setValueType(ObjectType::SHORT_ARRAY);
+            $this->putGetData($cache);
+            $client->destroyCache(AuthTlsExample::CACHE_NAME);
+        } catch (ClientException $e) {
+            echo('ERROR: ' . $e->getMessage() . PHP_EOL);
+        } finally {
+            $client->disconnect();
+        }
+    }
+    private function putGetData(CacheInterface $cache): void
+    {
+        $values = [
+            1 => $this->generateValue(1),
+            2 => $this->generateValue(2),
+            3 => $this->generateValue(3)
+        ];
+        // put values
+        foreach ($values as $key => $value) {
+            $cache->put($key, $value);
+        }
+        echo('Cache values put successfully:' . PHP_EOL);
+        foreach ($values as $key => $value) {
+            $this->printValue($key, $value);
+        }
+        // get and compare values
+        echo('Cache values get:' . PHP_EOL);
+        foreach ($values as $key => $value) {
+            $cacheValue = $cache->get($key);
+            $this->printValue($key, $cacheValue);
+            if (!$this->compareValues($value, $cacheValue)) {
+                echo('Unexpected cache value!' . PHP_EOL);
+                return;
+            }
+        }
+        echo('Cache values compared successfully' . PHP_EOL);
+    }
+    private function compareValues(array $array1, array $array2): bool
+    {
+        return count(array_diff($array1, $array2)) === 0;
+    }
+    private function generateValue(int $key): array
+    {
+        $length = $key + 2;
+        $result = [];
+        for ($i = 0; $i < $length; $i++) {
+            array_push($result, $key * 10 + $i);
+        }
+        return $result;
+    }
+    private function printValue($key, $value): void
+    {
+        echo(sprintf('  %d => [%s]%s', $key, implode(', ', $value), PHP_EOL));
+    }
+}
+
+$authTlsExample = new AuthTlsExample();
+$authTlsExample->start();
+```
