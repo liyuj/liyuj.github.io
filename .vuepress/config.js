@@ -90,7 +90,7 @@ module.exports = {
                         'TestsAndBenchmarking',
                         'Metrics',
                         'ThinClients',
-                        //'KubernetesDeployment',
+                        'KubernetesDeployment',
                         'DeepLearning'
                     ],
                     '/doc/sql/': [
