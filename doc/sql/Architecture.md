@@ -84,14 +84,6 @@ SELECT _key, _val FROM Person WHERE id IN
 ```
 然而，`IN`子句中的子查询`(SELECT personId FROM "salary".Salary ...)`不会被进一步分布化，只会在一个集群节点的本地数据集上执行。
 
-**事务性支持**
-
-目前，SQL仅仅支持原子模式，这意味着如果有一个事务已经提交了一个值A，但是一个并行的SQL查询正在提交值B，这是会看到值A而看不到值B。
-
-::: tip 多版本并发控制(MVCC)
-一旦Ignite SQL网格使用MVCC进行控制，DML操作也会支持事务模式。
-:::
-
 **DML语句的执行计划支持**
 
 目前DML操作不支持`EXPLAIN`。
@@ -191,24 +183,16 @@ EXPLAIN SELECT name FROM Person WHERE age = 26;
 ![](https://files.readme.io/OsddL8lfTOSLKqZWaTlI_Screen%20Shot%202015-08-24%20at%207.06.36%20PM.png)
 
 ### 3.5.3.SQL性能和可用性考量
-当执行SQL查询时有一些常见的陷阱需要注意：
-
- 1. 如果查询使用了操作符**OR**那么他可能不是以期望的方式使用索引。比如对于查询：`select name from Person where sex='M' and (age = 20 or age = 30)`,会使用`sex`字段上的索引而不是`age`上的索引，虽然后者选择性更强。要解决这个问题需要用UNION ALL重写这个查询（注意没有ALL的UNION会返回去重的行，这会改变查询的语意而且引入了额外的性能开销），比如：`select name from Person where sex='M' and age = 20 UNION ALL select name from Person where sex='M' and age = 30`；
- 2. 如果查询使用了操作符**IN**，那么会有两个问题：首先无法提供可变参数列表，这意味着需要在查询中指定明确的列表，比如`where id in (?, ?, ?)`,但是不能写`where id in ?`然后传入一个数组或者集合。第二，查询无法使用索引，要解决这两个问题需要像这样重写查询：`select p.name from Person p join table(id bigint = ?) i on p.id = i.id`,这里可以提供一个任意长度的对象数组（Object[]）作为参数，然后会在字段`id`上使用索引。注意基本类型数组（比如int[],long[]等）无法使用这个语法，但是可以使用基本类型的包装器。
-
-示例：
-```java
-new SqlFieldsQuery(
-  "select * from Person p join table(id bigint = ?) i on p.id = i.id").setArgs(new Object[]{ new Integer[] {2, 3, 4} }))
-```
-他会被转换为下面的SQL：
+如果查询使用了操作符**OR**那么可能不是以期望的方式使用索引。比如对于查询：`select name from Person where sex='M' and (age = 20 or age = 30)`,会使用`sex`字段上的索引而不是`age`上的索引，虽然后者选择性更强。要解决这个问题需要用UNION ALL重写这个查询（注意没有ALL的UNION会返回去重的行，这会改变查询的语义而且引入了额外的性能开销），比如：
 ```sql
-select * from "cache-name".Person p join table(id bigint = (2,3,4)) i on p.id = i.id
+select name from Person where sex='M' and age = 20 
+UNION ALL 
+select name from Person where sex='M' and age = 30
 ```
 ### 3.5.4.结果集延迟加载
 Ignite默认会试图将所有结果集加载到内存然后将其发送给查询发起方(通常为应用客户端），这个方式在查询结果集不太大时提供了比较好的性能。
 
-但是，如果相对于可用内存来说结果集过大，就是导致长期的GC暂停甚至内存溢出。
+不过如果相对于可用内存来说结果集过大，就是导致长期的GC暂停甚至内存溢出。
 
 为了降低内存的消耗，以适度降低性能为代价，可以对结果集进行延迟加载和处理，这个可以通过给JDBC或者ODBC连接串传递`lazy`参数，或者对于Java、.NET和C++来说，使用一个简单的方法也可以实现:
 **Java**：
@@ -222,7 +206,37 @@ query.setLazy(true);
 ```
 jdbc:ignite:thin://192.168.0.15/lazy=true
 ```
-### 3.5.5.查询并行化
+### 3.5.5.查询并置化的数据
+当Ignite执行分布式查询时，它将子查询发送给单个集群成员，并将结果分组到汇总节点上。如果预先知道查询的数据是按`GROUP BY`条件并置处理的，可以使用`SqlFieldsQuery.collocated = true`来减少节点之间的网络流量和查询执行时间。当此标志设置为`true`时，首先对单个节点执行查询，并将结果发送到汇总节点进行最终计算。考虑下面的示例，假设数据由`department_id`进行并置：
+
+**示例1**
+
+```sql
+SELECT SUM(salary) FROM Employee GROUP BY depatment_id
+```
+由于求和操作的性质，Ignite将对存储在各个节点上的元素的工资进行求和，然后将这些工资发送到汇总节点，在那里计算最终结果。启用并置标志只会稍微提高性能。
+
+**示例2**
+
+```sql
+SELECT AVG(salary) FROM Employee GROUP BY depatment_id
+```
+在本例中，Ignite必须将所有`(salary, department_id)`对提取到汇总节点，并在那里计算结果。但是，如果员工按`department_id`字段进行并置，即同一部门的员工数据存储在同一个节点上，那么设置`SqlFieldsQuery.collocated = true`将减少查询执行时间，因为ignite将计算各个节点上每个部门的平均值，并将结果发送到汇总节点进行最终计算。
+### 3.5.6.增加索引内联大小
+Ignite在索引本身中部分包含索引值，以优化查询和数据更新。固定大小的数据类型（bool、byte、short、int等）全部包含在内，对于可变大小的数据（string，byte[]），只包括固定长度的部分。包含部分的长度称为*内联大小*，默认情况下等于值的前10个字节。
+
+如果索引中没有完全包含值，比较这些值可能需要读取相应的数据页，这可能会对性能产生负面影响。在索引可变长度数据时，建议估计字段的长度，并将内联大小设置为包含大多数或所有值的值。
+
+使用以下属性之一设置内联大小（值都是以字节为单位设置的）：
+
+ - `QueryIndex.inlineSize`：如果通过`org.apache.ignite.cache.QueryEntity`对象配置索引时，具体细节可以参见[使用QueryEntity进行查询配置](/doc/java/Key-ValueDataGrid.md#_3-4-7-使用queryentity进行查询配置)；
+ - `@QuerySqlField.inlineSize`：具体细节可以参见[通过注解进行查询的配置](/doc/java/Key-ValueDataGrid.md#_3-4-6-通过注解进行查询的配置)；
+ - `INLINE_SIZE`：[CREATE INDEX](/doc/sql/SQLReference.md#_2-2-2-create-index)的`INLINE_SIZE`属性。
+
+::: warning 注意
+每个长度固定的列（如long）有1个字节的常量开销，每个`VARCHAR`列有2个字节的常量开销，在指定内联大小时应该考虑这些开销。还要注意的是，由于ignite将字符串编码为`UTF-8`，所以有些字符使用的字节数超过了1。
+:::
+### 3.5.7.查询并行化
 SQL查询在每个涉及的节点上，默认是以单线程模式执行的，这种方式对于使用索引返回一个小的结果集的查询是一种优化，比如：
 ```sql
 select * from Person where p.id = ?
@@ -231,29 +245,46 @@ select * from Person where p.id = ?
 ```sql
 select SUM(salary) from Person
 ```
-通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用`CREATE TABLE`生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
+通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
 
 如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行化配置。
 
-::: tip 注意
+::: warning 注意
 当前，这个属性影响特定缓存上的所有查询，可以加速很重的OLAP查询，但是会减慢其他的简单查询，这个行为在未来的版本中会改进。
 :::
 
-### 3.5.6.索引提示
-当明确知道对于查询来说一个索引比另一个更合适时，索引提示就会非常有用，他也有助于指导查询优化器来选择一个更高效的执行计划。在Ignite中要进行这个优化，可以使用`USE INDEX(indexA,...,indexN)`语句，它会告诉Ignite对于查询的执行只会使用给定名字的索引之一。
+### 3.5.8.索引提示
+当明确知道对于查询来说一个索引比另一个更合适时，索引提示就会非常有用，它会指导查询优化器来选择一个更高效的执行计划。在Ignite中要进行这个优化，可以使用`USE INDEX(indexA,...,indexN)`语句，它会告诉Ignite对于查询的执行只会使用给定名字的索引之一。
 
 下面是一个示例：
 ```sql
 SELECT * FROM Person USE INDEX(index_age)
   WHERE salary > 150000 AND age < 35;
 ```
-### 3.5.7.查询执行流程优化
-对于一个SELECT语句，SQL引擎会自动地使用条件段中的主键以及关系键对查询进行优化，比如下面的查询:
+### 3.5.9.分区修剪
+分区修剪是一种在WHERE条件中使用关系键来对查询进行优化的技术。当执行这样的查询时，Ignite将只扫描存储请求数据的那些分区。这将减少查询时间，因为查询将只发送到存储所请求分区的节点。要了解有关分区分布的更多信息，请参阅[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-3-1-分区和复制)。
+
+在下面的示例中，Employee对象通过`id`字段并置处理（如果未指定关联键，则Ignite将使用主键来并置数据）：
 ```sql
-SELECT * FROM Person p WHERE p.id = ?
+CREATE TABLE employee (id BIGINT PRIMARY KEY, department_id INT, name VARCHAR)
+
+/* This query is sent to the node where the requested key is stored */
+SELECT * FROM employee WHERE id=10; 
+
+/* This query is sent to all nodes */
+SELECT * FROM employee WHERE department_id=10;
 ```
-Ignite会计算`p.id`所属的分区，然后只在该分区所在的节点中执行查询。
-### 3.5.8.更新时忽略汇总
+下面的示例中，关系键显式指定，因此会被用于并置化的数据：
+```sql
+CREATE TABLE employee (id BIGINT PRIMARY KEY, department_id INT, name VARCHAR) WITH "AFFINITY_KEY=department_id"
+
+/* This query is sent to all nodes */
+SELECT * FROM employee WHERE id=10;
+
+/* This query is sent to the node where the requested key is stored */
+SELECT * FROM employee WHERE department_id=10;
+```
+### 3.5.10.更新时忽略汇总
 当Ignite执行DML操作时，首先，它会获取所有受影响的中间行用于查询发起方的分析（也被称为汇总），然后会准备更新值的批处理,最后发送给远程节点。
 
 如果一个DML操作需要移动大量数据的话，这个方式可能导致性能问题以及网络的堵塞。
@@ -263,15 +294,15 @@ Ignite会计算`p.id`所属的分区，然后只在该分区所在的节点中�
 ```
 jdbc:ignite:thin://192.168.0.15/skipReducerOnUpdate=true
 ```
-### 3.5.9.SQL堆内行缓存
-Ignite的固化内存在Java堆外存储数据和索引，这意味着每次数据访问，就会有一部分数据从堆外数据区复制到堆内，然后可能被反序列化并且在应用或者服务端节点引用它期间，一直保持在堆内。
+### 3.5.11.SQL堆内行缓存
+Ignite的固化内存在Java堆外存储数据和索引，这意味着每次数据访问，就会有一部分数据从堆外数据区复制到堆内，只要应用或者服务端节点引用它，就有可能被反序列化并且一直保持在堆内。
 
 SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象），使反序列化和数据复制的资源消耗最小化，每个缓存的行都会指向堆外数据区的一个数据条目，并且在如下情况下会失效：
 
  1. 存储在堆外数据区的主条目被更新或者删除；
  2. 存储主条目的数据页面从内存中退出。
 
-堆内行缓存是缓存级的（SQL表或者缓存的创建也可以使用CREATE TABLE语句，相关的参数可以通过缓存模板传递）。
+堆内行缓存是缓存级的（SQL表或者缓存的创建也可以使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)语句，相关的参数可以通过缓存模板传递）。
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
 		<property name="name" value="person"/>
@@ -279,14 +310,15 @@ SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象�
 		<property name="sqlOnheapCacheEnabled" value="true"/>
 </bean>
 ```
-如果开启了行缓存，通过分配更多的内存，对于部分SQL查询或者案例，可能提升2倍的性能，这是一种折衷。
+如果开启了行缓存，通过分配更多的内存，对于部分SQL查询或者场景，可能提升2倍的性能，这是一种折衷。
 
-::: tip SQL堆内行缓存大小
+::: warning SQL堆内行缓存大小
 目前，该缓存没有限制，可以和堆外数据区一样，占用更多的内存，但是：<br>
 1.如果开启了堆内行缓存，需要配置JVM的最大堆大小为存储缓存的所有数据区的总大小；<br>
 2.调整JVM的垃圾回收。
 :::
-
+### 3.5.12.用TIMESTAMP替代DATE
+尽可能地使用[TIMESTAMP](/doc/sql/SQLReference.md#_2-10-11-timestamp)替代[DATE](/doc/sql/SQLReference.md#_2-10-10-date)，DATE类型的序列化/反序列化效率较低，导致性能下降。
 ## 3.6.模式
 Ignite有一组默认的模式，为了更好地对表进行管理，也允许用户创建自定义的模式。
 
