@@ -24,8 +24,9 @@ alter_specification:
   
 tableColumn := columnName columnType
 ```
->**ALTER TABLE的范围**
+::: tip ALTER TABLE的范围
 目前，Ignite只支持列的增加和删除，在即将发布的版本中，命令的语法和功能将进一步扩展。
+:::
 
 **参数**
 
@@ -215,13 +216,13 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
 
 `CREATE TABLE`会创建一个新的缓存，然后在其上定义一个新的SQL表，缓存以键-值对的形式存储数据，并且该表允许在数据上执行SQL查询。
 
-表会驻留在`PUBLIC`模式中。
+该表将存储在连接参数中指定的模式中。如果未指定模式，将使用`PUBLIC`模式。有关Ignite中模式的详细信息，请参见[模式}(/doc/sql/Architecture.md#_3-6-模式)。
 
 注意`CREATE TABLE`操作是同步的，在`CREATE TABLE`执行过程中会阻塞其他DDL命令的执行，DML命令的执行不受影响，还会以并行的方式执行。
 
 如果希望使用键-值API访问数据，那么设置`CACHE_NAME`, `KEY_TYPE`和`VALUE_TYPE`参数会比较有用，因为：
 
- - `CREATE TABLE`执行后，生成的缓存名是`SQL_{SCHEMA_NAME}_{TABLE}`形式的，使用`CACHE_NAME`参数会覆盖默认的名字；
+ - `CREATE TABLE`执行后，生成的缓存名是`SQL_{SCHEMA_NAME}_{TABLE}`形式的，使用`CACHE_NAME`参数可以覆盖默认的名字；
  - 另外，该命令会创建两个新的二进制类型，分别对应键和值。Ignite会随机地生成包含UUID字符串的类型名，这使从非SQL API中使用这些`类型`变得复杂.这时可以使用自定义的`KEY_TYPE`和`VALUE_TYPE`来覆盖默认值，他们可以分别对应业务模型对象；
 
 #### 2.2.3.3.示例
@@ -235,12 +236,12 @@ CREATE TABLE IF NOT EXISTS Person (
   age int, 
   company varchar,
   PRIMARY KEY (id, city_id)
-) WITH "template=partitioned,backups=1,affinitykey=city_id, key_type=PersonKey, value_type=MyPerson";
+) WITH "template=partitioned,backups=1,affinity_key=city_id, key_type=PersonKey, value_type=MyPerson";
 ```
 该命令执行后，做了如下事情：
 
  - 创建了一个新的名为`SQL_PUBLIC_PERSON`的分布式缓存，该缓存会存储Person类型的数据，该类型与一个特定的Java, .NET, C++类对应，或者是二进制对象。此外，键类型（`PersonKey`）和值类型（`MyPerson`）是显式定义的，说明该数据可以被键-值以及其他的非SQL API处理;
- - 带有所有参数的SQL表/模式都会被定义，目前，所有的表都会位于`PUBLIC`模式中；
+ - 带有所有参数的SQL表/模式都会被定义；
  - 数据以键-值对的形式存储，`PRIMARY KEY`列会被用于键列，其他的列则属于值；
  - 和分布式缓存有关的参数通过语句的`WITH`子句进行传递，如果没有`WITH`子句，那么缓存会通过`CacheConfiguration`类的默认参数创建。
 
@@ -248,7 +249,7 @@ CREATE TABLE IF NOT EXISTS Person (
 ```sql
 CREATE TABLE Person (
   id int PRIMARY KEY,
-  city_id int.
+  city_id int,
   name varchar,
   age int, 
   company varchar
@@ -610,12 +611,12 @@ DELETE FROM Person WHERE name = 'John Doe';
 ### 2.4.1.COPY
 将CSV文件的数据复制进一个SQL表。
 ```sql
-COPY FROM "/path/to/local/file.csv"
+COPY FROM '/path/to/local/file.csv'
 INTO tablename (columnName, columnName, ...) FORMAT CSV
 ```
 **参数**
 
- - `/path/to/local/file.csv`：CSV文件的实际路径；
+ - `‘/path/to/local/file.csv’`：CSV文件的实际路径；
  - `tableName`：要注入数据的表名；
  - `columnName`：与CSV文件中的列对应的列名。
 
@@ -623,7 +624,7 @@ INTO tablename (columnName, columnName, ...) FORMAT CSV
 
 `COPY`命令可以将本地文件系统中文件的内容复制到服务端然后将数据注入SQL表。从内部来说，它会将文件内容读取为二进制形式数据包，然后将数据包发送到服务端，最后内容会以流的形式解析和处理。如果要将数据转存为文件，也可以使用这个模式。
 
-::: tip 只支持JDBC
+::: warning 只支持JDBC
 目前`COPY`命令只支持通过JDBC驱动以及CSV格式文件。
 :::
 
@@ -631,11 +632,11 @@ INTO tablename (columnName, columnName, ...) FORMAT CSV
 
 `COPY`命令可以以如下方式执行：
 ```sql
-COPY FROM "/path/to/local/file.csv" INTO city (
+COPY FROM '/path/to/local/file.csv' INTO city (
   ID, Name, CountryCode, District, Population) FORMAT CSV
 ```
 在上面的命令中，需要将`/path/to/local/file.csv`替换为CSV文件的实际路径，比如，可以使用最新的Ignite发行版中自带的`city.csv`，该文件位于`[IGNITE_HOME]/examples/src/main/resources/sql/`目录。
-### 2.4.2.SET
+### 2.4.2.SET STREAMING
 将文件内容流化，批量地导入SQL表。
 ```sql
 SET STREAMING ON;
@@ -650,7 +651,7 @@ SET STREAMING ON;
 
 **使用**
 
-要在集群中流化数据，需要准备一个`SET STREAMING ON`开头的文件，然后是要进行数据加载的INSERT命令，比如：
+要在集群中流化数据，需要准备一个`SET STREAMING ON`开头的文件，然后是要进行数据加载的`INSERT`命令，比如：
 ```sql
 SET STREAMING ON;
 
@@ -682,7 +683,7 @@ INSERT INTO City(ID, Name, CountryCode, District, Population) VALUES (5,'Amsterd
 -- More INSERT commands --
 ```
 
-::: tip 将数据刷入集群
+::: warning 将数据刷入集群
 如果数据加载完成，一定要关闭JDBC连接，确保数据刷入集群。
 :::
 
@@ -929,6 +930,35 @@ VAR_SAMP ([DISTINCT] expression)
 计算玩家年龄的样本方差：
 ```sql
 SELECT VAR_SAMP(age) FROM Players;
+```
+### 2.5.15.GROUP_CONCAT
+```sql
+GROUP_CONCAT([DISTINCT] expression || [expression || [expression ...]]
+  [ORDER BY expression [ASC|DESC], [[ORDER BY expression [ASC|DESC]]] 
+  [SEPARATOR expression])
+```
+这里的`expression`可以是列和字符串的串联（使用`||`操作符），比如，`column1 || "=" || column2`。
+
+**参数**
+
+ - `DISTINCT`：对结果集进行筛选，去除重复记录；
+ - `expression`：指定一个表达式，该表达式可以是列名、另一个函数的结果或数学运算；
+ - `ORDER BY`：通过表达式对数据行进行排序；
+ - `SEPARATOR`：覆写字符串分隔符。默认的分隔符是逗号“，”。
+
+::: warning 注意
+只有按主键或关系键对结果分组（即使用`GROUP BY`）时，才支持`GROUP_CONCAT`函数内的`DISTINCT`和`ORDER BY`表达式。此外，如果使用了[Java API](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/cache/query/SqlFieldsQuery.html#setCollocated-boolean-)，必须在连接串中配置`collocated=true`或者调用`SqlFieldsQuery.setCollocated(true)`，以通知Ignite数据是并置的。
+:::
+
+**描述**
+
+用分隔符连接字符串。默认分隔符是','（没有空格）。此方法返回一个字符串。如果未命中数据则结果为空。只能在SELECT语句中使用聚合。
+
+**示例**
+
+将所有玩家的名字聚合成一行：
+```sql
+SELECT GROUP_CONCAT(name ORDER BY id SEPARATOR ', ') FROM Players;
 ```
 ## 2.6.数值函数
 ### 2.6.1.ABS
@@ -2344,8 +2374,10 @@ DAY_OF_YEAR(CREATED)
 ```
 ### 2.8.10.EXTRACT
 ```sql
-EXTRACT ({YEAR | YY | MONTH | MM | WEEK | DAY | DD | DAY_OF_YEAR
-| DOY | HOUR | HH | MINUTE | MI | SECOND | SS | MILLISECOND | MS}
+EXTRACT ({EPOCH | YEAR | YY | QUARTER | MONTH | MM | WEEK | ISO_WEEK
+| DAY | DD | DAY_OF_YEAR | DOY | DAY_OF_WEEK | DOW | ISO_DAY_OF_WEEK
+| HOUR | HH | MINUTE | MI | SECOND | SS | MILLISECOND | MS
+| MICROSECOND | MCS | NANOSECOND | NS}
 FROM timestamp)
 ```
 **描述**
@@ -2722,6 +2754,9 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `ignite::Date`
  - ODBC: `SQL_TYPE_DATE`
 
+::: danger 注意
+尽可能地使用`TIMESTAMP`而不是`DATE`，因为`DATE`类型的序列化/反序列化效率非常低，导致性能下降。
+:::
 ### 2.10.11.TIMESTAMP
 可选值：时间戳数据类型，格式为`yyyy-MM-dd hh:mm:ss[.nnnnnnnnn]`。
 
@@ -2772,17 +2807,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `int8_t[]`
  - ODBC: `SQL_BINARY`
 
-### 2.10.16.ARRAY
-可选值：表示一个对象数组。
-
-映射：
-
- - Java/JDBC: `java.lang.Object[]`
- - .NET/C#: `object[]`
- - C/C++: `N/A`
- - ODBC: `N/A`
-
-### 2.10.17.GEOMETRY
+### 2.10.16.GEOMETRY
 可选值：空间几何类型，基于`com.vividsolutions.jts`库，通常以文本格式表示。
 
 映射：

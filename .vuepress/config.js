@@ -95,7 +95,7 @@ module.exports = {
                     ],
                     '/doc/sql/': [
                         '',
-                        //'SQLReference',
+                        'SQLReference',
                         //'Architecture',
                         //'JDBC',
                         //'ODBC',
