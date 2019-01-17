@@ -189,7 +189,7 @@ CREATE TABLE [IF NOT EXISTS] tableName (tableColumn [, tableColumn]...
 
 tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
 ```
-**参数**
+#### 2.2.3.1.参数
 
  - `tableName`：表名；
  - `tableColumn`：新表中一个列的名字和类型；
@@ -211,7 +211,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
    - `WRAP_KEY=<true | false>`：这个标志控制**单列**主键是否会被包装成二进制对象形式，这个标志默认值为`false`，这个标志对多列的`PRIMARY KEY`不会产生影响，不管这个参数值是什么，它总是会被包装；
    - `WRAP_VALUE=<true | false>`：这个标志控制**单列**基本类型的值是否会被包装成二进制对象形式，这个标志默认值为`true`，这个标志对多列的值不会产生影响，不管这个参数值是什么，它总是会被包装。如果表中只有一个列，并且没有计划添加额外的列时，可以将其配置为`false`。注意如果该参数配置为`false`，就无法在该表上执行`ALTER TABLE ADD COLUMN`命令；
 
-**描述**
+#### 2.2.3.2.描述
 
 `CREATE TABLE`会创建一个新的缓存，然后在其上定义一个新的SQL表，缓存以键-值对的形式存储数据，并且该表允许在数据上执行SQL查询。
 
@@ -224,7 +224,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
  - `CREATE TABLE`执行后，生成的缓存名是`SQL_{SCHEMA_NAME}_{TABLE}`形式的，使用`CACHE_NAME`参数会覆盖默认的名字；
  - 另外，该命令会创建两个新的二进制类型，分别对应键和值。Ignite会随机地生成包含UUID字符串的类型名，这使从非SQL API中使用这些`类型`变得复杂.这时可以使用自定义的`KEY_TYPE`和`VALUE_TYPE`来覆盖默认值，他们可以分别对应业务模型对象；
 
-**示例**
+#### 2.2.3.3.示例
 
 创建`Person`表：
 ```sql
