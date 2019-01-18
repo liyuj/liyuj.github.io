@@ -1,9 +1,11 @@
 # 4.JDBC
 ## 4.1.JDBC驱动
 Ignite提供了一个JDBC驱动，它可以通过标准的SQL语句处理分布式数据，比如从JDBC端直接进行`SELECT`、`INSERT`、`UPDATE`和`DELETE`。
+
 目前，Ignite支持两种类型的驱动，轻量易用的JDBC Thin模式驱动以及以客户端节点形式与集群进行交互。
 ### 4.1.1.JDBC Thin模式驱动
 JDBC Thin模式驱动是默认的，是一个轻量级驱动，要使用这种驱动，只需要将`ignite-core-{version}.jar`放入应用的类路径即可。
+
 驱动会接入集群节点然后将所有的请求转发给它进行处理。节点会处理分布式的查询以及结果集的汇总，然后将结果集反馈给客户端应用。
 JDBC连接串可以有两种模式：URL查询模式以及分号模式：
 ```
@@ -74,6 +76,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50")
 
 **多端点**
 在连接串中配置多个连接端点也是可以的，这样如果连接中断会开启自动故障转移，JDBC驱动会从列表中随机选择一个地址接入。如果之前的连接中断，驱动会选择另一个地址只到连接恢复，如果所有的端点都不可达，JDBC会停止重连并且抛出异常。
+
 下面的示例会显示如何通过连接串传递三个地址：
 ```java
 // Register JDBC driver.
@@ -85,8 +88,11 @@ Connection conn = DriverManager.getConnection(
 ```
 
 **集群配置**
+
 为了接收和处理来自JDBC Thin驱动转发过来的请求，一个节点需要绑定到一个本地网络端口`10800`，然后监听入站请求。
+
 通过`IgniteConfiguration`配置`ClientConnectorConfiguration`，可以对参数进行修改：
+
 Java：
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration()
@@ -127,7 +133,9 @@ SQLSTATE="08006`。
 
 ### 4.1.2.使用SSL
 JDBC Thin模式驱动可以使用SSL套接字通讯在驱动和节点间建立安全连接（包括发起握手）。
+
 具体可以看JDBC驱动的`ssl*`相关参数以及`ClientConnectorConfiguration`的`ssl*`和`useIgniteSslContextFactory`参数。
+
 默认实现基于JSSE，并且需要处理两个Java密钥存储库文件。
 
  - `sslClientCertificateKeyStoreUrl`：客户端认证密钥存储库文件，其持有客户端的密钥和证书；
@@ -153,7 +161,7 @@ ids.setDistributedJoins(true);
 Connection conn2 = ids.getConnection();
 ```
 之后就可以执行`SELECT`SQL查询了：
-```
+```java
 // Query names of all people.
 ResultSet rs = conn.createStatement().executeQuery("select name from Person");
  
@@ -176,6 +184,7 @@ while (rs.next()) {
 }
 ```
 此外，可以使用DML语句对数据进行修改。
+
 **INSERT**
 ```java
 // Insert a Person with a Long key.
@@ -218,6 +227,7 @@ JDBC客户端节点模式驱动使用自己的完整功能的客户端节点连�
  - `{apache_ignite_release}\ignite-indexing`和`{apache_ignite_release}\ignite-spring`目录下的所有jar文件；
 
 这个驱动很重，而且可能不支持Ignite的最新SQL特性，但是因为它底层使用客户端节点连接，它可以执行分布式查询，然后在应用端直接对结果进行汇总。
+
 JDBC连接URL的规则如下：
 ```
 jdbc:ignite:cfg://[<params>@]<config_url>
@@ -260,6 +270,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 驱动连接到的缓存会被视为默认的模式，要跨越多个缓存进行查询，可以参照`3.6.缓存查询`章节。
 
 **流模式**
+
 使用JDBC驱动，可以以流模式（批处理模式）将数据注入Ignite集群。这时驱动会在内部实例化`IgniteDataStreamer`然后将数据传给它。要激活这个模式，可以在JDBC连接串中增加`streaming`参数并且设置为`true`：
 ```java
 // Register JDBC driver.
@@ -269,6 +280,7 @@ Class.forName("org.apache.ignite.IgniteJdbcDriver");
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true@file:///etc/config/ignite-jdbc.xml");
 ```
 目前，流模式只支持INSERT操作，对于想更快地将数据预加载进缓存的场景非常有用。JDBC驱动定义了多个连接参数来影响流模式的行为，这些参数已经在上述的参数表中列出。
+
 这些参数几乎覆盖了`IgniteDataStreamer`的所有常规配置，这样就可以根据需要更好地调整流处理器。关于如何配置流处理器可以参考`流处理器`的相关文档来了解更多的信息。
 > **基于时间的刷新**
 默认情况下，当要么连接关闭，要么达到了`streamingPerNodeBufferSize`，数据才会被刷新，如果希望按照时间的方式来刷新，那么可以调整`streamingFlushFrequency`参数。
@@ -330,6 +342,7 @@ while (rs.next()) {
 }
 ```
 此外，可以使用DML语句对数据进行修改。
+
 **INSERT**
 ```java
 // Insert a Person with a Long key.

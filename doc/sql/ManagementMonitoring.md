@@ -21,8 +21,8 @@ NODES视图中包括了集群节点的各种信息。
 |`ADDRESSES`|VARCHAR|节点的地址|
 |`HOSTNAMES`|VARCHAR|节点的主机名|
 
-### 9.1.2.NODES_ATTRIBUTES视图
-NODES_ATTRIBUTES视图包括了集群节点的属性信息。
+### 9.1.2.NODE_ATTRIBUTES视图
+NODE_ATTRIBUTES视图包括了集群节点的属性信息。
 
 **列**
 

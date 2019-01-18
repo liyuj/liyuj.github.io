@@ -97,7 +97,7 @@ module.exports = {
                         '',
                         'SQLReference',
                         'Architecture',
-                        //'JDBC',
+                        'JDBC',
                         //'ODBC',
                         //'ToolsAndAnalytics',
                         //'JavaDeveloperGuide',
