@@ -4,7 +4,8 @@
 Ignite包括一个ODBC驱动，可以通过标准SQL查询和原生ODBC API查询和修改存储于分布式缓存中的数据。
 
 要了解ODBC的细节，可以参照[ODBC开发者参考](https://msdn.microsoft.com/en-us/library/ms714177.aspx)。
-Apache Ignite的ODBC驱动实现了ODBC API的3.0版。
+
+Ignite的ODBC驱动实现了ODBC API的3.0版。
 ### 5.1.2.集群配置
 ODBC驱动在Windows中被视为一个动态库，在Linux中被视为一个共享对象，应用不会直接加载它。作为替代，必要时它会使用一个驱动加载器API来加载和卸载ODBC驱动。
 
@@ -97,7 +98,8 @@ Ignite的ODBC驱动官方在如下环境中进行了测试：
 在Windows中，Ignite现在提供了预构建的32位和64位驱动的安装器，因此如果只是想在Windows中安装驱动，那么直接看下面的安装驱动章节就可以了。
 
 对于Linux环境，安装之前还是需要进行构建，因此如果使用的是Linux或者使用Windows但是仍然想自己构建驱动，那么往下看。
-Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之前可以自行进行构建。关于如何获取和设置Ignite本身，可以参照[1.基本概念](https://www.zybuluo.com/liyuj/note/757803)章节。
+
+Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之前可以自行进行构建。关于如何获取和设置Ignite本身，可以参照[基本概念](/doc/java/)章节。
 
 因为ODBC驱动是用C++编写的，因此它是作为Ignite C++的一部分提供的，并且依赖于一些C++库，具体点说依赖于`utils`和`binary`Ignite库，这就意味着，在构建ODBC驱动本身之前，需要先构建它们。
 
@@ -116,6 +118,7 @@ Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之�
 为了简化安装，构建完驱动之后可能想构建安装器，Ignite使用[WiX工具包](http://wixtoolset.org/)来生成ODBC的安装器，因此需要下载并安装WiX，记得一定要把Wix工具包的`bin`目录加入PATH变量中。
 
 一切就绪之后，打开终端然后定位到`%IGNITE_HOME%\platforms\cpp\odbc\install`目录，按顺序执行如下的命令：
+
 64位：
 ```bash
 candle.exe ignite-odbc-amd64.wxs
@@ -151,7 +154,9 @@ whereis libignite-odbc
 路径很可能是：`/usr/local/lib/libignite-odbc.so`。
 ### 5.1.6.安装ODBC驱动
 要使用ODBC驱动，首先要在系统中进行注册，因此ODBC驱动管理器必须能找到它。
+
 **在Windows上安装**
+
 在32位的Windows上需要使用32位版本的驱动，而在64位的Windows上可以使用64位和32位版本的驱动，也可以在64位的Windows上同时安装32位和64位版本的驱动，这样32位和64位的应用都可以使用驱动。
 
 *使用安装器进行安装*
@@ -257,13 +262,17 @@ DRIVER={Apache Ignite};ADDRESS=example.com:12901;CACHE=MyCache;PAGE_SIZE=4096
 ```
 ### 5.2.4.配置DSN
 如果要使用[DSN](https://en.wikipedia.org/wiki/Data_source_name)(数据源名)来进行连接，可以使用同样的参数。
+
 要在Windows上配置DSN，需要使用一个叫做`odbcad32`的系统工具，这是一个ODBC数据源管理器，要启动这个工具，打开`Control panel`->`Administrative Tools`->`数据源（ODBC）`，当ODBC数据源管理器启动后，选择`Add...`->`Apache Ignite`，然后以正确的方式配置DSN。
+
 ![](https://files.readme.io/6255aff-DSN_configuration.png)
+
 在Linux上配置DSN，需要找到`odbc.ini`文件，这个文件的位置各个发行版有所不同，依赖于发行版使用的特定驱动管理器，比如，如果使用`unixODBC`，那么可以执行如下的命令来输出系统级的ODBC相关信息：
 ```bash
 odbcinst -j
 ```
 文件的路径会显示在`SYSTEM DATA SOURCES`和`USER DATA SOURCES`属性之间。
+
 找到`odbc.ini`文件之后，可以用喜欢的任意编辑器打开它，然后像下面这样添加DSN片段：
 ```
 [DSN Name]

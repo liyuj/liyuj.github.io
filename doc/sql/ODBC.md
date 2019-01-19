@@ -4,7 +4,8 @@
 Ignite包括一个ODBC驱动，可以通过标准SQL查询和原生ODBC API查询和修改存储于分布式缓存中的数据。
 
 要了解ODBC的细节，可以参照[ODBC开发者参考](https://msdn.microsoft.com/en-us/library/ms714177.aspx)。
-Apache Ignite的ODBC驱动实现了ODBC API的3.0版。
+
+Ignite的ODBC驱动实现了ODBC API的3.0版。
 ### 5.1.2.集群配置
 ODBC驱动在Windows中被视为一个动态库，在Linux中被视为一个共享对象，应用不会直接加载它。作为替代，必要时它会使用一个驱动加载器API来加载和卸载ODBC驱动。
 
@@ -54,7 +55,7 @@ XML：
   <property name="clientConnectorConfiguration">
     <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
       <property name="host" value="127.0.0.1"/>
-      <property name="port" value="12345"/>
+      <property name="port" value="10800"/>
       <property name="portRange" value="5"/>
       <property name="maxOpenCursorsPerConnection" value="512"/>
       <property name="socketSendBufferSize" value="65536"/>
@@ -82,7 +83,7 @@ clientConnectorCfg.setThreadPoolSize(4);
 cfg.setClientConnectorConfiguration(clientConnectorCfg);
 ...
 ```
-通过`ClientListenerProcessor`从ODBC驱动端建立的到集群的连接也是可以配置的，关于如何从驱动端修改连接的配置，可以看[这里](https://apacheignite.readme.io/v1.8/docs/connecting-string)。
+通过`ClientListenerProcessor`从ODBC驱动端建立的到集群的连接也是可以配置的，关于如何从驱动端修改连接的配置，可以看[这里](#_5-2-连接串和dsn)。
 ### 5.1.3.线程安全
 Ignite ODBC驱动的当前实现仅仅在连接层提供了线程的安全，这意味着如果没有额外的同步化，无法从多个线程访问同一个连接。不过可以为每个线程创建独立的连接，然后同时使用。
 ### 5.1.4.先决条件
@@ -97,7 +98,8 @@ Ignite的ODBC驱动官方在如下环境中进行了测试：
 在Windows中，Ignite现在提供了预构建的32位和64位驱动的安装器，因此如果只是想在Windows中安装驱动，那么直接看下面的安装驱动章节就可以了。
 
 对于Linux环境，安装之前还是需要进行构建，因此如果使用的是Linux或者使用Windows但是仍然想自己构建驱动，那么往下看。
-Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之前可以自行进行构建。关于如何获取和设置Ignite本身，可以参照[1.基本概念](https://www.zybuluo.com/liyuj/note/757803)章节。
+
+Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之前可以自行进行构建。关于如何获取和设置Ignite本身，可以参照[基本概念](/doc/java/)章节。
 
 因为ODBC驱动是用C++编写的，因此它是作为Ignite C++的一部分提供的，并且依赖于一些C++库，具体点说依赖于`utils`和`binary`Ignite库，这就意味着，在构建ODBC驱动本身之前，需要先构建它们。
 
@@ -115,6 +117,7 @@ Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之�
 为了简化安装，构建完驱动之后可能想构建安装器，Ignite使用[WiX工具包](http://wixtoolset.org/)来生成ODBC的安装器，因此需要下载并安装WiX，记得一定要把Wix工具包的`bin`目录加入PATH变量中。
 
 一切就绪之后，打开终端然后定位到`%IGNITE_HOME%\platforms\cpp\odbc\install`目录，按顺序执行如下的命令：
+
 64位：
 ```bash
 candle.exe ignite-odbc-amd64.wxs
@@ -201,25 +204,25 @@ Ignite的ODBC驱动可以使用一些连接串/DSN参数，所有的参数都是
 
 |属性关键字|描述|默认值|
 |---|---|---|
-|ADDRESS|要连接的远程节点的地址，格式为：`<host>[:<port>]`。比如：localhost, example.com:12345, 127.0.0.1, 192.168.3.80:5893，如果指定了这个属性，`SERVER`和`PORT`将会被忽略。||
-|SERVER|要连接的节点地址，如果指定了`ADDRESS`属性，本属性会被忽略。||
-|PORT|节点的`OdbcProcessor`监听的端口,如果指定了`ADDRESS`属性，本属性会被忽略。|10800|
-|USER|SQL连接的用户名。如果服务端开启了认证，该参数为必需。|“”|
-|PASSWORD|SQL连接的密码。如果服务端开启了认证，该参数为必需。|“”|
-|SCHEMA|模式名。|PUBLIC|
-|DSN|要连接的DSN名||
-|PAGE_SIZE|数据源的响应中返回的行数，默认值会适用于大多数场景，小些的值会导致获取数据变慢，大些的值会导致驱动的额外内存占用，以及获取下一页时的额外延迟。|1024|
-|DISTRIBUTED_JOINS|为在ODBC连接上执行的所有查询开启非并置的分布式关联特性。|false|
-|ENFORCE_JOIN_ORDER|强制SQL查询中表关联顺序，如果设置为`true`，查询优化器在关联时就不会对表进行再排序。|false|
-|PROTOCOL_VERSION|用于指定使用的ODBC协议版本，目前有三个版本：2.1.0、2.1.5和2.3.0，为了兼容，也可以使用早期版本的协议。|2.3.0|
-|REPLICATED_ONLY|配置查询只在全复制的表上执行，这是个提示，用于更高效地执行。|false|
-|COLLOCATED|用于优化的并置标志，当Ignite执行分布式查询时，它会将子查询发送给每个节点，如果事先知道要查询的数据是在同一个节点并置在一起的，通常是基于关系键，Ignite会有一个显著的性能提升和网络优化。|false|
-|LAZY|查询延迟执行。Ignite默认会将所有的结果集放入内存然后将其返回给客户端，对于不太大的结果集，这样会提供较好的性能，并且使内部的数据库锁时间最小化，因此提高了并发能力。但是，如果相对于可用内存来说结果集过大，那么会导致频繁的GC暂停，甚至`OutOfMemoryError`，如果使用这个标志，可以提示Ignite延迟加载结果集，这样可以在不大幅降低性能的前提下，最大限度地减少内存的消耗。|false|
-|SKIP_REDUCER_ON_UPDATE|开启服务端的更新特性。当Ignite执行DML操作时，首先，它会获取所有受影响的中间行给查询发起方进行分析（通常被称为汇总），然后会准备一个更新值的批量发给远程节点。这个方式可能影响性能，如果一个DML操作会移动大量数据条目时，还可能会造成网络堵塞。使用这个标志可以提示Ignite在对应的远程节点上进行中间行的分析和更新。默认值为false，这意味着会首先获取中间行然后发给查询发起方。|false|
-|SSL_MODE|确定服务端是否需要SSL连接。可以根据需要使用`require`或者`disable`。||
-|SSL_KEY_FILE|指定包含服务端SSL私钥的文件名。||
-|SSL_CERT_FILE|指定包含SSL服务器证书的文件名。||
-|SSL_CA_FILE|指定包含SSL服务器证书颁发机构（CA）的文件名。||
+|`ADDRESS`|要连接的远程节点的地址，格式为：`<host>[:<port>]`。比如：localhost, example.com:12345, 127.0.0.1, 192.168.3.80:5893，如果指定了这个属性，`SERVER`和`PORT`将会被忽略。||
+|`SERVER`|要连接的节点地址，如果指定了`ADDRESS`属性，本属性会被忽略。||
+|`PORT`|节点的`OdbcProcessor`监听的端口,如果指定了`ADDRESS`属性，本属性会被忽略。|10800|
+|`USER`|SQL连接的用户名。如果服务端开启了认证，该参数为必需。|“”|
+|`PASSWORD`|SQL连接的密码。如果服务端开启了认证，该参数为必需。|“”|
+|`SCHEMA`|模式名。|PUBLIC|
+|`DSN`|要连接的DSN名||
+|`PAGE_SIZE`|数据源的响应中返回的行数，默认值会适用于大多数场景，小些的值会导致获取数据变慢，大些的值会导致驱动的额外内存占用，以及获取下一页时的额外延迟。|1024|
+|`DISTRIBUTED_JOINS`|为在ODBC连接上执行的所有查询开启非并置的分布式关联特性。|false|
+|`ENFORCE_JOIN_ORDER`|强制SQL查询中表关联顺序，如果设置为`true`，查询优化器在关联时就不会对表进行再排序。|false|
+|`PROTOCOL_VERSION`|使用的ODBC协议版本，目前支持如下的版本：2.1.0、2.1.5、2.3.0、2.3.2和2.5.0，因为向后兼容，也可以使用协议的早期版本。|2.3.0|
+|`REPLICATED_ONLY`|配置查询只在全复制的表上执行，这是个提示，用于更高效地执行。|false|
+|`COLLOCATED`|用于优化的并置标志，当Ignite执行分布式查询时，它会将子查询发送给每个节点，如果事先知道要查询的数据是在同一个节点并置在一起的，通常是基于关系键，Ignite会有一个显著的性能提升和网络优化。|false|
+|`LAZY`|查询延迟执行。Ignite默认会将所有的结果集放入内存然后将其返回给客户端，对于不太大的结果集，这样会提供较好的性能，并且使内部的数据库锁时间最小化，因此提高了并发能力。但是，如果相对于可用内存来说结果集过大，那么会导致频繁的GC暂停，甚至`OutOfMemoryError`，如果使用这个标志，可以提示Ignite延迟加载结果集，这样可以在不大幅降低性能的前提下，最大限度地减少内存的消耗。|false|
+|`SKIP_REDUCER_ON_UPDATE`|开启服务端的更新特性。当Ignite执行DML操作时，首先，它会获取所有受影响的中间行给查询发起方进行分析（通常被称为汇总），然后会准备一个更新值的批量发给远程节点。这个方式可能影响性能，如果一个DML操作会移动大量数据条目时，还可能会造成网络堵塞。使用这个标志可以提示Ignite在对应的远程节点上进行中间行的分析和更新。默认值为false，这意味着会首先获取中间行然后发给查询发起方。|false|
+|`SSL_MODE`|确定服务端是否需要SSL连接。可以根据需要使用`require`或者`disable`。||
+|`SSL_KEY_FILE`|指定包含服务端SSL私钥的文件名。||
+|`SSL_CERT_FILE`|指定包含SSL服务器证书的文件名。||
+|`SSL_CA_FILE`|指定包含SSL服务器证书颁发机构（CA）的文件名。||
 
 ### 5.2.3.连接串示例
 下面的串，可以用于`SQLDriverConnect`ODBC调用，来建立与Ignite节点的连接。
@@ -254,8 +257,11 @@ DRIVER={Apache Ignite};ADDRESS=example.com:12901;CACHE=MyCache;PAGE_SIZE=4096
 ```
 ### 5.2.4.配置DSN
 如果要使用[DSN](https://en.wikipedia.org/wiki/Data_source_name)(数据源名)来进行连接，可以使用同样的参数。
+
 要在Windows上配置DSN，需要使用一个叫做`odbcad32`的系统工具，这是一个ODBC数据源管理器，要启动这个工具，打开`Control panel`->`Administrative Tools`->`数据源（ODBC）`，当ODBC数据源管理器启动后，选择`Add...`->`Apache Ignite`，然后以正确的方式配置DSN。
-![](https://files.readme.io/6255aff-DSN_configuration.png)
+
+![](https://files.readme.io/3fee52e-dsn_configuration.png)
+
 在Linux上配置DSN，需要找到`odbc.ini`文件，这个文件的位置各个发行版有所不同，依赖于发行版使用的特定驱动管理器，比如，如果使用`unixODBC`，那么可以执行如下的命令来输出系统级的ODBC相关信息：
 ```bash
 odbcinst -j
@@ -274,6 +280,7 @@ driver=Apache Ignite
 本章会详细描述如何接入Ignite集群，如何使用ODBC驱动执行各种SQL查询。
 
 在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](https://www.zybuluo.com/liyuj/note/612268#42%E5%88%86%E5%B8%83%E5%BC%8F%E6%9F%A5%E8%AF%A2)的字段。
+
 另外，从Ignite的1.8.0版本开始，ODBC驱动支持DML，这意味着通过ODBC连接不仅仅可以访问数据，还可以修改网格中的数据。
 
 > 这里是完整的[ODBC示例](https://github.com/apache/ignite/tree/master/modules/platforms/cpp/examples/odbc-example)。
@@ -736,7 +743,14 @@ SQLExecute(stmt);
 // Releasing the statement handle.
 SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 ```
->注意这种类型的批处理目前只支持INSERT、UPDATE、 DELETE、和MERGE语句，还不支持SELECT，data-at-execution功能也不支持通过参数数组进行批处理。
+::: tip 注意
+注意这种类型的批处理目前只支持INSERT、UPDATE、 DELETE、和MERGE语句，还不支持SELECT，data-at-execution功能也不支持通过参数数组进行批处理。
+:::
+### 5.3.9.流处理
+Ignite的ODBC驱动可以通过`SET STREAMING`命令对流化数据进行批量处理，具体可以看[SET STREAMING](/doc/sql/SQLReference.md#_2-4-2-set-streaming)的相关内容。
+::: tip 注意
+流处理模式中，参数数组和data-at-execution参数是不支持的。
+:::
 
 ## 5.4.规范
 ### 5.4.1.摘要
