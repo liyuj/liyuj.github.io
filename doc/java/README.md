@@ -1321,16 +1321,19 @@ ignite.compute().run(new OuterRunnable());
 
 二进制对象只可以用于使用默认的二进制编组器时（即没有在配置中显式地设置其他的编组器）
 
-> **限制**
+::: tip 限制
 `BinaryObject`格式实现也带来了若干个限制：
-1. 在内部Ignite不会写属性以及类型的名字，但是使用一个小写的名字哈希来标示一个属性或者类型，这意味着属性或者类型不能有同样的名字哈希。即使序列化不会在哈希冲突的情况下工作，但Ignite在配置级别提供了一种方法来解决此冲突；
-2.同样的原因，`BinaryObject`格式在类的不同层次上也不允许有同样的属性名；
-3.如果类实现了`Externalizable`接口，Ignite会使用`OptimizedMarshaller`，`OptimizedMarshaller`会使用`writeExternal()`和`readExternal()`来进行类对象的序列化和反序列化，这需要将实现`Externalizable`的类加入服务端节点的类路径中。
+ 1. 在内部Ignite不会写属性以及类型的名字，但是使用一个小写的名字哈希来标示一个属性或者类型，这意味着属性或者类型不能有同样的名字哈希。即使序列化不会在哈希冲突的情况下工作，但Ignite在配置级别提供了一种方法来解决此冲突；
+ 2. 同样的原因，`BinaryObject`格式在类的不同层次上也不允许有同样的属性名；
+ 3. 如果类实现了`Externalizable`接口，Ignite会使用`OptimizedMarshaller`，`OptimizedMarshaller`会使用`writeExternal()`和`readExternal()`来进行类对象的序列化和反序列化，这需要将实现`Externalizable`的类加入服务端节点的类路径中。
+:::
 
 `IgniteBinary`入口，可以从Ignite的实例获得，包含了操作二进制对象的所有必要的方法。
->**自动化哈希值计算和Equals实现**
+::: tip 自动化哈希值计算和Equals实现
 如果一个对象可以被序列化到二进制形式，那么Ignite会在序列化期间计算它的哈希值并且将其写入最终的二进制数组。另外，Ignite还为二进制对象的比较需求提供了equals方法的自定义实现。这意味着，不需要为在Ignite中使用的自定义键和值覆写`GetHashCode`和`Equals`方法，除非他们无法序列化成二进制形式。
+
 比如，`Externalizable`类型的对象无法被序列化成二进制形式，这时就需要自行实现`hashCode`和`equals`方法，具体可以看上面的限制章节。
+:::
 
 ### 1.10.2.配置二进制对象
 在绝大多数情况下不需要额外地配置二进制对象。
@@ -1360,10 +1363,11 @@ ignite.compute().run(new OuterRunnable());
 ### 1.10.3.BinaryObject缓存API
 Ignite默认使用反序列化值作为最常见的使用场景，要启用`BinaryObject`处理，需要获得一个`IgniteCache`的实例然后使用`withKeepBinary()`方法。启用之后，如果可能，这个标志会确保从缓存返回的对象都是`BinaryObject`格式的。将值传递给`EntryProcessor`和`CacheInterceptor`也是同样的处理。
 
-> **平台类型**
+::: tip 平台类型
 注意当通过`withKeepBinary()`方法启用`BinaryObject`处理时并不是所有的对象都会表示为`BinaryObject`，会有一系列的`平台`类型，包括基本类型，String，UUID，Date，Timestamp，BigDecimal，Collections，Maps和Arrays，他们不会被表示为`BinaryObject`。
 
 注意在下面的示例中，键类型为`Integer`，他是不会被修改，因为他是`平台`类型。
+:::
 
 获取BinaryObject：
 ```java
@@ -1481,7 +1485,9 @@ public class CacheExampleBinaryStore extends CacheStoreAdapter<Integer, BinaryOb
 在内部，Ignite不会写属性或者类型名字的完整字符串，而是因为性能的原因，为类型或者属性名写一个整型哈希值作为替代。经过测试，在类型相同时，属性名或者类型名的哈希值冲突实际上是不存在的，为了获得性能，使用哈希值是安全的。对于当不同的类型或者属性确实冲突的场合，`BinaryNameMapper`和`BinaryIdMapper`可以为该类型或者属性名覆写自动生成的哈希值。
 
 `BinaryNameMapper` - 映射类型/类和属性名到不同的名字；
+
 `BinaryIdMapper` - 映射从`BinaryNameMapper`来的类型和属性名到ID，以便于Ignite内部使用。
+
 Ignite直接支持如下的映射器实现：
 
  - `BinaryBasicNameMapper`：`BinaryNameMapper`的一个基本实现，对于一个给定的类，根据使用的`setSimpleName(boolean useSimpleName)`属性值，会返回一个完整或者简单的名字；

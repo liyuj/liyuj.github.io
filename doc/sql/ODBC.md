@@ -283,7 +283,9 @@ driver=Apache Ignite
 
 另外，从Ignite的1.8.0版本开始，ODBC驱动支持DML，这意味着通过ODBC连接不仅仅可以访问数据，还可以修改网格中的数据。
 
-> 这里是完整的[ODBC示例](https://github.com/apache/ignite/tree/master/modules/platforms/cpp/examples/odbc-example)。
+::: tip 提示
+这里是完整的[ODBC示例](https://github.com/apache/ignite/tree/master/modules/platforms/cpp/examples/odbc-example)。
+:::
 
 ### 5.3.2.配置Ignite集群
 第一步，需要对集群节点进行配置，这个配置需要包含缓存的配置以及定义了`QueryEntities`的属性。如果应用（当前场景是ODBC驱动）要通过SQL语句进行数据的查询和修改，`QueryEntities`是必须的，或者，也可以使用DDL创建表。
@@ -417,8 +419,9 @@ SQLExecDirect(stmt, query3, SQL_NTS);
 </beans>
 ```
 从上述配置中可以看出，定义了两个缓存，包含了`Person`和`Organization`类型的数据，它们都列出了使用SQL可以读写的特定字段和索引。
->**OdbcConfiguration**
+::: warning OdbcConfiguration
 确保在配置中显式地配置了`OdbcConfiguration`。
+:::
 
 ### 5.3.3.接入集群
 配置好然后启动集群，就可以从ODBC驱动端接入了。如何做呢？准备一个有效的连接串然后连接时将其作为一个参数传递给ODBC驱动就可以了。
@@ -535,8 +538,9 @@ else
 SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 ```
 
->**列绑定**
+::: tip 列绑定
 在上例中，所有的列都绑定到`SQL_C_CHAR`，这意味着获取时所有的值都会被转换成字符串，这样做是为了简化，获取时进行值转换是非常慢的，因此默认的做法应该是与存储采用同样的方式进行获取。
+:::
 
 ### 5.3.5.插入数据
 要将新的数据插入集群，ODBC端可以使用`INSERT`语句。
@@ -621,8 +625,9 @@ SQLCHAR query2[] = "INSERT INTO \"Organization\".Organization (id, name)
 // Releasing statement handle.
 SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 ```
->**错误检查**
+::: warning 错误检查
 为了简化，上面的代码没有进行错误检查，但是在生产环境中不要这样做。
+:::
 ### 5.3.6.更新数据
 下面使用`UPDATE`语句更新存储在集群中的部分人员的工资信息：
 ```cpp

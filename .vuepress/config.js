@@ -99,7 +99,7 @@ module.exports = {
                         'Architecture',
                         'JDBC',
                         'ODBC',
-                        //'ToolsAndAnalytics',
+                        'ToolsAndAnalytics',
                         //'JavaDeveloperGuide',
                         //'PHPDeveloperGuide',
                         'ManagementMonitoring',

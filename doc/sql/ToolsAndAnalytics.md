@@ -334,14 +334,17 @@ cd incubator-zeppelin
 mvn clean install -Dignite-version=1.7.0 -DskipTests
 ```
 
-> **用指定的Ignite版本构建Zeppelin**
+::: tip 用指定的Ignite版本构建Zeppelin
 在构建Zeppelin时可以通过`ignite-version`属性来指定Ignite的版本，需要使用`1.7.0`以及之后的版本。
-**添加Ignite解释器**
+:::
+
+::: tip 添加Ignite解释器
 Ignite和Ignite解释器默认已经在Zeppelin中配置了。另外也可以将如下的解释器类名加入相应的配置文件或者环境变量中(可以参照[Zeppelin安装向导](https://zeppelin.incubator.apache.org/docs/0.5.5-incubating/install/install.html)的配置章节)。
 
  1. `org.apache.zeppelin.ignite.IgniteInterpreter`
  2. `org.apache.zeppelin.ignite.IgniteSqlInterpreter`
 **注意**第一个解释器会成为默认值。
+:::
 
 Zeppelin安装配置好了之后，可以用如下的命令来启动：
 ```bash
@@ -445,4 +448,6 @@ collectionAsScalaIterable(res).foreach(println _)
 
 ![Scala REPL output](https://files.readme.io/DCZWZY4FSRSLHO49KD0Z_Selection_011.png)
 
-> 注意Ignite集群的Ignite版本以及Zeppelin的版本必须匹配。
+::: warning 注意
+注意Ignite集群的Ignite版本以及Zeppelin的版本必须匹配。
+:::
