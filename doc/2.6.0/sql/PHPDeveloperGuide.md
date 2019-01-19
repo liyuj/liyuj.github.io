@@ -2,12 +2,16 @@
 ## 8.1.PHP PDO
 ### 8.1.1.摘要
 PHP提供了一个轻量级、一致的接口来访问数据库，叫做PHP数据对象-PDO，这个扩展依赖于若干特定数据库的PDO驱动，其中之一是[PDO_ODBC](http://php.net/manual/en/ref.pdo-odbc.php)，它可以接入任何实现了自己的ODBC驱动的数据库。
+
 通过使用Ignite的ODBC驱动，从PHP应用中就可以接入Ignite集群，然后访问和修改数据，本文就会介绍如何达到该目的。
 ### 8.1.2.配置ODBC驱动
 Ignite遵守ODBC协议，并且实现了自己的ODBC驱动，这个驱动会用于PHP的PDO框架接入Ignite集群。
+
 查看本系列文档的ODBC部分，可以知道如何在目标系统上安装和配置这个驱动，安装完毕后，就可以进入下一个章节。
 
-> 只能使用Ignite的1.8.0及以后的版本中的ODBC驱动，之前的版本不支持PHP的PDO框架。
+::: warning 注意
+只能使用Ignite的1.8.0及以后的版本中的ODBC驱动，之前的版本不支持PHP的PDO框架。
+:::
 
 ### 8.1.3.安装和配置PHP PDO
 要安装PHP，PDO以及PDO_ODBC驱动，可以看PHP的相关资源。
@@ -21,8 +25,11 @@ Ignite遵守ODBC协议，并且实现了自己的ODBC驱动，这个驱动会用
 
 ### 8.1.4.启动Ignite集群
 PHP PDO准备就绪之后，就可以通过一个常规的配置启动Ignite集群，然后在PHP应用中接入集群并且查询和修改集群的数据。
+
 首先，集群端已经起用了ODBC处理器，如何做呢，在每个集群节点的`IgniteConfiguration`中加入`odbcConfiguration`就可以了。
+
 下一步，列出`IgniteConfiguration`中与特定数据模型有关的所有缓存的配置，因为之后要在PHP PDO端执行SQL查询，所有每个缓存的配置都需要包含一个`QueryEntity`的定义，可以查看有关`SQL查询`的文档，来了解有关`QueryEntity`和SQL查询的更多信息。
+
 可以使用下面的配置模板启动一个Ignite集群：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -84,9 +91,12 @@ PHP PDO准备就绪之后，就可以通过一个常规的配置启动Ignite集�
 ```
 ### 8.1.5.从PHP端接入Ignite集群
 要从PHP PDO端接入Ignite，需要正确地配置DSN，在下面的示例中，假定DSN名为`LocalApacheIgniteDSN`。
-> 注意，PHP PDO端必须配置使用DSN。
+::: warning 注意
+PHP PDO端必须配置使用DSN。
+:::
 
 最后，都配置好之后，就可以在Ignite和PHP PDO应用之间相互连接了，可以像下面这样执行一些查询：
+
 **Insert**：
 ```php
 <?php

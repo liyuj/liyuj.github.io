@@ -101,7 +101,7 @@ module.exports = {
                         'ODBC',
                         'ToolsAndAnalytics',
                         'JavaDeveloperGuide',
-                        //'PHPDeveloperGuide',
+                        'PHPDeveloperGuide',
                         'ManagementMonitoring',
                         'SqlKeyValue'
                     ],
