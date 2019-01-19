@@ -14,6 +14,11 @@ try (QueryCursor<Entry<Long, Person>> cursor = cache.query(sql.setArgs(1000))) {
     System.out.println(e.getValue().toString());
 }
 ```
+::: warning 注意
+`SqlQuery`只支持`select * from ...`或者`select alias.* from ...`这种类型的查询，无法支持针对部分列的查询，也不支持`SELECT TOP`或者`SELECT DISTINCT`语句，如果尝试执行不支持的查询，都会抛出异常，如果要执行这样的查询，请使用`SqlFieldsQueries`。
+
+因为SqlQuery总是返回所有的字段，所以完全可以忽略查询中的SELECT子句，即使用`FROM Persons WHERE ...`或者像上例这样只提供WHERE子句`salary > ?`。
+:::
 ### 7.1.2.SqlFieldsQueries
 不需要查询整个对象，只需要指定几个特定的字段即可，这样可以最小化网络和序列化的开销。为此，Ignite实现了一个`字段查询`的概念。`SqlFieldsQuery`接受一个标准SQL查询作为它的构造器参数，然后像下面的示例那样立即执行：
 ```java
@@ -29,10 +34,12 @@ try (QueryCursor<List<?>> cursor = cache.query(sql)) {
     System.out.println("personName=" + row.get(0));
 }
 ```
-> **可查询字段定义**
+::: warning 可查询字段定义
 在`SqlQuery`和`SqlFieldsQuery`中的指定字段可以被访问之前，他们需要为SQL模式的一部分，使用标准的DDL命令，或者特定的Java注解，或者`QueryEntity`配置，都可以进行字段的定义。
+:::
 
 通过`SqlFieldsQuery`，还可以使用DML命令进行数据的修改：
+
 **INSERT**
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
@@ -66,11 +73,14 @@ cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
 Ignite的发布版包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
 ## 7.2.模式和索引
 ### 7.2.1.摘要
-不管是通过注解或者通过QueryEntity的方式，表和索引建立之后，它们所属的模式名为`CacheConfiguration`对象中配置的缓存名，要修改的话，需要使用`CacheConfiguration.setSqlSchema`方法。
+不管是通过[注解](#_7-2-2-基于注解的配置)或者通过[QueryEntity](#_7-2-3-基于queryentity的配置)的方式，表和索引建立之后，它们所属的模式名为`CacheConfiguration`对象中配置的缓存名，要修改的话，需要使用`CacheConfiguration.setSqlSchema`方法。
+
 但是，如果表和索引是通过DDL语句的形式定义的，那么模式名就会完全不同，这时，表和索引所属的模式名默认为`PUBLIC`。
+
 这时，不管使用上述的哪种方式配置的表，那么一定要确保查询时要指定正确的模式名。比如，假定80%的表都是通过DDL配置的，那么通过`SqlQuery.setSchema("PUBLIC")`方法将查询的默认模式配置成`PUBLIC`就会很有意义：
+
 Java：
-```
+```java
 IgniteCache cache = ignite.getOrCreateCache(
     new CacheConfiguration<>()
         .setName("Person")
@@ -103,6 +113,7 @@ cache.query(qry).getAll();
 ```
 ### 7.2.2.基于注解的配置
 索引，和可查询的字段一样，是可以通过编程的方式用`@QuerySqlField`进行配置的。如下所示，期望的字段已经加注了该注解。
+
 Java：
 ```java
 public class Person implements Serializable {
@@ -147,17 +158,24 @@ case class Person (
 }
 ```
 在SQL查询中，类型名会被用作表名，这时，表名为`Person`（模式名的定义和使用前面已经描述）。
+
 `id`和`salary`都是索引列，`id`字段升序排列（默认），而`salary`降序排列。
+
 如果不希望索引一个字段，但是仍然想在SQL查询中使用它，那么在加注解时可以忽略`index = true`参数，这样的字段称为可查询字段，举例来说，上面的`name`就被定义为可查询字段。
+
 最后，`age`既不是可查询字段也不是索引字段，在Ignite中，从SQL查询的角度看就是不可见的。
+
 下面，就可以向下面这样执行SQL查询了：
 ```java
 SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 		"WHERE id > 1500 LIMIT 10");
 ```
->**运行时更新索引和可查询字段**
-如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用ALTER TABLE, CREATE/DROP INDEX命令。
+::: tip 运行时更新索引和可查询字段
+如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-2-数据定义语言（ddl）)命令。
+:::
+
 **索引嵌套对象**
+
 使用注解，嵌套对象的字段也可以被索引以及查询，比如，假设`Person`对象有一个`Address`对象属性：
 ```java
 public class Person {
@@ -196,9 +214,11 @@ QueryCursor<List<?>> cursor = personCache.query(new SqlFieldsQuery(
   "select * from Person where street = 'street1'"));
 ```
 注意在查询的where子句中不需要指定**address.street**，这是因为`Address`类的字段会被合并到`Person`表中，这样会简化对`Address`中的字段的访问。
->**Scala注解**
+::: tip Scala注解
 在Scala类中，`@QuerySqlField`注解必须和`@Field`注解一起使用，这样的话这个字段对于Ignite才是可见的，就像这样的:`@(QuerySqlField @field)`。
+
 也可以使用`ignite-scalar`模块的`@ScalarCacheQuerySqlField`注解作为替代，他不过是`@Field`注解的别名。
+:::
 
 **注册索引类型**
 定义了索引字段和可查询字段之后，就需要和他们所属的对象类型一起，在SQL引擎中注册。
@@ -211,14 +231,20 @@ CacheConfiguration<Long, Person> ccfg = new CacheConfiguration<>();
 ccfg.setIndexedTypes(Long.class, Person.class);
 ```
 注意，这个方法只接收成对的类型，一个键类一个值类，基本类型需要使用包装器类。
-> **预定义字段**
+::: tip 预定义字段
 除了用`@QuerySqlField`注解标注的所有字段，每个表都有两个特别的预定义字段：`_key`和`_val`，它表示到整个键对象和值对象的链接。这很有用，比如当他们中的一个是基本类型并且希望用它的值进行过滤时。要做到这一点，执行一个`SELECT * FROM Person WHERE _key = 100`查询即可。
+:::
 
-> 多亏了二进制编组器，不需要将索引类型类加入集群节点的类路径中，SQL查询引擎不需要对象反序列化就可以钻取索引和可查询字段的值。
+::: tip 注意
+多亏了二进制编组器，不需要将索引类型类加入集群节点的类路径中，SQL查询引擎不需要对象反序列化就可以钻取索引和可查询字段的值。
+:::
 
 **分组索引**
+
 当查询条件复杂时可以使用多字段索引来加快查询的速度，这时可以用`@QuerySqlField.Group`注解。如果希望一个字段参与多个分组索引时也可以将多个`@QuerySqlField.Group`注解加入`orderedGroups`中。
+
 比如，下面的`Person`类中`age`字段加入了名为`age_salary_idx`的分组索引，他的分组序号是0并且降序排列，同一个分组索引中还有一个字段`salary`,他的分组序号是3并且升序排列。最重要的是`salary`字段还是一个单列索引(除了`orderedGroups`声明之外，还加上了`index = true`)。分组中的`order`不需要是什么特别的数值，他只是用于分组内的字段排序。
+
 **Java：**
 ```java
 public class Person implements Serializable {
@@ -234,11 +260,15 @@ public class Person implements Serializable {
 }
 ```
 
-> 注意，将`@QuerySqlField.Group`放在`@QuerySqlField(orderedGroups={...})`外面是无效的。
+::: warning 注意
+将`@QuerySqlField.Group`放在`@QuerySqlField(orderedGroups={...})`外面是无效的。
+:::
 
 ### 7.2.3.基于QueryEntity的配置
 索引和字段也可以通过`org.apache.ignite.cache.QueryEntity`进行配置，它便于利用Spring进行基于XML的配置。
+
 在上面基于注解的配置中涉及的所有概念，对于基于`QueryEntity`的方式也都有效，此外，如果类型的字段通过`@QuerySqlField`进行了配置并且通过`CacheConfiguration.setIndexedTypes`注册过的，在内部也会被转换为查询实体。
+
 下面的示例显示的是如何像可查询字段那样定义一个单一字段索引和分组索引。
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -250,6 +280,9 @@ public class Person implements Serializable {
                 <!-- Setting indexed type's key class -->
                 <property name="keyType" value="java.lang.Long"/>
               
+                <!-- Key field name to be used in INSERT and SELECT queries -->
+                <property name="keyFieldName" value="id"/>
+              
                 <!-- Setting indexed type's value class -->
                 <property name="valueType"
                           value="org.apache.ignite.examples.Person"/>
@@ -258,7 +291,6 @@ public class Person implements Serializable {
                 Indexed fields are added to 'indexes' list below.-->
                 <property name="fields">
                     <map>
-                        <entry key="id" value="java.lang.Long"/>
                         <entry key="name" value="java.lang.String"/>
                         <entry key="salary" value="java.lang.Long "/>
                     </map>
@@ -269,7 +301,7 @@ public class Person implements Serializable {
                     <list>
                         <!-- Single field (aka. column) index -->
                         <bean class="org.apache.ignite.cache.QueryIndex">
-                            <constructor-arg value="id"/>
+                            <constructor-arg value="name"/>
                         </bean>
                       
                         <!-- Group index. -->
@@ -290,20 +322,25 @@ public class Person implements Serializable {
 </bean>
 ```
 SQL查询中会使用`valueType`的简称作为表名，这时，表名为`Person`。
+
 QueryEntity定义之后，就可以执行下面的查询了：
 ```java
 SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 		"WHERE id > 1500 LIMIT 10");
 ```
+::: tip 运行时更新索引和可查询字段
+如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-2-数据定义语言（ddl）)命令。
+:::
 ### 7.2.4.自定义键
 如果只使用预定义的SQL数据类型作为缓存键，那么就没必要对和DML相关的配置做额外的操作，这些数据类型在`GridQueryProcessor#SQL_TYPES`常量中进行定义，列举如下：
-> **预定义SQL数据类型**
- 1.所有的基本类型及其包装器，除了`char`和`Character`；
- 2.`String`;
- 3.`BigDecimal`;
- 4.`byte[]`;
- 5.`java.util.Date`, `java.sql.Date`, `java.sql.Timestamp`;
- 6.`java.util.UUID`。
+::: tip 预定义SQL数据类型
+ - 所有的基本类型及其包装器，除了`char`和`Character`；
+ - `String`;
+ - `BigDecimal`;
+ - `byte[]`;
+ - `java.util.Date`, `java.sql.Date`, `java.sql.Timestamp`;
+ - `java.util.UUID`。
+:::
 
 然而，如果决定引入复杂的自定义缓存键，那么在DML语句中要指向这些字段就需要：
 
@@ -311,6 +348,7 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
  - 使用新的配置参数`QueryEntitty.setKeyFields(..)`来对键和值进行区分；
 
 下面的例子展示了如何实现：
+
 **Java:**
 ```java
 // Preparing cache configuration.
@@ -385,13 +423,17 @@ ignite.createCache(cacheCfg);
     </property>
 </bean>
 ```
->**哈希值自动计算和equals实现**
+::: tip 哈希值自动计算和equals实现
 如果自定义键可以被序列化为二进制形式，那么Ignite会自动进行哈希值的计算并且实现`equals`方法。
+
 但是，如果是`Externalizable`类型，那么就无法序列化为二进制形式，那么就需要自行实现`hashCode`和`equals`方法。
+:::
 
 ### 7.2.5.空间查询
 这个空间模块只对`com.vividsolutions.jts`类型的对象有用。
+
 要配置索引以及/或者几何类型的可查询字段，可以使用和已有的非几何类型同样的方法，首先，可以使用`org.apache.ignite.cache.QueryEntity`定义索引，他对于基于Spring的XML配置文件非常方便，第二，通过`@QuerySqlField`注解来声明索引也可以达到同样的效果，他在内部会转化为`QueryEntities`。
+
 **QuerySqlField：**
 ```java
 /**
@@ -453,11 +495,13 @@ Collection<Cache.Entry<Integer, MapPoint>> entries = cache.query(query).getAll()
 // Printing number of points that fit into the area defined by the polygon.
 System.out.println("Fetched points [" + entries.size() + ']');
 ```
-> **完整示例**
+::: tip 完整示例
 Ignite中用于演示空间查询的可以立即执行的完整示例，可以在[这里](https://github.com/dmagda/geospatial)找到。
+:::
 
 ## 7.3.自定义SQL函数
 Ignite的SQL引擎支持通过额外用Java编写的自定义SQL函数，来扩展ANSI-99规范定义的SQL函数集。
+
 一个自定义SQL函数仅仅是一个加注了`@QuerySqlFunction`注解的公共静态方法。
 ```java
 // Defining a custom SQL function.
@@ -489,6 +533,7 @@ cache.query(query).getAll();
 
 ## 7.4.查询取消
 Ignite中有两种方式停止长时间运行的SQL查询，SQL查询时间长的原因，比如使用了未经优化的索引等。
+
 第一个方法是为特定的`SqlQuery`和`SqlFieldsQuery`设置查询执行的超时时间。
 ```java
 SqlQuery qry = new SqlQuery<AffinityKey<Long>, Person>(Person.class, joinSql);
