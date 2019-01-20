@@ -107,7 +107,7 @@ module.exports = {
                     ],
                     '/doc/integration/': [
                         '',
-                        //'Clustering',
+                        'Clustering',
                         //'WebSessionClustering',
                         //'OSGiSupport',
                         //'Spring',

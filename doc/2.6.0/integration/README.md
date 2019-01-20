@@ -1,7 +1,9 @@
 # 1.Ignite集成总览
 ![](https://files.readme.io/f35ab94-0bad3a9-ignite_architecture.png)
 本系列集成文档包含了已有的所有有关Ignite和其他的技术和产品集成的信息。
+
 集成的价值在于简化Ignite和应用、服务中使用的其他技术的结合，以便要么平滑地切换到Ignite，要么有助于将Ignite嵌入已有的系统。
+
 现有的集成被分成下面的若干个领域：
 
 **集群化**

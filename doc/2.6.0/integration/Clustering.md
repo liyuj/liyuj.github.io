@@ -7,12 +7,16 @@ AWS云上的节点发现通常认为很有挑战性。Amazon EC2，和其他大�
  - 每次新的映像启动时TCP地址会发生变化
 
 虽然在没有组播时可以使用基于TCP的发现，但是不得不处理不断变换的IP地址以及不断更新配置。这产生了一个主要的不便之处以至于在这种环境下基于静态IP的配置实质上变得不可用。
+
 为了缓解不断变化的IP地址问题，Ignite通过利用[Amazon S3](https://aws.amazon.com/s3/)存储或[Amazon ELB](https://aws.amazon.com/elasticloadbalancing/)支持节点自动发现。
 
 ### 2.1.2.基于Amazon S3的发现
 基于Amazon S3的发现可以使节点在启动时在Amazon S3存储上注册它们的IP地址，这样其它节点会尝试连接任意存储在S3上的IP地址然后发起网格节点的自动发现。至于使用，需要将`ipFinder`配置为`TcpDiscoveryS3IpFinder`。
+
 注意，要将`libs/optional/ignite-aws`中的库文件添加到应用的类路径。
+
 下面的例子显示了如何配置基于Amazon S3的IP探测器：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -57,7 +61,9 @@ Ignition.start(cfg);
 ```
 ### 2.1.3.基于Amazon ELB的发现
 基于AWS ELB的IP探测器不需要节点注册它们的IP地址，该IP探测器会自动获取ELB中连接的所有节点的地址，然后使用它们接入集群。至于使用，需要将`ipFinder`配置为`TcpDiscoveryElbIpFinder`。
+
 下面是如何配置基于AWS ELB的IP探测器的示例：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -122,6 +128,7 @@ GCE上的节点发现通常认为很有挑战性。Google云，和其他大部�
 > 这个方法可以只配置一次就可以在所有的EC2实例上复用。
 
 下面的例子显示了如何配置基于Google云存储的IP搜索器：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -168,12 +175,15 @@ Ignition.start(cfg);
 
 ### 2.3.2.基于Apache JCloud的发现
 为了减轻不断变化的IP地址的问题，Ignite支持通过使用基于`TcpDiscoveryCloudIpFinder`的Apache jclouds工具包来实现节点的自动发现。要了解有关Apache JCloud的信息，请参照[jclouds.apache.org](https://jclouds.apache.org/)。
+
 该IP搜索器形成节点地址，通过获取云上所有虚拟机的私有和共有IP地址以及给他们增加一个端口号使Ignite可以运行，该端口可以通过`TcpDiscoverySpi.setLocalPort(int)`或者`TcpDiscoverySpi.DFLT_PORT`进行设置，这样所有节点会连接任何生成的的IP地址然后发起网格节点的自动发现。
+
 可以参考[Apache jclouds providers section](https://jclouds.apache.org/reference/providers/#compute)来获取他支持的云平台的列表。
 
 > 所有虚拟机都要使用同一个端口启动Ignite实例，否则他们无法通过IP搜索器发现对方。
 
 下面的例子显示了如何配置基于Apache JCloud的IP搜索器：
+
 **XML：**
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
