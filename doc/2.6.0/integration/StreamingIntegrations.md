@@ -4,6 +4,7 @@ Ignite可以和主要的流处理技术和框架进行集成，比如Kafka、Cam
 ## 7.2.Kafka流处理器
 ### 7.2.1.摘要
 Apache Ignite的Kafka流处理器模块提供了从Kafka到Ignite缓存的流处理功能。
+
 下面两个方法中的任何一个都可以用于获得这样的流处理功能：
 
  - 使用和Ignite sink的Kafka连接器功能；
@@ -12,7 +13,9 @@ Apache Ignite的Kafka流处理器模块提供了从Kafka到Ignite缓存的流处
 ### 7.2.2.通过Kafka连接器的数据流
 通过从Kafka的主题拉取数据然后将其写入特定的Ignite缓存，IgniteSinkConnector可以用于将数据从Kafka导入Ignite缓存。
 连接器位于`optional/ignite-kafka`，它和它的依赖需要位于一个Kafka运行实例的类路径中，下面会详细描述。
+
 关于Kafka连接器的更多信息，可以参考[Kafka文档](http://kafka.apache.org/documentation.html#connect)。
+
 **设置和运行**
 
  - 将下面的jar包放入Kafka的类路径；
@@ -60,6 +63,7 @@ igniteCfg=/some-path/ignite.xml
 singleTupleExtractorCls=my.company.MyExtractor
 ```
 这里*cacheName*等于`some-path/ignite.xml`中指定的缓存名，之后`someTopic1,someTopic2`主题的数据就会被拉取和存储。如果希望覆盖缓存中的已有值，可以将`cacheAllowOverwrite`设置为`true`。如果需要解析输入的数据然后形成新的键和值，则需要实现一个*StreamSingleTupleExtractor*然后像上面那样指定*singleTupleExtractorCls*。
+
 还可以设置`cachePerNodeDataSize`和`cachePerNodeParOps`，用于调整每个节点的缓冲区以及每个节点中并行流操作的最大值。
 可以将test中的`example-ignite.xml`文件作为一个简单缓存配置文件的示例。
 
@@ -68,6 +72,7 @@ singleTupleExtractorCls=my.company.MyExtractor
 bin/connect-standalone.sh myconfig/connect-standalone.properties myconfig/ignite-connector.properties
 ```
 **流程检查**
+
 要执行一个非常基本的功能检查，可以这样做：
 
  - 启动Zookeeper；
@@ -169,6 +174,7 @@ finally {
 
 ### 7.3.2.直接摄取
 直接摄取使得通过一个提取器元组的帮助可以从任意Camel端点获得消息然后直接进入Ignite，这个被称为**直接摄取**。
+
 下面是一个代码示例：
 ```java
 // Start Apache Ignite.
@@ -247,8 +253,11 @@ streamer.setResponseProcessor(new Processor() {
 
 ### 7.3.6.Apache Camel
 [Apache Camel](http://camel.apache.org/)是一个企业级集成框架，围绕Gregor Hohpe和Bobby Woolf推广的[企业集成模式](http://www.enterpriseintegrationpatterns.com/)思想，比如*通道*、*管道*、*过滤器*、*拆分器*、*聚合器*、*路由器*、*重新排序器*等等，他可以像一个乐高玩具一样连接彼此来创建一个将系统连接在一起的集成路径。
+
 到目前为止，Camel有超过200个组件，很多都是针对不同技术的适配器，比如**JMS**、**SOAP**、**HTTP**、**文件**、**FTP**、**POP3**、**SMTP**、**SSH**；包括云服务，比如**AWS**，**GCE**、**Salesforce**；社交网络，比如**Twitter**、**Facebook**；甚至包括新一代的数据库，比如**MongoDB**、**Cassandra**；以及数据处理技术，比如**Hadoop(HDFS,HBase)**以及**Spark**。
+
 Camel可以运行在各种环境中，同时也被Ignite支持：独立的Java程序、OSGi、Servlet容器、Spring Boot、JEE应用服务器等等。他是完全模块化的，因此只需要部署实际需要的组件，其他都不需要。
+
 要了解更多的信息，可以参照[Camel是什么？](https://camel.apache.org/what-is-camel.html)。
 ## 7.4.JMS流处理器
 ### 7.4.1.摘要
@@ -341,6 +350,7 @@ dataStreamer.close();
 ## 7.5.MQTT流处理器
 ### 7.5.1.摘要
 该流处理器使用[Eclipse Paho](https://eclipse.org/paho/)作为MQTT客户端，从一个MQTT主题消费消息，然后将键值对提供给`IgniteDataStreamer`实例。
+
 必须提供一个流的元组提取器(不管是单条目的，还是多条目的提取器)来处理传入的消息，然后提取元组以插入缓存。
 ### 7.5.2.特性
 这个流处理器支持：
@@ -387,6 +397,7 @@ streamer.start();
 要了解有关选项的更多信息，可以参考`ignite-mqtt`模块的javadoc。
 ## 7.6.Storm流处理器
 Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处理功能。
+
 通过如下步骤可以将数据注入Ignite缓存：
 
  - 在Maven工程中导入Ignite的Storm流处理器模块。如果使用Maven来管理项目的依赖，可以像下面这样添加Storm模块依赖（将`${ignite.version}`替换为实际使用的版本）：
@@ -416,6 +427,7 @@ storm jar ignite-storm-streaming-jar-with-dependencies.jar my.company.ignite.MyS
 ```
 ## 7.7.Flink流处理器
 Apache Ignite Flink Sink模块是一个流处理连接器，他可以将Flink数据注入Ignite缓存，该Sink会将输入的数据注入Ignite缓存。每当创建一个Sink，都需要提供一个Ignite缓存名和Ignite网格配置文件。
+
 通过如下步骤，可以开启到Ignite缓存的数据注入：
  
  - 在Maven工程中导入Ignite的Flink Sink模块。如果使用Maven来管理项目的依赖的话，可以像下面这样添加Flink模块依赖（将`${ignite.version}`替换为实际使用的版本）；
@@ -502,6 +514,7 @@ streamer.start();
 ## 7.9.Flume流处理器
 ### 7.9.1.摘要
 Apache Flume是一个高效的收集、汇总以及移动大量的日志数据的分布式的、高可靠和高可用的服务（[https://github.com/apache/flume](https://github.com/apache/flume)）。
+
 IgniteSink是一个Flume池，他会从相对应的Flume通道中提取事件然后将数据注入Ignite缓存，目前支持Flume的1.6.0版本。
 在启动Flume代理之前，就像下面章节描述的，IgniteSink及其依赖需要包含在代理的类路径中。
 ### 7.9.2.设置
@@ -526,7 +539,7 @@ plugins.d/
      |-- spring-core-4.1.0.RELEASE.jar
      `-- spring-expression-4.1.0.RELEASE.jar
 ```
- - 在Flume配置文件中，指定带有缓存属性的Ignite XML配置文件的位置（可以将*flume/src/test/resources/example-ignite.xml *作为一个基本的样例），缓存属性中包含要创建缓存的缓存名称（与Ignite配置文件中的相同），EventTransformer的实现类以及可选的批处理大小。所有的属性都显示在下面的表格中（必须项为粗体）。
+ - 在Flume配置文件中，指定带有缓存属性的Ignite XML配置文件的位置（可以将*flume/src/test/resources/example-ignite.xml*作为一个基本的样例），缓存属性中包含要创建缓存的缓存名称（与Ignite配置文件中的相同），EventTransformer的实现类以及可选的批处理大小。所有的属性都显示在下面的表格中（必须项为粗体）。
 
 |属性名称|默认值|描述|
 |---|---|---|
@@ -585,6 +598,7 @@ try (IgniteDataStreamer<Integer, String> dataStreamer =
 ```
 ## 7.11.RocketMQ流处理器
 这个流处理器模块提供了从[Apache RocketMQ](https://github.com/apache/incubator-rocketmq)到Ignite的流化处理功能。
+
 如果要使用Ignite的RocketMQ流处理器模块：
 
 1. 将其导入自己的Maven工程；

@@ -10,7 +10,9 @@ Ignite在Karaf4.0.0版本系列上进行了测试，可能也可以工作于更�
 
 ### 4.1.2.准备步骤
 首先，Ignite使用了Oracle/Sun JRE的底层包`sun.nio.ch`(OpenJDK也有效)。
+
 因为这是一个专有的包（并不是Java标准规范的一部分），Apache Kafka默认并没有从[System Bundle](http://wiki.osgi.org/wiki/System_Bundle)（bundle 0）中导出它，因此必须通过[修改${KARAF_BASE}/etc/jre.properties文件](https://karaf.apache.org/manual/latest-2.2.x/users-guide/jre-tuning.html)通知Kafka导出它。
+
 定位到使用的JRE版本的`jre-1.x`属性，然后在最后追加包名，比如：
 ```
 jre-1.8= \
@@ -22,6 +24,7 @@ jre-1.8= \
 ```
 ### 4.1.3.安装Ignite特性库
 使用Apache Karaf Shell中的如下命令来安装Ignite特性库，确保容器可以连接到互联网或者一个包含Ignite组件的备用Maven仓库。
+
 将Ignite特性库加入Karaf：
 ```bash
 karaf@root()> feature:repo-add mvn:org.apache.ignite/ignite-osgi-karaf/${ignite.version}/xml/features
@@ -29,6 +32,7 @@ Adding feature url mvn:org.apache.ignite/ignite-osgi-karaf/${ignite.version}/xml
 karaf@root()>
 ```
 将`${ignite.version}`替换为实际使用的版本号。
+
 这时可以列出Ignite支持的所有特性：
 ```
 karaf@root()> feature:list | grep ignite
@@ -70,7 +74,9 @@ Error executing command: Resource has no uri
 按照如下的说明可以忽略这个错误。
 
 Apache Karaf捆绑了[Pax Logging](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging),他是一个从其他组件收集和汇总日志输出（通过不同的框架输出，比如slf4j，log4j，JULI，commons-logging等）然后用一个典型的log4j配置处理的框架。
+
 `ignite-log4j `模块依赖于log4j，Pax Logging默认不输出它，因此我们开发了一个OSGi片段，SymbolicName为`ignite-osgi-paxlogging`，他加入了`ignite-core`然后输出了缺失的包。
+
 `ignite-log4j`特性也安装了这个片段，但是需要用`org.ops4j.pax.logging.pax-logging-api`这个名字强制刷新：
 ```bash
 karaf@root()> feature:install ignite-log4j
@@ -140,6 +146,7 @@ karaf@root()>
  - javax cache API
 
 当在Karaf中部署时，可以通过使用Ignite特性库来快速地安装`ignite-core`特性，可以参照`17.1.在Apache Karaf中安装`章节来了解更多的信息。
+
 可以随意地安装额外的Ignite模块来扩展平台的功能，就像在一个标准环境中将模块加入类路径一样。
 ### 4.3.2.实现Ignite组件Activator
 要启动Ignite，通过继承抽象类`org.apache.ignite.osgi.IgniteAbstractOsgiContextActivator`来实现一个OSGi组件Activator：

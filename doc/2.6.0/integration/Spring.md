@@ -56,6 +56,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 </beans>
 ```
 当缓存管理器初始化时也可能已经有一个Ignite节点正在运行（比如已经通过`ServletContextListenerStartup`启动了）。这时只需要简单地通过`gridName`属性提供网格名字就可以了。注意如果不设置网格名字，缓存管理器会试图使用默认的Ignite实例（名字为`null`的），下面是一个示例：
+
 使用已启动的Ignite实例：
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -81,6 +82,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 
 ### 5.1.3.动态缓存
 虽然通过Ignite配置文件可以获得所有必要的缓存，但是这不是必要的。如果Spring要使用一个不存在的缓存时，`SpringCacheManager`会自动创建它。
+
 如果不指定，会使用默认值创建一个新的缓存。要定制的话，可以通过`dynamicCacheConfiguration`属性提供一个配置模板，比如，如果希望使用`复制`缓存而不是`分区`缓存，可以像下面这样配置`SpringCacheManager`:
 ```xml
 <bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
@@ -107,6 +109,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 ```
 ### 5.1.4.示例
 如果在Spring应用上下文中已经加入了`SpringCacheManager`，就可以通过简单地加上注解为任意的java方法启用缓存。
+
 通常为很重的操作使用缓存，比如数据库访问。比如，假设有个Dao类有一个`averageSalary(...)`方法，他计算一个组织内的所有雇员的平均工资，那么可以通过`@Cacheable`注解来开启这个方法的缓存。
 ```java
 private JdbcTemplate jdbc;
@@ -149,6 +152,7 @@ public void updateSalary(Employee e) {
 ## 5.2.Spring Data
 ### 5.2.1.摘要
 [Spring Data框架](http://projects.spring.io/spring-data/)提供了一套统一并且广泛使用的API，它从应用层抽象了底层的数据存储，Spring Data有助于避免锁定到特定的数据库厂商，通过很小的代价就可以从一个数据库切换到另一个。
+
 Ignite实现了Spring Data的`CrudRepository`接口，它不仅仅支持基本的CRUD操作，还支持通过统一的Spring Data API访问Ignite的SQL网格。
 ### 5.2.2.Maven配置
 开始使用Ignite的Spring Data库的最简单方式就是将下面的Maven依赖加入应用的`pom.xml`文件：
@@ -163,6 +167,7 @@ Ignite实现了Spring Data的`CrudRepository`接口，它不仅仅支持基本�
 Ignite从2.0版本开始支持Spring Data，因此需要使用`2.0.0`及之后的版本。
 ### 5.2.3.IgniteRepository
 Ignite引入了一个特定的`IgniteRepository`接口，扩展了默认的`CrudRepository`，这个接口可以被所有希望从Ignite集群中存储和查询数据的自定义Spring Data Repository继承。
+
 比如，创建一个名为`PersonRepository`的自定义Repository：
 ```java
 @RepositoryConfig(cacheName = "PersonCache")
@@ -193,6 +198,7 @@ public interface PersonRepository extends IgniteRepository<Person, Long> {
 }
 ```
 `@RepositoryConfig`注解需要指定，他会将Repository映射到一个分布式缓存，在上面的示例中，`PersonRepository`映射到了`PersonCache`。
+
 自定义方法（比如`findByFirstName(name)`以及`findTopByLastNameLike(name)`）的签名会被自动处理，在该方法被调用时会被转成对应的SQL查询。另外，如果需要执行明确的SQL查询作为方法调用的结果，也可以使用`@Query(queryString)`注解。
 >**不支持的CRUD操作**
 `CrudRepository`接口的部分操作目前还不支持。这些操作是不需要提供键作为参数的：
@@ -239,6 +245,7 @@ public class SpringAppCfg {
 }
 ```
 这个配置会实例化传入`IgniteRepositoryFactoryBean`的Ignite bean（节点），然后用于所有需要接入Ignite集群的Ignite Repository。
+
 在上例中，应用会直接实例化该bean，然后命名为`igniteInstance`，另外，配置也可以注册下面的bean，然后自动地启动一个Ignite节点。
 
  - 名为`igniteCfg`的`IgniteConfiguration`对象；
@@ -246,6 +253,7 @@ public class SpringAppCfg {
 
 ### 5.2.5.使用IgniteRepository
 所有的配置和Repository准备好之后，就可以在应用的上下文中注册配置以及获取Repository的引用。
+
 下面的示例代码就会展示如何在应用的上下文中注册`SpringAppCfg`（上面章节的示例配置），然后获取`PersonRepository`的引用：
 ```java
 ctx = new AnnotationConfigApplicationContext();

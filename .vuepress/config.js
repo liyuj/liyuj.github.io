@@ -108,13 +108,13 @@ module.exports = {
                     '/doc/integration/': [
                         '',
                         'Clustering',
-                        //'WebSessionClustering',
-                        //'OSGiSupport',
-                        //'Spring',
-                        //'CassandraIntegration',
-                        //'StreamingIntegrations',
-                        //'Hibernate',
-                        //'MyBatis'
+                        'WebSessionClustering',
+                        'OSGiSupport',
+                        'Spring',
+                        'CassandraIntegration',
+                        'StreamingIntegrations',
+                        'Hibernate',
+                        'MyBatis'
                     ],
                     '/doc/spark/': [
                         '',

@@ -2,7 +2,8 @@
 ## 6.1.Ignite和Apache Cassandra
 ### 6.1.1.摘要
 对于过期的缓存记录，通过使用[Cassandra](http://cassandra.apache.org/)作为持久化存储，Ignite的Cassandra模块为缓存实现了一个CacheStore。
-他在功能上和`CacheJdbcBlobStore`以及`CacheJdbcPojoStore`的方式几乎是相同的，但是又提供了如下的好处；
+
+它在功能上和`CacheJdbcBlobStore`以及`CacheJdbcPojoStore`的方式几乎是相同的，但是又提供了如下的好处；
 
  1. 使用[Apache Cassandra](http://cassandra.apache.org/)，它是一个高性能和高可扩展的键值存储；
 >**SQL查询**
@@ -87,6 +88,7 @@
 ### 6.2.2.PersistenceSettingsBean
 这个bean存储了对象（键和值）如何持久化到Cassandra数据库的所有细节信息（键空间、表、分区选项、POJO字段映射等）。
 `org.apache.ignite.cache.store.cassandra.utils.persistence.KeyValuePersistenceSettings`的构造器可以通过如下方式创建这个Bean，从一个包含特定结构的XML配置文档的字符串（看下面的代码），或者指向XML文档的资源。
+
 下面是一个XML配置文档的常规示例（**持久化描述符**），它指定了Ignite缓存的键和值如何序列化/反序列化到/从Cassandra:
 ```xml
 <!--
@@ -241,6 +243,7 @@ Attributes:
 </persistence>
 ```
 下面会提供关于持久化描述符配置及其元素的所有细节信息。
+
 **persistence**
 
 > **必要元素**
@@ -257,13 +260,17 @@ Attributes:
 创建在持久化配置容器中配置的**keyspace**属性指定的Cassandra键空间时的可选项。
 
 键空间只有在不存在时才会被创建，并且连接到Cassandra的账户要持有正确的权限。
+
 这个XML元素指定的文本只是[创建键空间](http://docs.datastax.com/en/cql/3.0/cql/cql_reference/create_keyspace_r.html)的Cassandra DDL语句中在**WITH**关键字之后的一段代码。
+
 **tableOptions**
 > **可选元素**
 创建在持久化配置容器中配置的**table**属性指定的表时的可选项。
 
 表只有在不存在时才会被创建，并且连接到Cassandra的账户要持有正确的权限。
+
 这个XML元素指定的文本只是[创建表](http://docs.datastax.com/en/cql/3.0/cql/cql_reference/create_table_r.html)的Cassandra DDL语句中在**WITH**关键字之后的一段代码。
+
 **keyPersistence**
 > **必要元素**
 Ignite缓存键的持久化配置。
@@ -285,12 +292,14 @@ Ignite缓存键的持久化配置。
 |**POJO**|将对象的每个属性按照对应的类型存储到Cassandra的表中，对于对象的属性，提供了利用Cassandra第二索引的能力，只能用于遵守Java Bean规范的POJO对象，并且它的属性都是基本Java类型，它们会直接映射到对应的Cassandra类型上。|
 
 *可用的序列化器实现*
+
 |类名|描述|
 |---|---|
 |**org.apache.ignite.cache.store.cassandra.utils.serializer.JavaSerializer**|使用标准的Java序列化框架|
 |**org.apache.ignite.cache.store.cassandra.utils.serializer.KryoSerializer**|使用Kryo序列化框架|
 
 如果使用了**PRIMITIVE**和**BLOB**持久化策略，那么是不需要指定`keyPersistence`标签的内部元素的，这样的原因是，这两个策略中整个对象都被持久化到Cassandra表中的一列（可以通过`column`指定）。
+
 如果使用`POJO`持久化策略，那么有两个策略：
 
  - 让`keyPersistence`标签为空，这时，POJO对象类的所有字段都会通过如下的规则自动检测：
@@ -303,11 +312,13 @@ Ignite缓存键的持久化配置。
  - 在`keyPersistence`标签中指定持久化的细节，这时，需要在`partitionKey`标签中指定映射到Cassandra表列的`分区键`字段，这个标签只是作为一个映射设置的容器，没有任何属性。作为一个选择（如果打算使用集群键），也可以在`clusterKey`标签中指定映射到对应Cassandra表列的`集群`键字段。这个标签只是作为一个映射设置的容器，也没有任何属性。
 
 下面两个章节会详细描述**分区**和**集群**键字段映射的细节（如果选择了上面列表的第二个选项）。
+
 **partitionKey**
 > **可选元素**
 `field`元素的容器，用于指定Cassandra的分区键。
 
 定义了**Ignite缓存**的键对象字段（在它里面），他会被用作Cassandra表的**分区键**，并且指定了到表列的字段映射。
+
 映射是通过`<field>`标签设定的，它有如下的属性：
 
 |属性|必需|描述|
@@ -333,6 +344,7 @@ Ignite缓存键的持久化配置。
 Ignite缓存值的持久化配置。
 
 这些设置指定了Ignite缓存的值对象如何存储/加载到/从Cassandra表。
+
 这些设置的属性看上去和对应的Ignite缓存键的设定很像。
 
 |属性|必需|描述|
@@ -343,6 +355,7 @@ Ignite缓存值的持久化配置。
 |column|否|PRIMITIVE和BLOB策略时存储值的列名，如果不指定，列名为`value`，对于POJO策略属性无需指定。|
 
 持久化策略（与键的持久化策略一致）：
+
 |名称|描述|
 |---|---|
 |**PRIMITIVE**|存储对象，通过对应的类型将其映射到Cassandra表列中，只能使用简单的Java类型（int、long、String、double、Date），他们会直接映射到对应的Cassandra类型上，要了解详细的Java到Cassandra的类型映射，点击[这里](http://docs.datastax.com/en/developer/java-driver/2.0/java-driver/reference/javaClass2Cql3Datatypes_r.html)。|
@@ -350,12 +363,14 @@ Ignite缓存值的持久化配置。
 |**POJO**|将对象的每个属性按照对应的类型存储到Cassandra的表中，对于对象的属性，提供了利用Cassandra第二索引的能力，只能用于遵守Java Bean规范的POJO对象，并且它的属性都是基本Java类型，它们会直接映射到对应的Cassandra类型上。|
 
 *可用的序列化器实现*
+
 |类名|描述|
 |---|---|
 |**org.apache.ignite.cache.store.cassandra.utils.serializer.JavaSerializer**|使用标准的Java序列化框架|
 |**org.apache.ignite.cache.store.cassandra.utils.serializer.KryoSerializer**|使用Kryo序列化框架|
 
 如果使用了**PRIMITIVE**和**BLOB**持久化策略，那么是不需要指定`valuePersistence`标签的内部元素的，这样的原因是，这两个策略中整个对象都被持久化到Cassandra表中的一列（可以通过`column`指定）。
+
 如果使用`POJO`持久化策略，那么有两个策略（与键的选项相同）：
 
  - 让`valuePersistence`标签为空，这时，POJO对象类的所有字段都会通过如下的规则自动检测：
@@ -378,7 +393,9 @@ Ignite缓存值的持久化配置。
 
 ## 6.3.示例
 就像上一章描述的那样，要将Cassandra配置为缓存存储，需要将Ignite缓存的**CacheStoreFactory**设置为`org.apache.ignite.cache.store.cassandra.CassandraCacheStoreFactory`。
+
 下面是一个Ignite将Cassandra配置为缓存存储的典型配置示例，即使他看上去很复杂也不用担心，我们会一步一步深入每一个配置项，这个示例来自于Cassandra模块源代码的单元测试资源文件`test/resources/org/apache/ignite/tests/persistence/blob/ignite-config.xml`。
+
 XML：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -459,7 +476,9 @@ XML：
 </beans>
 ```
 在这个示例中，配置了两个Ignite缓存：`cache1`和`cache2`，下面会看配置的细节。
+
 这两个缓存非常接近（**cache1**和**cache2**），看起来像这样：
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -475,18 +494,22 @@ XML：
 </bean>
 ```
 首先，我们看到通读和通写选项已经启用了：
+
 XML：
 ```xml
 <property name="readThrough" value="true"/>
 <property name="writeThrough" value="true"/>
 ```
 如果希望为过期条目使用持久化存储，这个对于Ignite缓存就是必要的。
+
 如果希望异步更新持久化存储的话，也可以有选择地配置后写参数。
+
 XML：
 ```xml
 <property name="writeBehindEnabled" value="true"/>
 ```
 下一个重要的事就是`CacheStoreFactory`的配置：
+
 XML：
 ```xml
 <property name="cacheStoreFactory">
@@ -502,10 +525,11 @@ XML：
  - **persistenceSettingsBean**：spring bean的名字，它指定了对象如何持久化到Cassandra数据库的细节，要了解更多细节，可以看上一章的介绍。
 
 在这个示例中，`cassandraAdminDataSource`是一个datasource bean，可以使用如下的指令导入Ignite的缓存配置文件：
-```XML
+```xml
 <import resource="classpath:org/apache/ignite/tests/cassandra/connection-settings.xml" />
 ```
 `cache1_persistence_settings`是一个持久化配置bean，他是在Ignite缓存配置文件中使用如下的方式配置的：
+
 XML:
 ```xml
 <bean id="cache1_persistence_settings" class="org.apache.ignite.cache.store.cassandra.utils.persistence.KeyValuePersistenceSettings">
@@ -537,6 +561,7 @@ XML:
 </beans>
 ```
 最后，还没有描述的最后一个片段就是持久化设置的配置，我们可以从`org/apache/ignite/tests/persistence/blob/persistence-settings-1.xml`测试资源文件中看一下`cache1_persistence_settings`:
+
 XML:
 ```xml
 <persistence keyspace="test1" table="blob_test1">
@@ -545,9 +570,11 @@ XML:
 </persistence>
 ```
 在这个配置中，我们可以看到Cassandra的`test1.blob_test1`表会用于**cache1**缓存的键/值存储，缓存的键对象会以**integer**的形式存储于`key`列中，缓存的值对象会以**blob**的形式存储于`value`列中。
+
 下一章会为不同类型的持久化策略提供持久化设置的示例。
 ### 6.3.1.示例1
 Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，`String`类型的值在Cassandra中会以`text`的形式存储。
+
 XML:
 ```xml
 <persistence keyspace="test1" table="my_table">
@@ -558,6 +585,7 @@ XML:
 键会存储于`my_key`列，值会存储于`value`列（如果`column`属性不指定的话会使用默认值）。
 ### 6.3.2.示例2
 Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，`any`类型的值（`BLOB`持久化策略中无需指定类型）在Cassandra中会以`BLOB`的形式存储，这个场景的唯一解决方案就是在Cassandra中将值存储为`BLOB`。
+
 XML：
 ```xml
 <persistence keyspace="test1" table="my_table">
@@ -583,6 +611,7 @@ Ignite缓存的持久化配置中，`Integer`类型的键和`any`类型的值在
 键会存储于`BLOB`类型的`key`列，使用[Java标准序列化](https://docs.oracle.com/javase/tutorial/jndi/objects/serial.html)，值会存储于`BLOB`类型的`value`列，使用[Kryo序列化](https://github.com/EsotericSoftware/kryo)。
 ### 6.3.4.示例4
 Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，自定义POJO`org.apache.ignite.tests.pojos.Person`类型的值在动态分析后会被持久化到一组表列中，这样的话每个POJO字段都会被映射到相对应的表列，关于更多动态POJO字段发现的信息，可以查看上一章的介绍。
+
 XML：
 ```xml
 <persistence keyspace="test1" table="my_table">
@@ -591,6 +620,7 @@ XML：
 </persistence>
 ```
 键会存储于`int`类型的`key`列。
+
 我们可以假设`org.apache.ignite.tests.pojos.Person`类的实现如下：
 ```java
 public class Person {
@@ -686,6 +716,7 @@ public class Person {
 
 ### 6.3.5.示例5
 Ignite缓存的持久化配置中，键是自定义的POJO`org.apache.ignite.tests.pojos.PersonId`类型，值是自定义POJO`org.apache.ignite.tests.pojos.Person`类型，基于手工指定的映射规则，都会被持久化到一组表列。
+
 XML：
 ```xml
 <persistence keyspace="test1" table="my_table" ttl="86400">
@@ -734,13 +765,17 @@ XML：
 </persistence>
 ```
 这些配置看上去非常复杂，我们可以一步一步地分析它。
+
 首先看一下根标签：
+
 XML：
 ```xml
 <persistence keyspace="test1" table="my_table" ttl="86400">
 ```
 它指定了Ignite缓存的键和值应该存储于`test1.my_table`表，并且每一条数据会在86400秒（24小时）后[过期](http://docs.datastax.com/en/cql/3.1/cql/cql_using/use_expire_c.html)。
+
 然后可以看到关于Cassandra键空间的高级配置，在不存在时，这个配置会用于创建键空间。
+
 XML：
 ```xml
 <keyspaceOptions>
@@ -749,6 +784,7 @@ XML：
 </keyspaceOptions>
 ```
 然后通过对键空间配置的分析，可以看到只会用于表创建的高级配置。
+
 XML：
 ```xml
 <tableOptions>
@@ -757,6 +793,7 @@ XML：
 </tableOptions>
 ```
 下一个章节说明了Ignite缓存的键如何持久化：
+
 XML：
 ```xml
 <keyPersistence class="org.apache.ignite.tests.pojos.PersonId" strategy="POJO">
@@ -816,6 +853,7 @@ public class PersonId {
 
 另外，`(company, department)`的列组合会用作为Cassandra的`PARTITION`键，`number`列会用作为倒序排列的`集群`键。
 最后到最后一章，它指定了Ignite缓存值的持久化配置：
+
 XML：
 ```xml
 <valuePersistence class="org.apache.ignite.tests.pojos.Person"
@@ -849,12 +887,15 @@ XML：
 
 ## 6.4.DDL生成器
 Ignite Cassandra模块的一个好处是，无需关注Cassandra的表创建DDL语法以及Java到Cassandra的类型映射细节。
+
 只需要创建指定了Ignite缓存的键和值如何序列化/反序列化到/从Cassandra的XML配置文档即可，基于这个设置，剩余的Cassandra键空间和表都会被自动创建，要让这一切运转起来，只需要：
 
 > 在Cassandra的连接设置中，指定的用户要有足够的权限来创建键空间和表。
 
 然而，因为严格的安全策略，某些环境中这是不可能的。这个场景的唯一解决方案就是向运维团队提供DDL脚本来创建所有必要的Cassandra键空间和表。
+
 这就是使用DDL生成工具的确切场景，它会从一个持久化配置中生成DDL。
+
 语法样例：
 ```bash
 java org.apache.ignite.cache.store.cassandra.utils.DDLGenerator /opt/dev/ignite/persistence-settings-1.xml /opt/dev/ignite/persistence-settings-2.xml
@@ -915,6 +956,7 @@ Ignite的Cassandra模块提供了一组负载测试，他可以模拟Ignite和Ca
 
 ### 6.5.1.构建负载测试
 Cassandra模块的负载测试是作为模块测试源代码的一部分提供的，因此首先需要从源代码构建Ignite发行版。
+
 从源代码构建Ignite发行版之后，会发现在Cassandra模块目录下有`target/tests-package`目录以及`target/ignite-cassandra-tests-<version>.zip`，他是这个目录的zip压缩包。测试包包含了马上就可以用的Ignite Cassandra模块的负载测试应用，它的结构如下：
 
  - **bootstrap**：目录包括了AWS部署框架的引导脚本；

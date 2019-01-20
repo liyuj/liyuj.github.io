@@ -2,10 +2,14 @@
 ## 8.1.Hibernate二级缓存
 ### 8.1.1.摘要
 Ignite可以用做Hibernate的二级缓存，它可以显著地提升应用持久化层的性能。
+
 Hibernate是著名的、应用广泛的对象关系映射框架(ORM),在与SQL数据库紧密互动的同时，他通过对查询结果集的缓存来最小化昂贵的数据库请求。
+
 ![](https://files.readme.io/867f0b4-hibernate-L2-cache_1.png)
-Hibernate数据库映射对象的所有工作都是在一个会话中完成的，通常绑定到一个worker线程或者Web会话。默认的话，Hibernate只会使用Session级的缓存（L1），因此，缓存在一个会话中的对象，对于另一个会话是不可见的。然而，如果用一个全局的二级缓存的话，他缓存的所有对象对于用同一个缓存配置的所有会话都是可见的。这通常会带来性能的显著提升，因为每一个新创建的会话都可以利用L2缓存（他比任何会话级L1缓存都要长寿）中已有的数据的好处。
-L1缓存是一直启用的而且是由Hibernate内部实现的，而L2缓存是可选的而且有很多的可插拔的实现。Ignite可以作为L2缓存的实现非常容易地嵌入，而且可以用于所有的访问模式（`READ_ONLY`,`READ_WRITE`,`NONSTRICT_READ_WRITE`和`TRANSACTIONAL`），支持广泛的相关特性：
+
+Hibernate数据库映射对象的所有工作都是在一个会话中完成的，通常绑定到一个worker线程或者Web会话。默认的话，Hibernate只会使用Session级的缓存（一级缓存），因此，缓存在一个会话中的对象，对于另一个会话是不可见的。然而，如果用一个全局的二级缓存的话，他缓存的所有对象对于用同一个缓存配置的所有会话都是可见的。这通常会带来性能的显著提升，因为每一个新创建的会话都可以利用二级缓存（他比任何会话级L1缓存都要长寿）中已有的数据的好处。
+
+一级缓存是一直启用的而且是由Hibernate内部实现的，而二级缓存是可选的而且有很多的可插拔的实现。Ignite可以作为L2缓存的实现非常容易地嵌入，而且可以用于所有的访问模式（`READ_ONLY`,`READ_WRITE`,`NONSTRICT_READ_WRITE`和`TRANSACTIONAL`），支持广泛的相关特性：
 
  - 缓存到内存和磁盘以及堆外内存
  - 缓存事务
@@ -27,7 +31,9 @@ L1缓存是一直启用的而且是由Hibernate内部实现的，而L2缓存是�
  - 正确地配置Ignite缓存。
 
 **Maven配置**
+
 要在项目中添加Ignite-hibernate集成，需要将下面的依赖加入POM文件：
+
 Hibernate5:
 ```xml
 <dependency>
@@ -45,6 +51,7 @@ Hibernate4:
 </dependency>
 ```
 **Hibernate配置示例**
+
 一个用Ignite配置Hibernate二级缓存的典型例子看上去像下面这样：
 ```xml
 <hibernate-configuration>
@@ -85,6 +92,7 @@ Hibernate4:
  - 指定实体类以及为每个类配置缓存（Ignite中应该配置一个相应的缓存区域）
 
 **Ignite配置示例**
+
 一个典型的支持Hibernate二级缓存的Ignite配置，像下面这样：
 ```xml
 <!-- Basic configuration for atomic cache. -->
@@ -149,6 +157,7 @@ Hibernate4:
  - 开启`FULL_SYNC`模式保持备份节点的完全同步
 
 另外，指定了一个缓存来更新时间戳，它可以是`原子化`的，因为性能好。
+
 配置完Ignite缓存节点后，可以通过如下方式在节点内启动他：
 ```java
 Ignition.start("my-config-folder/my-ignite-configuration.xml");
@@ -159,17 +168,24 @@ $IGNITE_HOME/bin/ignite.sh my-config-folder/my-ignite-configuration.xml
 ```
 对于Windows,可以执行同一文件夹下的`.bat`脚本。
 
-> 节点也可以在其他主机上启动，以形成一个分布式的缓存集群，一定要确保在配置文件中指定正确的网络参数。
+::: tip 提示
+节点也可以在其他主机上启动，以形成一个分布式的缓存集群，一定要确保在配置文件中指定正确的网络参数。
+:::
 
 ### 8.1.3.查询缓存
 除了二级缓存，Hibernate还提供了查询缓存，这个缓存存储了通过指定参数集进行查询的结果(或者是HQL或者是Criteria)，因此，当重复用同样的参数集进行查询时，他会命中缓存而不会去访问数据库。
+
 查询缓存对于反复用同样的参数集进行查询时是有用的。像二级缓存的场景一样，Hibernate依赖于一个第三方的缓存实现，Ignite也可以这样用。
 
-> 要考虑使用Ignite的SQL网格会比通过Hibernate性能更好。
+::: tip 提示
+要考虑使用Ignite的SQL网格会比通过Hibernate性能更好。
+:::
 
 ### 8.1.4.查询缓存配置
 上面的配置信息完全适用于查询缓存，但是额外的配置和代码变更还是必要的。
+
 **Hibernate配置**
+
 要在Hibernate种启用查询缓存，只需要在配置文件中添加额外的一行：
 ```xml
 <!-- Enable query cache. -->
@@ -189,7 +205,9 @@ criteria.setCacheable(true);
 ...
 ```
 这个完成之后，查询结果就会被缓存了。
+
 **Ignite配置**
+
 要在Ignite中开启Hibernate查询缓存，需要指定一个额外的缓存配置：
 ```xml
 <property name="cacheConfiguration">
