@@ -2,11 +2,14 @@
 ## 2.1.内存文件系统
 Ignite有一个独特的功能，叫做Ignite文件系统（IGFS），就是一个分布式的内存文件系统，IGFS提供了和Hadoop HDFS类似的功能，但是只在内存中。事实上，除了他自己的API，IGFS还实现了Hadoop的文件系统API，可以透明地加入Hadoop或者Spark的运行环境。
 IGFS将每个文件的数据拆分成独立的数据块然后将他们保存进一个分布式内存缓存中。然而，与Hadoop HDFS不同，IGFS不需要一个name节点，它通过一个哈希函数自动确定文件数据的位置。
+
 IGFS可以独立部署，也可以部署在HDFS之上，这时他成为了一个存储于HDFS中的文件的透明缓存层。
+
 ![](https://files.readme.io/795c4d6-spark-igfs_1.png)
 
 ## 2.2.IGFS原生Ignite API
 Ignite文件系统（IGFS）是一个内存级的文件系统，他可以在现有的缓存基础设施基础上对文件以及文件夹进行操作。
+
 IGFS既可以作为一个纯粹的内存文件系统，也可以委托给其他的文件系统（比如各种Hadoop文件系统实现）作为一个缓存层。
 另外，IGFS提供了在文件系统数据上执行MapReduce任务的API。
 ### 2.2.1.IgniteFileSystem
@@ -69,18 +72,22 @@ fs.delete(dir, true);
 ```
 ## 2.3.IGFS作为Hadoop文件系统
 Ignite Hadoop加速器提供了一个叫做`IgniteHadoopFileSystem`的Hadoop兼容IGFS实现，Hadoop可以以即插即用的形式运行在这个文件系统上，然后显著地减少了I/O和改善了延迟和吞吐量。
+
 ![](https://files.readme.io/f1ac167-ignite_filesystem_1.png)
+
 ### 2.3.1.配置Ignite
 Ignite Hadoop加速器在Ignite集群内部执行文件系统操作，必须满足几个前置条件：
-1）`IGNITE_HOME`环境变量必须设置以及指向Ignite的安装根目录。
-2）每个节点都必须在类路径上包含Hadoop的jar文件。可以参照各个Hadoop发行版的Ignite安装向导来了解详细信息。
-3）`IGFS`必须在集群节点上进行了配置。可以参照`13.2.IGFS原生Ignite API`章节来了解如何进行配置。
-4）要让`IGFS`接收来自Hadoop的请求，需要配置一个端点（默认的配置文件是`${IGNITE_HOME}/config/default-config.xml`）。Ignite提供两种类型的端点：
+
+ 1. `IGNITE_HOME`环境变量必须设置以及指向Ignite的安装根目录；
+ 2. 每个节点都必须在类路径上包含Hadoop的jar文件。可以参照各个Hadoop发行版的Ignite安装向导来了解详细信息；
+ 3. `IGFS`必须在集群节点上进行了配置。可以参照`13.2.IGFS原生Ignite API`章节来了解如何进行配置；
+ 4. 要让`IGFS`接收来自Hadoop的请求，需要配置一个端点（默认的配置文件是`${IGNITE_HOME}/config/default-config.xml`）。Ignite提供两种类型的端点：
 
  - `shmem`：工作于共享内存（Windows不可用）
  - `tcp`：工作于标准Socket API
 
 如果与Ignite节点是在同一台机器上执行文件系统操作那么共享内存端点是推荐的做法。注意如果在共享内存通信模式下`port`参数也可以用于执行客户端-服务端握手的初始化。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.FileSystemConfiguration">
@@ -105,6 +112,7 @@ endpointCfg.setType(IgfsEndpointType.SHMEM);
 fileSystemCfg.setIpcEndpointConfiguration(endpointCfg);
 ```
 TCP端点可以用于或者Ignite节点位于其他机器或者共享内存不可用的场合。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.FileSystemConfiguration">
@@ -131,7 +139,9 @@ endpointCfg.setHost("myHost");
 fileSystemCfg.setIpcEndpointConfiguration(endpointCfg);
 ```
 如果host参数未设置，默认值是`127.0.0.1`。
+
 如果port参数未设置，默认值是`10500`。
+
 如果ipcEndpointConfiguration未设置，那么对于Linux系统共享内存端点会使用默认的端口，对于WindowsTCP端口会使用默认的端口。
 ### 2.3.2.运行Ignite
 配置Ignite节点后，通过如下方式可以启动：
@@ -140,14 +150,18 @@ $ bin/ignite.sh
 ```
 ### 2.3.3.配置Hadoop
 要使用Ignite作业跟踪器运行Hadoop作业，需要满足如下的前提条件：
-1）`IGNITE_HOME`环境变量必须设置以及指向Ignite的安装根目录。
-2）Hadoop必须在类路径上包含Ignite jar文件：`${IGNITE_HOME}\libs\ignite-core-[version].jar`和`${IGNITE_HOME}\libs\hadoop\ignite-hadoop-[version].jar`。
+
+1.`IGNITE_HOME`环境变量必须设置以及指向Ignite的安装根目录。
+
+2.Hadoop必须在类路径上包含Ignite jar文件：`${IGNITE_HOME}\libs\ignite-core-[version].jar`和`${IGNITE_HOME}\libs\hadoop\ignite-hadoop-[version].jar`。
+
 这个可以通过若干种方式实现：
 
  - 将这几个jar文件加入`HADOOP_CLASSPATH`环境变量；
  - 将这些jar文件拷贝或者建立符号链接到Hadoop存放共享库的文件夹中，可以参照Ignite针对各个Hadoop发行版的安装向导来了解详细信息；
 
-3）对于将要执行的活动必须配置Ignite的Hadoop加速器文件系统，至少要提供文件系统类的全限定名；
+3.对于将要执行的活动必须配置Ignite的Hadoop加速器文件系统，至少要提供文件系统类的全限定名；
+
 XML：
 ```xml
 <configuration>
@@ -172,9 +186,13 @@ XML：
 </configuration>
 ```
 这里的value是一个配有IGFS的Ignite节点的端点URL，本章节的末尾会提供这个URL的规则。
+
 如何将配置传递给Hadoop作业有若干种方式：
+
 **第一**，可以创建独立的带有这些配置属性的`core-site.xml`然后用于作业的运行；
+
 **第二**，可以通过编程的方式为特定的作业设置这些属性。
+
 Java：
 ```java
 Configuration conf = new Configuration();
@@ -191,6 +209,7 @@ Job job = new Job(conf, "word count");
 
 ### 2.3.4.运行Hadoop
 如何运行一个作业取决于对Hadoop如何进行配置。
+
 如果创建了独立的`core-site.xml`:
 ```bash
 hadoop --config [path_to_config] [arguments]
@@ -206,7 +225,9 @@ export HADOOP_CLASSPATH=${IGNITE_HOME}/libs/ignite-core-${VERSION}.jar:${IGNITE_
 hadoop --config [path_to_config_directory] "${@}"
 ```
 使用IGFS通过这种方式运行一个Hadoop作业，需要运行命令`hadoop-ignited ...`，如果要在默认的Hadoop上运行同样的作业，只需要使用同样的参数运行`hadoop ...`。
+
 如果通过编程方式启动一个作业，那么提交它：
+
 Java：
 ```java
 ...
@@ -230,8 +251,9 @@ URI示例：
 
 ### 2.3.6.高可用IGFS客户端
 高可用（HA）IGFS客户端是基于Ignite客户端节点的，Ignite客户端节点是在执行Hadoop作业的主机上启动的。常规的TCP客户端接入上述的集群后，在重连后是不支持已经打开的IGFS I/O流的，而Ignite的客户端节点是没有这个问题的。
+
 要配置使用Ignite的客户端节点接入集群，需要为Hadoop作业配置属性**fs.igfs.<igfs_authority>.config_path**，值为Ignite节点配置的路径：
-```
+```java
 Configuration conf = new Configuration();
 ...
 conf.set("fs.default.name", "igfs://myIgfs@/");
@@ -243,7 +265,9 @@ Job job = new Job(conf, "word count");
 
 ## 2.4.Hadoop文件系统缓存
 Ignite Hadoop加速器包含了一个`IGFS`二级文件系统实现`IgniteHadoopIgfsSecondaryFileSystem`，它可以对任何Hadoop`文件系统`实现进行通读和通写。
+
 要使用二级文件系统，可以在`IGFS`配置中指定或者通过编程的方式实现。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.FileSystemConfiguration">
@@ -279,7 +303,9 @@ fileSystemCfg.setSecondarFileSystem(hadoopFileSystem);
 
 ## 2.5.IGFS模式
 IGFS可以工作于四种操作模式：`PRIMARY`,`PROXY`,`DUAL_SYNC`和`DUAL_ASYNC`。这些模式既可以配置整个文件系统，也可以配置特定的路径。他们是在`IgfsMode`枚举中定义的，默认文件系统操作于`DUAL_ASYNC`模式。
+
 如果未配置二级文件系统，配置成`DUAL_SYNC`或者`DUAL_ASYNC`模式的所有路径都会回退到`PRIMARY`模式。
+
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.FileSystemConfiguration">
@@ -312,4 +338,5 @@ IGFS对于工作于PROXY模式的路径的操作是受限的，在这些路径�
 该模式中，当数据被请求并且还没有缓存在内存中时，IGFS会在二级文件系统中进行同步地通读，当数据在IGFS中被更新/创建时对其进行同步地通写。实际上，该模式下IGFS是在二级文件系统之上作为一个智能缓存层的。
 ### 2.5.4.DUAL_ASYNC模式
 与`DUAL_SYNC`相同，但是对于二级文件系统的读写是异步方式执行的。
+
 在IGFS更新和二级文件系统更新之间存在一个滞后，但是这个模式下更新的性能显著好于`DUAL_SYNC`模式。

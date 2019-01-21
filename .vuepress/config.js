@@ -118,9 +118,9 @@ module.exports = {
                     ],
                     '/doc/spark/': [
                         '',
-                        //'In-MemoryFileSystem',
-                        //'HadoopAccelerator',
-                        //'IgniteForSpark'
+                        'In-MemoryFileSystem',
+                        'HadoopAccelerator',
+                        'IgniteForSpark'
                     ],
                     '/doc/tools/': [
                         '',
