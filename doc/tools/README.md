@@ -13,14 +13,18 @@ Ignite的**Web控制台**，是一个可以部署在系统环境中的Web应用�
 ## 1.2.入门
 ### 1.2.1.安装
 Ignite的Web控制台是一个WEB应用，需要构建、打包然后部署在自己的环境上。另外，它需要安装NodeJS，MongoDB以及Ignite的Web代理。
+
 参照`构建和部署`章节的文档，然后按照步骤操作即可。
-> **一个免费已部署的Ignite Web控制台实例**
+::: tip 一个免费已部署的Ignite Web控制台实例
 在构建和部署自己的本地Ignite Web控制台实例之前，可以看一下一个免费已部署的[Web控制台实例](https://console.gridgain.com/)，利用这个站点，花几分钟就可以大概了解控制台的已有功能。
+:::
 
 Ignite的Web控制台启动运行之后，需要按照下面章节的步骤配置并且启动Web代理，代理是Ignite的Web控制台和Ignite集群之间的媒介。
 ### 1.2.2.Ignite Web代理
 Ignite的Web代理是一个独立的Java应用，它可以建立Ignite集群与Web控制台之间的连接。Web Agent与集群节点间采用REST接口进行通信，而与Web控制台之间采用WebSocket进行通信。
+
 ![](https://files.readme.io/924bc44-Apache-Ignite-Cluster.png)
+
 举例来说，Ignite的Web Agent功能如下：
 
  - Web控制台与Ignite集群之间执行SQL查询的代理；
@@ -42,17 +46,28 @@ Ignite Web代理的zip压缩包中的`ignite-web-agent.{sh|bat}`脚本可用于�
 ```
 2.配置Web代理的`serverURI`属性，将其指向Ignite节点的REST服务的URL，代理默认会连接`http://localhost:8080`。
 
+*启动Web代理*
+
+在终端中，可以使用`ignite-web-agent.{sh|bat}`脚本从Web代理的根目录中启动Web代理，如下：
+```bash
+$ ./ignite-web-agent.sh
+```
+
 **配置**
 
 *配置文件*
+
 Ignite的Web代理默认会试图从`default.properties`文件中加载配置。这个文件的内容需要遵循一个简单的基于行的格式。
+
 可用的属性名包括：`tokens`，`server-uri`，`node-uri`，`driver-folder`。
-```
+```properties
 tokens=1a2b3c4d5f,2j1s134d12
 serverURI=https://console.example.com:3001
 ```
 *命令行参数*
+
 要获得帮助，可以在终端中执行`ignite-web-agent.{sh|bat} -h`或者`ignite-web-agent.{sh|bat} --help`。
+
 可用的属性如下：
 
  - `-h`,`--help`：输出帮助信息；
@@ -65,54 +80,70 @@ serverURI=https://console.example.com:3001
 **代理配置**
 
 代理可以通过将系统属性、`JVM_OPTS`环境变量的方式传给Web代理。
+
 在如下文档中可以找到详细的描述：
 [http://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html](http://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html)。
 
 *HTTP*
+
 `http.proxyHost`：代理服务器的主机名或者地址；
+
 `http.proxyPort `：代理服务器的端口号。
 
 如果代理需要认证的话，还需要提供如下的系统属性：
+
 `http.proxyUsername`：用户名；
+
 `http.proxyPassword`：密码。
+
 Shell：
 ```bash
 JVM_OPTS="-Dhttp.proxyHost=<proxy-hostname> -Dhttp.proxyPort=<proxy-port> -Dhttp.proxyUsername=<proxy-username> -Dhttp.proxyPassword=<proxy-password>" ./ignite-web-agent.sh
 ```
 CMD：
-```bash
+```batch
 set JVM_OPTS=-Dhttp.proxyHost=<proxy-hostname> -Dhttp.proxyPort=<proxy-port> -Dhttp.proxyUsername=<proxy-username> -Dhttp.proxyPassword=<proxy-password>
 ./ignite-web-agent.bat
 ```
 *HTTPS*
+
 `https.proxyHost`：代理服务器的主机名或者地址；
+
 `https.proxyPort `：代理服务器的端口号。
 
 如果代理需要认证的话，还需要提供如下的系统属性：
+
 `https.proxyUsername`：用户名；
+
 `https.proxyPassword`：密码。
+
 Shell：
 ```bash
 JVM_OPTS="-Dhttps.proxyHost=<proxy-hostname> -Dhttps.proxyPort=<proxy-port> -Dhttps.proxyUsername=<proxy-username> -Dhttps.proxyPassword=<proxy-password>" ./ignite-web-agent.sh
 ```
 CMD：
-```bash
+```batch
 set JVM_OPTS=-Dhttps.proxyHost=<proxy-hostname> -Dhttps.proxyPort=<proxy-port> -Dhttps.proxyUsername=<proxy-username> -Dhttps.proxyPassword=<proxy-password>
 ./ignite-web-agent.bat
 ```
 *SOCKS*
+
 `socksProxyHost`：代理服务器的主机名或者地址；
+
 `socksProxyPort`：代理服务器的端口号。
 
 如果代理需要认证的话，还需要提供如下的系统属性：
+
 `java.net.socks.username`：用户名；
+
 `java.net.socks.password`：密码。
+
 Shell:
 ```bash
 JVM_OPTS="-DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -Djava.net.socks.username=<proxy-username> -Djava.net.socks.password=<proxy-password>" ./ignite-web-agent.sh
 ```
 CMD:
-```bash
+```batch
 set JVM_OPTS= -DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -Djava.net.socks.username=<proxy-username> -Djava.net.socks.password=<proxy-password>
 ./ignite-web-agent.bat
 ```
@@ -120,8 +151,8 @@ set JVM_OPTS= -DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -D
 ### 1.3.1.先决条件
 为了在本地部署Ignite的Web控制台，需要先安装：
 
- - MongoDB（3.2.0以上版本），具体可以参照[文档](http://docs.mongodb.org/manual/installation)；
- - NodeJS（6.5.X以上版本），可以从[https://nodejs.org/en/download/current](https://nodejs.org/en/download/current)针对具体的OS找到相对应的安装文件。
+ - MongoDB（版本>=3.2.x <=3.4.15），具体可以参照[文档](http://docs.mongodb.org/manual/installation)；
+ - NodeJS（8.0.0以上版本），可以从[https://nodejs.org/en/download/current](https://nodejs.org/en/download/current)针对具体的OS找到相对应的安装文件。
 
 开始之前需要下载依赖：
 
@@ -147,7 +178,7 @@ mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests=true
  - 配置MongoDB以服务的模式运行，或者在终端中执行`mongod`命令来启动MongoDB；
  - 将`ignite-web-agent-x.x.x.zip`复制到`$IGNITE_HOME/modules/web-console/backend/agent_dists`文件夹；
  - 在终端中切换到`$IGNITE_HOME/modules/web-console/backend`，如果需要，运行`npm install --no-optional`(如果依赖改变)，然后运行`npm start`启动后台；
- - 在另一个终端中切换到`$IGNITE_HOME/modules/web-console/frontend`，如果需要，运行`npm install --no-optional`(如果依赖改变)，然后运行`npm run dev`以开发模式启动webpack；
+ - 在另一个终端中切换到`$IGNITE_HOME/modules/web-console/frontend`，如果需要，运行`npm install --no-optional`(如果依赖改变)，然后运行`npm start`以开发模式启动webpack；
  - 在浏览器中打开：`http://localhost:9000`；
  - 在`2.2.入门`章节中可以看到如何将部署的控制台接入一个远程集群，或者如何在远程主机上访问控制台。
 
@@ -221,6 +252,7 @@ httpd.conf:
 >上面文件中的**WEB_CONSOLE_HOSTNAME**，需要替换为部署Web控制台实例的机器的主机名。
 
 如果Apache HTTP Server还用于部署的Web控制台，那么下面的配置也需要添加到`/etc/httpd/conf/httpd.conf`:
+
 httpd.conf:
 ```
 ServerName localhost
@@ -322,6 +354,7 @@ server {
 **WEB_CONSOLE_HOSTNAME**，需要替换为部署Web控制台实例的机器的主机名。
 
 执行`sudo service nginx restart`重启Nginx HTTP Server以使配置生效。
+
 打开浏览器，根据部署类型打开下面的地址中的一个：`http://WEB_CONSOLE_HOSTNAME`或`http://EXTERNAL_SERVER_IP`。
 
 **问题解决**
@@ -345,6 +378,7 @@ server {
 **配置集群和缓存**
 
 点击控制台侧边栏上的`Clusters`和`Caches`，可以查看和设定Ignite的配置参数，点击`Summary`可以下载这些配置的XML和Java格式文件，这个页面还可以下载一个可用的基于Maven的工程。
+
 ![](https://files.readme.io/857edc8-summary.png)
 
 **导入领域模型**
@@ -380,11 +414,11 @@ SELECT p.name, count(*) AS cnt FROM "ParkingCache".Parking p`
 ![](https://files.readme.io/5b5cdc8-sql-queries.png)
 
 ## 1.5.Docker部署
-在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker映像，如果基于Docker的方式不可行，那么可以参照`2.3.构建和部署`章节的内容。
+在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker映像，如果基于Docker的方式不可行，那么可以参照[构建和部署](#_1-3-构建和部署)章节的内容。
 ### 1.5.1.启动Web代理
-如`2.2.入门`章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的Web代理，下面是步骤：
+如[入门](#_1-2-入门)章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的[Web代理](#_1-2-2-ignite-web代理)，下面是步骤：
 
- - 启动开启REST服务的Ignite节点，将`ignite-rest-http`目录从`IGNITE_HOME/libs/optional/`移动到`IGNITE_HOME/lib/`，或者如果从IDE启动节点，则需要将下面的依赖加入pom.xml文件：
+1.启动开启REST服务的Ignite节点，将`ignite-rest-http`目录从`IGNITE_HOME/libs/optional/`移动到`IGNITE_HOME/lib/`，或者如果从IDE启动节点，则需要将下面的依赖加入pom.xml文件：
 
 ```xml
 <dependency>
@@ -393,15 +427,15 @@ SELECT p.name, count(*) AS cnt FROM "ParkingCache".Parking p`
     <version>{ignite.version}</version>
 </dependency>
 ```
- - 在`ignite-web-agent-{version}`目录下的`default.properties`文件中，需要配置Web代理的`serverURI`属性，这样它就可以访问Ignite节点的REST服务。如果不配置，代理默认会连接`http://localhost:8080`。代理会尝试从`default.properties`文件中加载配置参数，该文件的内容格式比较简单，有效的属性名为：`tokens`，`server-uri`，`node-uri`，`driver-folder`。
+2.在`ignite-web-agent-{version}`目录下的`default.properties`文件中，需要配置Web代理的`serverURI`属性，这样它就可以访问Ignite节点的REST服务。如果不配置，代理默认会连接`http://localhost:8080`。代理会尝试从`default.properties`文件中加载配置参数，该文件的内容格式比较简单，有效的属性名为：`tokens`，`server-uri`，`node-uri`，`driver-folder`。
 
 default.properties：
-```
+```properties
 tokens=1a2b3c4d5f,2j1s134d12
 serverURI=https://console.example.com:3001
 ```
 
- - 在终端中，在Web代理的目录中使用`ignite-web-agent.{sh|bat}`脚本启动Web代理，如下：
+3.在终端中，在Web代理的目录中使用`ignite-web-agent.{sh|bat}`脚本启动Web代理，如下：
 
 ```bash
 $ ./ignite-web-agent.sh
@@ -412,18 +446,23 @@ $ ./ignite-web-agent.sh
  - 拉取Ignite Web控制台的Docker映像:`docker pull apacheignite/web-console-standalone`;
  - 启动Web控制台：`docker run -d -p 80:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`。
 
->**注意**
-1.需要使用`sudo`来运行docker命令；
-2.如果`80`端口已被占用，那么容器端口需要映射到其他的可用端口。比如，下面的命令将容器的`80`端口绑定的宿主机的`8080`端口：`sudo docker run -d -p 8080:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`;
-3.`<host_absolute_path>`：是宿主机中MongoDB创建数据库文件的路径。这个文件夹应该在docker运行前创建好，打开`Docker->Preferences->File Sharing`然后在那里创建目录，或者使用其他的方式也行；
+::: tip 注意
+ 1. 需要使用`sudo`来运行docker命令；
+ 2. 如果`80`端口已被占用，那么容器端口需要映射到其他的可用端口。比如，下面的命令将容器的`80`端口绑定的宿主机的`8080`端口：`sudo docker run -d -p 8080:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`;
+ 3. `<host_absolute_path>`：是宿主机中MongoDB创建数据库文件的路径。这个文件夹应该在docker运行前创建好，打开`Docker->Preferences->File Sharing`然后在那里创建目录，或者使用其他的方式也行。
+:::
 
  - 在浏览器中打开Web控制台：`http://localhost`或者`http://host-ip-of-computer-with-docker-image`，如果默认端口有变，那么地址为：`http://localhost:<host_port>`。
 
 ### 1.5.3.更新到新版
 Docker更新容器的方式如下：
+
 `docker pull apacheignite/web-console-standalone`
+
 `docker stop apacheignite/web-console-standalone`
+
 `docker rm apacheignite/web-console-standalone`
+
 `docker run -d -p 80:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`
 
 ### 1.5.4.为Web控制台添加HTTPS支持
@@ -490,7 +529,9 @@ server {
   }
 }
 ```
-> 将web-console.conf中的占位符`<your-web-console-domain-name>`替换为自己的域名，以便浏览器正确地从HTTP跳转到HTTPS。
+::: tip 注意
+将web-console.conf中的占位符`<your-web-console-domain-name>`替换为自己的域名，以便浏览器正确地从HTTP跳转到HTTPS。
+:::
 
  - 准备名为`server.crt`，`server.key`的证书文件；
  - 启动Web控制台：
