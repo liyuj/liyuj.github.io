@@ -1,8 +1,9 @@
 # 1.基本概念
 ## 1.1.Ignite是什么
 
->Ignite是：
+::: tip Ignite是：
 一个以内存为中心的分布式数据库、缓存和处理平台，可以在PB级数据中，以内存级的速度进行事务性、分析性以及流式负载的处理。
+:::
 
 ![](https://files.readme.io/0bad3a9-ignite_architecture.png)
 ### 1.1.1.固化内存
