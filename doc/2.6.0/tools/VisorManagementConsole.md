@@ -2,10 +2,12 @@
 ## 3.1.命令行接口
 ### 3.1.1.摘要
 Visor命令行接口为Ignite提供了脚本化的监控能力，他可以用于从网格获得与节点、缓存和任务有关的统计数据，显示与网络有关的各种指标的一般细节，还有节点的配置属性也可以在这里看到，他还可以用于启动和停止远程节点。
+
 ![](https://files.readme.io/T32Eltb1SoaxDK1lEIvd_visor.png)
 
 ### 3.1.2.使用
 Ignite附带了`IGNITE_HOME/bin/ignitevisorcmd.{sh|bat}`脚本，用于启动命令行管理接口。
+
 要获得帮助以及希望入门，输入`type`或者`?`命令，要将visor接入网格，输入`open`命令。
 ### 3.1.3.命令
 
@@ -39,6 +41,7 @@ Ignite附带了`IGNITE_HOME/bin/ignitevisorcmd.{sh|bat}`脚本，用于启动命
 ## 3.2.报警指令
 ### 3.2.1.报警指令规范
 注册：alert: alert -r {-t=&lt;sec&gt;} {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;} ... {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;}
+
 取消注册：alert -u {-id=&lt;alert-id&gt;|-a}
 
 报警选项：
@@ -88,13 +91,21 @@ lte：小于等于‘<=’`<value>`数
 ### 3.2.2.示例
 alert
 输出当前注册的所有报警。
+
 alert -u -a
+
 取消当前所有已注册的报警。
+
 alert -u -id=12345678
+
 取消指定id的报警。
+
 alert -r -t=900 -cc=gte4 -cl=gt50
+
 注册一个报警，如果网格内有大于等于4个CPU以及大于50%的CPU负载，每隔15分会发出通知。
+
 alert -r -n=Nodes -t=15 -nc=gte3 -s=/home/user/scripts/alert.sh -i=300
+
 注册一个报警，如果网格内有大于等于3个节点每隔15秒会发送通知，并且每隔不小于5分钟重复执行脚本“/home/user/scripts/alert.sh”。
 ### 3.2.3.自定义脚本
 注册下面这个报警，每隔15秒，如果网格内有大于等于2个节点，并且CPU数小于等于16，重复间隔不能小于5分钟，执行如下脚本`/home/user/myScript.sh`：
@@ -114,7 +125,9 @@ ALERT [MyAlert] CONDITION [-nc=gte2 -cc=lte16] alarmed with node count [2] and c
 ## 3.3.启动指令
 ### 3.3.1.启动指令规范
 在远程主机上启动或者重启节点。
+
 `start -f=<path> {-m=<num>} {-r}`
+
 `start -h=<hostname> {-p=<num>} {-u=<username>} {-pw=<password>} {-k=<path>} {-n=<num>} {-g=<path>} {-c=<path>} {-s=<path>} {-m=<num>} {-r}`
 选项：
 
@@ -182,7 +195,9 @@ script=/bin/ignite.sh
 ## 3.4.批处理模式
 ### 3.4.1.使用批处理模式启动VVisor
 Visor命令行可以开启一个批处理模式（运行一组命令）。
+
 运行`ignitevisorcmd.{sh|bat} -?`后，会显示可用的选项：
+
 **ignitevisorcmd.{sh|bat} -?**
 ```
 Usage:
@@ -197,6 +212,7 @@ Usage:
 ```
 ### 3.4.2.使用带有命令的文件的批处理模式
 这个批处理模式会从文件中读取命令，所有的命令都要从新的一行开始：
+
 **commands.txt**
 ```
 open
@@ -210,12 +226,13 @@ ignitevisorcmd.{bat|sh} -np -b=commands.txt
 这会使用索引值为`0`的配置接入集群，然后执行`status`命令。
 ### 3.4.3.使用命令列表的批处理模式
 这个批处理模式指令会从`-e`选项读取，命令必须用分号分割：
+
 **使用**
-```
+```bash
 ignitevisorcmd.{bat|sh} -np -e="open;0;status"
 ```
 如果命令包含空格符，它们需要加上额外的单引号：
-```
+```bash
 ignitevisorcmd.{bat|sh} -np -e="'open -cpath=config/default-config.xml;status'"
 ```
 这会和上面的例子做同样的事情。

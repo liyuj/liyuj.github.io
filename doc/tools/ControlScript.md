@@ -50,11 +50,17 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 ```
 ### 4.1.4.一致性检查命令
 该脚本还提供了一组命令，验证内部数据的一致性。
+
 首先，该命令可用于调试和排错的目的，尤其在活跃的开发节点。
+
 其次，如果怀疑一个查询，比如SQL返回了不完整或者错误的结果集，该命令可以验证是否真的存在数据不一致的情况。
+
 最后，一致性检查命令可以用作集群健康检查工具的一部分。
+
 下面会更详细地描述一些使用场景：
+
 **分区校验和验证**
+
 即使主节点和备份节点之间的更新计数器和大小相等，也可能会出现主节点和备份节点因某些严重故障而出现差异的情况。`./control.sh`工具中的`idle_verify`命令会计算和比较整个集群的分区哈希值，然后如果有不同会进行报告。它可以指定一个需要验证的缓存列表，比如：
 ```bash
 # Checks partitions of all caches that their partitions actually contain same data.
@@ -73,11 +79,14 @@ Partition instances: [PartitionHashRecord [isPrimary=true, partHash=97506054, up
 Conflict partition: PartitionKey [grpId=1544803905, grpName=default, partId=6]
 Partition instances: [PartitionHashRecord [isPrimary=true, partHash=97595430, updateCntr=3, size=3, consistentId=bltTest1], PartitionHashRecord [isPrimary=false, partHash=66016964, updateCntr=3, size=2, consistentId=bltTest0]]
 ```
->**idle_verify检查期间集群应该为空闲状态**
+::: danger idle_verify检查期间集群应该为空闲状态
 当`idle_verify`计算哈希值时，所有的更新都要停止，否则可能会出现**假阳性**的错误结果。如果正在不断地更新，是无法在分布式系统中比较很大的数据集的。
+:::
 
 **SQL索引一致性验证**
+
 `validate_indexes`命令可以在所有的集群节点本地对给定缓存的索引进行验证。
+
 验证过程会进行如下的检查：
 
  1. 主索引指向的所有键值条目，对于二级SQL索引（如果有）都可以访问；
@@ -102,5 +111,6 @@ IndexValidationIssue [key=0, cacheName=persons-cache-vi, idxName=_key_PK], class
 IndexValidationIssue [key=0, cacheName=persons-cache-vi, idxName=PERSON_ORGID_ASC_IDX], class org.apache.ignite.IgniteCheckedException: Key is present in CacheDataTree, but can't be found in SQL index.
 validate_indexes has finished with errors (listed above).
 ```
->**validate_indexes检查期间集群应该为空闲状态**
+::: danger validate_indexes检查期间集群应该为空闲状态
 和`idle_verify`命令一样，只有所有的更新都停止，索引验证工具才能正常工作，否则，可能会出现检查线程与更新条目/索引的线程之间的竞争，这将导致假阳性错误报告。
+:::

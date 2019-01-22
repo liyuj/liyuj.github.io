@@ -61,6 +61,10 @@ module.exports = {
                         link: '/doc/tools/'
                     },
                     {
+                        text: '商业版',
+                        link: '/doc/gridgain/'
+                    },
+                    {
                         text: '博客',
                         link: 'https://my.oschina.net/liyuj'
                     },
@@ -124,10 +128,13 @@ module.exports = {
                     ],
                     '/doc/tools/': [
                         '',
-                        //'IgniteWebConsoleAbilities',
-                        //'VisorManagementConsole',
-                        //'ControlScript',
+                        'IgniteWebConsoleAbilities',
+                        'VisorManagementConsole',
+                        'ControlScript',
                         'Informatica'
+                    ],
+                    '/doc/gridgain/':[
+                        'OracleGoldenGateIntegration'
                     ],
                     '/': [
                         ''
