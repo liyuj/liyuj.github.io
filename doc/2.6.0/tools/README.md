@@ -15,8 +15,9 @@ Ignite的**Web控制台**，是一个可以部署在系统环境中的Web应用�
 Ignite的Web控制台是一个WEB应用，需要构建、打包然后部署在自己的环境上。另外，它需要安装NodeJS，MongoDB以及Ignite的Web代理。
 
 参照`构建和部署`章节的文档，然后按照步骤操作即可。
-> **一个免费已部署的Ignite Web控制台实例**
+::: tip 一个免费已部署的Ignite Web控制台实例
 在构建和部署自己的本地Ignite Web控制台实例之前，可以看一下一个免费已部署的[Web控制台实例](https://console.gridgain.com/)，利用这个站点，花几分钟就可以大概了解控制台的已有功能。
+:::
 
 Ignite的Web控制台启动运行之后，需要按照下面章节的步骤配置并且启动Web代理，代理是Ignite的Web控制台和Ignite集群之间的媒介。
 ### 1.2.2.Ignite Web代理

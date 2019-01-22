@@ -180,7 +180,7 @@ mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests=true
  - 在终端中切换到`$IGNITE_HOME/modules/web-console/backend`，如果需要，运行`npm install --no-optional`(如果依赖改变)，然后运行`npm start`启动后台；
  - 在另一个终端中切换到`$IGNITE_HOME/modules/web-console/frontend`，如果需要，运行`npm install --no-optional`(如果依赖改变)，然后运行`npm start`以开发模式启动webpack；
  - 在浏览器中打开：`http://localhost:9000`；
- - 在`2.2.入门`章节中可以看到如何将部署的控制台接入一个远程集群，或者如何在远程主机上访问控制台。
+ - 在[入门](#_1-2-入门)章节中可以看到如何将部署的控制台接入一个远程集群，或者如何在远程主机上访问控制台。
 
 ### 1.3.4.在生产模式中运行Ignite的Web控制台
 **前提条件**
@@ -195,7 +195,9 @@ mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests=true
  - 在终端中切换到`$IGNITE_HOME/modules/web-console/backend`；
  - 运行`npm start`启动后台。
 
->如果希望以守护进程模式运行后台，需要为NodeJS应用使用进程管理器：pm2，forever等。
+::: tip 注意
+如果希望以守护进程模式运行后台，需要为NodeJS应用使用进程管理器：pm2，forever等。
+:::
 
 **构建前台**
 
@@ -249,7 +251,10 @@ httpd.conf:
   RewriteRule ^ /index.html [L]
 </VirtualHost>
 ```
->上面文件中的**WEB_CONSOLE_HOSTNAME**，需要替换为部署Web控制台实例的机器的主机名。
+
+::: warning 注意
+上面文件中的**WEB_CONSOLE_HOSTNAME**，需要替换为部署Web控制台实例的机器的主机名。
+:::
 
 如果Apache HTTP Server还用于部署的Web控制台，那么下面的配置也需要添加到`/etc/httpd/conf/httpd.conf`:
 
@@ -292,7 +297,10 @@ RewriteRule ^/api/v1/(.*)$ http://localhost:3000/$1 [P,L]
 
 RewriteRule ^ /index.html [L]  
 ```
->上面的**EXTERNAL_SERVER_IP**，需要替换为部署Web控制台实例的机器的主机名。
+
+::: warning 注意
+上面的**EXTERNAL_SERVER_IP**，需要替换为部署Web控制台实例的机器的主机名。
+:::
 
 执行`sudo apachectl restart`重启Apache HTTP Server以使配置生效。
 打开浏览器，根据部署类型打开下面的地址中的一个：`http://WEB_CONSOLE_HOSTNAME`或`http://EXTERNAL_SERVER_IP`。
@@ -350,8 +358,12 @@ server {
   }
 }
 ```
->上面的**EXTERNAL_SERVER_IP**，需要替换为部署Web控制台实例的机器的主机名。
+
+::: warning 注意
+上面的**EXTERNAL_SERVER_IP**，需要替换为部署Web控制台实例的机器的主机名。
+
 **WEB_CONSOLE_HOSTNAME**，需要替换为部署Web控制台实例的机器的主机名。
+:::
 
 执行`sudo service nginx restart`重启Nginx HTTP Server以使配置生效。
 
