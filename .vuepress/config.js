@@ -134,7 +134,7 @@ module.exports = {
                         'Informatica'
                     ],
                     '/doc/gridgain/':[
-                        'OracleGoldenGateIntegration'
+                        ''
                     ],
                     '/': [
                         ''

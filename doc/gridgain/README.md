@@ -4,7 +4,7 @@
 
 ::: tip 兼容性
 GridGain兼容于Oracle GoldenGate的11.2及其以后的版本。
-[http://www.oracle.com/technetwork/middleware/goldengate/certify-100402.html](http://www.oracle.com/technetwork/middleware/goldengate/certify-100402.html)，这个页面中包含了Oracle GoldenGate支持的数据源列表。
+这个[页面](http://www.oracle.com/technetwork/middleware/goldengate/certify-100402.html)中包含了Oracle GoldenGate支持的数据源列表。
 :::
 ### 1.1.1.角色
 下面是GoldenGate复制过程中的主要角色：`源数据库`、`提取器`、`队列文件`以及`GridGain处理器`（GridGain Java适配器）。
@@ -49,10 +49,10 @@ GridGain处理器是一个GoldenGate的扩展，它会启动一个GridGain的客
  - 一组Java库（jars），它包含了Oracle GoldenGate的Java API，这个Java框架通过Java本地化接口（JNI）与`userexit`进行通信。
 
 ::: tip 提示
-在下面的页面中，可以了解如何安装这些组件：[https://docs.oracle.com/cd/E18101_01/doc.1111/e17814.pdf](https://docs.oracle.com/cd/E18101_01/doc.1111/e17814.pdf)
+在下面的页面中，可以了解如何安装这些组件：[Oracle GoldenGate For Java安装](https://docs.oracle.com/cd/E18101_01/doc.1111/e17814.pdf)
 :::
 
-要复制的所有模式和表，必要的日志级别要配置好，具体要看应用使用的数据库的文档（比如Oracle，可以看[https://docs.oracle.com/goldengate/1212/gg-winux/GIORA/setup.htm#GIORA364](https://docs.oracle.com/goldengate/1212/gg-winux/GIORA/setup.htm#GIORA364)）。
+要复制的所有模式和表，必要的日志级别要配置好，具体要看应用使用的数据库的文档（比如Oracle，可以看[这里](https://docs.oracle.com/goldengate/1212/gg-winux/GIORA/setup.htm#GIORA364)）。
 
 ### 1.2.2.GridGain处理器配置
 要安装GridGain处理器，按照如下步骤操作：
@@ -65,7 +65,7 @@ GridGain处理器是一个GoldenGate的扩展，它会启动一个GridGain的客
 对于GoldenGate的12.2.X版本，需要使用`integration/gridgain-goldengate-12.2`文件夹，其它与GoldenGate有关的模块，比如Oracle GoldenGate应用适配器，也要是相同的版本-12.2.X。
 :::
 
-3.使用`JavaUserExit`配置GoldenGate的`提取器`和`复制`，GridGain处理器是与提取适配器相关的(具体可以看[https://docs.oracle.com/goldengate/1212/gg-winux/GWURF/gg_parameters.htm#GWURF995](https://docs.oracle.com/goldengate/1212/gg-winux/GWURF/gg_parameters.htm#GWURF995))。比如在下面的模式中，事务是在源数据库通过主提取进程捕获的，它会将数据写入GoldenGate的队列文件。然后会使用数据泵技术将事务发送给队列，队列会由提取适配器读取；
+3.使用`JavaUserExit`配置GoldenGate的`提取器`和`复制`，GridGain处理器是与提取适配器相关的(具体可以看[UserExit属性](https://docs.oracle.com/goldengate/1212/gg-winux/GWURF/gg_parameters.htm#GWURF995))。比如在下面的模式中，事务是在源数据库通过主提取进程捕获的，它会将数据写入GoldenGate的队列文件。然后会使用数据泵技术将事务发送给队列，队列会由提取适配器读取；
 
 dirprm/gridgain.prm：
 ```
