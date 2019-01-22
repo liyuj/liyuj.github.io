@@ -19,7 +19,7 @@
 
 ![](https://files.readme.io/3eab31c-igfs.png)
 ### 2.1.6.配置总结
-使用控制台的总览特性，可以下载一个直接可用的基于Maven的工程，它包含了XML格式和Java的配置，还有Java领域模型POJO，还可以拷贝这些配置和POJO到自己已有的工程。控制台还可以生成一个Docker的配置文件，可以用其生成一个Ignite Docker映像。
+使用控制台的总览特性，可以下载一个直接可用的基于Maven的工程，它包含了XML格式和Java的配置，还有Java领域模型POJO，还可以拷贝这些配置和POJO到自己已有的工程。控制台还可以生成一个Docker的配置文件，可以用其生成一个Ignite Docker镜像。
 
 ![](https://files.readme.io/4100500-summary.png)
 ## 2.2.自动化RDBMS集成

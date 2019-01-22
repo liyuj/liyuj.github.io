@@ -90,9 +90,9 @@ spec:
         - containerPort: 10800 # SQL port number.
         - containerPort: 10900 # Thin clients port number.
 ```
-如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker映像使用的一个shell脚本会用到它。Docker映像的完整配置参数列表可以查看`14.2.Docker部署`的相关章节。
+如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看`14.2.Docker部署`的相关章节。
 ::: tip Ignite Docker镜像版本
-Kubernetes支持Ignite的1.9及其以后的版本，一定要使用有效的Docker映像版本，完整的标签列表在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)。
+Kubernetes支持Ignite的1.9及其以后的版本，一定要使用有效的Docker镜像版本，完整的标签列表在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)。
 :::
 
 下一步，在Kubernetes中使用上述的配置部署Ignite配置组：

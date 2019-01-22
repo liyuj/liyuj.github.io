@@ -407,7 +407,7 @@ SELECT p.name, count(*) AS cnt FROM "ParkingCache".Parking p`
 ![](https://files.readme.io/5b5cdc8-sql-queries.png)
 
 ## 1.5.Docker部署
-在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker映像，如果基于Docker的方式不可行，那么可以参照`2.3.构建和部署`章节的内容。
+在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker镜像，如果基于Docker的方式不可行，那么可以参照`2.3.构建和部署`章节的内容。
 ### 1.5.1.启动Web代理
 如`2.2.入门`章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的Web代理，下面是步骤：
 
@@ -436,7 +436,7 @@ $ ./ignite-web-agent.sh
 ### 1.5.2.部署Web控制台
 下面是部署的完整步骤：
 
- - 拉取Ignite Web控制台的Docker映像:`docker pull apacheignite/web-console-standalone`;
+ - 拉取Ignite Web控制台的Docker镜像:`docker pull apacheignite/web-console-standalone`;
  - 启动Web控制台：`docker run -d -p 80:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`。
 
 >**注意**

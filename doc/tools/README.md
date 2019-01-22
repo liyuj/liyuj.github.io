@@ -426,7 +426,7 @@ SELECT p.name, count(*) AS cnt FROM "ParkingCache".Parking p`
 ![](https://files.readme.io/5b5cdc8-sql-queries.png)
 
 ## 1.5.Docker部署
-在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker映像，如果基于Docker的方式不可行，那么可以参照[构建和部署](#_1-3-构建和部署)章节的内容。
+在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker镜像，如果基于Docker的方式不可行，那么可以参照[构建和部署](#_1-3-构建和部署)章节的内容。
 ### 1.5.1.启动Web代理
 如[入门](#_1-2-入门)章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的[Web代理](#_1-2-2-ignite-web代理)，下面是步骤：
 
@@ -455,7 +455,7 @@ $ ./ignite-web-agent.sh
 ### 1.5.2.部署Web控制台
 下面是部署的完整步骤：
 
- - 拉取Ignite Web控制台的Docker映像:`docker pull apacheignite/web-console-standalone`;
+ - 拉取Ignite Web控制台的Docker镜像:`docker pull apacheignite/web-console-standalone`;
  - 启动Web控制台：`docker run -d -p 80:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`。
 
 ::: tip 注意
@@ -551,3 +551,322 @@ server {
 `docker run -d -p 80:80 -p 443:443 -v <host_absolute_path>:/var/lib/mongodb -v <web-console.conf_absolute_path>:/etc/nginx/web-console.conf -v <server.crt_absolute_path>:/etc/nginx/server.crt -v < server.key_absolute_path>:/etc/nginx/server.key --name web-console-standalone apacheignite/web-console-standalone`
 
 ## 1.6.Kubernetes安装
+如果要在Kubernetes环境中安装Ignite的Web控制台，需要将4个组件部署为Docker镜像：
+
+ - MongoDB（Web控制台使用MongoDB作为存储层）；
+ - Web控制台后端；
+ - Web控制台前端；
+ - Web代理。
+
+以下部分将介绍完成安装这些组件所需的步骤。
+### 1.6.1.安装MongoDB
+下面的配置定义了MongoDB安装所需的参数，它配置了如下的资源：
+
+ - 名为`mongodb`的命名空间；
+ - 名为`mongodb-claim0`的持久化存储；
+ - 运行MongoDB3.4版本的环境；
+ - 一个名为`mongodb`的服务，它会映射到运行MongoDB镜像的配置组的27017端口。
+
+mongodb-deployment.yaml：
+```yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mongodb
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  name: mongodb-claim0
+  namespace: mongodb
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: mongodb
+  namespace: mongodb
+  labels: 
+    app: mongodb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - image: mongo:3.4
+        name: mongodb
+        resources: {}
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongodb-claim0
+      restartPolicy: Always
+      volumes:
+      - name: mongodb-claim0
+        persistentVolumeClaim:
+          claimName: mongodb-claim0
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: mongodb
+  namespace: mongodb
+  labels:
+    app: mongodb
+spec:
+  ports:
+  - name: "mongodb"
+    port: 27017
+    targetPort: 27017
+  selector:
+    app: mongodb
+status:
+  loadBalancer: {}
+```
+将上面的配置保存为名为`mongodb-deployment.yaml`的文件，然后执行下面的命令：
+```bash
+kubectl create -f mongodb-deployment.yaml
+```
+通过下面的命令可以验证MongoDB配置组是否正在运行：
+```bash
+$ kubectl get pods -n mongodb
+NAME                      READY     STATUS    RESTARTS   AGE
+mongodb-6b8f5585b-cprmw   1/1       Running   0          1d
+```
+### 1.6.2.安装Web控制台
+要安装Web控制台，需要2个Docker镜像，一个前台一个后台。
+
+**创建命名空间**
+
+创建名为`web-console`的命名空间，控制台的前端和后端会建在这个命名空间里。
+```bash
+kubectl create namespace web-console
+```
+**专有Docker存储库**
+
+如果要使用Docker Hub上的专用Docker存储库来获取前端和后端的Docker镜像，则需要添加一个具有访问存储库所需凭据的注册表项，为此，请使用以下命令：
+```bash
+kubectl create secret docker-registry registrykey --docker-server=https://index.docker.io/v1/ --docker-username=<username> --docker-password=<password> --docker-email=<email> -n web-console
+```
+它会被用于部署的配置中。
+
+如果使用公共存储库，可以跳过此步骤并在下面提供的部署配置中注释掉`imagePullSecrets`项目。
+
+**安装Web控制台的前端和后端**
+
+下面的配置创建了前端和后端的部署，在该文件中，需要指定下面的参数：
+
+ - 后端部署段的`image`参数，后端的Docker镜像；
+ - 前端部署段的`image`参数，前端的Docker镜像；
+ - `server_sessionSecret`，用户加密Cookie的密码，可以指定任意值。
+
+web-console-deployment.yaml：
+```yaml
+
+# creating deployment for the backend; specify a Docker Image 
+# in the 'image' field.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: backend
+  name: backend
+  namespace: web-console
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: backend
+    spec:
+      containers:
+      - env:
+        - name: mail_auth_pass
+        - name: mail_auth_user
+        - name: mail_from
+        - name: mail_greeting
+        - name: mail_service
+        - name: mail_sign
+        - name: mongodb_url
+          value: mongodb://mongodb.mongodb.svc.cluster.local/console
+        - name: server_host
+          value: "0.0.0.0"
+        - name: server_port
+          value: "3000"
+        - name: server_sessionSecret
+          value: CHANGE_ME
+        image: 
+        name: backend
+        resources: {}
+      restartPolicy: Always
+      # remove this property if you use a public Docker repository
+      imagePullSecrets:
+        - name: registrykey
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: backend
+  namespace: web-console
+  labels:
+    app: backend
+spec:
+  ports:
+  - name: "backend"
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: backend
+status:
+  loadBalancer: {}
+
+---
+# creating deployment for the frontend; specify a Docker Image 
+# in the 'image' field.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: frontend
+  namespace: web-console
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - image: 
+        name: frontend
+        ports:
+        - containerPort: 80
+        resources: {}
+      restartPolicy: Always
+      # remove this property if you use a public Docker repository
+      imagePullSecrets:
+        - name: registrykey      
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: frontend
+  namespace: web-console
+  labels:
+    app: frontend
+spec:
+  ports:
+  - name: "frontend"
+    port: 80
+    targetPort: 80
+  selector:
+    app: frontend
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+```
+将该配置保存为`web-console-deployment.yaml`文件，然后在终端中执行下面的命令：
+```bash
+kubectl create -f web-console-deployment.yaml
+```
+### 1.6.3.安装Web代理
+安装Web代理之前，需要有一个正在运行的Ignite集群，并且这个Web代理要和集群安装在同一个命名空间中，关于Ignite的Kubernetes环境部署的详细信息，可以参见这个[文档](/doc/java/KubernetesDeployment.md#_20-1-kubernetes部署)。
+
+**获得安全令牌**
+
+要安装Web代理，需要一个安全令牌来保护Web代理和Web控制台之间的通信，要获得这个令牌，可以登录Web控制台界面并打开自己的配置（点击右上角的用户名），然后点击`Show security token...`来显示这个令牌。
+
+![](https://files.readme.io/d38ac26-token.png)
+
+**安装Web代理的Docker镜像**
+
+Web代理要和集群安装在同一个命名空间中，在下面的配置中，假定命名空间为`ignite`。
+
+指定如下的参数：
+
+ - `NODE_URI`：节点的URI，这个URI必须与Kubernetes集群中运行的集群节点相对应，Web代理会接入这个节点然后与集群进行通信；
+ - `SERVER_URI`：Kubernetes中安装的Web控制台的前端的URI，如果使用自定义配置，这个值需要修改（如果使用上面提供的示例而不更改命名空间和服务的名称，则提供的默认URL应起作用）；
+ - `TOKENS`：指定从Web控制台中获得的安全令牌；
+ - `NODE_LOGIN`和`NODE_PASSWORD`：指定集群用户的用户名和密码，用户名和密码只有在Ignite集群开启认证的时候才是必须的；
+ - `namespace`：确保该命名空间与部署的集群的命名空间相对应；
+ - `image`：Web代理的Docker镜像。
+
+web-agent-deployment.yaml：
+```yml
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: web-agent
+  namespace: ignite
+spec:
+  selector:
+    matchLabels:
+      app: web-agent
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web-agent
+    spec:
+      serviceAccountName: ignite-cluster
+      containers:
+      - name: web-agent
+        image: apacheignite/web-agent:mytag3
+        resources:
+          limits:
+            cpu: 500m 
+            memory: 500Mi
+        env:
+        - name: DRIVER_FOLDER
+          value: "./jdbc-drivers"
+        - name: NODE_URI
+          value: "http://ignite-service.ignite.svc.cluster.local:8080"
+        - name: SERVER_URI
+          value: "http://frontend.web-console.svc.cluster.local"
+        - name: TOKENS
+          value: ""
+        - name: NODE_LOGIN
+          value: web-agent
+        - name: NODE_PASSWORD
+          value: password
+```
+将上述内容保存为`web-agent-deployment.yaml`文件然后执行下面的命令：
+```bash
+kubectl create -f web-agent-deployment.yaml
+```
+确认Web代理是否已经在运行：
+```bash
+$ kubectl get pods -n ignite
+NAME                        READY     STATUS    RESTARTS   AGE
+web-agent-5596bd78c-h4272   1/1       Running   0          1h
+```

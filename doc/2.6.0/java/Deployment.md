@@ -5,8 +5,8 @@ Ignite对部署没有要求，可以非常容易地部署到私有主机或者�
 ## 14.2.Docker部署
 Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器，Docker会自动下载Ignite发布版，将代码部署进Ignite以及配置节点，他还可以自动启动配置好的Ignite节点，这样的集成方式，使得通过简单地重启Ignite的Docker容器就可以部署新的代码。
 ### 14.2.1.启动Ignite Docker容器
-要运行Docker容器，需要拉取然后启动一个Docker映像，默认会下载最新的版本，但是在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到一个完整的清单。
-可以使用如下的命令拉取Ignite docker映像：
+要运行Docker容器，需要拉取然后启动一个Docker镜像，默认会下载最新的版本，但是在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到一个完整的清单。
+可以使用如下的命令拉取Ignite docker镜像：
 ```bash
 # Pull latest version.
 sudo docker pull apacheignite/ignite
@@ -50,7 +50,7 @@ sudo docker run -it --net=host -e "CONFIG_URI=https://raw.githubusercontent.com/
 ![](https://files.readme.io/ryYtMcSCuGiyVcXN1GCw_dock_git_repo.png)
 
 ## 14.3.AWS部署
-Ignite的AMI（Amazon机器映像）可以通过AWS的EC2管理控制台配置一个简单的Ignite集群，通过AMI进行安装，可以快速地部署一个Ignite集群。
+Ignite的AMI（Amazon机器镜像）可以通过AWS的EC2管理控制台配置一个简单的Ignite集群，通过AMI进行安装，可以快速地部署一个Ignite集群。
 ### 14.3.1.Amazon EC2部署
 
  - 点击下表的链接选择必要的区域：
@@ -60,7 +60,7 @@ Ignite的AMI（Amazon机器映像）可以通过AWS的EC2管理控制台配置�
 区域
 </td>
 <td>
-映像
+镜像
 </td>
 </tr>
 <tr>
@@ -88,7 +88,7 @@ EU-CENTRAL
 </td>
 </tr>
 </table>
-或者，也可以使用`Apache Ignite`关键字在`Community AMIs`中搜索映像：
+或者，也可以使用`Apache Ignite`关键字在`Community AMIs`中搜索镜像：
 ![](https://files.readme.io/faf5b14-search.png)
  - 选择一个`Instance Type`;
  - 打开`Configure Instance`并且展开`Advanced Details`;
@@ -124,10 +124,10 @@ sudo docker logs -f CONTAINER_ID
 sudo docker exec -it container_id /bin/bash
 ```
 ## 14.4.Google计算部署
-Ignite的映像可以通过Google计算控制台配置一个简单的Ignite集群，通过映像进行安装，可以快速地部署一个Ignite集群。
+Ignite的镜像可以通过Google计算控制台配置一个简单的Ignite集群，通过镜像进行安装，可以快速地部署一个Ignite集群。
 ### 14.4.1.Google计算部署
 
- - 要导入[Ignite映像](https://storage.googleapis.com/ignite-media/ignite-google-image.tar.gz)，执行如下的命令：
+ - 要导入[Ignite镜像](https://storage.googleapis.com/ignite-media/ignite-google-image.tar.gz)，执行如下的命令：
 ```bash
 gcloud compute images create ignite-image \
    --source-uri gs://ignite-media/ignite-google-image.tar.gz
@@ -137,7 +137,7 @@ gcloud compute images create ignite-image \
  - 打开`Google Compute Console`；
  - 打开`Compute->Compute Engine->VM`实例，然后点击`New instance`；
  - 点击`Boot disk`的`Change`按钮；
- - 打开`Custom images`，然后选择已导入的映像，在下面的截图中，可以看到名为`ignite-name`的映像；
+ - 打开`Custom images`，然后选择已导入的镜像，在下面的截图中，可以看到名为`ignite-name`的镜像；
 ![](https://files.readme.io/e02e235-choose_image.png)
 
  - 点击`Management, disk, networking, access & security options `，然后可以添加任意的配置参数：
