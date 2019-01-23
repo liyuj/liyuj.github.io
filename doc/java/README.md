@@ -1842,7 +1842,33 @@ bin/ignite.sh config/wsl-default-config.xml -J-DNODE=01 &
 ...
 bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
 ```
-## 1.13.FAQ
+## 1.13.异常处理
+下表描述了Ignite API支持的异常以及可以用来处理这些异常的操作。可以查看javadoc中的`throws`子句，查看是否存在已检查异常。
+
+|异常|描述|要采取的动作|运行时异常|
+|---|---|---|---|
+|`IgniteException`|此异常表示网格中存在错误。|操作失败，从方法退出。|是|
+|`IgniteClientDisconnectedException`|当客户端节点与集群断开连接时，Ignite API（缓存操作、计算API和数据结构操作）会抛出此异常。|在`future`中等待并重试。|是|
+|`IgniteAuthenticationException`|当节点身份验证失败或安全身份验证失败时，会抛出此异常。|操作失败，从方法退出。|否|
+|`IgniteClientException`|缓存操作会抛出此异常。|根据异常消息确定下一步的动作。|是|
+|`IgniteDeploymentException`|当Ignite API（计算网格相关）未能在节点上部署作业或任务时，会抛出此异常。|操作失败，从方法退出。|是|
+|`IgniteInterruptedException`|此异常用于将标准[InterruptedException](https://docs.oracle.com/javase/8/docs/api/java/lang/InterruptedException.html)包装为`IgniteException`。|清除中断标志后重试。|是|
+|`IgniteSpiException`|SPI引发的异常，如`CollisionSpi`、`LoadBalancingSpi`、`TcpDiscoveryIpFinder`、`FailoverSpi`、`UriDeploymentSpi`等。|操作失败，从方法退出。|是|
+|`IgniteSQLException`|SQL查询处理失败会抛出此异常，该异常会包含相关规范定义的[错误代码](https://static.javadoc.io/org.apache.ignite/ignite-core/2.5.0/org/apache/ignite/internal/processors/cache/query/IgniteQueryErrorCode.html)。|操作失败，从方法退出。|是|
+|`IgniteAccessControlException`|认证/授权失败时会抛出此异常。|操作失败，从方法退出。|否|
+|`IgniteCacheRestartingException`|如果缓存正在重启，Ignite的缓存API会抛出此异常。|在`future`中等待并重试。|是|
+|`IgniteFutureTimeoutException`|当`future`的计算超时时，会抛出此异常。|要么增加超时限制要么方法退出。|是|
+|`IgniteFutureCancelledException`|当`future`的计算因为被取消而无法获得结果时，会抛出此异常。|可进行重试。|是|
+|`IgniteIllegalStateException`|此异常表示Ignite实例对于请求的操作处于无效状态。|操作失败，从方法退出。|是|
+|`IgniteNeedReconnectException`|此异常显示节点应尝试重新连接到集群。|可进行重试。|否|
+|`IgniteDataIntegrityViolationException`|如果发现数据完整性冲突，会抛出此异常。|操作失败，从方法退出。|是|
+|`IgniteOutOfMemoryException`|系统没有足够内存处理Ignite操作（缓存操作）时，会抛出此异常。|操作失败，从方法退出。|是|
+|`IgniteTxOptimisticCheckedException`|当事务以乐观方式失败时，会抛出此异常。|可进行重试|否|
+|`IgniteTxRollbackCheckedException`|当事务自动回滚时，会抛出此异常。|可进行重试。|否|
+|`IgniteTxTimeoutCheckedException`|当事务超时时，会抛出此异常。|可进行重试。|否|
+|`ClusterTopologyException`|当集群拓扑发生错误（比如节点故障）时会抛出此异常（针对计算和事件API）。|在`future`中等待并重试。|是|
+
+## 1.14.FAQ
 
 **1.堆内和堆外内存存储有何不同？**
 
