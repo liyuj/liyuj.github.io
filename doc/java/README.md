@@ -79,11 +79,11 @@ Ignite是一个分布式系统，因此，有能力将数据和数据以及数�
 
 ## 1.3.入门
 ### 1.3.1.先决条件
-Apache Ignite官方在如下环境中进行的测试：
+Apache Ignite官方在如下环境中进行了测试：
 
  - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9，具体可以看下面的`在JDK9中运行Ignite`章节；
- - OS：Linux（任何版本），Mac OS X（10.6及以上），Windows(XP及以上)，Windows Server（2008及以上），Oracle Solaris
- - 网络：没有限制（建议10G）
+ - OS：Linux（任何版本），Mac OS X（10.6及以上），Windows(XP及以上)，Windows Server（2008及以上），Oracle Solaris；
+ - 网络：没有限制（建议10G）；
  - 架构：x86，x64，SPARC，PowerPC
 
 ### 1.3.2.启动第一个Ignite集群
@@ -1853,7 +1853,7 @@ bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
 |`IgniteClientException`|缓存操作会抛出此异常。|根据异常消息确定下一步的动作。|是|
 |`IgniteDeploymentException`|当Ignite API（计算网格相关）未能在节点上部署作业或任务时，会抛出此异常。|操作失败，从方法退出。|是|
 |`IgniteInterruptedException`|此异常用于将标准[InterruptedException](https://docs.oracle.com/javase/8/docs/api/java/lang/InterruptedException.html)包装为`IgniteException`。|清除中断标志后重试。|是|
-|`IgniteSpiException`|SPI引发的异常，如`CollisionSpi`、`LoadBalancingSpi`、`TcpDiscoveryIpFinder`、`FailoverSpi`、`UriDeploymentSpi`等。|操作失败，从方法退出。|是|
+|`IgniteSpiException`|SPI引发的异常，如`CollisionSpi`、`LoadBalancingSpi`、<br>`TcpDiscoveryIpFinder`、`FailoverSpi`、`UriDeploymentSpi`等。|操作失败，从方法退出。|是|
 |`IgniteSQLException`|SQL查询处理失败会抛出此异常，该异常会包含相关规范定义的[错误代码](https://static.javadoc.io/org.apache.ignite/ignite-core/2.5.0/org/apache/ignite/internal/processors/cache/query/IgniteQueryErrorCode.html)。|操作失败，从方法退出。|是|
 |`IgniteAccessControlException`|认证/授权失败时会抛出此异常。|操作失败，从方法退出。|否|
 |`IgniteCacheRestartingException`|如果缓存正在重启，Ignite的缓存API会抛出此异常。|在`future`中等待并重试。|是|

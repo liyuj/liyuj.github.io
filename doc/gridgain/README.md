@@ -1,405 +1,228 @@
-# 1.Oracle GoldenGate集成
-## 1.1.GoldenGate复制
-针对与GoldenGate兼容的所有数据源和GridGain集群之间的数据实时集成和复制问题，GridGain的GoldenGate组件为这个需求提供了一套解决方案。配置好GoldenGate集成复制后，GridGain将自动从GoldenGate数据源中接收更新，同时还会将源数据转换为与GridGain兼容的缓存对象，GoldenGate还通过支持实时数据集成的核心功能实现了高可用性和灾难承受能力，同时保留了性能并确保了可扩展性。
+# 1.入门
+## 1.1.入门
+![](https://files.readme.io/5c0c967-gridgain_platform.png)
+### 1.1.1.先决条件
+GridGain官方在如下环境中进行了测试：
 
-::: tip 兼容性
-GridGain兼容于Oracle GoldenGate的11.2及其以后的版本。
-这个[页面](http://www.oracle.com/technetwork/middleware/goldengate/certify-100402.html)中包含了Oracle GoldenGate支持的数据源列表。
+ - JDK：Oracle JDK8，Open JDK8，IBM JDK8；
+ - OS：Linux（任何版本），Mac OS X（10.6及以上），Windows(XP及以上)，Windows Server（2008及以上），Oracle Solaris；
+ - 网络：没有限制（建议10G）；
+ - 架构：x86，x64，SPARC，PowerPC。
+
+### 1.1.2.安装
+以下是安装GridGain企业版的简述：
+
+ - 从[这里](http://www.gridgain.com/download/editions/)下载GridGain的企业版压缩包；
+ - 解压压缩包到系统的安装文件夹；
+ - 配置`IGNITE_HOME`环境变量指向前面解压的安装文件夹，确保路径不要以`/`结尾（此步骤为可选）。
+
+### 1.1.3.配置
+GridGain基于Apache Ignite项目，以插件的方式提供了企业级功能，Ignite的所有功能在GridGain中仍然可用，API层面没有任何变化，具体的细节可以看[Ignite文档](/doc/java/)。
+
+::: tip 注意
+GridGain复用了Ignite的系统属性、环境属性和启动脚本等，比如使用`ignite.sh`脚本就可以启动一个GridGain节点，但是已经获得了所有的企业级功能，因为已经自动启用了GridGain的插件。
 :::
-### 1.1.1.角色
-下面是GoldenGate复制过程中的主要角色：`源数据库`、`提取器`、`队列文件`以及`GridGain处理器`（GridGain Java适配器）。
+GridGain插件自动使用默认的配置启用。如果需要修改（添加安全性、可移植对象、数据中心复制等），则应使用`GridGainConfiguration`类。它实现了Ignite的`PluginConfiguration`接口，因此可以通过`IgniteConfiguration.setPluginConfigurations()`配置属性进行设置。
 
- - `源数据库`：包含源数据的数据库；
- - `提取器`：这个进程运行在源系统上，是GoldenGate的数据捕获机制。它既可以配置为源数据的初始加载，也可以配置为变更数据的增量同步。还可以配置为在支持DDL变更的数据库上传播任何DDL更改；
- - `队列文件`：这是GoldenGate存储于磁盘上的一系列文件，这些文件由提取进程写入和读取，根据配置，这些文件可以位于源系统，也可以位于目标系统。
+例如，如果要启用安全性，可以使用`GridGainConfiguration.setSecurityCredentialsProvider()`方法对其进行配置：
+```java
+// Ignite configuration.
+IgniteConfiguration igniteCfg = new IgniteConfiguration();
+ 
+// GridGain plugin configuration.
+GridGainConfiguration gridCfg = new GridGainConfiguration();
 
-GoldenGate复制有如下的方案：
+// Create security credentials.
+SecurityCredentials creds = new SecurityCredentials("username", "password");
 
-在源端复制到GridGain集群：
+// Create basic security provider.
+SecurityCredentialsBasicProvider provider = new SecurityCredentialsBasicProvider(creds);
 
-![](https://files.readme.io/jZaErH6rRuighpdsSa1H_extract.png)
+// Specify security provider in GridGain Configuration.
+gridCfg.setSecurityCredentialsProvider(provider);
+```
+### 1.1.4.从命令行启动
+可以使用默认配置或通过传递配置文件从命令行启动GridGain节点。可以启动任意多个节点，它们之间都会自动发现。
 
-在目标端复制到GridGain集群：
+**使用默认的配置**
 
-![](https://files.readme.io/o7v7a4T5TXCFfoioo5A5_replicat.png)
+要使用默认的配置启动一个节点，打开终端，转到`IGNITE_HOME`（GridGain安装文件夹），然后输入：
+```bash
+$ bin/ignite.sh
+```
+输出大致如下：
+```
+[02:49:12] Ignite node started OK (id=ab5d18a6)
+[02:49:12] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.0GB]
+```
+`ignite.sh`默认会使用`config/default-config.xml`启动一个节点。
 
-### 1.1.2.特性
-**批处理**
+**传递配置文件**
 
-从源数据库过来的更新可以在不同的模式下执行。如果复制是在`事务`模式下完成的，则更新首先由事务机制累积，然后批量注入缓存中。
+要显示指定配置文件，在终端中，进入GridGain的安装文件夹然后输入`ignite.sh <path to configuration file>`，比如：
+```bash
+$ bin/ignite.sh examples/config/example-cache.xml
+```
+配置文件的路径可以是绝对路径，也可以是相对于`IGNITE_HOME`（GridGain安装文件夹）或者类路径的`META-INF`文件夹。
 
-**故障转移**
-
-GridGain的处理支持故障转移，如果由于某些原因GoldenGate在处理过程中失败或者复制停止，则GridGain会从最后成功的事务开始重新进行处理。
-
-**冲突解决**
-
-在双活或者多活场景中，多个数据源对缓存中同一个键的更新叫做冲突，为了确保跨越多个数据中心的冲突解决的一致性。
-## 1.2.GridGain处理器
-GridGain处理器是一个GoldenGate的扩展，它会启动一个GridGain的客户端节点，接收不同的事件，接收从`提取`或者`复制`进程过来的更新信息，对信息进行处理，必要时执行缓存操作，然后回给Oracle GoldenGate一个反馈信息。
-
-从`源数据库`接收的更新将传递给数据源操作处理器，该处理器应由用户实现和设置。GridGain处理程序能处理GridGain集群中的任意缓存。如果更新处理因任何原因（例如网络问题等）失败，则GridGain处理程序返回错误代码，从而在GoldenGate中启动故障转移。
-
-`数据源操作处理器`提供了一组API，进行数据库的关系模型到缓存之间的转换，该API可以访问GridGain的完整API：缓存API、数据流处理、计算操作等等（具体可以看下一章节），还可以进行冲突的解决。
-
-### 1.2.1.GoldenGate的配置
-要使用GoldenGate集成组件，GoldenGate需要安装两个组件：
-
- - C/C++实现的动态链接或者共享库，通过一个C API与Oracle的GoldenGate提取进程集成作为`userexit (UE)`；
- - 一组Java库（jars），它包含了Oracle GoldenGate的Java API，这个Java框架通过Java本地化接口（JNI）与`userexit`进行通信。
-
-::: tip 提示
-在下面的页面中，可以了解如何安装这些组件：[Oracle GoldenGate For Java安装](https://docs.oracle.com/cd/E18101_01/doc.1111/e17814.pdf)
+::: tip 交互式模式
+如果希望以交互式模式选择一个配置文件，传入`-i`标志即可，比如：`ignite.sh -i`。
 :::
+**通过Maven获得**
 
-要复制的所有模式和表，必要的日志级别要配置好，具体要看应用使用的数据库的文档（比如Oracle，可以看[这里](https://docs.oracle.com/goldengate/1212/gg-winux/GIORA/setup.htm#GIORA364)）。
+另一个在项目中使用GridGain的简单方法是使用Maven的依赖管理。
 
-### 1.2.2.GridGain处理器配置
-要安装GridGain处理器，按照如下步骤操作：
+GridGain只需要一个`gridgain-core`作为强制依赖项。通常，还需要为基于Spring的XML配置添加`ignite-spring`依赖，并为SQL查询添加`ignite-indexing`依赖。
 
-1.从[http://www.gridgain.com/download/](http://www.gridgain.com/download/)下载和解压GridGain的安装包；
+将`${gridgain.version}`替换为实际使用的GridGain企业版版本，将`${ignite.version}`替换为实际的Ignite或GridGain专业版版本。
 
-2.将` integration/gridgain-goldengate`文件夹复制到`GOLDENGATE_ROOT_DIRECTORY`；
-
-::: warning 注意
-对于GoldenGate的12.2.X版本，需要使用`integration/gridgain-goldengate-12.2`文件夹，其它与GoldenGate有关的模块，比如Oracle GoldenGate应用适配器，也要是相同的版本-12.2.X。
-:::
-
-3.使用`JavaUserExit`配置GoldenGate的`提取器`和`复制`，GridGain处理器是与提取适配器相关的(具体可以看[UserExit属性](https://docs.oracle.com/goldengate/1212/gg-winux/GWURF/gg_parameters.htm#GWURF995))。比如在下面的模式中，事务是在源数据库通过主提取进程捕获的，它会将数据写入GoldenGate的队列文件。然后会使用数据泵技术将事务发送给队列，队列会由提取适配器读取；
-
-dirprm/gridgain.prm：
-```
-# Extractor name.
-EXTRACT GRIDGAIN
-# Path to property file for `GridGain Handler`.
-SETENV ( GGS_USEREXIT_CONF = "dirprm/gridgain.props")
-# Credentials for database.
-USERID username, PASSWORD password
-CUSEREXIT libggjava_ue.so CUSEREXIT INCLUDEUPDATEBEFORES, PASSTHRU
-NOCOMPRESSUPDATES
-SOURCEDEFS dirdef/per.def
-TABLE *;
-```
-4.实现GridGain的处理器然后复制包含该处理器的jar到`GOLDENGATE_ROOT_DIRECTORY/gridgain-goldengate`文件夹；
-
-5.在属性文件中配置GridGain的处理器，其中还应该有GridGain的XML配置文件的路径，该Spring上下文中应该包含前述步骤中实现的bean；
-
-文本：
-```properties
-# Handler name.
-gg.handlerlist=gridgain
-
-# Handler class name.
-gg.handler.gridgain.type=org.gridgain.oracle.goldengate.GridGainHandler
-# Path to GridGain configuration file. See XML tab.
-gg.handler.gridgain.configurationPath=dirprm/gridgain-configuration.xml
-# GoldenGate Handler bean name.
-gg.handler.gridgain.operationHandlerBeanName=personOpHandler
-
-# GoldenGate settings 
-gg.report.time=30sec
-gg.classpath=gridgain-goldengate/*
-
-javawriter.stats.full=TRUE
-javawriter.stats.display=TRUE
-javawriter.bootoptions=-Xmx1024m -Xms1024m -Djava.class.path=ggjava/ggjava.jar:gg-lib/log4j.xml
-```
-XML：
+最后，为了使用GridGain企业版或专业版的库，必须将GridGain的外部存储库添加到Maven配置文件中，如下所示：
 ```xml
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="personOpHandler" name="personOpHandler" class="org.gridgain.oracle.goldengate.handler.PersonOperationHandler"/>
-
-    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
-        <property name="localHost" value="127.0.0.1"/>
-
-        <property name="cacheConfiguration">
-            <list>
-                <bean class="org.apache.ignite.configuration.CacheConfiguration">
-                    <property name="name" value="person"/>
-                    <property name="atomicityMode" value="ATOMIC"/>
-                    <property name="backups" value="1"/>
-                </bean>
-                <bean class="org.apache.ignite.configuration.CacheConfiguration">
-                    <property name="name" value="address"/>
-                    <property name="atomicityMode" value="TRANSACTIONAL"/>
-                    <property name="backups" value="1"/>
-                </bean>
-            </list>
-        </property>
-    </bean>
-</beans>
+<repositories>
+    <repository>
+        <id>GridGain External Repository</id>
+        <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
+    </repository>
+</repositories>
+ 
+<dependency>
+    <groupId>org.gridgain</groupId>
+    <artifactId>gridgain-core</artifactId>
+    <version>${gridgain.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.ignite</groupId>
+    <artifactId>ignite-spring</artifactId>
+    <version>${ignite.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.ignite</groupId>
+    <artifactId>ignite-indexing</artifactId>
+    <version>${ignite.version}</version>
+</dependency>
 ```
-GridGain处理器有如下的属性：
+### 1.1.5.第一个GridGain计算应用
+下面会编写第一个网格应用程序，它将计算一个句子中的非空白字符数。作为一个示例，会将一个句子分成多个单词，并让每个计算作业计算每个单词中的字符数。最后，简单地从各个作业中得到的结果相加，就会得到总数：
 
-|属性|描述|默认值|
-|---|---|---|
-|`type`|GridGain处理器的主类，此值必须有下一个值：`org.gridgain.oracle.GridGainHandler`|无|
-|`configurationPath`|GridGain XML配置文件的路径，该文件中必须有由`operationHandlerBeanName`属性命名的bean|无|
-|`mode`|操作模式。可用值为：`op`、`tx`、`meta`和`all`|`op`|
-|`operationHandlerBeanName`|GridGain处理器bean的名字，该bean必须在XML配置文件中存在，必须实现`DataSourceOperationHandler`接口|无|
-
-## 1.3.数据源操作处理器
-`DataSourceOperationHandler`接口可以将从`数据源`过来的更新转换为对应的缓存对象，并且执行缓存操作，`DataSourceOperationHandler`接口应该由开发者实现。
-
+Java8：
 ```java
-/**
- * An function that allows applications to perform operations on updates from 
- * DataBase and store they to cache. The callback will be invoked on each 
- * operations such as insert, update, delete rows and etc.
- */
-public interface DataSourceOperationHandler {
-    /**
-     * Init method. This method will be invoked before the handler starts 
-     * to receive updates from database.
-     *
-     * @param ignite Ignite instance.
-     */
-    public void init(Ignite ignite);
-
-    /**
-     * Handle single operation update. This method invoked when 
-     * {@link GridGainHandler#setMode(String)} in "op" mode.
-     *
-     * @param dsOp An operation on a data source, containing the current 
-     *      column values (after the operation occurred) and optionally 
-     *      the "before" values (before the operation occurred). An operation
-     *      can in general be a database operation such as 
-     *      insert/update/delete or a primary-key update.
-     * @param opCtx Operation context contains information about operations.
-     */
-    public void handleOperation(DsOperation dsOp, OperationContext opCtx);
-
-    /**
-     * Handle transaction update. This method invoked when 
-     * {@link GridGainHandler#setMode(String)} in "tx" mode.
-     *
-     * @param tx Data source transaction. This object contains info about 
-     *      whole transaction: changed rows, value, type and etc.
-     * @param opCtx Operation context contains information about operations.
-     */
-    public void handleTransaction(DsTransaction tx, OperationContext opCtx);
-}
-```
-`init`方法会在处理器开始接收来自源数据库的更新之前被调用，这个好位置可以用于创建缓存、检查配置等。对于来自数据库的每个更新，GridGain处理器会调用`handleOperation`或者`handleTransaction`方法，如果处理器工作于`tx`模式，`handleTransaction`方法会被调用，否则会调用`handleOperation`方法。这些方法的实现可以使用任何Ignite的API：缓存操作、计算、消息等等，下面是一个伪代码实现的示例：
-```java
-/**
- * The class transforms updates (id, name and salary columns)
- * to Person cache value and save it to cluster.
- */
-public class PersonOperationHandler implements DataSourceOperationHandler {
-    /** Column name that contains "Name". */
-    public static final String NAME_COL = "name";
-
-    /** Column name that contains "Salary". */
-    public static final String SALARY_COL = "salary";
-
-    /** Ignite instance. */
-    private Ignite ignite;
-
-    /** Cache person. */
-    private IgniteCache<Integer, Person> cache;
-
-    /** {@inheritDoc} */
-    @Override public void init(Ignite ignite) {
-        this.ignite = ignite;
-
-        cache = ignite.cache("persons");
-    }
-
-    /** {@inheritDoc} */
-    @Override public void handleOperation(DsOperation dsOp, OperationContext opCtx) {
-        handle(dsOp, opCtx);
-    }
-
-    /** {@inheritDoc} */
-    @Override public void handleTransaction(DsTransaction tx, OperationContext opCtx) {
-        try (Transaction igniteTx = ignite.transactions().txStart()) {
-            for (DsOperation op : tx.getOperations())
-                handle(op, opCtx);
-
-            igniteTx.commit();
-        }
-    }
-
-    /**
-     * The methods convert data from database to {@code Person} object and performs cache operation.
-     *
-     * @param dsOp An operation on a data source, containing the 
-     *      current column values (after the operation occurred)
-     *      and optionally the "before" values (before the operation occurred). 
-     *      An operation can in general be a database operation such as 
-     *      insert/update/delete or a primary-key update.
-     * @param opCtx Operation context contains information about operations.
-     */
-    private void handle(DsOperation dsOp, OperationContext opCtx) {
-        TableMetaData tableMeta = opCtx.getMetaData()
-            .getTableMetaData(dsOp.getTableName());
-
-        Op op = new Op(dsOp, tableMeta,  opCtx.getConfiguration());
-
-        DsColumn id = op.getColumn(tableMeta
-            .getColumnMetaData(new ColumnName("id")).getIndex());
-
-        if (id == null || id.getAfterValue() == null)
-            throw new NullPointerException("Column id doesn't exist! Id: " + id + ".");
-
-        int key = Integer.valueOf(id.getBeforeValue());
-
-        if (op.getOpType().isDelete())
-            cache.remove(key);
-        else if (op.getOpType().isInsert()) {
-            String name = null;
-            Double salary = null;
-
-            DsColumn nameCol = op.getColumn(tableMeta.getColumnMetaData(new ColumnName(NAME_COL))
-                .getIndex());
-            DsColumn salaryCol = op.getColumn(tableMeta.getColumnMetaData(new ColumnName(SALARY_COL))
-                .getIndex());
-
-            if (!nameCol.isMissing())
-                name = nameCol.getAfterValue();
-
-            if (!salaryCol.isMissing())
-                salary = Double.valueOf(salaryCol.getAfterValue());
-
-            cache.put(key, new Person(key, name, salary));
-        }
-        else {
-            String name = null;
-            Double salary = null;
-
-            DsColumn nameCol = op.getColumn(tableMeta.getColumnMetaData(new ColumnName(NAME_COL))
-                .getIndex());
-            DsColumn salaryCol = op.getColumn(tableMeta.getColumnMetaData(new ColumnName(SALARY_COL))
-                .getIndex());
-
-            if (!nameCol.isMissing())
-                name = nameCol.getAfterValue();
-
-            if (!salaryCol.isMissing())
-                salary = Double.valueOf(salaryCol.getAfterValue());
-
-            cache.invoke(key, new PersonUpdater(name, salary));
-        }
-    }
-
-    /**
-     * The class updates person.
-     */
-    public static final class PersonUpdater implements CacheEntryProcessor<Integer, Person, Void> {
-        /** */
-        private String name;
-
-        /** */
-        private Double salary;
-
-        /**
-         * @param name Name.
-         * @param salary Salary.
-         */
-        public PersonUpdater(String name, Double salary) {
-            this.name = name;
-            this.salary = salary;
-        }
-
-        /** {@inheritDoc} */
-        @Override public Void process(MutableEntry<Integer, Person> entry, Object... arguments)
-            throws EntryProcessorException {
-            String oldName = entry.getValue() != null ? entry.getValue().name() : null;
-            double oldSalary = entry.getValue() != null ? entry.getValue().salary() : 0;
-
-            Person p = new Person(
-                entry.getKey(),
-                name != null ? name : oldName,
-                salary != null ? salary : oldSalary
-            );
-
-            entry.setValue(p);
-
-            return null;
-        }
-    }
-}
-```
-该处理器需要在Spring XML配置文件中进行配置，它会启动GridGain的处理器。
-```xml
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="personOperationHandler" name="personOperationHandler"
-      class="org.gridgain.oracle.goldengate.PersonOperationHandler"/>
-
-    <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-      ...
-    </bean>
-</beans>
-```
-在`dirprm/gridgain.props`属性文件中，需要为GridGain的处理器配置`theoperationHandlerBeanName`属性。
-
-dirprm/gridgain.props：
-```properties
-gg.handlerlist=gridgain
-
-gg.handler.gridgain.operationHandlerBeanName=personOperationHandler
-
-...
-```
-## 1.4.GoldenGate冲突解决
-当通过GoldenGate和GridGain缓存API更新缓存时，可以选择继续更新、保留旧值或通过合并旧值和新值生成其他值。为了实现这一点，GridGain提供了冲突解决方案。
-
-要对缓存操作和数据流处理使用冲突解决机制，需要使用`GridGain.cache(String cacheName, byte dataCenterId)`和`GridGain.dataStreamer(String cacheName, byte dataCenterId)`方法。它预计数据中心ID对于参与数据中心复制的所有拓扑都是唯一的，对于属于给定拓扑的所有节点也是唯一的。
-
-缓存：
-```java
-// Get GridGain plugin.
-GridGain gridGain = ignite.plugin(GridGain.PLUGIN_NAME);
-
-// Get "Person" cache with given data center id.
-IgniteCache cache = gridGain.cache("Person", 31);
-
-...
-
-/**
- * Conflict resolver for Person entity. In conflicts always used an entry 
- * with data center id equals 31.
- */
-public class PersonConflictResolver implements CacheConflictResolver<Integer, Person> {
-    /** {@inheritDoc} */
-    @Override public void resolve(CacheConflictContext<Integer, Person> ctx) {
-        // If we
-        if (oldEntry.dataCenterId() == 31)
-            ctx.useOld();
-        else if (newEntry.dataCenterId() == 31)
-            ctx.useNew();
-    }
-}
-```
-数据流处理：
-```java
-// Get GridGain plugin.
-GridGain gridGain = ignite.plugin(GridGain.PLUGIN_NAME);
-
-// Get Data Streamer for cache with given data center id.
-IgniteDataStreamer cache = gridGain.dataStreamer("Person", 31);
-
-...
+try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
+  Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
+ 
+  // Iterate through all the words in the sentence and create Callable jobs.
+  for (final String word : "Count characters using callable".split(" "))
+    calls.add(word::length);
+ 
+  // Execute collection of Callables on the grid.
+  Collection<Integer> res = ignite.compute().call(calls);
+ 
+  // Add up all the results.
+  int sum = res.stream().mapToInt(Integer::intValue).sum();
   
-/**
- * Conflict resolver for Person entity. In conflicts always used an entry 
- * with data center id equals 31.
- */
-public class PersonConflictResolver implements CacheConflictResolver<Integer, Person> {
-    /** {@inheritDoc} */
-    @Override public void resolve(CacheConflictContext<Integer, Person> ctx) {
-        // If we
-        if (oldEntry.dataCenterId() == 31)
-            ctx.useOld();
-        else if (newEntry.dataCenterId() == 31)
-            ctx.useNew();
+  System.out.println("Total number of characters is '" + sum + "'.");
+} 
+```
+Java7：
+```java
+try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
+    Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
+  
+    // Iterate through all the words in the sentence and create Callable jobs.
+    for (final String word : "Count characters using callable".split(" ")) {
+        calls.add(new IgniteCallable<Integer>() {
+            @Override public Integer call() throws Exception {
+                return word.length();
+            }
+        });
     }
+  
+    // Execute collection of Callables on the grid.
+    Collection<Integer> res = ignite.compute().call(calls);
+  
+    int sum = 0;
+  
+    // Add up individual word lengths received from remote nodes.
+    for (int len : res)
+        sum += len;
+  
+    System.out.println(">>> Total number of characters in the phrase is '" + sum + "'.");
+} 
+```
+::: tip 零部署
+因为有零部署特性，当从IDE中运行上述应用时，远程节点会自动接收到作业而不需要进行显式地部署。
+:::
+### 1.1.6.第一个GridGain数据应用
+下面是几个简单的示例，进行分布式缓存的读写，以及执行基本的事务等。
+
+因为示例中用到了缓存，因此要确保它们已经配置好，下面会使用Ignite已经附带的示例配置，他已经配置好了若干个缓存：
+```bash
+$ bin/ignite.sh examples/config/example-cache.xml
+```
+读和写：
+```java
+try (Ignite ignite = Ignition.start("examples/config/example-cache.xml")) {
+    IgniteCache<Integer, String> cache = ignite.getOrCreateCache("myCacheName");
+  
+    // Store keys in cache (values will end up on different cache nodes).
+    for (int i = 0; i < 10; i++)
+        cache.put(i, Integer.toString(i));
+  
+    for (int i = 0; i < 10; i++)
+        System.out.println("Got [key=" + i + ", val=" + cache.get(i) + ']');
 }
+```
+原子操作：
+```java
+// Put-if-absent which returns previous value.
+Integer oldVal = cache.getAndPutIfAbsent("Hello", 11);
+   
+// Put-if-absent which returns boolean success flag.
+boolean success = cache.putIfAbsent("World", 22);
+   
+// Replace-if-exists operation (opposite of getAndPutIfAbsent), returns previous value.
+oldVal = cache.getAndReplace("Hello", 11);
+  
+// Replace-if-exists operation (opposite of putIfAbsent), returns boolean success flag.
+success = cache.replace("World", 22);
+   
+// Replace-if-matches operation.
+success = cache.replace("World", 2, 22);
+   
+// Remove-if-matches operation.
+success = cache.remove("Hello", 1); 
+```
+事务：
+```java
+try (Transaction tx = ignite.transactions().txStart()) {
+    Integer hello = cache.get("Hello");
+   
+    if (hello == 1)
+        cache.put("Hello", 11);
+   
+    cache.put("World", 22);
+   
+    tx.commit();
+} 
+```
+分布式锁：
+```java
+// Lock cache key "Hello".
+Lock lock = cache.lock("Hello");
+  
+lock.lock();
+  
+try {
+    cache.put("Hello", 11);
+    cache.put("World", 22);
+}
+finally {
+    lock.unlock();
+}
+```
+### 1.1.7.GridGain Visor管理控制台
+检查数据网格的内容以及执行其它众多管理和监视操作的最简单方法是使用GridGain的Visor GUI实用程序。
+
+要启动Visor，只需运行：
+```bash
+$ bin/ggvisorui.sh
 ```
