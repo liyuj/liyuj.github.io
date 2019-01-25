@@ -226,3 +226,96 @@ finally {
 ```bash
 $ bin/ggvisorui.sh
 ```
+## 1.2.配置
+GridGain是作为Ignite的插件存在的，只可以配置企业级的特性（安全、数据中心复制等），开源版的特性都是在Ignite中进行配置的，具体可以看Ignite的[文档](/doc/java/)。
+### 1.2.1.GridGainConfiguration
+GridGain的主配置类是`GridGainConfiguration`，从代码上来说，它是Ignite的一个插件。
+
+Java：
+```java
+// Ignite configuration.
+IgniteConfiguration cfg = new IgniteConfiguration();
+ 
+// GridGain plugin configuration.
+GridGainConfiguration ggCfg = new GridGainConfiguration();
+ 
+// For example, this is how rolling updates are enabled.
+ggCfg.setRollingUpdatesEnabled(true);
+ 
+// Set GridGain plugin configuration to Ignite configuration.
+cfg.setPluginConfigurations(ggCfg);
+```
+XML：
+```xml
+
+<!-- Ignite configuration bean. -->
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="pluginConfigurations">
+        <list>
+            <!-- GridGain plugin configuration bean. -->
+            <bean class="org.gridgain.grid.configuration.GridGainConfiguration">
+                <!-- For example, this is how rolling updates are enabled. -->
+                <property name="rollingUpdatesEnabled" value="true"/>
+            </bean>
+        </list>
+    </property>
+</bean>
+```
+下面是可用的配置属性的完整列表：
+
+|方法|描述|默认值|
+|---|---|---|
+|`setLicenseUrl(String)`|设定许可证文件的URL（如果和默认的URL不同）|`gridgain-license.xml`位于GridGain的根目录|
+|`setDataCenterId(byte)`|设定网格数据中心ID，数据中心ID在参与数据中心复制的所有拓扑中都应该是唯一的，对于属于给定拓扑的所有节点也是唯一的。|0|
+|`setDrSenderConfiguration(DrSenderConfiguration)`|设定数据中心发送者配置||
+|`setDrReceiverConfiguration(DrReceiverConfiguration)`|设定数据中心接收者配置||
+|`setAuthenticator(Authenticator)`|设定配置好的`Authenticator`的实例||
+|`setSecurityCredentialsProvider(SecurityCredentialsProvider)`|设定安全凭据||
+|`setInteropConfiguration(InteropConfiguration)`|设定与其他平台的互操作性||
+|`setRollingUpdatesEnabled(boolean)`|启用和禁用滚动升级|false|
+
+### 1.2.2.GridGainCacheConfiguration
+
+另外，Ignite的`CachePluginConfiguration`可以对缓存的配置进行扩展，然后GridGain通过`GridGainCacheConfiguration`类实现了这个接口。
+
+下面是配置方法：
+
+Java：
+```java
+// Ignite cache configuration.
+CacheConfiguration cacheCfg = new CacheConfiguration("myCache");
+  
+// GridGain plugin cache configuration.
+GridGainCacheConfiguration ggCacheCfg = new GridGainCacheConfiguration();
+ 
+// For example, this is how to set conflict resolution mode (AUTO is the default value).
+ggCacheCfg.setConflictResolverMode(CacheConflictMode.AUTO);
+  
+// Set GridGain plugin cache configuration to Ignite cache configuration.
+cacheCfg.setPluginConfigurations(ggCacheCfg); 
+```
+XML：
+```xml
+<!-- Ignite cache configuration bean. -->
+<bean class="org.apache.ignite.configuration.CacheConfiguration">
+    ...
+    <property name="pluginConfigurations">
+        <list>
+            <!-- GridGain plugin cache configuration bean. -->
+            <bean class="org.gridgain.grid.configuration.GridGainCacheConfiguration">
+                <!-- For example, this is how to set conflict resolution mode (AUTO is the default value). -->
+                <property name="conflictResolverMode" value="AUTO"/>
+            </bean>
+        </list>
+    </property>
+</bean> 
+```
+下面是可用的配置属性的完整列表：
+
+|方法|描述|默认值|
+|---|---|---|
+|`setDrSenderConfiguration(CacheDrSenderConfiguration)`|设定数据中心复制发送者配置||
+|`setDrReceiverEnabled(boolean)`|设定数据中心复制接收者启用标志|false|
+|`setConflictResolverMode(CacheConflictMode)`|设定冲突解决模式（`AUTO`或者`ALWAYS`）|`AUTO`|
+|`setConflictResolver(CacheConflictResolver)`|设定冲突解决器||
