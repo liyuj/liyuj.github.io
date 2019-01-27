@@ -266,14 +266,14 @@ XML：
 
 |方法|描述|默认值|
 |---|---|---|
-|`setLicenseUrl(String)`|设定许可证文件的URL（如果和默认的URL不同）|`gridgain-license.xml`位于GridGain的根目录|
-|`setDataCenterId(byte)`|设定网格数据中心ID，数据中心ID在参与数据中心复制的所有拓扑中都应该是唯一的，对于属于给定拓扑的所有节点也是唯一的。|0|
-|`setDrSenderConfiguration(DrSenderConfiguration)`|设定数据中心发送者配置||
-|`setDrReceiverConfiguration(DrReceiverConfiguration)`|设定数据中心接收者配置||
-|`setAuthenticator(Authenticator)`|设定配置好的`Authenticator`的实例||
-|`setSecurityCredentialsProvider(SecurityCredentialsProvider)`|设定安全凭据||
-|`setInteropConfiguration(InteropConfiguration)`|设定与其他平台的互操作性||
-|`setRollingUpdatesEnabled(boolean)`|启用和禁用滚动升级|false|
+|`setLicenseUrl()`|设定许可证文件的URL（如果和默认的URL不同）|`gridgain-license.xml`位于GridGain的根目录|
+|`setDataCenterId()`|设定网格数据中心ID，数据中心ID在参与数据中心复制的所有拓扑中都应该是唯一的，对于属于给定拓扑的所有节点也是唯一的。|0|
+|`setDrSenderConfiguration()`|设定数据中心发送者配置||
+|`setDrReceiverConfiguration()`|设定数据中心接收者配置||
+|`setAuthenticator()`|设定配置好的`Authenticator`的实例||
+|`setSecurityCredentialsProvider()`|设定安全凭据||
+|`setInteropConfiguration()`|设定与其他平台的互操作性||
+|`setRollingUpdatesEnabled()`|启用和禁用滚动升级|false|
 
 ### 1.2.2.GridGainCacheConfiguration
 
@@ -315,7 +315,7 @@ XML：
 
 |方法|描述|默认值|
 |---|---|---|
-|`setDrSenderConfiguration(CacheDrSenderConfiguration)`|设定数据中心复制发送者配置||
-|`setDrReceiverEnabled(boolean)`|设定数据中心复制接收者启用标志|false|
-|`setConflictResolverMode(CacheConflictMode)`|设定冲突解决模式（`AUTO`或者`ALWAYS`）|`AUTO`|
-|`setConflictResolver(CacheConflictResolver)`|设定冲突解决器||
+|`setDrSenderConfiguration()`|设定数据中心复制发送者配置||
+|`setDrReceiverEnabled()`|设定数据中心复制接收者启用标志|false|
+|`setConflictResolverMode()`|设定冲突解决模式（`AUTO`或者`ALWAYS`）|`AUTO`|
+|`setConflictResolver()`|设定冲突解决器||
