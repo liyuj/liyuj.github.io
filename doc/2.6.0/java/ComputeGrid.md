@@ -305,7 +305,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 ### 7.4.1.摘要
 `ComputeTask`是Ignite对于简化内存内MapReduce的抽象，这个也非常接近于ForkJoin范式，纯粹的MapReduce从来不是为了性能而设计，只适用于处理离线的批量业务处理(比如Hadoop MapReduce)。然而，当对内存内的数据进行计算时，实时性低延迟和高吞吐量通常具有更高的优先级。同样，简化API也变得非常重要。考虑到这一点，Ignite推出了`ComputeTask` API，它是一个轻量级的MapReduce(或ForkJoin)实现。
 
-> 只有当需要对作业到节点的映射做细粒度控制或者对故障转移进行定制的时候，才使用`ComputeTask`。对于所有其他的场景，都需要使用`8.2.分布式闭包`中介绍的集群内闭包执行来实现。
+> 只有当需要对作业到节点的映射做细粒度控制或者对故障转移进行定制的时候，才使用`ComputeTask`。对于所有其他的场景，都需要使用[分布式闭包](#_7-2-分布式闭包)中介绍的集群内闭包执行来实现。
 
 ### 7.4.2.ComputeTask
 `ComputeTask`定义了要在集群内执行的作业以及这些作业到节点的映射，他还定义了如何处理作业的返回值(Reduce)。所有的`IgniteCompute.execute(...)`方法都会在集群上执行给定的任务，应用只需要实现`ComputeTask`接口的`map(...)`和`reduce(...)`方法即可。
@@ -324,7 +324,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 
  - `WAIT`:等待所有剩余的作业完成（如果有的话）
  - `REDUCE`：立即进入Reduce阶段，丢弃剩余的作业和还未收到的结果
- - `FAILOVER`：将作业转移到另一个节点（参照`8.7.容错`章节），所有已经收到的作业结果也会在`reduce(...)`方法中有效
+ - `FAILOVER`：将作业转移到另一个节点（参照[容错](#_7-7-容错)章节），所有已经收到的作业结果也会在`reduce(...)`方法中有效
 
 **reduce方法**
 

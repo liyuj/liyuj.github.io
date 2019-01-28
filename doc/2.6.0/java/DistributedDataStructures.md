@@ -137,7 +137,7 @@ ref.compareAndSet("WRONG EXPECTED VALUE", "someNewVal"); // Won't change.
 
 > `IgniteCache`接口有`putIfAbsent()`和`replace()`方法，他们和原子类型一样提供了同样的CAS功能。
 
-### 6.3.2.原子性的配置
+### 6.3.2.原子性配置
 Ignite的原子化可以通过`IgniteConfiguration`的`atomicConfiguration`属性进行配置，有如下的配置参数可选：
 
 |setter方法|描述|默认值|
@@ -244,7 +244,7 @@ for (int i = 0; i < 20; i++) {
 `IgniteAtomicSequence`的关键参数是`atomicSequenceReserveSize`,他是每个节点序列值的预留数量。当一个节点试图获得`IgniteAtomicSequence`的实例时，一定数量的序列值会为该节点预留，然后随之而来的序列增量会在本地发生而不需要与其他节点通信，直到下一个预留操作发生。
 `atomicSequenceReserveSize`的默认值是`1000`，这个默认值可以通过`AtomicConfiguration`的`atomicSequenceReserveSize`属性进行修改。
 
-> 要了解各种原子性配置参数的详细信息，可以参照`6.2.原子性类型`章节，以及如何配置他们的示例。
+> 要了解各种原子性配置参数的详细信息，可以参照[原子性配置](#_6-3-2-原子性配置)章节，以及如何配置他们的示例。
 
 ## 6.6.Semaphore（信号量）
 ### 6.6.1.摘要
