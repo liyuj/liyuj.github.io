@@ -363,17 +363,15 @@ Zeppelin安装配置好了之后，可以用如下的命令来启动：
 
 **配置Ignite SQL 解释器**
 
-Ignite SQL解释器只需要`ignite.jdbc.url`属性，他的值是JDBC连接地址，在后面的示例中会用到`words`缓存，因此像下面这样编辑`ignite.jdbc.url`属性：
-```bash
-jdbc:ignite://localhost:11211/words
-```
+Ignite SQL解释器只需要`ignite.jdbc.url`属性，它的值是JDBC连接URL，在后面的示例中会用到`words`缓存，因此编辑`ignite.jdbc.url`属性值为`jdbc:ignite://localhost:11211/words`。
+
 **配置Ignite解释器**
 
 在大多数简单的场景中，Ignite解释器需要下述属性：
 
- - `ignite.addresses`：逗号分割的Ignite集群主机列表，要了解细节信息可以参照`2.4.集群配置`章节；
+ - `ignite.addresses`：逗号分割的Ignite集群主机列表，要了解细节信息可以参照[集群发现](/doc/java/Clustering.md#_2-5-集群发现)章节；
  - `ignite.clientMode`：可以以客户端节点也可以以服务端节点连接到Ignite集群，要了解细节可以参照[客户端和服务器端](/doc/java/#_1-7-客户端和服务端)章节。可以使用`true`或者`false`分别以客户端或者服务端模式连接到集群。
- - `ignite.peerClassLoadingEnabled`：启用对等类加载，要了解细节可以参照`2.5.零部署`章节。可以用`true`或者`false`分别启用或者禁用对等类加载。
+ - `ignite.peerClassLoadingEnabled`：启用对等类加载，要了解细节可以参照[零部署](/doc/java/Clustering.md#_2-6-零部署)章节。可以用`true`或者`false`分别启用或者禁用对等类加载。
 
 对于更复杂的场景，可以通过指向Ignite配置文件的`ignite.config.url`属性来自定义Ignite配置，注意如果定义了`ignite.config.url`属性，那么上述的属性都会被忽略。
 

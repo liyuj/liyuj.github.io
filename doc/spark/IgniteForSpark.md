@@ -405,10 +405,11 @@ import org.apache.ignite.configuration._
 ```
 **MESOS部署**
 
-Ignite可以部署在Mesos集群上，可以在`2.11.Mesos部署`章节参照Mesos部署说明。
+Ignite可以部署在Mesos集群上，具体细节请参见[Mesos部署](/doc/java/Deployment.md#_14-5-mesos部署)。
 ### 4.4.2.嵌入式部署
->**嵌入式模式已被弃用**
+::: danger 嵌入式模式已被弃用
 嵌入式模式意味着需要在Spark执行器中启动Ignite服务端节点，这可能导致意外的再平衡甚至数据丢失，因此该模式目前已被弃用并且最终会被废弃。可以考虑启动一个单独的Ignite集群然后使用独立模式来避免数据的一致性和性能问题。
+:::
 
 嵌入式部署意味着Ignite节点是在Spark作业进程内部启动的，然后当作业结束时就停止了，这时不需要额外的部署步骤。Ignite代码会通过Spark的部署机制分布到workder机器然后作为`IgniteContext`初始化的一部分在所有的workder上启动节点。
 ### 4.4.3.Maven
