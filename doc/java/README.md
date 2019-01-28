@@ -81,7 +81,7 @@ Ignite是一个分布式系统，因此，有能力将数据和数据以及数�
 ### 1.3.1.先决条件
 Apache Ignite官方在如下环境中进行了测试：
 
- - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9，具体可以看下面的`在JDK9中运行Ignite`章节；
+ - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9或之后的版本，具体可以看下面的[在JDK9及以后版本中运行Ignite](#_1-3-12-在jdk9-10-11中运行ignite)章节；
  - OS：Linux（任何版本），Mac OS X（10.6及以上），Windows(XP及以上)，Windows Server（2008及以上），Oracle Solaris；
  - 网络：没有限制（建议10G）；
  - 架构：x86，x64，SPARC，PowerPC
@@ -135,8 +135,9 @@ Windows：
 $ bin\ignite.bat examples\config\example-ignite.xml
 ```
 配置文件的路径，可以是绝对路径，也可以是相对于`IGNITE_HOME`（Ignite安装文件夹）的相对路径，也可以是类路径中的`META-INF`文件夹。
->**交互模式**
+::: tip 交互模式
 如果要使用交互模式选择一个配置文件，传入`-i`参数即可，就是`ignite.sh -i`。
+:::
 
 好，这样就成功了！
 ### 1.3.3.使用Maven
@@ -164,7 +165,7 @@ Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于S
 ```
 
 ::: tip Maven配置
-关于如何包含个别的ignite maven模块的更多信息，可以参考`1.4.Maven设置`章节。
+关于如何包含个别的ignite maven模块的更多信息，可以参考[Maven设置](#_1-4-maven配置)章节。
 :::
 
 每个发布版中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
@@ -752,17 +753,17 @@ public class ServiceGridExample {
     }
 }
 ```
-::: tip 零部署和服务网格
+::: warning 零部署和服务网格
 零部署是不支持服务网格的，如果希望将上面的服务部署在通过`ignite.sh`或者`ignite.bat`文件启动的节点上，那么就需要将服务的实现打成jar包然后放在`{apache_ignite_version}/libs`文件夹中。
 :::
 
 ### 1.3.8.集群管理和监控
-查看数据网格的数据、以及执行其他的管理和监控操作的最简单方式是使用`Ignite Web控制台`，还有就是使用Ignite的`Visor命令行`工具。
+查看数据网格的数据、以及执行其他的管理和监控操作的最简单方式是使用[Ignite Web控制台](/doc/tools/#_1-1-ignite-web控制台)，还有就是使用Ignite的[Visor命令行](/doc/tools/VisorManagementConsole.md#_3-1-命令行接口)工具。
 
 ### 1.3.9.Docker和云镜像安装
 最新的Ignite Docker镜像以及AWS和Google计算引擎的云镜像，可以通过Ignite的[下载页面](https://ignite.apache.org/download.cgi#docker)获得。
 ### 1.3.10.RPM|DEB包安装
-Ignite可以通过官方的[RPM](https://www.apache.org/dist/ignite/rpm)和[DEB](https://www.apache.org/dist/ignite/deb)仓库获得。
+Ignite可以通过官方的[RPM和DEB仓库](#_1-12-rpm和deb包安装)进行安装。
 ### 1.3.11.通过源代码构建
 如果下载了源代码，可以使用下面的命令构建二进制包：
 ```bash
@@ -781,10 +782,10 @@ $ mvn clean package -DskipTests -Prelease,lgpl
 $ mvn clean package -DskipTests -Dignite.edition=hadoop [-Dhadoop.version=X.X.X]
 ```
 源码包中的DEVNOTES.txt文件，有更多的细节。
-### 1.3.12.在JDK9中运行Ignite
-Ignite使用了专有的SDK API，默认不再可用。为了运行Ignite，需要给JVM传递特定的参数，以使这些API可用。
+### 1.3.12.在JDK9/10/11中运行Ignite
+Ignite使用了专有的SDK API，默认不再可用。为了运行Ignite，需要给JVM传递特定的标志，以使这些API可用。
 
-如果使用嵌入式模式启动，可以给JVM添加如下的参数：
+给应用的JVM添加如下的参数：
 ```
 --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED 
 --add-exports=java.base/sun.nio.ch=ALL-UNNAMED 
@@ -932,7 +933,7 @@ public class MyLifecycleBean implements LifecycleBean {
     }
 }
 ```
-也可以将Ignite实例以及其他有用的资源注入`LifecycleBean`实现，查看`1.8.资源注入`章节可以了解更多的信息。
+也可以将Ignite实例以及其他有用的资源注入`LifecycleBean`实现，查看[资源注入](#_1-8-资源注入)章节可以了解更多的信息。
 
 ### 1.5.4.生命周期事件类型
 当前支持如下生命周期事件类型：
@@ -976,10 +977,11 @@ IgniteFuture<String> fut = compute.callAsync(() -> {
 // Listen for completion and print out the result.
 fut.listen(f -> System.out.println("Job result: " + f.get()));
 ```
->**闭包执行和线程池**
+::: warning 闭包执行和线程池
 异步操作完成后，如果通过`IgniteFuture.listen()`或者`IgniteFuture.chain()`方法传递了闭包，那么闭包就会被调用线程以同步的方式执行，否则，闭包就会随着操作的完成异步地执行。
 根据操作的类型，闭包可能被系统线程池中的线程调用（异步缓存操作），或者被公共线程池中的线程调用（异步计算操作）。因此需要避免在闭包实现中调用同步的缓存和计算操作，否则可能导致死锁。
-要实现Ignite计算操作异步嵌套执行，可以使用自定义线程池，相关内容可以查看`1.9.线程池`中的相关内容。
+要实现Ignite计算操作异步嵌套执行，可以使用自定义线程池，相关内容可以查看[自定义线程池](#_1-9-8-自定义线程池)中的相关内容。
+:::
 
 ## 1.7.客户端和服务端
 ### 1.7.1.摘要

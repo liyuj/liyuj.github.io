@@ -160,8 +160,9 @@ Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于S
     <version>${ignite.version}</version>
 </dependency>
 ```
->**Maven配置**
-关于如何包含个别的ignite maven模块的更多信息，可以参考`1.4.Maven设置`章节。
+::: tip Maven配置
+关于如何包含个别的ignite maven模块的更多信息，可以参考[Maven设置](#_1-4-maven配置)章节。
+:::
 
 每个发布版中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
 
@@ -809,7 +810,7 @@ journalctl -fe
 sudo systemctl enable apache-ignite@<config name>
 ```
 >**通过包模式安装的Ignite以独立Java应用模式运行**
-如果通过RPM或者DEB包模式安装了Ignite，有时需要以独立Java应用模式运行，而不是一个服务（比如Windows10的WSL或者Docker中，运行`systemd`服务还有些已知的问题），这时，可以通过在`1.3.2.启动第一个Ignite集群`中描述的方法进行启动，具体是：
+如果通过RPM或者DEB包模式安装了Ignite，有时需要以独立Java应用模式运行，而不是一个服务（比如Windows10的WSL或者Docker中，运行`systemd`服务还有些已知的问题），这时，可以通过在[启动第一个Ignite集群](#_1-3-2-启动第一个ignite集群)中描述的方法进行启动，具体是：
  1. Ignite的主目录为`/usr/share/apache-ignite`，这里会找到`bin/ignite.sh`；
  2. 启动Ignite之前要以*root*用户登录，可以使用`sudo su -`或者在*ignite*用户中使用`sudo -u ignite /usr/bin/env bash`，这是因为权限限制所致。
 
@@ -969,7 +970,7 @@ public class MyLifecycleBean implements LifecycleBean {
     }
 }
 ```
-也可以将Ignite实例以及其他有用的资源注入`LifecycleBean`实现，查看`1.8.资源注入`章节可以了解更多的信息。
+也可以将Ignite实例以及其他有用的资源注入`LifecycleBean`实现，查看[资源注入](#_1-8-资源注入)章节可以了解更多的信息。
 
 ### 1.5.4.生命周期事件类型
 当前支持如下生命周期事件类型：
@@ -1016,7 +1017,7 @@ fut.listen(f -> System.out.println("Job result: " + f.get()));
 >**闭包执行和线程池**
 异步操作完成后，如果通过`IgniteFuture.listen()`或者`IgniteFuture.chain()`方法传递了闭包，那么闭包就会被调用线程以同步的方式执行，否则，闭包就会随着操作的完成异步地执行。
 根据操作的类型，闭包可能被系统线程池中的线程调用（异步缓存操作），或者被公共线程池中的线程调用（异步计算操作）。因此需要避免在闭包实现中调用同步的缓存和计算操作，否则可能导致死锁。
-要实现Ignite计算操作异步嵌套执行，可以使用自定义线程池，相关内容可以查看`1.9.线程池`中的相关内容。
+要实现Ignite计算操作异步嵌套执行，可以使用自定义线程池，相关内容可以查看[线程池](#_1-9-线程池)中的相关内容。
 
 ## 1.7.客户端和服务端
 ### 1.7.1.摘要

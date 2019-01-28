@@ -681,7 +681,7 @@ http://host:port/ignite?cmd=get&cacheName=SQL_PUBLIC_PERSON&keyType=int&key=1
 |cmd|string|否|**get**，小写||
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
 |key|string|否|要返回的值对应的键|testKey|
-|keyType|Java内置类型|是|具体可以看上面的`12.2.2.数据类型`章节。||
+|keyType|Java内置类型|是|具体可以看上面的[数据类型](#_12-2-2-数据类型)章节。||
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
 **返回值示例**

@@ -152,15 +152,23 @@ for (int i = 0; i < 20; i++)
 ```
 在上述示例中，`EVT_CACHE_OBJECT_PUT`,`EVT_CACHE_OBJECT_READ`,`EVT_CACHE_OBJECT_REMOVED`是在`EventType`接口中预定义的事件类型常量。
 
-> `EventType`接口定义了监听方法可用的各种事件类型常量，可以在相关的javadoc中看到这些事件类型的完整列表。
+::: tip 注意
+`EventType`接口定义了监听方法可用的各种事件类型常量，可以在相关的javadoc中看到这些事件类型的完整列表。
+:::
 
-> 作为参数传入`localListen(...)`和`remoteListen(...)`方法的事件类型还必须在`IgniteConfiguration`中进行配置，可以参照下面的`11.2.5.配置`章节。
+::: warning 注意
+作为参数传入`localListen(...)`和`remoteListen(...)`方法的事件类型还必须在`IgniteConfiguration`中进行配置，可以参照下面的[配置](#_9-2-5-配置)章节。
+:::
 
 ### 9.2.4.事件的查询
 系统生成的所有事件都会保持在本地节点的本地，`IgniteEvents`API提供了查询这些事件的方法。
+
 **本地事件**
+
 `localQuery(...)`方法通过传入的谓词过滤器在本地节点上进行事件的查询。如果满足了所有的条件，就会返回一个本地节点发生的所有事件的集合。
+
 **远程事件**
+
 `remoteQuery(...)`方法通过传入的谓词过滤器在远程节点上进行事件的异步查询。这个操作是分布式的，因此可能在通信层发生故障而且通常也会比本地事件通知花费更多的时间，注意这个方法是非阻塞的，然后附带future立即返回。
 ### 9.2.5.配置
 要获得集群内发生的任意任务或者缓存事件的通知，`IgniteConfiguration`的`includeEventTypes`属性必须启用：

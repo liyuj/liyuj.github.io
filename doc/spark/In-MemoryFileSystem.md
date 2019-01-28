@@ -80,7 +80,7 @@ Ignite Hadoop加速器在Ignite集群内部执行文件系统操作，必须满�
 
  1. `IGNITE_HOME`环境变量必须设置以及指向Ignite的安装根目录；
  2. 每个节点都必须在类路径上包含Hadoop的jar文件。可以参照各个Hadoop发行版的Ignite安装向导来了解详细信息；
- 3. `IGFS`必须在集群节点上进行了配置。可以参照`13.2.IGFS原生Ignite API`章节来了解如何进行配置；
+ 3. `IGFS`必须在集群节点上进行了配置。可以参照[IGFS原生Ignite API](#_2-2-igfs原生ignite-api)章节来了解如何进行配置；
  4. 要让`IGFS`接收来自Hadoop的请求，需要配置一个端点（默认的配置文件是`${IGNITE_HOME}/config/default-config.xml`）。Ignite提供两种类型的端点：
 
  - `shmem`：工作于共享内存（Windows不可用）

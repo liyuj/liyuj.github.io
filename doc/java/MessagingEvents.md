@@ -174,7 +174,7 @@ for (int i = 0; i < 20; i++)
 :::
 
 ::: warning 警告
-作为参数传入`localListen(...)`和`remoteListen(...)`方法的事件类型还必须在`IgniteConfiguration`中进行配置，可以参照下面的`11.2.5.配置`章节。
+作为参数传入`localListen(...)`和`remoteListen(...)`方法的事件类型还必须在`IgniteConfiguration`中进行配置，可以参照下面的[配置](#_9-2-5-配置)章节。
 :::
 
 ### 9.2.4.事件的查询

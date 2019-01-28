@@ -145,7 +145,7 @@ karaf@root()>
  - ignite-osgi
  - javax cache API
 
-当在Karaf中部署时，可以通过使用Ignite特性库来快速地安装`ignite-core`特性，可以参照`17.1.在Apache Karaf中安装`章节来了解更多的信息。
+当在Karaf中部署时，可以通过使用Ignite特性库来快速地安装`ignite-core`特性，可以参照[在Apache Karaf中安装](#_4-1-在apache-karaf中安装)章节来了解更多的信息。
 
 可以随意地安装额外的Ignite模块来扩展平台的功能，就像在一个标准环境中将模块加入类路径一样。
 ### 4.3.2.实现Ignite组件Activator

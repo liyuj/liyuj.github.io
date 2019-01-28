@@ -25,9 +25,10 @@ Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内
 ### 4.2.1.IgniteContext
 IgniteContext是Spark和Ignite集成的主要入口点。要创建一个Ignite上下文的实例，必须提供一个SparkContext的实例以及创建`IgniteConfiguration`的闭包（配置工厂）。Ignite上下文会确保Ignite服务端或者客户端节点存在于所有参与的作业实例中。或者，一个XML配置文件的路径也可以传入`IgniteContext`构造器，它会用于配置启动的节点。
 
-当创建一个`IgniteContext`实例时，一个可选的boolean`client`参数（默认为`true`）可以传入上下文构造器，这个通常用于一个共享部署安装，当`client`设为`false`时，上下文会操作于嵌入式模式然后在上下文创建期间在所有的工作节点上启动服务端节点。可以参照`15.3.安装与配置`章节了解有关部署配置的信息。
->**嵌入式模式已被弃用**
+当创建一个`IgniteContext`实例时，一个可选的boolean`client`参数（默认为`true`）可以传入上下文构造器，这个通常用于一个共享部署安装，当`client`设为`false`时，上下文会操作于嵌入式模式然后在上下文创建期间在所有的工作节点上启动服务端节点。可以参照[安装与部署](#_4-4-安装和部署)章节了解有关部署配置的信息。
+::: danger 嵌入式模式已被弃用
 嵌入式模式意味着需要在Spark执行器中启动Ignite服务端节点，这可能导致意外的再平衡甚至数据丢失，因此该模式目前已被弃用并且最终会被废弃。可以考虑启动一个单独的Ignite集群然后使用独立模式来避免数据的一致性和性能问题。
+:::
 
 一旦创建了`IgniteContext`，`IgniteRDD`的实例可以通过`fromCache`方法获得，当RDD创建之后请求的缓存在Ignite集群中是否存在不是必要的，如果指定名字的缓存不存在，会用提供的配置或者模板配置创建它。
 
@@ -368,7 +369,7 @@ GitHub上有一些用于演示如何在Ignite中使用Spark DataFrame的示例�
 
 **独立部署**
 
-在独立部署模式，Ignite节点应该与Spark工作节点部署在一起。Ignite安装的介绍可以参照`1.2.入门`章节，在所有的工作节点上安装Ignite之后，通过`ignite.sh`脚本在每个配置好的Spark workder上启动一个节点。
+在独立部署模式，Ignite节点应该与Spark工作节点部署在一起。Ignite安装的介绍可以参照[入门](/doc/2.6.0/java/#_1-3-入门)章节，在所有的工作节点上安装Ignite之后，通过`ignite.sh`脚本在每个配置好的Spark workder上启动一个节点。
 
 *默认将Ignite库文件加入Spark类路径*
 
@@ -580,4 +581,4 @@ res0: Long = 50000
  - **在IgniteRDD上调用任何活动时Spark应用或者Spark shell没有响应**
 如果在客户端模式（默认模式）下创建`IgniteContext`然后又没有任何Ignite服务端节点启动时，就会发生这种情况，这时Ignite客户端会一直等待服务端节点启动或者超过集群连接超时时间后失败。当在客户端节点使用`IgniteContext`时应该启动至少一个服务端节点。
  - **当使用IgniteContext时，抛出了` java.lang.ClassNotFoundException`和`org.apache.ignite.logger.java.JavaLoggerFileHandler`**
-在类路径中没有任何日志实现然后Ignite会试图使用标准的Java日志时，这个问题就会发生。默认的话，Spark会使用单独的类加载器加载用户的所有jar文件，而Java日志框架是使用应用级类加载器来初始化日志处理器。要解决这个问题，可以将`ignite-log4j`模块加入使用的jar列表以使Ignite使用log4J作为日志记录器，或者就像`15.3.安装和部署`章节中描述的那样修改Spark的默认类路径。
+在类路径中没有任何日志实现然后Ignite会试图使用标准的Java日志时，这个问题就会发生。默认的话，Spark会使用单独的类加载器加载用户的所有jar文件，而Java日志框架是使用应用级类加载器来初始化日志处理器。要解决这个问题，可以将`ignite-log4j`模块加入使用的jar列表以使Ignite使用log4J作为日志记录器，或者就像[安装与部署](#_4-4-安装和部署)章节中描述的那样修改Spark的默认类路径。

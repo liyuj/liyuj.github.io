@@ -3517,7 +3517,7 @@ Object cachedName = client.query(
 assertEquals(val.getName(), cachedName);
 ```
 ### 19.3.5.二进制类型
-瘦客户端完全支持[二进制编组器](/doc/java/README.md#_1-10-二进制编组器)章节中描述的二进制对象API。
+瘦客户端完全支持[二进制编组器](/doc/java/#_1-10-二进制编组器)章节中描述的二进制对象API。
 
 使用`CacheClient#withKeepBinary()`将缓存切换到二进制模式，然后直接处理Ignite的二进制对象，可以避免序列化/反序列化。
 
