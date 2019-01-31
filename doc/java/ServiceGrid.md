@@ -5,9 +5,9 @@
 
 比如，服务网格可以作为基于微服务架构的解决方案或者应用的技术基础，了解更多的信息可以参考下面的文章：
 
- - [在Ignite之上运行微服务：第一部分](https://www.zybuluo.com/liyuj/note/580738)
- - [在Ignite之上运行微服务：第二部分](https://www.zybuluo.com/liyuj/note/639612)
- - [在Ignite之上运行微服务：第三部分](https://www.zybuluo.com/liyuj/note/742474)
+ - [在Ignite之上运行微服务：第一部分](https://my.oschina.net/liyuj/blog/806752)
+ - [在Ignite之上运行微服务：第二部分](https://my.oschina.net/liyuj/blog/829457)
+ - [在Ignite之上运行微服务：第三部分](https://my.oschina.net/liyuj/blog/892755)
 
 Ignite可以控制每个集群节点应该部署多少个服务的实例，可以自动地确保所有的服务正确地部署和容错。
 

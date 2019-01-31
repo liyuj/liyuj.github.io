@@ -45,6 +45,10 @@ module.exports = {
                         link: '/doc/java/'
                     },
                     {
+                        text: 'C++',
+                        link: '/doc/cpp/'
+                    },
+                    {
                         text: 'SQL',
                         link: '/doc/sql/'
                     },
@@ -96,6 +100,9 @@ module.exports = {
                         'ThinClients',
                         'KubernetesDeployment',
                         'DeepLearning'
+                    ],
+                    '/doc/cpp/':[
+                        ''
                     ],
                     '/doc/sql/': [
                         '',
