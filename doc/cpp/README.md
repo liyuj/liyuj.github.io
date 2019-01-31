@@ -630,3 +630,58 @@ namespace ignite
 ::: warning 注意
 当属性`lowerCase`被设置为`true`时，C++函数`GetBinaryStringHashCode()`总是计算为`BinaryBasicIdMapper`的哈希。因此，如果要使用这个函数计算C++中的类型ID，那么一定要正确地配置`BinaryBasicIdMapper`。
 :::
+## 1.6.对象生命周期
+### 1.6.1.Ignite对象
+使用Ignite公共API创建的Ignite对象（如`Ignite`或者`Cache`），是作为内部/底层对象的精简处理器实现的，可以安全快速地复制或按值传递给函数。它也是将Ignite对象从一个函数传递到另一个函数的推荐方法，因为只要存在至少一个处理器对象，底层对象就会存在。
+```cpp
+// Fast and safe passing of the ignite::Ignite instance to the function.
+// Here 'val' points to the same underlying node instance even though
+// Ignite object gets copied on call.
+// It's guarateed that the underlying object will live as long as 'val'
+// object is alive.
+void Foo(ignite::Ignite val)
+{
+  ...
+}
+```
+### 1.6.2.用户对象
+有时，应用可能需要在Ignite中使用自定义对象，而自定义对象的生命周期在编译时无法轻松确定。例如，在创建`ContinuousQuery`实例时，需要为持续查询提供本地监听器的实例，即`CacheEntryEventListener`。这时，不清楚应该是由Ignite还是应用来负责管理本地监听器的生命周期，并在不再需要时将其释放。
+
+Ignite C++在这一点上非常灵活。它使用`ignite::Reference`类来解决自定义对象的所有权问题。请参考下面的代码，了解如何在实践中使用此类：
+```cpp
+// Ignite function that takes a value of 'SomeType'.
+void Foo(ignite::Reference<SomeType> val);
+
+//...
+  
+// Defining an object.
+SomeType obj1;
+
+// Passing a simple reference to the function.
+// Ignite will not get ownership over the instance.
+// The application is responsible for keeping instance alive while
+// it's used by Ignite and for releasing it once it is no longer needed.
+Foo(ignite::MakeReference(obj1);
+
+// Passing the object by copy.
+// Ignite gets a copy of the object instance and manages
+// its lifetime by itself.
+// 'SomeType' is required to have a copy constructor.
+foo(ignite::MakeReferenceFromCopy(obj1);
+
+// Defining another object.
+SomeType* obj2 = new SomeType;
+
+// Passing object's ownership to the function.
+// Ignite will release the object once it's no longer needed.
+// The applicaiton must not use the pointer once it have been passed
+// to Ignite as it might be released at any point of time.
+foo(ignite::MakeReferenceFromOwningPointer(obj2);
+
+std::shared_ptr<SomeType> obj3 = std::make_shared<SomeType>();
+
+// Passing the object by smart pointer.
+// In this case, Reference class behaves just like an underlying
+// smart pointer type.
+foo(ignite::MakeReferenceFromSmartPointer(obj3);
+```
