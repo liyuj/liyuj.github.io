@@ -3589,7 +3589,7 @@ catch (ClientAuthenticationException e) {
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 #### 19.4.1.2.入门
-**先决条件**
+**要求**
 
  - [Node.js](https://nodejs.org/en/)的版本要求是8.0及以上，可以下载Node.js针对特定平台预编译好的[二进制安装包](https://nodejs.org/en/download/)，也可以使用[包管理器](https://nodejs.org/en/download/package-manager)安装Node.js；
  - [最新版本](https://ignite.apache.org/download.cgi)的Ignite。
@@ -4348,7 +4348,7 @@ Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进�
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 #### 19.5.1.2.入门
-**先决条件**
+**要求**
 
  - Python的3.4及以后的版本
  - [最新版本](https://ignite.apache.org/download.cgi)的Ignite。
@@ -5350,7 +5350,7 @@ client = Client(username='ignite', password='ignite', use_ssl=False)
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 #### 19.6.1.2.入门
-**先决条件**
+**要求**
 
  - [PHP](http://php.net/manual/en/install.php)的7.2及其以后的版本和[Composer依赖管理器](https://getcomposer.org/download/)；
  - [PHP多字节字符串扩展](http://php.net/manual/en/mbstring.installation.php)，根据PHP的配置，可能需要额外地安装/配置这个扩展；

@@ -18,7 +18,7 @@ Ignite集群可以容易地在[Kubernetes](https://kubernetes.io/)环境中部�
 ## 20.2.常规配置
 ### 20.2.1.无状态部署
 如果使用纯内存方式或者作为第三方数据库（RDBMS, NoSQL）的缓存层，那么需要将其按照无状态的解决方案进行部署。
-#### 20.2.1.1.先决条件
+#### 20.2.1.1.要求
 确保如下事项已经完成：
 
  - 环境中已经部署了Kubernetes集群；
@@ -178,7 +178,7 @@ spec:
 ```
 ### 20.2.2.有状态部署
 如果Ignite部署为内存数据库，并且打开了原生持久化，那么就需要按照有状态的解决方案进行部署。
-#### 20.2.2.1.先决条件
+#### 20.2.2.1.要求
 确保如下事项已经完成
 
  - 环境中已经部署了Kubernetes集群；
@@ -533,7 +533,7 @@ cd /opt/ignite/apache-ignite-fabric/bin/
 RBAC使用`rbac.authorization.k8s.io`API组来驱动授权决策，允许管理员通过Kubernetes API动态地配置策略。
 
 建议为Ignite部署配置RBAC，以对部署进行细粒度的控制，避免与安全有关的问题。
-#### 20.2.3.2.先决条件
+#### 20.2.3.2.要求
 假定已经部署好了一套Kubernetes集群环境。
 #### 20.2.3.3.创建命名空间
 需要为Ignite部署创建一个唯一的命名空间，在本案例中命名空间名字为`ignite`：
@@ -1170,7 +1170,7 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
 
 在本文档中，将使用AWS EKS控制台和AWS CLI进行EKS部署。还将使用`EU (Ireland) (eu-west-1)`区域。密钥对也是必需的，最好将其准备好以后使用。可以使用AWS EC2创建此密钥对。
 
-**先决条件**
+**要求**
 
 创建完AWS账户之后，按照[Amazon EKS入门](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)的说明进行操作：
 

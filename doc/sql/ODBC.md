@@ -86,7 +86,7 @@ cfg.setClientConnectorConfiguration(clientConnectorCfg);
 通过`ClientListenerProcessor`从ODBC驱动端建立的到集群的连接也是可以配置的，关于如何从驱动端修改连接的配置，可以看[这里](#_5-2-连接串和dsn)。
 ### 5.1.3.线程安全
 Ignite ODBC驱动的当前实现仅仅在连接层提供了线程的安全，这意味着如果没有额外的同步化，无法从多个线程访问同一个连接。不过可以为每个线程创建独立的连接，然后同时使用。
-### 5.1.4.先决条件
+### 5.1.4.要求
 Ignite的ODBC驱动官方在如下环境中进行了测试：
 
 |OS|Windows（XP及以上，32位和64位版本）<br>Windows Server（2008及以上，32位和64位版本）<br>Ubuntu（14.x和15.x，64位）|

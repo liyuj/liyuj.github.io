@@ -141,7 +141,7 @@ set JVM_OPTS= -DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -D
 ./ignite-web-agent.bat
 ```
 ## 1.3.构建和部署
-### 1.3.1.先决条件
+### 1.3.1.要求
 为了在本地部署Ignite的Web控制台，需要先安装：
 
  - MongoDB（3.2.0以上版本），具体可以参照[文档](http://docs.mongodb.org/manual/installation)；

@@ -1,7 +1,7 @@
 # 1.入门
 ## 1.1.入门
 ![](https://files.readme.io/5c0c967-gridgain_platform.png)
-### 1.1.1.先决条件
+### 1.1.1.要求
 GridGain官方在如下环境中进行了测试：
 
  - JDK：Oracle JDK8，Open JDK8，IBM JDK8；

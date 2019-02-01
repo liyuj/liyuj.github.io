@@ -66,7 +66,7 @@ Ignite是一个弹性的、可水平扩展的分布式系统，它支持按需�
 
 **不完整**，ACID事务是支持的，但是仅仅在键-值API级别，Ignite还支持*跨分区的事务*，这意味着事务可以跨越不同服务器不同分区中的键。
 
-在SQL层，Ignite支持*原子性*，还不是*事务型一致性*，社区计划在2.4版本中实现SQL事务。
+Ignite在2.7版本中，通过MVCC技术，实现了包括SQL事务在内的全事务支持，不过目前还处于测试阶段。
 
 **Ignite是不是一个多模式数据库？**
 
@@ -85,7 +85,7 @@ Ignite的*固化内存*架构使得Ignite可以将内存计算延伸至磁盘，
 Ignite是一个分布式系统，因此，有能力将数据和数据以及数据和计算进行并置就变得非常重要，这会避免分布式数据噪声。当执行分布式SQL关联时数据的并置就变得非常的重要。Ignite还支持将用户的逻辑（函数，lambda等）直接发到数据所在的节点然后在本地进行数据的运算。
 
 ## 1.3.入门
-### 1.3.1.先决条件
+### 1.3.1.要求
 Apache Ignite官方在如下环境中进行了测试：
 
  - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上；
@@ -684,4 +684,262 @@ std::shared_ptr<SomeType> obj3 = std::make_shared<SomeType>();
 // In this case, Reference class behaves just like an underlying
 // smart pointer type.
 foo(ignite::MakeReferenceFromSmartPointer(obj3);
+```
+## 1.7.瘦客户端
+瘦客户端是一种轻量级的Ignite连接模式。它不是在JVM进程中启动（根本不需要Java），不参与集群，从不保存任何数据（元数据除外）或执行计算。
+
+它的作用是建立与一个或多个Ignite节点的套接字连接，并通过这些节点执行所有操作。
+
+瘦客户端模式非常适合生命周期短和资源受限的应用，内存和CPU使用率极低。
+### 1.7.1.安装
+瘦客户端API与Ignite C++一起分发，并与完整的Ignite C++ API共享许多类，头和库，因此可以轻松地从一个API切换到另一个API。基本安装和构建过程与[这里的描述](/doc/cpp/#_1-3-入门)是相同的。
+### 1.7.2.要求
+所有要求都与[普通客户端](/doc/cpp/#_1-3-1-要求)相同，但Java部分除外：不需要Java。
+### 1.7.3.配置服务端节点
+在Ignite服务端节点默认是启用瘦客户端连接器的。在Java或Spring XML中设置`IgniteConfiguration.clientConnectorConfiguration`为`null`可以禁用。
+
+连接器配置可以像下面这样进行调整：
+```xml
+<bean  class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="clientConnectorConfiguration">
+        <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
+            <property name="host" value="myHost"/>
+            <property name="port" value="11110"/>
+            <property name="portRange" value="30"/>
+        </bean>
+    </property>
+</bean>
+```
+### 1.7.4.接入集群
+瘦客户端的API位于`ignite::thin`C++命名空间下。瘦客户端API的入口点是`IgniteClient::Start(IgniteClientConfiguration)`方法。可以使用`IgniteClientConfiguration`类来对客户端进行配置，例如要连接的服务端节点列表，安全凭据和连接的SSL/TLS配置。
+
+::: tip 注意
+如果要使用认证或者安全连接，要确保服务端节点配置正确。
+:::
+以下是如何启动一个新的瘦客户端实例的示例：
+```cpp
+#include <ignite/thin/ignite_client.h>
+#include <ignite/thin/ignite_client_configuration.h>
+#include <ignite/thin/cache/ignite_client.h>
+
+using namespace ignite::thin;
+
+void TestClient()
+{
+  IgniteClientConfiguration cfg;
+  
+  //Endpoints list format is "<host>[port[..range]][,...]"
+  cfg.SetEndPoints("127.0.0.1:11110,example.com:1234..1240");
+  
+  IgniteClient client = IgniteClient::Start(cfg);
+  
+  cache::CacheClient<int32_t, std::string> cacheClient =
+    client.GetOrCreateCache<int32_t, std::string>("TestCache");
+  
+  cacheClient.Put(42, "Hello Ignite Thin Client!");
+}
+```
+### 1.7.5.认证
+如果服务端开启了[身份认证](/doc/java/Security.md#_4-2-1-认证)，那么必须提供用户的凭据：
+
+C++：
+```cpp
+#include <ignite/thin/ignite_client.h>
+#include <ignite/thin/ignite_client_configuration.h>
+#include <ignite/thin/cache/ignite_client.h>
+
+using namespace ignite::thin;
+
+void TestClientWithAuth()
+{
+  IgniteClientConfiguration cfg;
+  cfg.SetEndPoints("127.0.0.1:10800");
+  
+  // Use your own credentials here.
+  cfg.SetUser("ignite");
+  cfg.SetPassword("ignite");
+  
+  IgniteClient client = IgniteClient::Start(cfg);
+  
+  cache::CacheClient<int32_t, std::string> cacheClient =
+    client.GetOrCreateCache<int32_t, std::string>("TestCache");
+  
+  cacheClient.Put(42, "Hello Ignite Thin Client with auth!");
+}
+```
+服务端的Spring配置示例：
+```xml
+<bean  class="org.apache.ignite.configuration.IgniteConfiguration">
+
+    <property name="authenticationEnabled" value="true"/>
+
+    <property name="persistentStoreConfiguration">
+        <bean class="org.apache.ignite.configuration.PersistentStoreConfiguration"/>
+    </property>
+  
+    <property name="clientConnectorConfiguration">
+        <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
+            <property name="host" value="127.0.0.1"/>
+            <property name="port" value="10800"/>
+            <property name="portRange" value="10"/>
+        </bean>
+    </property>
+  
+</bean>
+```
+### 1.7.6.性能考量
+瘦客户端不是集群的一部分。因此关于集群及其数据分布的信息有限，再加上额外的网络延迟，瘦客户端上单个操作的延迟可能比普通客户端的延迟更差。虽然可以采取一些措施来改善瘦客户端延迟，例如最优映射，不过还是建议在单一键值操作方面使用批量操作（例如`GetAll()`，`SetAll()`），以在吞吐量方面获得最佳性能。
+
+**最优映射**
+
+Ignite C++瘦客户端尝试将数据请求发送到集群中的合适节点，以避免额外的网络延迟并提供最佳吞吐量和延迟。因此，C++瘦客户端在第一次创建`CacheClient`实例时就从端点列表中随机选取一个节点获取每个缓存的数据关联映射。
+
+由于瘦客户端不是集群的一部分，因此无法保证此映射始终是最新的。要刷新映射，可以使用`CacheClient::RefreshAffinityMapping`方法。请注意如果集群发生变更，则需要调用此方法。
+
+::: warning 注意
+确保在配置中列出所有集群节点的地址，如果集群节点地址不在列表中，则客户端将**不会**连接或向其发送请求。
+:::
+下面是一个示例：
+```cpp
+#include <ignite/thin/ignite_client.h>
+#include <ignite/thin/ignite_client_configuration.h>
+#include <ignite/thin/cache/ignite_client.h>
+
+using namespace ignite::thin;
+
+void TestClientWithAuth()
+{
+  IgniteClientConfiguration cfg;
+  cfg.SetEndPoints("127.0.0.1:10800");
+    
+  IgniteClient client = IgniteClient::Start(cfg);
+  
+  cache::CacheClient<int32_t, std::string> cacheClient =
+    client.GetOrCreateCache<int32_t, std::string>("TestCache");
+  
+  cacheClient.Put(42, "Hello Ignite Thin Client with auth!");
+  
+  cache.RefreshAffinityMapping();
+  
+  // Getting
+  std::string val = cacheClient.Gett(42);
+}
+```
+### 1.7.7.瘦客户端API
+瘦客户端提供了完整Ignite C++ API的子集。它还在开发中，社区计划在未来支持普通客户端中的大多数API。
+## 1.8.性能提示
+Ignite C++内存数据网格性能和吞吐量在很大程度上取决于使用的功能和设置。在大多数场景中，只需调整缓存配置即可优化缓存性能。
+### 1.8.1.禁用内部事件通知
+Ignite有丰富的事件系统来向用户通知各种各样的事件，包括缓存的修改、退出、压缩、拓扑的变化以及很多其它的。因为每秒钟可能产生上千的事件，它会对系统产生额外的负载，这会导致显著地性能下降。因此，强烈建议只有应用逻辑必要时才启用这些事件。事件通知默认是禁用的：
+
+XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ... 
+    <!-- Enable only some events and leave other ones disabled. -->
+    <property name="includeEventTypes">
+        <list>
+            <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_STARTED"/>
+            <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FINISHED"/>
+            <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FAILED"/>
+        </list>
+    </property>
+    ...
+</bean>
+```
+### 1.8.2.关闭备份
+如果使用了`分区`缓存，而且数据丢失并不是关键（比如，当有一个备份缓存存储时），可以考虑禁用`分区`缓存的备份。当备份启用时，缓存引擎会为每个条目维护一个远程拷贝，这需要网络交换和而且是耗时的。要禁用备份，可以使用如下的配置：
+
+XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
+            ...
+            <!-- Set cache mode. -->
+            <property name="cacheMode" value="PARTITIONED"/>
+            <!-- Set number of backups to 0-->
+            <property name="backups" value="0"/>
+            ...
+        </bean>
+    </property>
+</bean>
+```
+
+::: warning 可能的数据丢失
+如果没有启用`分区`缓存的备份，会丢失缓存在故障节点的所有数据，这对于缓存临时数据或者数据可以通过某种方式重建可能是可以接受的。禁用备份之前一定要确保对于应用来说丢失数据不是关键的。
+:::
+### 1.8.3.调整退出策略
+默认是禁用退出的。如果确实需要使用退出来确保缓存中的数据不会超出允许的内存限制，可以考虑选择适当的退出策略。设置最大值为100000条目的LRU退出策略的示例如下所示：
+```xml
+<bean class="org.apache.ignite.cache.CacheConfiguration">
+    ...
+    <property name="evictionPolicy">
+        <!-- LRU eviction policy. -->
+        <bean class="org.apache.ignite.cache.eviction.lru.LruEvictionPolicy">
+            <!-- Set the maximum cache size to 1 million (default is 100,000). -->
+            <property name="maxSize" value="1000000"/>
+        </bean>
+    </property>
+    ...
+</bean>
+```
+无论使用哪种退出策略，缓存性能都取决于退出策略配置的缓存中的最大条目数量，即如果缓存大小超过此限制，则退出就会开始。
+### 1.8.4.调整数据再平衡
+当新节点加入集群时，现有节点会将作为部分键的主节点或备份节点的所有权转移给新的节点，以便在网格中始终保持数据的均衡。这需要额外的资源并影响缓存的性能。要解决此问题，需要考虑调整以下参数：
+
+ - 配置合适的再平衡批量大小。默认值为512KB，这意味着再平衡消息大约为512KB。不过可能需要根据网络性能将此值设置为更高或更低；
+ - 配置再平衡限流以给CPU减负：如果数据集很大并且要发送大量消息，则CPU或网络可能会过度消耗，这可能会降低应用的性能。这时就要对数据再平衡进行限流，这有助于调整再平衡消息之间等待的时间，以确保再平衡过程不会对性能产生负面影响。注意，在再平衡过程中应用将继续正常运行；
+ - 配置再平衡线程池大小：与前一点相反，有时可能需要通过增加更多CPU核心来更快地进行再平衡。这可以通过增加再平衡线程池中的线程数来完成（默认线程池中只有2个线程）。
+
+以下是在缓存配置中设置所有上述参数的示例：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">             
+            <!-- Set rebalance batch size to 1 MB. -->
+            <property name="rebalanceBatchSize" value="#{1024 * 1024}"/>
+ 
+            <!-- Explicitly disable rebalance throttling. -->
+            <property name="rebalanceThrottle" value="0"/>
+ 
+            <!-- Set 4 threads for rebalancing. -->
+            <property name="rebalanceThreadPoolSize" value="4"/>
+            ...
+        </bean>
+    </property>
+</bean>
+```
+### 1.8.5.配置线程池
+Ignite默认将其主线程池大小设置为可用CPU核数的2倍。在大多数情况下，每个核心持有2个线程将使应用的性能更快，因为上下文切换将更少，CPU缓存也会更好地工作。但是，如果不希望作业阻塞I/O或任何其它原因，增加线程池大小可能也是有意义的，以下是配置线程池的示例：
+
+XML:
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ... 
+    <!-- Configure internal thread pool. -->
+    <property name="publicThreadPoolSize" value="64"/>
+    
+    <!-- Configure system thread pool. -->
+    <property name="systemThreadPoolSize" value="32"/>
+    ...
+</bean>
+```
+### 1.8.6.批量处理消息
+尽量使用键或值集合的API方法，而不是逐个传递。这将减少通过网络传递的消息量，并可能显著提高性能。
+### 1.8.7.调整垃圾收集
+如果由于垃圾收集（GC）而导致吞吐量出现峰值，则应调整JVM参数。实践证明，以下JVM设置可提供相当平滑的吞吐量，而不会出现大的峰值：
+
+```
+-XX:+UseParNewGC
+-XX:+UseConcMarkSweepGC
+-XX:+UseTLAB
+-XX:NewSize=128m
+-XX:MaxNewSize=128m
+-XX:MaxTenuringThreshold=0
+-XX:SurvivorRatio=1024
+-XX:+UseCMSInitiatingOccupancyOnly
+-XX:CMSInitiatingOccupancyFraction=60
 ```
