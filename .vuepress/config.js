@@ -102,7 +102,8 @@ module.exports = {
                         'DeepLearning'
                     ],
                     '/doc/cpp/':[
-                        ''
+                        '',
+                        'Clustering'
                     ],
                     '/doc/sql/': [
                         '',

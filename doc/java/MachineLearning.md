@@ -44,9 +44,9 @@ Ignite的机器学习能够对节点的故障容错。这意味着如果在学�
 
 **预处理**
 
-特征提取和规范化。
+特征提取和归一化。
 
-*适用领域*：对比如文本这样的输入数据进行转换，以便用于机器学习算法，然后提取需要拟合的特征，对数据进行规范化。
+*适用领域*：对比如文本这样的输入数据进行转换，以便用于机器学习算法，然后提取需要拟合的特征，对数据进行归一化。
 
 *算法*：Ignite的机器学习支持使用分区化的数据集自定义预处理，同时也有默认的预处理器。
 
@@ -102,8 +102,8 @@ mvn clean package -DskipTests
  - 修改特性
 
 注意：通常它从标签和特征提取开始，并且可以与其他预处理阶段兼容。
-### 15.2.2.规范化预处理器
-通常的流程是从Ignite数据中提取特征，转换特征，然后对其进行规范化。训练器API允许以以下方式组成转换器：
+### 15.2.2.归一化预处理器
+通常的流程是从Ignite数据中提取特征，转换特征，然后对其进行归一化。训练器API允许以以下方式组成转换器：
 ```java
 // Define feature extractor.
 IgniteBiFunction<Integer, double[], double[]> extractor = (k, v) -> v;
@@ -116,11 +116,11 @@ IgniteBiFunction<Integer, double[], double[]> extractorTransformer =
 IgniteBiFunction<Integer, double[], double[]> extractorTransformerNormalizer = 
     normalizationTrainer.fit(ignite, upstreamCache, transformer);
 ```
-除了可以自定义预处理器之外，Ignite还提供了一个内置的规范化预处理器，它会根据如下的函数对间隔的[0,1]进行规范化。
+除了可以自定义预处理器之外，Ignite还提供了一个内置的归一化预处理器，它会根据如下的函数对间隔的[0,1]进行归一化。
 
 ![](https://files.readme.io/ae0ef26-CodeCogsEqn_2.gif)
 
-为了规范化，需要创建一个`NormalizationTrainer`，然后将其与规范化预处理器进行匹配：
+为了归一化，需要创建一个`NormalizationTrainer`，然后将其与归一化预处理器进行匹配：
 ```java
 // Create normalization trainer.
 NormalizationTrainer<Integer, double[]> normalizationTrainer = 
@@ -149,7 +149,7 @@ LinearRegressionModel mdl = trainer.fit(
 double prediction = mdl.apply(preprocessor.apply(coordinates));
 ```
 ### 15.2.3.示例
-要了解规范化预处理器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/NormalizationExample.java)，该示例也会随着每个Ignite发行版进行发布。
+要了解归一化预处理器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/NormalizationExample.java)，该示例也会随着每个Ignite发行版进行发布。
 ### 15.2.4.二值化预处理器
 二值化是将数值特征阈值化为二元（0/1）特征的过程。大于阈值的特征值被二值化为1.0，等于或小于阈值的值被二值化为0.0。
 
