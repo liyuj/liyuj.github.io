@@ -103,7 +103,8 @@ module.exports = {
                     ],
                     '/doc/cpp/':[
                         '',
-                        'Clustering'
+                        'Clustering',
+                        'Key-ValueDataGrid'
                     ],
                     '/doc/sql/': [
                         '',

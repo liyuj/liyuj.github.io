@@ -645,7 +645,7 @@ void Foo(ignite::Ignite val)
 }
 ```
 ### 1.6.2.用户对象
-有时，应用可能需要在Ignite中使用自定义对象，而自定义对象的生命周期在编译时无法轻松确定。例如，在创建`ContinuousQuery`实例时，需要为持续查询提供本地监听器的实例，即`CacheEntryEventListener`。这时，不清楚应该是由Ignite还是应用来负责管理本地监听器的生命周期，并在不再需要时将其释放。
+有时，应用可能需要在Ignite中使用自定义对象，而自定义对象的生命周期在编译时无法轻松确定。例如，在创建`ContinuousQuery`实例时，需要为连续查询提供本地监听器的实例，即`CacheEntryEventListener`。这时，不清楚应该是由Ignite还是应用来负责管理本地监听器的生命周期，并在不再需要时将其释放。
 
 Ignite C++在这一点上非常灵活。它使用`ignite::Reference`类来解决自定义对象的所有权问题。请参考下面的代码，了解如何在实践中使用此类：
 ```cpp
