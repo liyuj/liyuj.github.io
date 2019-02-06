@@ -154,7 +154,7 @@ strm.close();
 要了解有关Kafka消费者属性的详细信息，可以参照[Kafka文档](http://kafka.apache.org/documentation.html)。
 ## 7.3.Camel流处理器
 ### 7.3.1.摘要
-本章节聚焦于[Apache Camel](http://camel.apache.org/)流处理器，它也可以被视为一个*统一的流处理器*，因为他可以从Camel支持的任何技术或者协议中消费消息然后注入一个Ignite缓存。
+本章节聚焦于[Apache Camel](http://camel.apache.org/)流处理器，它也可以被视为一个*统一的流处理器*，因为它可以从Camel支持的任何技术或者协议中消费消息然后注入一个Ignite缓存。
 
 > **Apache Camel是什么？**
 如果不知道[Apache Camel](http://camel.apache.org/)是什么，本章节的后面会做一个简介。
@@ -167,7 +167,7 @@ strm.close();
  - 通过POP3或者IMAP发送接收到的消息；
  - 一个MongoDB Tailable游标；
  - 一个AWS SQS队列；
- - 其他的；
+ - 其它的；
 
 这个流处理器支持两种摄取模式，**直接摄取**和**间接摄取**。
 
@@ -256,16 +256,16 @@ streamer.setResponseProcessor(new Processor() {
 还要确保添加流处理器中要用到的Camel组件的依赖。
 
 ### 7.3.6.Apache Camel
-[Apache Camel](http://camel.apache.org/)是一个企业级集成框架，围绕Gregor Hohpe和Bobby Woolf推广的[企业集成模式](http://www.enterpriseintegrationpatterns.com/)思想，比如*通道*、*管道*、*过滤器*、*拆分器*、*聚合器*、*路由器*、*重新排序器*等等，他可以像一个乐高玩具一样连接彼此来创建一个将系统连接在一起的集成路径。
+[Apache Camel](http://camel.apache.org/)是一个企业级集成框架，围绕Gregor Hohpe和Bobby Woolf推广的[企业集成模式](http://www.enterpriseintegrationpatterns.com/)思想，比如*通道*、*管道*、*过滤器*、*拆分器*、*聚合器*、*路由器*、*重新排序器*等等，它可以像一个乐高玩具一样连接彼此来创建一个将系统连接在一起的集成路径。
 
 到目前为止，Camel有超过200个组件，很多都是针对不同技术的适配器，比如**JMS**、**SOAP**、**HTTP**、**文件**、**FTP**、**POP3**、**SMTP**、**SSH**；包括云服务，比如**AWS**，**GCE**、**Salesforce**；社交网络，比如**Twitter**、**Facebook**；甚至包括新一代的数据库，比如**MongoDB**、**Cassandra**；以及数据处理技术，比如**Hadoop(HDFS,HBase)**以及**Spark**。
 
-Camel可以运行在各种环境中，同时也被Ignite支持：独立的Java程序、OSGi、Servlet容器、Spring Boot、JEE应用服务器等等。他是完全模块化的，因此只需要部署实际需要的组件，其他都不需要。
+Camel可以运行在各种环境中，同时也被Ignite支持：独立的Java程序、OSGi、Servlet容器、Spring Boot、JEE应用服务器等等。它是完全模块化的，因此只需要部署实际需要的组件，其它都不需要。
 
 要了解更多的信息，可以参照[Camel是什么？](https://camel.apache.org/what-is-camel.html)。
 ## 7.4.JMS流处理器
 ### 7.4.1.摘要
-Ignite提供了一个JMS数据流处理器，他会从JMS代理中消费消息，将消息转换为缓存数据格式然后插入Ignite缓存。
+Ignite提供了一个JMS数据流处理器，它会从JMS代理中消费消息，将消息转换为缓存数据格式然后插入Ignite缓存。
 ### 7.4.2.特性
 这个数据流处理器支持如下的特性：
 
@@ -275,7 +275,7 @@ Ignite提供了一个JMS数据流处理器，他会从JMS代理中消费消息�
    - 当从队列中消费消息时，这个组件会启动尽可能多的`会话`对象，每个都持有单独的`MessageListener`实例，因此实现了*自然*的并发；
    - 当从主题消费消息时，显然无法启动多个线程，因为这样会导致消费重复的消息，因此，通过一个内部的线程池来实现*虚拟*的并发。
  - 通过`transacted`参数支持事务级的会话；
- - 通过`batched`参数支持批量的消费，他会对在一个本地JMS事务的范围内接受的消息进行分组（不需要支持XA）。依赖于代理，这个技术提供了一个很高的吞吐量，因为它减少了必要的消息往返确认的量，虽然存在复制消息的开销（特别是在事务的中间发生了一个事件）。
+ - 通过`batched`参数支持批量的消费，它会对在一个本地JMS事务的范围内接受的消息进行分组（不需要支持XA）。依赖于代理，这个技术提供了一个很高的吞吐量，因为它减少了必要的消息往返确认的量，虽然存在复制消息的开销（特别是在事务的中间发生了一个事件）。
    - 当达到`batchClosureMillis`时间或者会话收到了至少`batchClosureSize`消息后批次会被提交；
    - 基于时间的闭包按照设定的频率触发，然后并行地应用到所有的`会话`；
    - 基于大小的闭包会应用到所有单独的`会话`（因为事务在JMS中是会话绑定的），因此当该`会话`消费了那么多消息后就会被触发。
@@ -286,15 +286,15 @@ Ignite提供了一个JMS数据流处理器，他会从JMS代理中消费消息�
 ### 7.4.3.实例化JMS流处理器
 实例化JMS流处理器时，需要具体化下面的泛型：
 
- - `T extends Message`：流处理器会接收到的JMS`Message`的类型，如果他可以接收多个，可以使用通用的`Message`类型；
+ - `T extends Message`：流处理器会接收到的JMS`Message`的类型，如果它可以接收多个，可以使用通用的`Message`类型；
  - `K` ：缓存键的类型；
  - `V` ：缓存值的类型；
 
 要配置JMS流处理器，还需要提供如下的必要属性：
 
- - `connectionFactory`：`ConnectionFactory`的实例，通过代理进行必要的配置，他也可以是一个`ConnectionFactory`池；
+ - `connectionFactory`：`ConnectionFactory`的实例，通过代理进行必要的配置，它也可以是一个`ConnectionFactory`池；
  - `destination`或者(`destinationName`和`destinationType`)：一个`Destination`对象（通常是一个代理指定的JMS`Queue`或者`Topic`接口的实现），或者是目的地名字的组合（队列或者主题名）和到或者`Queue`或者`Topic`的`Class`引用的类型， 在后一种情况下，流处理器通过`Session.createQueue(String)`或者`Session.createTopic(String)`来获得一个目的地；
- - `transformer`：一个`MessageTransformer<T, K, V>`的实现，他会消化一个类型为`T`的JMS消息然后产生一个要添加的缓存条目` Map<K, V>`，他也可以返回`null`或者空的`Map`来忽略传入的消息。
+ - `transformer`：一个`MessageTransformer<T, K, V>`的实现，它会消化一个类型为`T`的JMS消息然后产生一个要添加的缓存条目` Map<K, V>`，它也可以返回`null`或者空的`Map`来忽略传入的消息。
 
 ### 7.4.4.示例
 下面的示例通过`String`类型的键和`String`类型的值来填充一个缓存，要消费的`TextMessage`格式如下：
@@ -423,14 +423,14 @@ Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处
     ...
 </project>
 ```
- - 创建一个Ignite配置文件（可以以modules/storm/src/test/resources/example-ignite.xml文件作为示例）并且确保他可以被流处理器访问；
+ - 创建一个Ignite配置文件（可以以modules/storm/src/test/resources/example-ignite.xml文件作为示例）并且确保它可以被流处理器访问；
  - 确保输入流处理器的键值数据通过名为`ignite`的属性指定（或者通过StormStreamer.setIgniteTupleField(...)也可以指定一个不同的）。作为一个示例可以看`TestStormSpout.declareOutputFields(...)`。
  - 为流处理器创建一个网络，带有所有依赖制作一个jar文件然后运行如下的命令：
 ```bash
 storm jar ignite-storm-streaming-jar-with-dependencies.jar my.company.ignite.MyStormTopology
 ```
 ## 7.7.Flink流处理器
-Apache Ignite Flink Sink模块是一个流处理连接器，他可以将Flink数据注入Ignite缓存，该Sink会将输入的数据注入Ignite缓存。每当创建一个Sink，都需要提供一个Ignite缓存名和Ignite网格配置文件。
+Apache Ignite Flink Sink模块是一个流处理连接器，它可以将Flink数据注入Ignite缓存，该Sink会将输入的数据注入Ignite缓存。每当创建一个Sink，都需要提供一个Ignite缓存名和Ignite网格配置文件。
 
 通过如下步骤，可以开启到Ignite缓存的数据注入：
  
@@ -519,14 +519,14 @@ streamer.start();
 ### 7.9.1.摘要
 Apache Flume是一个高效的收集、汇总以及移动大量的日志数据的分布式的、高可靠和高可用的服务（[https://github.com/apache/flume](https://github.com/apache/flume)）。
 
-IgniteSink是一个Flume池，他会从相对应的Flume通道中提取事件然后将数据注入Ignite缓存，目前支持Flume的1.6.0版本。
+IgniteSink是一个Flume池，它会从相对应的Flume通道中提取事件然后将数据注入Ignite缓存，目前支持Flume的1.6.0版本。
 在启动Flume代理之前，就像下面章节描述的，IgniteSink及其依赖需要包含在代理的类路径中。
 ### 7.9.2.设置
 
  - 通过实现EventTransformer接口创建一个转换器；
  - 在${FLUME_HOME}中的plugins.d目录下创建`ignite`子目录，如果plugins.d目录不存在，创建它；
  - 构建前述的转换器并且拷贝到`${FLUME_HOME}/plugins.d/ignite/lib`目录；
- - 从Ignite发行版中拷贝其他的Ignite相关的jar包到`${FLUME_HOME}/plugins.d/ignite/libext`，如下所示；
+ - 从Ignite发行版中拷贝其它的Ignite相关的jar包到`${FLUME_HOME}/plugins.d/ignite/libext`，如下所示；
 ```
 plugins.d/
 `-- ignite

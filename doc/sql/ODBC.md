@@ -166,7 +166,7 @@ whereis libignite-odbc
 
 *手动安装*
 
-要在Windows上手动安装驱动，首先要为驱动在文件系统中选择一个目录，选择一个位置后就可以把驱动放在哪并且确保所有的驱动依赖可以被解析，也就是说，他们要么位于`%PATH%`，要么和驱动位于同一个目录。
+要在Windows上手动安装驱动，首先要为驱动在文件系统中选择一个目录，选择一个位置后就可以把驱动放在哪并且确保所有的驱动依赖可以被解析，也就是说，它们要么位于`%PATH%`，要么和驱动位于同一个目录。
 
 之后，就需要使用`%IGNITE_HOME%/platforms/cpp/odbc/install`目录下的安装脚本之一，注意，要执行这些脚本，很可能需要管理员权限。
 
@@ -183,7 +183,7 @@ install_amd64 <absolute_path_to_64_bit_driver> [<absolute_path_to_32_bit_driver>
 
 如果已经构建完成并且执行了`make install`命令，`libignite-odbc.so`很可能会位于`/usr/local/lib`，要在ODBC驱动管理器中安装ODBC驱动并且可以使用，需要按照如下的步骤进行操作：
 
- - 确保链接器可以定位ODBC驱动的所有依赖。可以使用`ldd`命令像如下这样进行检查（假定ODBC驱动位于`/usr/local/lib`）:`ldd /usr/local/lib/libignite-odbc.so`，如果存在到其他库的无法解析的链接，需要将这些库文件所在的目录添加到`LD_LIBRARY_PATH`；
+ - 确保链接器可以定位ODBC驱动的所有依赖。可以使用`ldd`命令像如下这样进行检查（假定ODBC驱动位于`/usr/local/lib`）:`ldd /usr/local/lib/libignite-odbc.so`，如果存在到其它库的无法解析的链接，需要将这些库文件所在的目录添加到`LD_LIBRARY_PATH`；
  - 编辑`$IGNITE_HOME/platforms/cpp/odbc/install/ignite-odbc-install.ini`文件，并且确保`Apache Ignite`段的`Driver`参数指向`libignite-odbc.so`所在的正确位置；
  - 要安装Ignite的ODBC驱动，可以使用如下的命令：`odbcinst -i -d -f $IGNITE_HOME/platforms/cpp/odbc/install/ignite-odbc-install.ini`，要执行这条命令，很可能需要root权限。
 
@@ -782,7 +782,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |通过调用`SQLGetDiagField`、`SQLGetDiagRec`，获得诊断信息。|是||
 |通过调用`SQLGetFunctions`和`SQLGetInfo`，检测驱动兼容性，以及通过调用`SQLNativeSql`，在发送到数据源之前检测SQL语句中的任何文本代换的结果|是||
 |使用`SQLEndTran`的语法提交一个事务，驱动的核心级别不需要支持真事务，因此，应用无法指定`SQL_ROLLBACK`或者为`SQL_ATTR_AUTOCOMMIT`连接属性指定`SQL_AUTOCOMMIT_OFF`|是||
-|调用`SQLCancel`取消数据执行对话框，以及多线程环境中，在另一个线程中取消ODBC函数的执行，核心级别的接口一致性不需要支持函数的异步执行，也不需要使用`SQLCancel`取消一个ODBC函数的异步执行。平台和ODBC驱动都不需要多线程地同时自主活动，然而在多线程环境中，ODBC驱动必须是线程安全的，从应用来的请求的序列化是实现这个规范的一致的方式，即使他导致了一系列的性能问题。|否|当前的ODBC驱动实现不支持异步执行|
+|调用`SQLCancel`取消数据执行对话框，以及多线程环境中，在另一个线程中取消ODBC函数的执行，核心级别的接口一致性不需要支持函数的异步执行，也不需要使用`SQLCancel`取消一个ODBC函数的异步执行。平台和ODBC驱动都不需要多线程地同时自主活动，然而在多线程环境中，ODBC驱动必须是线程安全的，从应用来的请求的序列化是实现这个规范的一致的方式，即使它导致了一系列的性能问题。|否|当前的ODBC驱动实现不支持异步执行|
 |通过调用`SQLSpecialColumns`获得表的行标识符`SQL_BEST_ROWID`。|部分|当前的实现总是返回空|
 
 ### 5.4.3.Level1接口一致性

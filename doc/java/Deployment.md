@@ -5,7 +5,7 @@ Ignite对部署没有要求，可以非常容易地部署到私有主机或者�
 ![](https://files.readme.io/8a65d4a-ignite-deploy.png)
 
 ## 14.2.Docker部署
-Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器，Docker会自动下载Ignite发布版，将代码部署进Ignite以及配置节点，他还可以自动启动配置好的Ignite节点，这样的集成方式，使得通过简单地重启Ignite的Docker容器就可以部署新的代码。
+Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器，Docker会自动下载Ignite发布版，将代码部署进Ignite以及配置节点，它还可以自动启动配置好的Ignite节点，这样的集成方式，使得通过简单地重启Ignite的Docker容器就可以部署新的代码。
 ### 14.2.1.启动Ignite Docker容器
 要运行Docker容器，需要拉取然后启动一个Docker镜像，默认会下载最新的版本，但是在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到一个完整的清单。
 
@@ -185,7 +185,7 @@ sudo docker exec -it container_id /bin/bash
 ### 14.5.1.摘要
 Apache Ignite支持在Mesos集群上调度和运行Ignite节点。
 
-Apache Mesos是一个集群管理器，他提供了一个通用运行环境以及所有的必要资源来部署、运行和管理分布式应用。他对资源的管理和隔离有助于充分利用服务器资源。
+Apache Mesos是一个集群管理器，它提供了一个通用运行环境以及所有的必要资源来部署、运行和管理分布式应用。它对资源的管理和隔离有助于充分利用服务器资源。
 
 要了解Apache Mesos的更多信息，请参照：[http://mesos.apache.org/](http://mesos.apache.org/)
 
@@ -311,7 +311,7 @@ IGNITE_VERSION=1.7.0
 ### 14.6.1.摘要
 与Yarn的集成可以支持在Yarn集群上调度和运行Apache Ignite节点。
 
-Yarn是一个资源管理器，他提供了一个包括所有必要资源的通用的运行环境来进行分布式应用的部署，运行和管理，他对资源的管理和隔离有助于充分利用服务器资源。
+Yarn是一个资源管理器，它提供了一个包括所有必要资源的通用的运行环境来进行分布式应用的部署，运行和管理，它对资源的管理和隔离有助于充分利用服务器资源。
 
 要了解Yarn的信息，请参照[http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html)。
 
@@ -375,7 +375,7 @@ yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar clu
 ### 14.7.1.摘要
 Ignite可以部署于VMWare管理的虚拟和云环境，没有什么和VMWare有关的特性，不过建议将Ignite实例绑定到一个单一专用的主机，这样可以：
 
- - 避免当Ignite实例与其他应用程序争用主机资源时，导致Ignite集群的性能出现峰值；
+ - 避免当Ignite实例与其它应用程序争用主机资源时，导致Ignite集群的性能出现峰值；
  - 确保高可用，如果一台主机宕机并且有两个或者多个Ignite服务端节点绑定到上面，那么可能导致数据丢失。
 
 下面的内容会说明和Ignite节点迁移有关的vMotion的使用。

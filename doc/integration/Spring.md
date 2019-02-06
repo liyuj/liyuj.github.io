@@ -1,7 +1,7 @@
 # 5.Spring
 ## 5.1.Spring缓存
 ### 5.1.1.摘要
-Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)的实现。他提供了基于注解的方式来启用Java方法的缓存，这样方法的执行结果就会存储在Ignite缓存中。如果之后同一个方法通过同样的参数集被调用，结果会直接从缓存中获得而不是实际执行这个方法。
+Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)的实现。它提供了基于注解的方式来启用Java方法的缓存，这样方法的执行结果就会存储在Ignite缓存中。如果之后同一个方法通过同样的参数集被调用，结果会直接从缓存中获得而不是实际执行这个方法。
 
 > **Spring缓存抽象文档**
 关于如何使用Spring缓存抽象的更多信息，包括可用的注解，可以参照这个文档页面：[http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html).
@@ -9,7 +9,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 ### 5.1.2.如何启用缓存
 只需要两个简单的步骤就可以将Ignite缓存嵌入基于Spring的应用：
 
- - 在嵌入式模式中使用正确的配置文件启动一个Ignite节点（即应用运行的同一个JVM）。他也可以有预定义的缓存，但不是必须的-如果必要缓存会在第一次访问时自动创建。
+ - 在嵌入式模式中使用正确的配置文件启动一个Ignite节点（即应用运行的同一个JVM）。它也可以有预定义的缓存，但不是必须的-如果必要缓存会在第一次访问时自动创建。
  - 在Spring应用上下文中配置`SpringCacheManager`作为缓存管理器。
 
 嵌入式节点可以通过`SpringCacheManager`自己启动，这种情况下需要分别通过`configurationPath`或者`configuration`属性提供一个Ignite配置文件的路径或者`IgniteConfiguration`Bean（看下面的示例）。注意同时设置两个属性是非法的，会抛出`IllegalArgumentException`。
@@ -110,7 +110,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 ### 5.1.4.示例
 如果在Spring应用上下文中已经加入了`SpringCacheManager`，就可以通过简单地加上注解为任意的java方法启用缓存。
 
-通常为很重的操作使用缓存，比如数据库访问。比如，假设有个Dao类有一个`averageSalary(...)`方法，他计算一个组织内的所有雇员的平均工资，那么可以通过`@Cacheable`注解来开启这个方法的缓存。
+通常为很重的操作使用缓存，比如数据库访问。比如，假设有个Dao类有一个`averageSalary(...)`方法，它计算一个组织内的所有雇员的平均工资，那么可以通过`@Cacheable`注解来开启这个方法的缓存。
 ```java
 private JdbcTemplate jdbc;
 
@@ -124,10 +124,10 @@ public long averageSalary(int organizationId) {
     return jdbc.queryForObject(sql, Long.class, organizationId);
 }
 ```
-当这个方法第一次被调用时，`SpringCacheManager`会自动创建一个`averageSalary`缓存，他也会在缓存中查找事先计算好的平均值然后如果存在的话就会直接返回，如果这个组织的平均值还没有被计算过，那么这个方法就会被调用然后将结果保存在缓存中，因此下一次请求这个组织的平均值，就不需要访问数据库了。
+当这个方法第一次被调用时，`SpringCacheManager`会自动创建一个`averageSalary`缓存，它也会在缓存中查找事先计算好的平均值然后如果存在的话就会直接返回，如果这个组织的平均值还没有被计算过，那么这个方法就会被调用然后将结果保存在缓存中，因此下一次请求这个组织的平均值，就不需要访问数据库了。
 
 > **缓存键**
-因为`organizationId`是唯一的方法参数，所以他会自动作为缓存键。
+因为`organizationId`是唯一的方法参数，所以它会自动作为缓存键。
 
 如果一个雇员的工资发生变化，可能希望从缓存中删除这个雇员所属组织的平均值，否则`averageSalary(...)`方法会返回过时的缓存结果。这个可以通过将`@CacheEvict`注解加到一个方法上来更新雇员的工资：
 ```java
@@ -197,7 +197,7 @@ public interface PersonRepository extends IgniteRepository<Person, Long> {
     public List<Long> selectId(long orgId, Pageable pageable);
 }
 ```
-`@RepositoryConfig`注解需要指定，他会将Repository映射到一个分布式缓存，在上面的示例中，`PersonRepository`映射到了`PersonCache`。
+`@RepositoryConfig`注解需要指定，它会将Repository映射到一个分布式缓存，在上面的示例中，`PersonRepository`映射到了`PersonCache`。
 
 自定义方法（比如`findByFirstName(name)`以及`findTopByLastNameLike(name)`）的签名会被自动处理，在该方法被调用时会被转成对应的SQL查询。另外，如果需要执行明确的SQL查询作为方法调用的结果，也可以使用`@Query(queryString)`注解。
 >**不支持的CRUD操作**

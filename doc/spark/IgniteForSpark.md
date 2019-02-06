@@ -8,7 +8,7 @@ Ignite作为一个分布式的内存数据库和缓存平台，对于Spark用户
 
 ![](https://files.readme.io/1e7bf72-spark_integration.png)
 ### 4.1.1.IgniteRDD
-Ignite提供了一个Spark RDD抽象的实现，他可以容易地在内存中跨越多个Spark作业共享状态，在跨越不同Spark作业、工作节点或者应用时，IgniteRDD为内存中的相同数据提供了一个共享的、可变的视图，而原生的SparkRDD无法在Spark作业或者应用之间进行共享。
+Ignite提供了一个Spark RDD抽象的实现，它可以容易地在内存中跨越多个Spark作业共享状态，在跨越不同Spark作业、工作节点或者应用时，IgniteRDD为内存中的相同数据提供了一个共享的、可变的视图，而原生的SparkRDD无法在Spark作业或者应用之间进行共享。
 
 IgniteRDD实现的方式是作为一个分布式的Ignite缓存（或者表）的视图，它可以作为一个节点部署在Spark执行进程内部，或者Spark 工作节点上或者它自己的集群中。这意味着根据选择的不同的部署模型，共享状态可能只存在于一个Spark应用的生命周期内（嵌入式模式），或者可能存在于Spark应用外部（独立模式），这时状态可以在多个Spark应用之间共享。
 
@@ -43,7 +43,7 @@ val igniteContext = new IgniteContext(sparkContext,
     "examples/config/spark/example-shared-rdd.xml")
 ```
 ### 4.2.2.IgniteRDD
-`IgniteRDD`是一个SparkRDD抽象的实现，他表示Ignite的缓存的活动视图。`IgniteRDD`不是一成不变的，Ignite缓存的所有改变（不论是他被另一个RDD或者缓存的外部改变触发）对于RDD用户都会立即可见。
+`IgniteRDD`是一个SparkRDD抽象的实现，它表示Ignite的缓存的活动视图。`IgniteRDD`不是一成不变的，Ignite缓存的所有改变（不论是它被另一个RDD或者缓存的外部改变触发）对于RDD用户都会立即可见。
 
 `IgniteRDD`利用Ignite缓存的分区性质然后向Spark执行器提供分区信息。`IgniteRDD`中分区的数量会等于底层Ignite缓存的分区数量，`IgniteRDD`还通过`getPrefferredLocations`方法向Spark提供了关系信息使RDD计算可以使用本地的数据。
 
@@ -488,13 +488,13 @@ spark.sparkContext.addJar(MAVEN_HOME + "/com/h2database/h2/1.4.195/h2-1.4.195.ja
 ```bash
 sbin/start-master.sh
 ```
-这个脚本会输出启动过程的日志文件的路径，可以在日志文件中查看master的URL，他的格式是：`spark://master_host:master_port`。也可以在日志文件中查看WebUI的URL（通常是`http://master_host:8080`）。
+这个脚本会输出启动过程的日志文件的路径，可以在日志文件中查看master的URL，它的格式是：`spark://master_host:master_port`。也可以在日志文件中查看WebUI的URL（通常是`http://master_host:8080`）。
 
 4. 转到每个工作节点的`$SPARK_HOME`然后执行如下的命令：
 ```bash
 bin/spark-class org.apache.spark.deploy.worker.Worker spark://master_host:master_port
 ```
-这里的`spark://master_host:master_port`就是从上述的主节点的日志文件中抓取的主节点的URL。在所有的工作节点都启动之后可以查看主节点的WebUI界面，他会显示所有的处于`ALIVE`状态的已经注册的工作节点。
+这里的`spark://master_host:master_port`就是从上述的主节点的日志文件中抓取的主节点的URL。在所有的工作节点都启动之后可以查看主节点的WebUI界面，它会显示所有的处于`ALIVE`状态的已经注册的工作节点。
 
 5. 转到每个工作节点的`$IGNITE_HOME`目录然后通过运行如下的命令启动一个Ignite节点：
 ```bash
@@ -506,7 +506,7 @@ bin/ignite.sh
 
 **1.启动spark-shell**
 
- - 还可能需要提供Ignite部件的Maven坐标（如果需要，可以使用`--repositories`参数，但是他可能会被忽略）：
+ - 还可能需要提供Ignite部件的Maven坐标（如果需要，可以使用`--repositories`参数，但是它可能会被忽略）：
 ```bash
 ./bin/spark-shell 
 	--packages org.apache.ignite:ignite-spark:1.8.0

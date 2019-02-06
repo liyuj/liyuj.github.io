@@ -15,7 +15,7 @@
 
 ![](https://files.readme.io/d8d186d-caches.png)
 ### 2.1.5.IGFS
-还可以配置Ignite的内存文件系统，可以在已有的缓存结构中处理文件和目录。IGFS即可以工作于纯内存文件系统中，也可以对接其他的文件系统（比如各种Hadoop文件系统实现）作为一个缓存层，另外，IGFS还提供了在文件系统数据中执行MapReduce任务的API。
+还可以配置Ignite的内存文件系统，可以在已有的缓存结构中处理文件和目录。IGFS即可以工作于纯内存文件系统中，也可以对接其它的文件系统（比如各种Hadoop文件系统实现）作为一个缓存层，另外，IGFS还提供了在文件系统数据中执行MapReduce任务的API。
 
 ![](https://files.readme.io/3eab31c-igfs.png)
 ### 2.1.6.配置总结
@@ -33,7 +33,7 @@ Ignite还有一个`org.apache.ignite.cache.store.jdbc.CacheJdbcPojoStore`，这�
 ### 2.2.2.数据库模式导入
 在浏览器中打开部署在GridGain的Ignite[Web控制台实例](https://console.gridgain.com/)然后登录，或者也可以构建和部署一个自己的Web控制台实例。
 > **Web控制台部署和Logo**
-为了简化，使用了一个已经部署的Web控制台实例，这个实例部署在GridGain的基础设施上，并且将GridGain的logo嵌入作为主界面的一部分，在本文档的所有截图中，也会看到这个logo，注意可以将Web控制台部署到任意主机，也可以使用其他的logo。
+为了简化，使用了一个已经部署的Web控制台实例，这个实例部署在GridGain的基础设施上，并且将GridGain的logo嵌入作为主界面的一部分，在本文档的所有截图中，也会看到这个logo，注意可以将Web控制台部署到任意主机，也可以使用其它的logo。
 
 **1.配置Ignite集群**
 
@@ -90,7 +90,7 @@ Ignite还有一个`org.apache.ignite.cache.store.jdbc.CacheJdbcPojoStore`，这�
  - 使用`ServerNodeSpringStartup`或者`ServerNodeCodeStartup`文件启动一个服务端节点；
  - 使用`LoadCaches`文件来执行初始化，即将数据从数据库中加载进缓存。
 
-> 要了解这个工程结构以及已有构件的详细信息，可以看工程的README文件，他包含了与内容有关的详细说明。
+> 要了解这个工程结构以及已有构件的详细信息，可以看工程的README文件，它包含了与内容有关的详细说明。
 
 ## 2.3.执行查询
 可以通过Web控制台接入Ignite集群然后在其中执行SQL查询，还可以查看执行计划，内存模式，还有集群的流化图表。
@@ -105,7 +105,7 @@ Ignite可以无限制地支持SQL查询，SQL语法兼容于ANSI-99标准，这�
 
 ![](https://files.readme.io/595390c-sql-pie-chart.png)
 ## 2.4.使用跟踪
-作为一个IT管理员，可能希望了解组织内的其他人通过Web控制台是如何与集群进行交互的。这样的功能通过`Admin panel`可以得到。
+作为一个IT管理员，可能希望了解组织内的其它人通过Web控制台是如何与集群进行交互的。这样的功能通过`Admin panel`可以得到。
 
 ![](https://files.readme.io/9726ee5-admin-panel-1.png)
 
@@ -114,7 +114,7 @@ Ignite可以无限制地支持SQL查询，SQL语法兼容于ANSI-99标准，这�
 ![](https://files.readme.io/0071e3c-admin-panel-2.png)
 
 ## 2.5.多集群支持
-有这样一个场景，就是环境中同时部署并且运行着多个Ignite集群，然后想使用一个Web控制台实例并行地监控并且管理他们。
+有这样一个场景，就是环境中同时部署并且运行着多个Ignite集群，然后想使用一个Web控制台实例并行地监控并且管理它们。
 
 要做到这一点，每个集群都需要启动一个Ignite Web控制台代理实例，然后映射到已经部署的Ignite Web控制台，如下图所示：
 
@@ -122,7 +122,7 @@ Ignite可以无限制地支持SQL查询，SQL语法兼容于ANSI-99标准，这�
 
 开启多集群支持的最直接方式就是，在与运行的特定集群的节点之一相同的机器/硬件或者网络上启动代理，然后将代理映射到Web控制台实例。
 ### 2.5.1.单主机两集群
-本章节会显示如何在单主机上启动多个集群，然后将他们接入Ignite Web控制台，作为一个示例，下面会配置并且启动两个集群以及两个Ignite Web代理。
+本章节会显示如何在单主机上启动多个集群，然后将它们接入Ignite Web控制台，作为一个示例，下面会配置并且启动两个集群以及两个Ignite Web代理。
 
 下面是第一个集群节点的配置示例：
 ```xml

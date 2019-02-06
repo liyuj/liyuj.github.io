@@ -35,7 +35,7 @@ try (QueryCursor<List<?>> cursor = cache.query(sql)) {
 }
 ```
 ::: warning 可查询字段定义
-在`SqlQuery`和`SqlFieldsQuery`中的指定字段可以被访问之前，他们需要为SQL模式的一部分，使用标准的DDL命令，或者特定的Java注解，或者`QueryEntity`配置，都可以进行字段的定义。
+在`SqlQuery`和`SqlFieldsQuery`中的指定字段可以被访问之前，它们需要为SQL模式的一部分，使用标准的DDL命令，或者特定的Java注解，或者`QueryEntity`配置，都可以进行字段的定义。
 :::
 
 通过`SqlFieldsQuery`，还可以使用DML命令进行数据的修改：
@@ -217,11 +217,11 @@ QueryCursor<List<?>> cursor = personCache.query(new SqlFieldsQuery(
 ::: tip Scala注解
 在Scala类中，`@QuerySqlField`注解必须和`@Field`注解一起使用，这样的话这个字段对于Ignite才是可见的，就像这样的:`@(QuerySqlField @field)`。
 
-也可以使用`ignite-scalar`模块的`@ScalarCacheQuerySqlField`注解作为替代，他不过是`@Field`注解的别名。
+也可以使用`ignite-scalar`模块的`@ScalarCacheQuerySqlField`注解作为替代，它不过是`@Field`注解的别名。
 :::
 
 **注册索引类型**
-定义了索引字段和可查询字段之后，就需要和他们所属的对象类型一起，在SQL引擎中注册。
+定义了索引字段和可查询字段之后，就需要和它们所属的对象类型一起，在SQL引擎中注册。
 要告诉Ignite哪些类型应该被索引，需要通过`CacheConfiguration.setIndexedTypes`方法传入键-值对，如下所示：
 ```java
 // Preparing configuration.
@@ -232,7 +232,7 @@ ccfg.setIndexedTypes(Long.class, Person.class);
 ```
 注意，这个方法只接收成对的类型，一个键类一个值类，基本类型需要使用包装器类。
 ::: tip 预定义字段
-除了用`@QuerySqlField`注解标注的所有字段，每个表都有两个特别的预定义字段：`_key`和`_val`，它表示到整个键对象和值对象的链接。这很有用，比如当他们中的一个是基本类型并且希望用它的值进行过滤时。要做到这一点，执行一个`SELECT * FROM Person WHERE _key = 100`查询即可。
+除了用`@QuerySqlField`注解标注的所有字段，每个表都有两个特别的预定义字段：`_key`和`_val`，它表示到整个键对象和值对象的链接。这很有用，比如当它们中的一个是基本类型并且希望用它的值进行过滤时。要做到这一点，执行一个`SELECT * FROM Person WHERE _key = 100`查询即可。
 :::
 
 ::: tip 注意
@@ -243,7 +243,7 @@ ccfg.setIndexedTypes(Long.class, Person.class);
 
 当查询条件复杂时可以使用多字段索引来加快查询的速度，这时可以用`@QuerySqlField.Group`注解。如果希望一个字段参与多个分组索引时也可以将多个`@QuerySqlField.Group`注解加入`orderedGroups`中。
 
-比如，下面的`Person`类中`age`字段加入了名为`age_salary_idx`的分组索引，他的分组序号是0并且降序排列，同一个分组索引中还有一个字段`salary`,他的分组序号是3并且升序排列。最重要的是`salary`字段还是一个单列索引(除了`orderedGroups`声明之外，还加上了`index = true`)。分组中的`order`不需要是什么特别的数值，他只是用于分组内的字段排序。
+比如，下面的`Person`类中`age`字段加入了名为`age_salary_idx`的分组索引，它的分组序号是0并且降序排列，同一个分组索引中还有一个字段`salary`,它的分组序号是3并且升序排列。最重要的是`salary`字段还是一个单列索引(除了`orderedGroups`声明之外，还加上了`index = true`)。分组中的`order`不需要是什么特别的数值，它只是用于分组内的字段排序。
 
 **Java：**
 ```java
@@ -432,7 +432,7 @@ ignite.createCache(cacheCfg);
 ### 7.2.5.空间查询
 这个空间模块只对`com.vividsolutions.jts`类型的对象有用。
 
-要配置索引以及/或者几何类型的可查询字段，可以使用和已有的非几何类型同样的方法，首先，可以使用`org.apache.ignite.cache.QueryEntity`定义索引，他对于基于Spring的XML配置文件非常方便，第二，通过`@QuerySqlField`注解来声明索引也可以达到同样的效果，他在内部会转化为`QueryEntities`。
+要配置索引以及/或者几何类型的可查询字段，可以使用和已有的非几何类型同样的方法，首先，可以使用`org.apache.ignite.cache.QueryEntity`定义索引，它对于基于Spring的XML配置文件非常方便，第二，通过`@QuerySqlField`注解来声明索引也可以达到同样的效果，它在内部会转化为`QueryEntities`。
 
 **QuerySqlField：**
 ```java

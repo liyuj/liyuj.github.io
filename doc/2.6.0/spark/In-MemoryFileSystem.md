@@ -1,19 +1,19 @@
 # 2.内存文件系统
 ## 2.1.内存文件系统
-Ignite有一个独特的功能，叫做Ignite文件系统（IGFS），就是一个分布式的内存文件系统，IGFS提供了和Hadoop HDFS类似的功能，但是只在内存中。事实上，除了他自己的API，IGFS还实现了Hadoop的文件系统API，可以透明地加入Hadoop或者Spark的运行环境。
-IGFS将每个文件的数据拆分成独立的数据块然后将他们保存进一个分布式内存缓存中。然而，与Hadoop HDFS不同，IGFS不需要一个name节点，它通过一个哈希函数自动确定文件数据的位置。
+Ignite有一个独特的功能，叫做Ignite文件系统（IGFS），就是一个分布式的内存文件系统，IGFS提供了和Hadoop HDFS类似的功能，但是只在内存中。事实上，除了它自己的API，IGFS还实现了Hadoop的文件系统API，可以透明地加入Hadoop或者Spark的运行环境。
+IGFS将每个文件的数据拆分成独立的数据块然后将它们保存进一个分布式内存缓存中。然而，与Hadoop HDFS不同，IGFS不需要一个name节点，它通过一个哈希函数自动确定文件数据的位置。
 
-IGFS可以独立部署，也可以部署在HDFS之上，这时他成为了一个存储于HDFS中的文件的透明缓存层。
+IGFS可以独立部署，也可以部署在HDFS之上，这时它成为了一个存储于HDFS中的文件的透明缓存层。
 
 ![](https://files.readme.io/795c4d6-spark-igfs_1.png)
 
 ## 2.2.IGFS原生Ignite API
-Ignite文件系统（IGFS）是一个内存级的文件系统，他可以在现有的缓存基础设施基础上对文件以及文件夹进行操作。
+Ignite文件系统（IGFS）是一个内存级的文件系统，它可以在现有的缓存基础设施基础上对文件以及文件夹进行操作。
 
-IGFS既可以作为一个纯粹的内存文件系统，也可以委托给其他的文件系统（比如各种Hadoop文件系统实现）作为一个缓存层。
+IGFS既可以作为一个纯粹的内存文件系统，也可以委托给其它的文件系统（比如各种Hadoop文件系统实现）作为一个缓存层。
 另外，IGFS提供了在文件系统数据上执行MapReduce任务的API。
 ### 2.2.1.IgniteFileSystem
-`IgniteFileSystem`接口是一个进入Ignite文件系统实现的入口，他提供了正常的文件系统操作的方法，比如`create`,`delete`,`mkdirs`等等，以及执行MapReduce任务的方法。
+`IgniteFileSystem`接口是一个进入Ignite文件系统实现的入口，它提供了正常的文件系统操作的方法，比如`create`,`delete`,`mkdirs`等等，以及执行MapReduce任务的方法。
 ```java
 Ignite ignite = Ignition.ignite();
 
@@ -111,7 +111,7 @@ endpointCfg.setType(IgfsEndpointType.SHMEM);
 ...
 fileSystemCfg.setIpcEndpointConfiguration(endpointCfg);
 ```
-TCP端点可以用于或者Ignite节点位于其他机器或者共享内存不可用的场合。
+TCP端点可以用于或者Ignite节点位于其它机器或者共享内存不可用的场合。
 
 XML：
 ```xml
@@ -290,9 +290,9 @@ fileSystemCfg.setSecondarFileSystem(hadoopFileSystem);
 在Ignite节点启动过程中，Ignite默认不会在类路径中包含Hadoop的库文件，如果决定使用`HDFS`作为一个二级文件系统，那么需要提前按照如下步骤进行操作：
 
  1. 使用Ignite发行版的`Apache Ignite Hadoop Accelerator`版本（如果自行构建发行版可以使用-Dignite.edition=hadoop）；
- 2. 如果使用Apache的Hadoop发行版，启动一个Ignite节点之前需要设置HADOOP_HOME环境变量。如果使用其他的Hadoop发行版（HDP, Cloudera, BigTop等），一定确保`/etc/default/hadoop`文件存在并且有适当的内容。
+ 2. 如果使用Apache的Hadoop发行版，启动一个Ignite节点之前需要设置HADOOP_HOME环境变量。如果使用其它的Hadoop发行版（HDP, Cloudera, BigTop等），一定确保`/etc/default/hadoop`文件存在并且有适当的内容。
 
-作为一个选择，可以在Ignite节点类路径中手工添加必要的Hadoop依赖，这些依赖的groupId是`org.apache.hadoop`，他们已经在`modules/hadoop/pom.xml`文件中列出，当前，他们是：
+作为一个选择，可以在Ignite节点类路径中手工添加必要的Hadoop依赖，这些依赖的groupId是`org.apache.hadoop`，它们已经在`modules/hadoop/pom.xml`文件中列出，当前，它们是：
 
  - hadoop-annotations
  - hadoop-auth
@@ -302,7 +302,7 @@ fileSystemCfg.setSecondarFileSystem(hadoopFileSystem);
  - hadoop-mapreduce-client-core
 
 ## 2.5.IGFS模式
-IGFS可以工作于四种操作模式：`PRIMARY`,`PROXY`,`DUAL_SYNC`和`DUAL_ASYNC`。这些模式既可以配置整个文件系统，也可以配置特定的路径。他们是在`IgfsMode`枚举中定义的，默认文件系统操作于`DUAL_ASYNC`模式。
+IGFS可以工作于四种操作模式：`PRIMARY`,`PROXY`,`DUAL_SYNC`和`DUAL_ASYNC`。这些模式既可以配置整个文件系统，也可以配置特定的路径。它们是在`IgfsMode`枚举中定义的，默认文件系统操作于`DUAL_ASYNC`模式。
 
 如果未配置二级文件系统，配置成`DUAL_SYNC`或者`DUAL_ASYNC`模式的所有路径都会回退到`PRIMARY`模式。
 

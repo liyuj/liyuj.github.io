@@ -113,7 +113,7 @@ XML：
 |参数名|描述|默认值|
 |---|---|---|
 |`host`|绑定的主机名或者IP地址，如果配置为`null`，会使用`localHost`。|null|
-|`port`|绑定的TCP端口，如果指定的端口已被占用，Ignite会使用`portRange`属性来查找其他可用的端口。|10800|
+|`port`|绑定的TCP端口，如果指定的端口已被占用，Ignite会使用`portRange`属性来查找其它可用的端口。|10800|
 |`portRange`|定义尝试绑定的端口数量，比如，如果端口配置为`10800`并且端口范围为`100`，Ignite会从10800开始，在[10800,10900]范围内查找可用端口。|100|
 |`maxOpenCursorsPerConnection`|每个连接打开的服务端游标的最大数量。|128|
 |`threadPoolSize`|线程池中负责请求处理的线程数量。|max(8,CPU核数)|
@@ -260,10 +260,10 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 |`cache`|缓存名，如果未定义会使用默认的缓存，区分大小写||
 |`nodeId`|要执行的查询所在节点的Id，对于在本地查询是有用的||
 |`local`|查询只在本地节点执行，这个参数和`nodeId`参数都是通过指定节点来限制数据集|false|
-|`collocated`|优化标志，当Ignite执行一个分布式查询时，他会向单个的集群节点发送子查询，如果提前知道要查询的数据已经被并置到同一个节点，Ignite会有显著的性能提升和网络优化|false|
+|`collocated`|优化标志，当Ignite执行一个分布式查询时，它会向单个的集群节点发送子查询，如果提前知道要查询的数据已经被并置到同一个节点，Ignite会有显著的性能提升和网络优化|false|
 |`distributedJoins`|可以在非并置的数据上使用分布式关联。|false|
 |`streaming`|通过`INSERT`语句为本链接开启批量数据加载模式，具体可以参照后面的`流模式`相关章节。|false|
-|`streamingAllowOverwrite`|通知Ignite对于重复的已有键，覆写它的值而不是忽略他们，具体可以参照后面的`流模式`相关章节。|false|
+|`streamingAllowOverwrite`|通知Ignite对于重复的已有键，覆写它的值而不是忽略它们，具体可以参照后面的`流模式`相关章节。|false|
 |`streamingFlushFrequency`|超时时间，*毫秒*，数据流处理器用于刷新数据，*数据默认会在连接关闭时刷新*，具体可以参照后面的`流模式`相关章节。|0|
 |`streamingPerNodeBufferSize`|数据流处理器的每节点缓冲区大小，具体可以参照后面的`流模式`相关章节。|1024|
 |`streamingPerNodeParallelOperations`|数据流处理器的每节点并行操作数。具体可以参照后面的`流模式`相关章节。|16|

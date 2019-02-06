@@ -90,7 +90,7 @@ private static void writeRequestHeader(int reqLength, short opCode, long reqId, 
 |---|---|
 |`int`|响应消息长度|
 |`long`|请求Id|
-|`int`|状态码，（0为成功，其他为错误码）|
+|`int`|状态码，（0为成功，其它为错误码）|
 |`string`|错误消息（只有状态码非0时才会有）|
 
 响应头：
@@ -655,7 +655,7 @@ UUID（Guid）数组。
 
 类型代码：23
 
-任意类型对象数组。包括任意类型的标准对象、以及各种类型的复杂对象、`NULL`值及其他们的任意组合，这也意味着，集合可以包含其它的集合。
+任意类型对象数组。包括任意类型的标准对象、以及各种类型的复杂对象、`NULL`值及其它们的任意组合，这也意味着，集合可以包含其它的集合。
 
 结构：
 
@@ -3644,7 +3644,7 @@ npm link apache-ignite-client #link examples
 node CachePutGetExample.js
 ```
 ::: tip Node.js示例文件
-Node.js瘦客户端有完整的直接可用的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)，他们可以演示客户端的行为。
+Node.js瘦客户端有完整的直接可用的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)，它们可以演示客户端的行为。
 :::
 ### 19.4.2.初始化和配置
 本文会描述使用Node.js瘦客户端与Ignite集群进行交互的基本步骤。
@@ -4417,7 +4417,7 @@ my_cache = client.create_cache('my cache')
 #### 19.5.2.3.配置缓存
 `prop_codes`模块包含表示各种缓存设置的顺序值列表。
 
-与缓存同步、再平衡、关联和其他与缓存配置相关的详细信息，可以参阅[数据网格](/doc/java/Key-ValueDataGrid.md)的相关文档。
+与缓存同步、再平衡、关联和其它与缓存配置相关的详细信息，可以参阅[数据网格](/doc/java/Key-ValueDataGrid.md)的相关文档。
 
 通过`create_cache()`或`get_or_create_cache()`,下面的缓存属性可用于对缓存进行配置：
 

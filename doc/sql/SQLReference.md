@@ -117,7 +117,7 @@ index_option := {INLINE_SIZE size | PARALLEL parallelism_level}
 
 `CREATE INDEX`为指定的表创建一个新的索引，常规的索引存储于内部的B+树数据结构中，该B+树和实际的数据一样，在集群内进行分布，一个集群节点会存储其所属的数据对应的索引的一部分。
 
-如果`CREATE INDEX`在运行时执行，那么数据库会在指定的索引列上同步地迭代，同一个表的其他DDL命令会被阻塞，直到`CREATE INDEX`执行完毕，但是DML语句的执行不受影响，还是并行地执行。
+如果`CREATE INDEX`在运行时执行，那么数据库会在指定的索引列上同步地迭代，同一个表的其它DDL命令会被阻塞，直到`CREATE INDEX`执行完毕，但是DML语句的执行不受影响，还是并行地执行。
 
 如果开启了Ignite的持久化，这个命令对应的模式改变也会被持久化到磁盘，因此即使整个集群重启也不会受到影响。
 
@@ -199,7 +199,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
  - `IF NOT EXISTS`：只有同名表不存在时才会创建新表；
  - `PRIMARY KEY`：定义表的主键，可以由一个或者多个列组成；
  - `WITH`：标准ANSI SQL中未定义的参数：
-   - `TEMPLATE=<cache's template name>`：在Ignite中注册的大小写敏感的缓存模板，用于CREATE TABLE命令在创建分布式缓存时的配置。一个模板是在集群中通过`Ignite.addCacheConfiguration`注册的`CacheConfiguration`类的实例。使用预定义的`TEMPLATE=PARTITIONED`或者`TEMPLATE=REPLICATED`模板，可以直接创建对应复制类型的缓存，其他的参数由`CacheConfiguration`对象决定，在没有显式指定的情况下，默认会使用`TEMPLATE=PARTITIONED`模板。
+   - `TEMPLATE=<cache's template name>`：在Ignite中注册的大小写敏感的缓存模板，用于CREATE TABLE命令在创建分布式缓存时的配置。一个模板是在集群中通过`Ignite.addCacheConfiguration`注册的`CacheConfiguration`类的实例。使用预定义的`TEMPLATE=PARTITIONED`或者`TEMPLATE=REPLICATED`模板，可以直接创建对应复制类型的缓存，其它的参数由`CacheConfiguration`对象决定，在没有显式指定的情况下，默认会使用`TEMPLATE=PARTITIONED`模板。
    - `BACKUPS=<number of backups>`：设置数据的备份数量，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存备份数量为0；
    - `ATOMICITY=<ATOMIC | TRANSACTIONAL>`：为底层缓存设置`ATOMIC`或者`TRANSACTIONAL`模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`ATOMIC`模式；
    - `WRITE_SYNCHRONIZATION_MODE=<PRIMARY_SYNC | FULL_SYNC | FULL_ASYNC>`：设置底层缓存的写同步模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`FULL_SYNC`模式；
@@ -208,7 +208,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
    - `CACHE_NAME=<custom name of the new cache>`：命令创建的底层缓存的名字，下面会详细描述；
    - `DATA_REGION=<existing data region name>`：表数据存储的数据区的名字，Ignite默认会将所有的数据存储于默认的数据区中；
    - `KEY_TYPE=<custom name of the key type>`：设置自定义键类型的名字，用于Ignite的键值API中，名字需要与Java、.NET和C++的类相对应，或者如果使用了二进制对象而不是自定义类时，也可以是随机的。在自定义键中，字段的数量和类型需要与`PRIMARY KEY`相对应，下面会详细描述；
-   - `VALUE_TYPE=<custom name of the value type of the new cache>`：设置自定义值类型的名字，用于Ignite的键值API以及其他的非SQL API中。名字需要与Java、.NET和C++的类相对应，或者如果使用了二进制对象而不是自定义类时，也可以是随机的。值类型需要包含在CREATE TABLE命令中定义的所有列，但是`PRIMARY KEY`约束中列出的不算，下面会详细描述；
+   - `VALUE_TYPE=<custom name of the value type of the new cache>`：设置自定义值类型的名字，用于Ignite的键值API以及其它的非SQL API中。名字需要与Java、.NET和C++的类相对应，或者如果使用了二进制对象而不是自定义类时，也可以是随机的。值类型需要包含在CREATE TABLE命令中定义的所有列，但是`PRIMARY KEY`约束中列出的不算，下面会详细描述；
    - `WRAP_KEY=<true | false>`：这个标志控制**单列**主键是否会被包装成二进制对象形式，这个标志默认值为`false`，这个标志对多列的`PRIMARY KEY`不会产生影响，不管这个参数值是什么，它总是会被包装；
    - `WRAP_VALUE=<true | false>`：这个标志控制**单列**基本类型的值是否会被包装成二进制对象形式，这个标志默认值为`true`，这个标志对多列的值不会产生影响，不管这个参数值是什么，它总是会被包装。如果表中只有一个列，并且没有计划添加额外的列时，可以将其配置为`false`。注意如果该参数配置为`false`，就无法在该表上执行`ALTER TABLE ADD COLUMN`命令；
 
@@ -218,12 +218,12 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
 
 该表将存储在连接参数中指定的模式中。如果未指定模式，将使用`PUBLIC`模式。有关Ignite中模式的详细信息，请参见[模式}(/doc/sql/Architecture.md#_3-6-模式)。
 
-注意`CREATE TABLE`操作是同步的，在`CREATE TABLE`执行过程中会阻塞其他DDL命令的执行，DML命令的执行不受影响，还会以并行的方式执行。
+注意`CREATE TABLE`操作是同步的，在`CREATE TABLE`执行过程中会阻塞其它DDL命令的执行，DML命令的执行不受影响，还会以并行的方式执行。
 
 如果希望使用键-值API访问数据，那么设置`CACHE_NAME`, `KEY_TYPE`和`VALUE_TYPE`参数会比较有用，因为：
 
  - `CREATE TABLE`执行后，生成的缓存名是`SQL_{SCHEMA_NAME}_{TABLE}`形式的，使用`CACHE_NAME`参数可以覆盖默认的名字；
- - 另外，该命令会创建两个新的二进制类型，分别对应键和值。Ignite会随机地生成包含UUID字符串的类型名，这使从非SQL API中使用这些`类型`变得复杂.这时可以使用自定义的`KEY_TYPE`和`VALUE_TYPE`来覆盖默认值，他们可以分别对应业务模型对象；
+ - 另外，该命令会创建两个新的二进制类型，分别对应键和值。Ignite会随机地生成包含UUID字符串的类型名，这使从非SQL API中使用这些`类型`变得复杂.这时可以使用自定义的`KEY_TYPE`和`VALUE_TYPE`来覆盖默认值，它们可以分别对应业务模型对象；
 
 #### 2.2.3.3.示例
 
@@ -240,9 +240,9 @@ CREATE TABLE IF NOT EXISTS Person (
 ```
 该命令执行后，做了如下事情：
 
- - 创建了一个新的名为`SQL_PUBLIC_PERSON`的分布式缓存，该缓存会存储Person类型的数据，该类型与一个特定的Java, .NET, C++类对应，或者是二进制对象。此外，键类型（`PersonKey`）和值类型（`MyPerson`）是显式定义的，说明该数据可以被键-值以及其他的非SQL API处理;
+ - 创建了一个新的名为`SQL_PUBLIC_PERSON`的分布式缓存，该缓存会存储Person类型的数据，该类型与一个特定的Java, .NET, C++类对应，或者是二进制对象。此外，键类型（`PersonKey`）和值类型（`MyPerson`）是显式定义的，说明该数据可以被键-值以及其它的非SQL API处理;
  - 带有所有参数的SQL表/模式都会被定义；
- - 数据以键-值对的形式存储，`PRIMARY KEY`列会被用于键列，其他的列则属于值；
+ - 数据以键-值对的形式存储，`PRIMARY KEY`列会被用于键列，其它的列则属于值；
  - 和分布式缓存有关的参数通过语句的`WITH`子句进行传递，如果没有`WITH`子句，那么缓存会通过`CacheConfiguration`类的默认参数创建。
 
 下面的示例显示了如何通过指定的`PRIMARY KEY`来创建相同的表，然后覆写了和缓存有关的部分参数：
@@ -269,7 +269,7 @@ DROP INDEX [IF EXISTS] indexName
 
 `DROP INDEX`命令会删除之前创建的一个索引。
 
-相同表的其他DDL命令会被阻塞，直到`DROP INDEX`执行完成，DML命令的执行不受影响，仍然会以并行的方式执行。
+相同表的其它DDL命令会被阻塞，直到`DROP INDEX`执行完成，DML命令的执行不受影响，仍然会以并行的方式执行。
 
 如果开启了Ignite的持久化，这个命令对应的模式改变也会被持久化到磁盘，因此即使整个集群重启也不会受到影响。
 
@@ -293,7 +293,7 @@ DROP TABLE [IF EXISTS] tableName
 
 `DROP TABLE`命令会删除之前创建的一个表,底层的分布式缓存及其保存的数据也会被删除。
 
-在`DROP TABLE`命令执行过程中，相同表的其他DDL和DML命令都会被阻塞，，在表删除后，所有挂起的命令都会报错。
+在`DROP TABLE`命令执行过程中，相同表的其它DDL和DML命令都会被阻塞，，在表删除后，所有挂起的命令都会报错。
 
 如果开启了Ignite的持久化，这个命令对应的模式改变也会被持久化到磁盘，因此即使整个集群重启也不会受到影响。
 
@@ -1509,7 +1509,7 @@ ROUNDMAGIC (expression)
 
 **描述**
 
-该方法会很好地对数值进行四舍五入，但是速度较慢。它对0附近的数值有特殊的处理，他只支持小于等于+/-1000000000000的数值。
+该方法会很好地对数值进行四舍五入，但是速度较慢。它对0附近的数值有特殊的处理，它只支持小于等于+/-1000000000000的数值。
 
 在内部，首先将值转成字符串，然后检查最后的4位，`000x`会变成`0000`,`999x`会变成`999999`，这些都是自动的，该方法返回double型值。
 
@@ -2015,7 +2015,7 @@ TRIM ([{LEADING | TRAILING | BOTH} [string] FROM] string)
 ```
 **描述**
 
-删除首尾的所有空格，通过一个字符串，也可以删除其他的字符。
+删除首尾的所有空格，通过一个字符串，也可以删除其它的字符。
 
 **示例**
 ```sql
@@ -2029,7 +2029,7 @@ REGEXP_REPLACE(inputString, regexString, replacementString [, flagsString])
 
 替换每个匹配正则表达式的子串，具体可以参照Java的`String.replaceAll()`方法，如果参数都为空（除了可选的flagsString参数），返回结果也为空。
 
-flagsString参数可以为`i`、`c`、`n`、`m`，其他的字符会出现异常，该参数可以同时使用多个标志位（比如`im`），后面的标志会覆盖前面的，比如`ic`等价于`c`。
+flagsString参数可以为`i`、`c`、`n`、`m`，其它的字符会出现异常，该参数可以同时使用多个标志位（比如`im`），后面的标志会覆盖前面的，比如`ic`等价于`c`。
 
  - `i`：启用区分大小写匹配（Pattern.CASE_INSENSITIVE）；
  - `c`：禁用区分大小写匹配（Pattern.CASE_INSENSITIVE）；
@@ -2048,7 +2048,7 @@ REGEXP_LIKE(inputString, regexString [, flagsString])
 
 用正则表达式进行字符串匹配，具体可以参照Java的`Matcher.find()`方法，如果参数都为空（除了可选的flagsString参数），返回结果也为空。
 
-flagsString参数可以为`i`、`c`、`n`、`m`，其他的字符会出现异常，该参数可以同时使用多个标志位（比如`im`），后面的标志会覆盖前面的，比如`ic`等价于`c`。
+flagsString参数可以为`i`、`c`、`n`、`m`，其它的字符会出现异常，该参数可以同时使用多个标志位（比如`im`），后面的标志会覆盖前面的，比如`ic`等价于`c`。
 
  - `i`：启用区分大小写匹配（Pattern.CASE_INSENSITIVE）；
  - `c`：禁用区分大小写匹配（Pattern.CASE_INSENSITIVE）；
@@ -2613,7 +2613,7 @@ CAST (value AS dataType)
 
 将值变更为另一个类型，规则如下：
 
- - 如果将数值转为布尔值，0被认为false，其他值为true；
+ - 如果将数值转为布尔值，0被认为false，其它值为true；
  - 如果将布尔值转为数值，false为0，true为1；
  - 当将数值转为另一个类型的数值时，会检查是否溢出；
  - 如果将数值转为二进制，字节数会与精度匹配；
@@ -2778,7 +2778,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - ODBC: `SQL_VARCHAR`
 
 ### 2.10.13.CHAR
-可选值：Unicode字符串。支持这个类型是为了与旧的应用或者其他数据库进行兼容。
+可选值：Unicode字符串。支持这个类型是为了与旧的应用或者其它数据库进行兼容。
 
 映射：
 

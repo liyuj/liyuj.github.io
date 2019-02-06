@@ -85,7 +85,7 @@ private static void writeRequestHeader(int reqLength, short opCode, long reqId, 
 |---|---|
 |`int`|响应消息长度|
 |`long`|请求Id|
-|`int`|状态码，（0为成功，其他为错误码）|
+|`int`|状态码，（0为成功，其它为错误码）|
 |`string`|错误消息（只有状态码非0时才会有）|
 
 响应头：

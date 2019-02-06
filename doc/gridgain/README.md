@@ -154,7 +154,7 @@ try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
 ### 1.1.6.第一个GridGain数据应用
 下面是几个简单的示例，进行分布式缓存的读写，以及执行基本的事务等。
 
-因为示例中用到了缓存，因此要确保它们已经配置好，下面会使用Ignite已经附带的示例配置，他已经配置好了若干个缓存：
+因为示例中用到了缓存，因此要确保它们已经配置好，下面会使用Ignite已经附带的示例配置，它已经配置好了若干个缓存：
 ```bash
 $ bin/ignite.sh examples/config/example-cache.xml
 ```
@@ -272,7 +272,7 @@ XML：
 |`setDrReceiverConfiguration()`|设定数据中心接收者配置||
 |`setAuthenticator()`|设定配置好的`Authenticator`的实例||
 |`setSecurityCredentialsProvider()`|设定安全凭据||
-|`setInteropConfiguration()`|设定与其他平台的互操作性||
+|`setInteropConfiguration()`|设定与其它平台的互操作性||
 |`setRollingUpdatesEnabled()`|启用和禁用滚动升级|false|
 
 ### 1.2.2.GridGainCacheConfiguration

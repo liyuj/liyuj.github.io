@@ -8,7 +8,7 @@
 ### 1.1.1.固化内存
 Ignite的固化内存组件不仅仅将内存作为一个缓存层，还视为一个全功能的存储层。这意味着可以按需将持久化打开或者关闭。如果持久化关闭，那么Ignite就可以作为一个分布式的**内存数据库**或者**内存数据网格**，这完全取决于使用SQL和键-值API的喜好。如果持久化打开，那么Ignite就成为一个分布式的，**可水平扩展的数据库**，它会保证完整的数据一致性以及集群故障的可恢复能力。
 ### 1.1.2.Ignite持久化
-Ignite的原生持久化是一个分布式的、支持ACID以及兼容SQL的磁盘存储，它可以作为一个可选的磁盘层与Ignite的固化内存透明地集成，然后将数据和索引存储在SSD、闪存、3D XPoint以及其他类型的非易失性存储中。
+Ignite的原生持久化是一个分布式的、支持ACID以及兼容SQL的磁盘存储，它可以作为一个可选的磁盘层与Ignite的固化内存透明地集成，然后将数据和索引存储在SSD、闪存、3D XPoint以及其它类型的非易失性存储中。
 
 打开Ignite的持久化之后，就不需要将所有的数据和索引保存在内存中，或者在节点或者集群重启后对数据进行预热，因为固化内存和持久化紧密耦合之后，会将其视为一个二级存储层，这意味着在内存中数据和索引的一个子集如果丢失了，固化内存会从磁盘上进行获取。
 ### 1.1.3.ACID兼容
@@ -46,13 +46,13 @@ Ignite是一个弹性的、可水平扩展的分布式系统，它支持按需�
 
 **Ignite是不是SQL数据库？**
 
-**不完整**，尽管Ignite的目标是和其他的关系型SQL数据库具有类似的行为，但是在处理约束和索引方面还是有不同的。Ignite支持*一级*和*二级*索引，但是只有一级索引支持*唯一性*，Ignite还不支持*外键*约束。
+**不完整**，尽管Ignite的目标是和其它的关系型SQL数据库具有类似的行为，但是在处理约束和索引方面还是有不同的。Ignite支持*一级*和*二级*索引，但是只有一级索引支持*唯一性*，Ignite还不支持*外键*约束。
 
 总体来说，Ignite作为约束不支持任何会导致集群广播消息的更新以及显著降低系统性能和可伸缩性的操作。
 
 **Ignite是不是一个NoSQL数据库?**
 
-**不完全**，和其他NoSQL数据库一样，Ignite支持高可用和水平扩展，但是，和其他的NoSQL数据库不同，Ignite支持SQL和ACID。
+**不完全**，和其它NoSQL数据库一样，Ignite支持高可用和水平扩展，但是，和其它的NoSQL数据库不同，Ignite支持SQL和ACID。
 
 **Ignite是不是事务型数据库？**
 
@@ -95,7 +95,7 @@ Apache Ignite官方在如下环境中进行的测试：
  - 解压到系统中的一个安装文件夹；
  - （可选）配置`IGNITE_HOME`环境变量，指向安装文件夹，确保路径不以`/`结尾。
 
-> **其他的安装选项**
+> **其它的安装选项**
 除了二进制发行版，Ignite还支持源代码安装、docker、云镜像以及RPM格式，具体可以看下面的说明。
 在应用中，建议使用maven，后面会介绍。
 
@@ -566,7 +566,7 @@ ignite.compute().affinityRun("SQL_PUBLIC_CITY", cityId, new IgniteRunnable() {
 ### 1.3.6.第一个数据网格应用
 我们再来一个小例子，它从/往分布式缓存中获取/添加数据，并且执行基本的事务。
 
-因为在应用中使用了缓存，要确保他是经过配置的，我们可以用Ignite自带的示例配置，他已经做了一些缓存的配置。
+因为在应用中使用了缓存，要确保它是经过配置的，我们可以用Ignite自带的示例配置，它已经做了一些缓存的配置。
 ```bash
 $ bin/ignite.sh examples/config/example-cache.xml
 ```
@@ -752,8 +752,8 @@ public class ServiceGridExample {
 零部署是不支持服务网格的，如果希望将上面的服务部署在通过`ignite.sh`或者`ignite.bat`文件启动的节点上，那么就需要将服务的实现打成jar包然后放在`{apache_ignite_version}/libs`文件夹中。
 
 ### 1.3.8.集群管理和监控
-查看数据网格的数据、以及执行其他的管理和监控操作的最简单方式是使用`Ignite Web控制台`，还有就是使用Ignite的`Visor命令行`工具。
-### 1.3.9.其他的安装方式
+查看数据网格的数据、以及执行其它的管理和监控操作的最简单方式是使用`Ignite Web控制台`，还有就是使用Ignite的`Visor命令行`工具。
+### 1.3.9.其它的安装方式
 除了二进制发布版以及Maven组件，要安装Ignite，还可以使用Docker、云镜像、使用DEB或者RPM包、从源代码编译等。
 
 **Docker和云镜像**
@@ -849,7 +849,7 @@ Ignite强依赖于`ignite-core.jar`。
     <version>${ignite.version}</version>
 </dependency>
 ```
-然而，很多时候需要其他更多的依赖，比如，要使用Spring配置或者SQL查询等。
+然而，很多时候需要其它更多的依赖，比如，要使用Spring配置或者SQL查询等。
 
 下面就是最常用的可选模块：
 
@@ -875,7 +875,7 @@ Ignite强依赖于`ignite-core.jar`。
 ```
 
 ### 1.4.3.导入独立模块
-可以一个个地导入Ignite模块，唯一必须的就是`ignite-core`，其他的都是可选的，所有可选模块都可以像核心模块一样导入，只是构件Id不同。
+可以一个个地导入Ignite模块，唯一必须的就是`ignite-core`，其它的都是可选的，所有可选模块都可以像核心模块一样导入，只是构件Id不同。
 
 现在提供如下模块：
 
@@ -899,7 +899,7 @@ Ignite强依赖于`ignite-core.jar`。
  - `ignite-visor-console`：开源的命令行管理和监控工具
 
 > **构件版本**
-注意，导入若干Ignite模块时，他们的版本号应该相同，比如，如果使用`ignite-core`1.8,所有其他的模块也必须导入1.8版本。
+注意，导入若干Ignite模块时，它们的版本号应该相同，比如，如果使用`ignite-core`1.8,所有其它的模块也必须导入1.8版本。
 
 ### 1.4.4.LGPL依赖
 下面的Ignite模块有LGPL依赖，因此无法部署到Maven中央仓库：
@@ -970,7 +970,7 @@ public class MyLifecycleBean implements LifecycleBean {
     }
 }
 ```
-也可以将Ignite实例以及其他有用的资源注入`LifecycleBean`实现，查看[资源注入](#_1-8-资源注入)章节可以了解更多的信息。
+也可以将Ignite实例以及其它有用的资源注入`LifecycleBean`实现，查看[资源注入](#_1-8-资源注入)章节可以了解更多的信息。
 
 ### 1.5.4.生命周期事件类型
 当前支持如下生命周期事件类型：
@@ -1056,7 +1056,7 @@ Ignite ignite = Ignition.start();
 ### 1.7.3.创建分布式缓存
 当在Ignite中创建缓存时，不管是通过XML方式，还是通过` Ignite.createCache(...)`或者`Ignite.getOrCreateCache(...)`方法，Ignite会自动地在所有的服务端节点中部署分布式缓存。
 
-> 当分布式缓存创建之后，他会自动地部署在所有的已有或者未来的**服务端**节点上。
+> 当分布式缓存创建之后，它会自动地部署在所有的已有或者未来的**服务端**节点上。
 
 ```java
 // Enable client mode locally.
@@ -1133,9 +1133,9 @@ XML：
  - 慢客户端会被服务端节点踢出；
 
 当一个客户端发现它与一个集群断开时，会为自己赋予一个新的节点`id`然后试图与该服务端重新连接。`注意`：这会产生一个副作用，就是当客户端重建连接时本地`ClusterNode`的`id`属性会发生变化，这意味着，如果业务逻辑依赖于这个`id`，就会受到影响。
-当客户端处于一个断开状态并且试图重建与集群的连接过程中时，Ignite API会抛出一个特定的异常：`IgniteClientDisconnectedException`，这个异常提供了一个`future`，当客户端重连成功后他会完成（`IgniteCache`API会抛出`CacheException`，他有一个`IgniteClientDisconnectedException`作为他的cause）。这个`future`也可以通过`IgniteCluster.clientReconnectFuture()`方法获得。
+当客户端处于一个断开状态并且试图重建与集群的连接过程中时，Ignite API会抛出一个特定的异常：`IgniteClientDisconnectedException`，这个异常提供了一个`future`，当客户端重连成功后它会完成（`IgniteCache`API会抛出`CacheException`，它有一个`IgniteClientDisconnectedException`作为它的cause）。这个`future`也可以通过`IgniteCluster.clientReconnectFuture()`方法获得。
 
-此外，客户端重连也有一些特定的事件（这些事件是本地化的，也就是说他们只会在客户端节点触发）：
+此外，客户端重连也有一些特定的事件（这些事件是本地化的，也就是说它们只会在客户端节点触发）：
 
  - EventType.EVT_CLIENT_NODE_DISCONNECTED
  - EventType.EVT_CLIENT_NODE_RECONNECTED
@@ -1218,7 +1218,7 @@ cfg.setDiscoverySpi(discoverySpi);
 ### 1.8.1.摘要
 Ignite中，预定义的资源都是可以进行依赖注入的，同时支持基于属性和基于方法的注入。任何加注正确注解的资源都会在初始化之前注入相对应的任务、作业、闭包或者SPI。
 ### 1.8.2.基于属性和基于方法
-可以通过在一个属性或者方法上加注注解来注入资源。当加注在属性上时，Ignite只是在注入阶段简单地设置属性的值（不会理会该属性的访问修饰符）。如果在一个方法上加注了资源注解，他会访问一个与注入资源相对应的输入参数的类型，如果匹配，那么在注入阶段，就会将适当的资源作为输入参数，然后调用该方法。
+可以通过在一个属性或者方法上加注注解来注入资源。当加注在属性上时，Ignite只是在注入阶段简单地设置属性的值（不会理会该属性的访问修饰符）。如果在一个方法上加注了资源注解，它会访问一个与注入资源相对应的输入参数的类型，如果匹配，那么在注入阶段，就会将适当的资源作为输入参数，然后调用该方法。
 
 基于属性：
 ```java
@@ -1262,7 +1262,7 @@ public class MyClusterJob implements ComputeJob {
 |`IgniteInstanceResource`|注入当前的Ignite实例|
 |`JobContextResource`|注入`ComputeJobContext`的实例。作业的上下文持有关于一个作业执行的有用的信息。比如，可以获得包含与作业并置的条目的缓存的名字。|
 |`LoadBalancerResource`|注入`ComputeLoadBalancer`的实例，注入后可以用于任务的负载平衡。|
-|`LoggerResource`|注入`IgniteLogger`的实例，他可以用于向本地节点的日志写消息。|
+|`LoggerResource`|注入`IgniteLogger`的实例，它可以用于向本地节点的日志写消息。|
 |`ServiceResource`|通过指定服务名注入Ignite的服务。|
 |`SpringApplicationContextResource`|注入Spring的`ApplicationContext`资源。|
 |`SpringResource`|从Spring的`ApplicationContext`注入资源，当希望访问在Spring的ApplicationContext XML配置中指定的一个Bean时，可以用它。|
@@ -1273,7 +1273,7 @@ public class MyClusterJob implements ComputeJob {
 ### 1.9.1.摘要
 Ignite创建并且维护着一组线程池，根据使用的API不同分别用于不同的目的。本章节中会列出一些众所周知的内部线程池，然后会展示如何自定义线程池。在`IgniteConfiguration`的javadoc中，可以看到Ignite中可用的完整线程池列表。
 ### 1.9.2.系统线程池
-系统线程池处理所有与缓存相关的操作，除了SQL以及其他的查询类型，它们会使用查询线程池，同时这个线程池也负责处理Ignite计算任务的取消操作。
+系统线程池处理所有与缓存相关的操作，除了SQL以及其它的查询类型，它们会使用查询线程池，同时这个线程池也负责处理Ignite计算任务的取消操作。
 
 默认的线程池数量为`max(8,CPU总核数)`，使用`IgniteConfiguration.setSystemThreadPoolSize(...)`可以进行调整。
 ### 1.9.3.公共线程池
@@ -1330,7 +1330,7 @@ public class InnerRunnable implements IgniteRunnable {
     }
 }
 ```
-怎么做呢，需要使用`IgniteCompute.withExecutor()`，他会被上级任务的实现马上执行，像下面这样：
+怎么做呢，需要使用`IgniteCompute.withExecutor()`，它会被上级任务的实现马上执行，像下面这样：
 ```java
 public class OuterRunnable implements IgniteRunnable {    
     @IgniteInstanceResource
@@ -1352,11 +1352,11 @@ ignite.compute().run(new OuterRunnable());
 ### 1.10.1.基本概念
 从1.6版本开始，Ignite引入了一个在缓存中存储数据的新概念，名为`二进制对象`，这个新的序列化格式提供了若干个优势：
 
- - 他可以从一个对象的序列化形式中读取一个任意的属性，而不需要将该对象完整地反序列化，这个功能完全删除了将缓存的键和值类部署到服务端节点类路径的必要性；
- - 他可以为同一个类型的对象增加和删除属性，给定的服务端节点不需要有模型类的定义，这个功能允许动态改变对象的结构，甚至允许多个客户端持有类定义的不同版本，他们是共存的；
- - 他可以根据类型名构造一个新的对象，根本不需要类定义，因此允许动态类型创建；
+ - 它可以从一个对象的序列化形式中读取一个任意的属性，而不需要将该对象完整地反序列化，这个功能完全删除了将缓存的键和值类部署到服务端节点类路径的必要性；
+ - 它可以为同一个类型的对象增加和删除属性，给定的服务端节点不需要有模型类的定义，这个功能允许动态改变对象的结构，甚至允许多个客户端持有类定义的不同版本，它们是共存的；
+ - 它可以根据类型名构造一个新的对象，根本不需要类定义，因此允许动态类型创建；
 
-二进制对象只可以用于使用默认的二进制编组器时（即没有在配置中显式地设置其他的编组器）
+二进制对象只可以用于使用默认的二进制编组器时（即没有在配置中显式地设置其它的编组器）
 
 > **限制**
 `BinaryObject`格式实现也带来了若干个限制：
@@ -1366,7 +1366,7 @@ ignite.compute().run(new OuterRunnable());
 
 `IgniteBinary`入口，可以从Ignite的实例获得，包含了操作二进制对象的所有必要的方法。
 >**自动化哈希值计算和Equals实现**
-如果一个对象可以被序列化到二进制形式，那么Ignite会在序列化期间计算它的哈希值并且将其写入最终的二进制数组。另外，Ignite还为二进制对象的比较需求提供了equals方法的自定义实现。这意味着，不需要为在Ignite中使用的自定义键和值覆写`GetHashCode`和`Equals`方法，除非他们无法序列化成二进制形式。
+如果一个对象可以被序列化到二进制形式，那么Ignite会在序列化期间计算它的哈希值并且将其写入最终的二进制数组。另外，Ignite还为二进制对象的比较需求提供了equals方法的自定义实现。这意味着，不需要为在Ignite中使用的自定义键和值覆写`GetHashCode`和`Equals`方法，除非它们无法序列化成二进制形式。
 比如，`Externalizable`类型的对象无法被序列化成二进制形式，这时就需要自行实现`hashCode`和`equals`方法，具体可以看上面的限制章节。
 
 ### 1.10.2.配置二进制对象
@@ -1398,9 +1398,9 @@ ignite.compute().run(new OuterRunnable());
 Ignite默认使用反序列化值作为最常见的使用场景，要启用`BinaryObject`处理，需要获得一个`IgniteCache`的实例然后使用`withKeepBinary()`方法。启用之后，如果可能，这个标志会确保从缓存返回的对象都是`BinaryObject`格式的。将值传递给`EntryProcessor`和`CacheInterceptor`也是同样的处理。
 
 > **平台类型**
-注意当通过`withKeepBinary()`方法启用`BinaryObject`处理时并不是所有的对象都会表示为`BinaryObject`，会有一系列的`平台`类型，包括基本类型，String，UUID，Date，Timestamp，BigDecimal，Collections，Maps和Arrays，他们不会被表示为`BinaryObject`。
+注意当通过`withKeepBinary()`方法启用`BinaryObject`处理时并不是所有的对象都会表示为`BinaryObject`，会有一系列的`平台`类型，包括基本类型，String，UUID，Date，Timestamp，BigDecimal，Collections，Maps和Arrays，它们不会被表示为`BinaryObject`。
 
-注意在下面的示例中，键类型为`Integer`，他是不会被修改，因为他是`平台`类型。
+注意在下面的示例中，键类型为`Integer`，它是不会被修改，因为它是`平台`类型。
 
 获取BinaryObject：
 ```java
@@ -1417,7 +1417,7 @@ BinaryObject binaryPerson = binaryCache.get(personId);
 ### 1.10.4.使用BinaryObjectBuilder修改二进制对象
 `BinaryObject`实例是不能修改的，要更新属性或者创建新的`BinaryObject`，必须使用`BinaryObjectBuilder`的实例。
 
-`BinaryObjectBuilder`的实例可以通过`IgniteBinary`入口获得。他可以使用类型名创建，这时返回的对象不包含任何属性，或者他也可以通过一个已有的`BinaryObject`创建，这时返回的对象会包含从给定的`BinaryObject`中拷贝的所有属性。
+`BinaryObjectBuilder`的实例可以通过`IgniteBinary`入口获得。它可以使用类型名创建，这时返回的对象不包含任何属性，或者它也可以通过一个已有的`BinaryObject`创建，这时返回的对象会包含从给定的`BinaryObject`中拷贝的所有属性。
 
 获取`BinaryObjectBuilder`实例的另外一个方式是调用已有`BinaryObject`实例的`toBuilder()`方法，这种方式创建的对象也会从`BinaryObject`中拷贝所有的数据。
 
@@ -1448,7 +1448,7 @@ cache.<Integer, BinaryObject>withKeepBinary().invoke(
 ### 1.10.5.BinaryObject类型元数据
 像上面描述的那样，二进制对象结构可以在运行时进行修改，因此获取一个存储在缓存中的一个特定类型的信息也可能是有用的，比如属性名，属性类型，属性类型名，关系属性名，Ignite通过`BinaryType`接口满足这样的需求。
 
-这个接口还引入了一个属性getter的更快的版本，叫做`BinaryField`。这个概念类似于Java的反射，可以缓存`BinaryField`实例中读取的属性的特定信息，他有助于从一个很大的二进制对象集合中读取同一个属性。
+这个接口还引入了一个属性getter的更快的版本，叫做`BinaryField`。这个概念类似于Java的反射，可以缓存`BinaryField`实例中读取的属性的特定信息，它有助于从一个很大的二进制对象集合中读取同一个属性。
 ```java
 Collection<BinaryObject> persons = getPersons();
 
@@ -1515,7 +1515,7 @@ public class CacheExampleBinaryStore extends CacheStoreAdapter<Integer, BinaryOb
 Ignite直接支持如下的映射器实现：
 
  - `BinaryBasicNameMapper`：`BinaryNameMapper`的一个基本实现，对于一个给定的类，根据使用的`setSimpleName(boolean useSimpleName)`属性值，会返回一个完整或者简单的名字；
- - `BinaryBasicIdMapper`：`BinaryIdMapper`的一个基本实现，他有一个`setLowerCase(boolean isLowerCase)`配置属性，如果属性设置为`false`，那么会返回一个给定类型或者属性名的哈希值，如果设置为`true`，会返回一个给定类型或者属性名的小写形式的哈希值。
+ - `BinaryBasicIdMapper`：`BinaryIdMapper`的一个基本实现，它有一个`setLowerCase(boolean isLowerCase)`配置属性，如果属性设置为`false`，那么会返回一个给定类型或者属性名的哈希值，如果设置为`true`，会返回一个给定类型或者属性名的小写形式的哈希值。
 
 如果仅仅使用Java或者.NET客户端并且在`BinaryConfiguration`中没有指定映射器，那么Ignite会使用`BinaryBasicNameMapper`并且`simpleName`属性会被设置为`false`，使用`BinaryBasicIdMapper`并且`lowerCase`属性会被设置为`true`。
 
@@ -1725,7 +1725,7 @@ Apache Ignite是一个具有计算能力的、有弹性的内存中的分布式�
 
 **6.是否可以用Hibernate访问Apache Ignite？**
 
-是的，Apache Ignite可以用作Hibernate的二级缓存（或者L2缓存），他可以显著地提升应用的持久化层的速度。
+是的，Apache Ignite可以用作Hibernate的二级缓存（或者L2缓存），它可以显著地提升应用的持久化层的速度。
 [更多信息](https://apacheignite.readme.io/docs/hibernate-l2-cache)
 
 **7.Apache Ignite是否支持JDBC？**
@@ -1735,12 +1735,12 @@ Apache Ignite是一个具有计算能力的、有弹性的内存中的分布式�
 
 **8.Apache Ignite是否保证消息的顺序？**
 
-是的，如果希望收到消息的顺序与发送消息的顺序一致，可以使用`sendOrdered(...)`方法。可以传递一个超时时间来指定一条消息在队列中的等待时间，他会等待本来应在其之前发送的消息。如果超时时间过期，所有的还没有到达该节点中一个给定主题的消息都会被忽略。
+是的，如果希望收到消息的顺序与发送消息的顺序一致，可以使用`sendOrdered(...)`方法。可以传递一个超时时间来指定一条消息在队列中的等待时间，它会等待本来应在其之前发送的消息。如果超时时间过期，所有的还没有到达该节点中一个给定主题的消息都会被忽略。
 [更多信息](https://apacheignite.readme.io/docs/messaging)
 
-**9.是否可以运行Java和.Net闭包？他是如何工作的？**
+**9.是否可以运行Java和.Net闭包？它是如何工作的？**
 
-.Net节点可以同时执行Java和.Net闭包，而标准Java节点只能执行Java闭包。当启动ApacheIgnite.exe时，他会使用位于`IGNITE_HOME/platforms/dotnet/bin`的一个脚本在同一个进程下同时启动JVM和CLR，.Net闭包会被CLR处理执行。
+.Net节点可以同时执行Java和.Net闭包，而标准Java节点只能执行Java闭包。当启动ApacheIgnite.exe时，它会使用位于`IGNITE_HOME/platforms/dotnet/bin`的一个脚本在同一个进程下同时启动JVM和CLR，.Net闭包会被CLR处理执行。
 
 **10.Java和.Net之间的转换成本是什么？**
 
@@ -1752,8 +1752,8 @@ Apache Ignite是一个具有计算能力的、有弹性的内存中的分布式�
 
 **12.SQL查询是否被负载平衡？**
 
-SQL查询总是被广播到保存有要查询的数据的每个节点，例外就是本地SQL查询(query.setLocal(true))，他只是在一个本地节点执行，还有就是可以精确标识节点的部分查询。
+SQL查询总是被广播到保存有要查询的数据的每个节点，例外就是本地SQL查询(query.setLocal(true))，它只是在一个本地节点执行，还有就是可以精确标识节点的部分查询。
 
 **13.用户是否可以控制资源分配？即，是否可以限制用户A为50个节点，但是用户B可以在所有的100个节点上执行任务？**
 
-多租户只在缓存中存在，他们可以在创建在一个节点的子集上（可以看`CacheConfiguration.setNodeFilter`）以及在每个缓存基础上安全地赋予权限。
+多租户只在缓存中存在，它们可以在创建在一个节点的子集上（可以看`CacheConfiguration.setNodeFilter`）以及在每个缓存基础上安全地赋予权限。

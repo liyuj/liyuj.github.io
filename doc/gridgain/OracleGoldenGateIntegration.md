@@ -349,7 +349,7 @@ gg.handler.gridgain.operationHandlerBeanName=personOperationHandler
 ...
 ```
 ## 2.4.GoldenGate冲突解决
-当通过GoldenGate和GridGain缓存API更新缓存时，可以选择继续更新、保留旧值或通过合并旧值和新值生成其他值。为了实现这一点，GridGain提供了冲突解决方案。
+当通过GoldenGate和GridGain缓存API更新缓存时，可以选择继续更新、保留旧值或通过合并旧值和新值生成其它值。为了实现这一点，GridGain提供了冲突解决方案。
 
 要对缓存操作和数据流处理使用冲突解决机制，需要使用`GridGain.cache(String cacheName, byte dataCenterId)`和`GridGain.dataStreamer(String cacheName, byte dataCenterId)`方法。它预计数据中心ID对于参与数据中心复制的所有拓扑都是唯一的，对于属于给定拓扑的所有节点也是唯一的。
 

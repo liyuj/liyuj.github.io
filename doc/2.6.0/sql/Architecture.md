@@ -25,7 +25,7 @@ Ignite SQL网格执行查询有两种方式：
 关联查询的执行流程与上面描述的`分区`缓存查询执行流程没什么不同。
 
 ### 3.1.2.并发修改
-`UPDATE`和`DELETE`语句在内部会生成`SELECT`查询，目的是获得要更新的条目的集合。这个集合中的键是不会被锁定的，因此有一种可能就是在并发的情况下，属于某个键的值会被其他的查询修改。SQL引擎已经实现了一种技术，即首先避免锁定键，然后保证在DML语句执行更新时值是最新的。
+`UPDATE`和`DELETE`语句在内部会生成`SELECT`查询，目的是获得要更新的条目的集合。这个集合中的键是不会被锁定的，因此有一种可能就是在并发的情况下，属于某个键的值会被其它的查询修改。SQL引擎已经实现了一种技术，即首先避免锁定键，然后保证在DML语句执行更新时值是最新的。
 总体而言，引擎会并发地检测要更新的缓存条目的子集，然后重新执行`SELECT`语句来限制要修改的键的范围。
 比如下面的要执行的`UPDATE`语句：
 ```java
@@ -38,7 +38,7 @@ SELECT _key, _value, 'Mike' from Person WHERE lastName = 'Smith';
 >**_key和_val**
 `_key`和`_val`关键字用于获取同时获取对象的键和包含所有属性的值，同样的关键字也可以用于应用的代码中。
 
-之后通过上面的`SELECT`获得的条目会被其他查询并发地更新：
+之后通过上面的`SELECT`获得的条目会被其它查询并发地更新：
 ```java
 UPDATE Person set firstName = 'Sarah' WHERE id = 1;
 ```
@@ -96,13 +96,13 @@ Ignite设计和支持的**非并置**分布式关联就是针对的这样的场�
 可以查看JDBC, ODBC, Java, .NET, C++的相关文档来了解详细的信息。
 以Jdbc为例，它需要在连接的URL连接串中添加`distributedJoins=true`参数。
 
-正如**图2**所示，有一个潜在的数据移动步骤（D(Q)）。潜在的单播请求只会在关联在主键（缓存键）或者关系键上完成之后才会发送，因为执行关联的节点知道缺失数据的位置，其他所有的情况都会发送广播请求。 
+正如**图2**所示，有一个潜在的数据移动步骤（D(Q)）。潜在的单播请求只会在关联在主键（缓存键）或者关系键上完成之后才会发送，因为执行关联的节点知道缺失数据的位置，其它所有的情况都会发送广播请求。 
 ![](https://files.readme.io/95f09db-Non_collocated_sql_queries.png)
 
 >因为性能的原因，不管是广播还是单播请求，都是批量处理的，这个批量的大小是由`page size`参数管理的。
 
 ## .3.3.本地查询
-有时，SQL网格中查询的执行会从分布式模式回落至本地模式，在本地模式中，查询会简单地传递至底层的H2引擎，他只会处理本地节点的数据集。
+有时，SQL网格中查询的执行会从分布式模式回落至本地模式，在本地模式中，查询会简单地传递至底层的H2引擎，它只会处理本地节点的数据集。
 这些场景包括：
 
  - 如果一个查询在部署有`复制`缓存的节点上执行，那么Ignite会假定所有的数据都在本地，然后就会隐式地在本地执行一个简单的查询；
@@ -138,7 +138,7 @@ Ignite的空间库(`ignite-geospatial`)依赖于[JTS](http://tsusiatsoftware.net
 另外，也可以下载Ignite的源代码自己构建这个库。
 ## 3.5.性能和调试
 ### 3.5.1.使用EXPLAIN语句
-为了读取执行计划以及提高查询性能的目的，Ignite支持`EXPLAIN ...`语法，注意一个计划游标会包含多行：最后一行是汇总节点的查询，其他是映射节点的。
+为了读取执行计划以及提高查询性能的目的，Ignite支持`EXPLAIN ...`语法，注意一个计划游标会包含多行：最后一行是汇总节点的查询，其它是映射节点的。
 ```sql
 EXPLAIN SELECT name FROM Person WHERE age = 26;
 ```
@@ -149,7 +149,7 @@ EXPLAIN SELECT name FROM Person WHERE age = 26;
 ### 3.5.3.SQL性能和可用性考量
 当执行SQL查询时有一些常见的陷阱需要注意：
 
- 1. 如果查询使用了操作符**OR**那么他可能不是以期望的方式使用索引。比如对于查询：`select name from Person where sex='M' and (age = 20 or age = 30)`,会使用`sex`字段上的索引而不是`age`上的索引，虽然后者选择性更强。要解决这个问题需要用UNION ALL重写这个查询（注意没有ALL的UNION会返回去重的行，这会改变查询的语意而且引入了额外的性能开销），比如：`select name from Person where sex='M' and age = 20 UNION ALL select name from Person where sex='M' and age = 30`；
+ 1. 如果查询使用了操作符**OR**那么它可能不是以期望的方式使用索引。比如对于查询：`select name from Person where sex='M' and (age = 20 or age = 30)`,会使用`sex`字段上的索引而不是`age`上的索引，虽然后者选择性更强。要解决这个问题需要用UNION ALL重写这个查询（注意没有ALL的UNION会返回去重的行，这会改变查询的语意而且引入了额外的性能开销），比如：`select name from Person where sex='M' and age = 20 UNION ALL select name from Person where sex='M' and age = 30`；
  2. 如果查询使用了操作符**IN**，那么会有两个问题：首先无法提供可变参数列表，这意味着需要在查询中指定明确的列表，比如`where id in (?, ?, ?)`,但是不能写`where id in ?`然后传入一个数组或者集合。第二，查询无法使用索引，要解决这两个问题需要像这样重写查询：`select p.name from Person p join table(id bigint = ?) i on p.id = i.id`,这里可以提供一个任意长度的对象数组（Object[]）作为参数，然后会在字段`id`上使用索引。注意基本类型数组（比如int[],long[]等）无法使用这个语法，但是可以使用基本类型的包装器。
 
 示例：
@@ -157,7 +157,7 @@ EXPLAIN SELECT name FROM Person WHERE age = 26;
 new SqlFieldsQuery(
   "select * from Person p join table(id bigint = ?) i on p.id = i.id").setArgs(new Object[]{ new Integer[] {2, 3, 4} }))
 ```
-他会被转换为下面的SQL：
+它会被转换为下面的SQL：
 ```sql
 select * from "cache-name".Person p join table(id bigint = (2,3,4)) i on p.id = i.id
 ```
@@ -188,10 +188,10 @@ select SUM(salary) from Person
 通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用`CREATE TABLE`生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
 如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行化配置。
 > **注意**
-当前，这个属性影响特定缓存上的所有查询，可以加速很重的OLAP查询，但是会减慢其他的简单查询，这个行为在未来的版本中会改进。
+当前，这个属性影响特定缓存上的所有查询，可以加速很重的OLAP查询，但是会减慢其它的简单查询，这个行为在未来的版本中会改进。
 
 ### 3.5.6.索引提示
-当明确知道对于查询来说一个索引比另一个更合适时，索引提示就会非常有用，他也有助于指导查询优化器来选择一个更高效的执行计划。在Ignite中要进行这个优化，可以使用`USE INDEX(indexA,...,indexN)`语句，它会告诉Ignite对于查询的执行只会使用给定名字的索引之一。
+当明确知道对于查询来说一个索引比另一个更合适时，索引提示就会非常有用，它也有助于指导查询优化器来选择一个更高效的执行计划。在Ignite中要进行这个优化，可以使用`USE INDEX(indexA,...,indexN)`语句，它会告诉Ignite对于查询的执行只会使用给定名字的索引之一。
 下面是一个示例：
 ```sql
 SELECT * FROM Person USE INDEX(index_age)

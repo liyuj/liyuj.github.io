@@ -1,7 +1,7 @@
 # 2.集群发现
 ## 2.1.Amazon AWS发现
 ### 2.1.1.摘要
-AWS云上的节点发现通常认为很有挑战性。Amazon EC2，和其他大部分的虚拟环境一样，有如下的限制：
+AWS云上的节点发现通常认为很有挑战性。Amazon EC2，和其它大部分的虚拟环境一样，有如下的限制：
 
  - 组播被禁用
  - 每次新的镜像启动时TCP地址会发生变化
@@ -117,7 +117,7 @@ Ignition.start(cfg);
 :::
 ## 2.2.Google计算发现
 ### 2.2.1.摘要
-GCE上的节点发现通常认为很有挑战性。Google云，和其他大部分的虚拟环境一样，有如下的限制：
+GCE上的节点发现通常认为很有挑战性。Google云，和其它大部分的虚拟环境一样，有如下的限制：
 
  - 组播被禁用
  - 每次新的镜像启动时TCP地址会发生变化
@@ -125,7 +125,7 @@ GCE上的节点发现通常认为很有挑战性。Google云，和其他大部�
 虽然在没有组播时可以使用基于TCP的发现，但是不得不处理不断变换的IP地址以及不断更新配置。这产生了一个主要的不便之处以至于在这种环境下基于静态IP的配置实质上变得不可用。
 
 ### 2.2.2.基于Google云存储的发现
-为了减轻不断变化的IP地址的问题，Ignite支持通过使用基于`TcpDiscoveryGoogleStorageIpFinder`的Google云存储来实现节点的自动发现。在启动时节点在存储上注册他们的IP地址，这样其他节点会试图连接任意保存在存储上的IP地址然后初始化网格节点的自动发现。
+为了减轻不断变化的IP地址的问题，Ignite支持通过使用基于`TcpDiscoveryGoogleStorageIpFinder`的Google云存储来实现节点的自动发现。在启动时节点在存储上注册它们的IP地址，这样其它节点会试图连接任意保存在存储上的IP地址然后初始化网格节点的自动发现。
 
 > 这个方法可以只配置一次就可以在所有的EC2实例上复用。
 
@@ -168,7 +168,7 @@ Ignition.start(cfg);
 
 ## 2.3.JCloud发现
 ### 2.3.1.摘要
-云平台上的节点发现通常认为很有挑战性。因为JCloud，和其他大部分的虚拟环境一样，有如下的限制：
+云平台上的节点发现通常认为很有挑战性。因为JCloud，和其它大部分的虚拟环境一样，有如下的限制：
 
  - 组播被禁用
  - 每次新的镜像启动时TCP地址会发生变化
@@ -178,11 +178,11 @@ Ignition.start(cfg);
 ### 2.3.2.基于Apache JCloud的发现
 为了减轻不断变化的IP地址的问题，Ignite支持通过使用基于`TcpDiscoveryCloudIpFinder`的Apache jclouds工具包来实现节点的自动发现。要了解有关Apache JCloud的信息，请参照[jclouds.apache.org](https://jclouds.apache.org/)。
 
-该IP搜索器形成节点地址，通过获取云上所有虚拟机的私有和共有IP地址以及给他们增加一个端口号使Ignite可以运行，该端口可以通过`TcpDiscoverySpi.setLocalPort(int)`或者`TcpDiscoverySpi.DFLT_PORT`进行设置，这样所有节点会连接任何生成的的IP地址然后发起网格节点的自动发现。
+该IP搜索器形成节点地址，通过获取云上所有虚拟机的私有和共有IP地址以及给它们增加一个端口号使Ignite可以运行，该端口可以通过`TcpDiscoverySpi.setLocalPort(int)`或者`TcpDiscoverySpi.DFLT_PORT`进行设置，这样所有节点会连接任何生成的的IP地址然后发起网格节点的自动发现。
 
-可以参考[Apache jclouds providers section](https://jclouds.apache.org/reference/providers/#compute)来获取他支持的云平台的列表。
+可以参考[Apache jclouds providers section](https://jclouds.apache.org/reference/providers/#compute)来获取它支持的云平台的列表。
 
-> 所有虚拟机都要使用同一个端口启动Ignite实例，否则他们无法通过IP搜索器发现对方。
+> 所有虚拟机都要使用同一个端口启动Ignite实例，否则它们无法通过IP搜索器发现对方。
 
 下面的例子显示了如何配置基于Apache JCloud的IP搜索器：
 

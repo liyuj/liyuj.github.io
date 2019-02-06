@@ -17,7 +17,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
 ### 17.1.3.在远程运行Ignite的基准测试
 如果要在若干远程主机上进行测试，需要按照如下步骤进行：
 
- 1. 打开`config/ignite-remote-config.xml`文件，然后将`<value>127.0.0.1:47500..47509</value>`替换为实际的所有远程主机IP列表，如果要使用其他类型的IP搜索器，可以参照相关的集群配置文档；
+ 1. 打开`config/ignite-remote-config.xml`文件，然后将`<value>127.0.0.1:47500..47509</value>`替换为实际的所有远程主机IP列表，如果要使用其它类型的IP搜索器，可以参照相关的集群配置文档；
  2. 打开`config/benchmark-remote-sample.properties`文件，然后将下列位置的`localhost`替换为实际的所有远程主机IP列表：`SERVERS=localhost,localhost`和`DRIVERS=localhost,localhost`，DRIVER是实际执行测试逻辑的主机（通常是Ignite客户端节点），SERVERS是被测试的节点，如果要进行所有测试的话，需要替换`config/benchmark-remote.properties`文件中的相同内容；
  3. 将Yardstick测试上传到`DRIVERS`主机之一的工作目录；
  4. 登录该主机，然后执行如下命令：
@@ -25,7 +25,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
 ```bash
 ./bin/benchmark-run-all.sh config/benchmark-remote-sample.properties
 ```
-所有必要的文件默认会被自动地从执行上面命令的主机上传到所有其他主机的相同目录，如果要手工做的话，需要将配置文件中的`AUTO_COPY`变量设为`false`。
+所有必要的文件默认会被自动地从执行上面命令的主机上传到所有其它主机的相同目录，如果要手工做的话，需要将配置文件中的`AUTO_COPY`变量设为`false`。
 
 上面的命令会测试一个分布式原子化缓存的`put`操作，测试结果会被添加到一个自动生成的`output/results-{DATE-TIME}`目录中。
 
@@ -68,7 +68,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
  - `-b <num>`或者`--backups <num>`：每个键的备份数量；
  - `-cfg <path>`或者`--Config <path`：Ignite配置文件的路径；
  - `-cs`或者`--cacheStore`：打开或者关闭缓存存储的通读和通写；
- - `-cl`或者`--client`：客户端标志，如果有多个`DRIVER`时需要使用这个标志，除了这个以外的其他`DRIVER`的行为类似于`SERVER`；
+ - `-cl`或者`--client`：客户端标志，如果有多个`DRIVER`时需要使用这个标志，除了这个以外的其它`DRIVER`的行为类似于`SERVER`；
  - `-nc`或者`--nearCache`：近缓存标志；
  - `-nn <num>`或者`--nodeNumber <num>`：在`benchmark.properties`中自动配置的节点数量，用于等待启动指定数量的节点；
  - `-sm <mode>`或者`-syncMode <mode>`：同步模式（定义于CacheWriteSynchronizationMode）；

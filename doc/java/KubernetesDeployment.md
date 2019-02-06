@@ -337,7 +337,7 @@ parameters:
 kubectl create -f ignite-persistence-storage-class.yaml
 ```
 ::: tip 存储类参数
-可以根据需要自由调整存储类配置的区域、存储类型和其他参数。
+可以根据需要自由调整存储类配置的区域、存储类型和其它参数。
 :::
 确认两个存储类都已创建并可使用：
 ```bash
@@ -623,7 +623,7 @@ Ignite服务用于Ignite节点的自动发现，还有做为要接入集群的�
 
 本文描述如何配置和部署Ignite服务。
 #### 20.2.4.1.Ignite服务部署
-Ignite的`KubernetesIPFinder`需要用户配置和部署一个特定的Kubernetes服务，他会维护一个所有有效的Ignite配置组的IP地址列表。
+Ignite的`KubernetesIPFinder`需要用户配置和部署一个特定的Kubernetes服务，它会维护一个所有有效的Ignite配置组的IP地址列表。
 
 每次启动一个新的Ignite配置组，IP探测器会通过Kubernetes API接入服务来获取已有的Ignite配置组地址列表。通过这些地址，新的节点就可以发现集群中的其它节点从而最终加入Ignite集群。
 
@@ -717,7 +717,7 @@ Ignition.start(cfg);
 
 Ignite的`KubernetesIPFinder`需要用户配置和部署一个特定的Kubernetes服务，它负责维护所有在线Ignite配置组（节点）的IP地址列表。
 
-每当启动一个新的Ignite配置组，IP探测器会通过Kubernetes的API访问Kubernetes服务，获取已有的Ignite配置组的地址列表，通过这些地址，新的节点就可以与其他节点互相连接，然后最终加入集群。
+每当启动一个新的Ignite配置组，IP探测器会通过Kubernetes的API访问Kubernetes服务，获取已有的Ignite配置组的地址列表，通过这些地址，新的节点就可以与其它节点互相连接，然后最终加入集群。
 
 该服务需要手工配置，然后需要优先于Ignite配置组先行启动，下面是代码样例：
 

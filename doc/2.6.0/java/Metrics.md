@@ -89,7 +89,7 @@ for (DataRegionMetrics metrics : regionsMetrics) {
 |`getLargeEntriesPagesPercentage()`|获取被超过页面大小的大条目完全占用的页面的百分比，大条目也可以拆分为多个片段，每个片段适配一个单个页面。|
 |`getPagesFillFactor()`|获取仍然空闲可用的空间的百分比。|
 |`getDirtyPages()`|获取脏页面的数量（页面的内容与磁盘上同一页的内容不同），这个指标只有当持久化存储启用的时候才可用。|
-|`getPagesReplaceRate()`|获取内存中的页面被磁盘上的其他页面替换的速率（页/秒）。这个指标有效地表示了内存中页面退出并且被磁盘上的页面替换的速率，这个指标只有当持久化存储启用的时候才可用。|
+|`getPagesReplaceRate()`|获取内存中的页面被磁盘上的其它页面替换的速率（页/秒）。这个指标有效地表示了内存中页面退出并且被磁盘上的页面替换的速率，这个指标只有当持久化存储启用的时候才可用。|
 |`getPhysicalMemoryPages()`|获取当前加载进内存的页面数量，如果持久化存储未启用，这个指标会等同于`getTotalAllocatedPages()`。|
 |`getTotalAllocatedSize()`|获取为内存区分配的总内存大小（字节），如果禁用原生持久化，该指标显示内存中页面总大小，如果启用原生持久化，该指标显示内存和磁盘上的页面总大小。|
 |`getPhysicalMemorySize()`|获取内存中加载的页面总大小（字节），如果禁用了原生持久化，该指标与`getTotalAllocatedSize()`一致。|

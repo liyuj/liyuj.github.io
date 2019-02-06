@@ -84,7 +84,7 @@ ignite.bat
 ![](https://files.readme.io/4f78e4b-Screen_Shot_2017-08-16_at_12.59.49_PM.png)
 
 >**不支持数据库元数据的错误**
-如果Ignite的版本是2.0或者2.1，在展开`Tables`、`Views`或者其他菜单项时，会得到`SQL Error: Database metadata not supported by driver`这样的错误。Ignite的下一个版本就会支持元数据，但是缺少这个特性并不影响下面会看到的所有使用场景。
+如果Ignite的版本是2.0或者2.1，在展开`Tables`、`Views`或者其它菜单项时，会得到`SQL Error: Database metadata not supported by driver`这样的错误。Ignite的下一个版本就会支持元数据，但是缺少这个特性并不影响下面会看到的所有使用场景。
 
 ### 6.1.3.数据查询和分析
 下一步会定义一个SQL模式，通过DBeaver插入以及查询部分数据，再挑选一些支持的DDL和DML语句。
@@ -207,7 +207,7 @@ sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;pa
 |`!tables`|列出数据库中的所有表|
 |`!verbose`|启动详细输出模式|
 
-上面的列表可能不完整，还可能有其他Ignite支持的SQLLine命令。想看完整的SQLLine命令列表，看[这里](http://sqlline.sourceforge.net/#commands)。
+上面的列表可能不完整，还可能有其它Ignite支持的SQLLine命令。想看完整的SQLLine命令列表，看[这里](http://sqlline.sourceforge.net/#commands)。
 
 ### 6.2.3.示例
 接入集群后，就可以执行SQL语句和SQLLine命令，比如：
@@ -267,7 +267,7 @@ Ignite有自己的ODBC实现，这样就使从Tableau端接入Ignite成为可能
 ![](https://files.readme.io/65f14b7-edit_connection.png)
  3. 配置之前设定的`DSN`属性值，下面的示例中为：`LocalApacheIgniteDSN`，做完之后，点击`Connect`按钮；
 ![](https://files.readme.io/dc816ce-choose_dsn_01.png)
- 4. Tableau会试图验证这个连接，如果验证通过，`Sign In`按钮以及其他的与连接有关的字段就会变为可用状态，点击`Sign In`就会完成连接过程；
+ 4. Tableau会试图验证这个连接，如果验证通过，`Sign In`按钮以及其它的与连接有关的字段就会变为可用状态，点击`Sign In`就会完成连接过程；
 ![](https://files.readme.io/6ff4404-choose_dsn_02.png)
 
 ### 6.3.4.数据查询和分析
@@ -317,7 +317,7 @@ Ignite和Pentaho之间建立连接之后，就可以通过Pentaho支持的各种
 
 ## 6.5.Apache Zeppelin
 ### 6.5.1.摘要
-[Apache Zeppelin](http://zeppelin.incubator.apache.org/),是一个支持交互式数据分析的基于Web的笔记本，它可以用SQL，Scala以及其他的工具来生成漂亮的数据驱动的，交互式以及可协同的文档。
+[Apache Zeppelin](http://zeppelin.incubator.apache.org/),是一个支持交互式数据分析的基于Web的笔记本，它可以用SQL，Scala以及其它的工具来生成漂亮的数据驱动的，交互式以及可协同的文档。
 
 Zeppelin通过Ignite的SQL解释器可以从缓存中获得分布式的数据，此外，当SQL无法满足需求时Ignite解释器可以执行任何的Scala代码。比如，可以将数据注入缓存或者执行分布式计算。
 
@@ -360,7 +360,7 @@ Zeppelin安装配置好了之后，可以用如下的命令来启动：
 
 **配置Ignite SQL 解释器**
 
-Ignite SQL解释器只需要`ignite.jdbc.url`属性，他的值是JDBC连接地址，在后面的示例中会用到`words`缓存，因此像下面这样编辑`ignite.jdbc.url`属性：
+Ignite SQL解释器只需要`ignite.jdbc.url`属性，它的值是JDBC连接地址，在后面的示例中会用到`words`缓存，因此像下面这样编辑`ignite.jdbc.url`属性：
 ```bash
 jdbc:ignite://localhost:11211/words
 ```
@@ -396,7 +396,7 @@ unzip apache-ignite-fabric-{version}-bin.zip -d <dest_dir>
 
 ![Creating new note](https://files.readme.io/g5LuJDlqSYk8IHXfCNqy_Selection_003.png)
 
-创建新的笔记之后需要再次点击`Notebook`菜单项来打开创建的笔记，点击笔记的名字可以对他重新命名，输入新的标题然后按下`回车`键。
+创建新的笔记之后需要再次点击`Notebook`菜单项来打开创建的笔记，点击笔记的名字可以对它重新命名，输入新的标题然后按下`回车`键。
 
 ![New note](https://files.readme.io/8HkeqrRgQGWvNPwPfkpg_Selection_004.png)
 

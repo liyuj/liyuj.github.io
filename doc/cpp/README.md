@@ -10,7 +10,7 @@
 ### 1.1.1.固化内存
 Ignite的固化内存组件不仅仅将内存作为一个缓存层，还视为一个全功能的存储层。这意味着可以按需将持久化打开或者关闭。如果持久化关闭，那么Ignite就可以作为一个分布式的**内存数据库**或者**内存数据网格**，这完全取决于使用SQL和键-值API的喜好。如果持久化打开，那么Ignite就成为一个分布式的，**可水平扩展的数据库**，它会保证完整的数据一致性以及集群故障的可恢复能力。
 ### 1.1.2.Ignite持久化
-Ignite的原生持久化是一个分布式的、支持ACID以及兼容SQL的磁盘存储，它可以作为一个可选的磁盘层与Ignite的固化内存透明地集成，然后将数据和索引存储在SSD、闪存、3D XPoint以及其他类型的非易失性存储中。
+Ignite的原生持久化是一个分布式的、支持ACID以及兼容SQL的磁盘存储，它可以作为一个可选的磁盘层与Ignite的固化内存透明地集成，然后将数据和索引存储在SSD、闪存、3D XPoint以及其它类型的非易失性存储中。
 
 打开Ignite的持久化之后，就不需要将所有的数据和索引保存在内存中，或者在节点或者集群重启后对数据进行预热，因为固化内存和持久化紧密耦合之后，会将其视为一个二级存储层，这意味着在内存中数据和索引的一个子集如果丢失了，固化内存会从磁盘上进行获取。
 ### 1.1.3.ACID兼容
@@ -54,13 +54,13 @@ Ignite是一个弹性的、可水平扩展的分布式系统，它支持按需�
 
 **Ignite是不是关系型SQL数据库？**
 
-**不完整**，尽管Ignite的目标是和其他的关系型SQL数据库具有类似的行为，但是在处理约束和索引方面还是有不同的。Ignite支持*一级*和*二级*索引，但是只有一级索引支持*唯一性*，Ignite还不支持*外键*约束。
+**不完整**，尽管Ignite的目标是和其它的关系型SQL数据库具有类似的行为，但是在处理约束和索引方面还是有不同的。Ignite支持*一级*和*二级*索引，但是只有一级索引支持*唯一性*，Ignite还不支持*外键*约束。
 
 总体来说，Ignite作为约束不支持任何会导致集群广播消息的更新以及显著降低系统性能和可伸缩性的操作。
 
 **Ignite是不是一个NoSQL数据库?**
 
-**不完全**，和其他NoSQL数据库一样，Ignite支持高可用和水平扩展，但是，和其他的NoSQL数据库不同，Ignite支持SQL和ACID。
+**不完全**，和其它NoSQL数据库一样，Ignite支持高可用和水平扩展，但是，和其它的NoSQL数据库不同，Ignite支持SQL和ACID。
 
 **Ignite是不是事务型数据库？**
 
@@ -386,7 +386,7 @@ namespace ignite
       IGNITE_BINARY_GET_TYPE_ID_AS_HASH(Address)
       IGNITE_BINARY_GET_TYPE_NAME_AS_IS(Address)
       IGNITE_BINARY_GET_NULL_DEFAULT_CTOR(Address)
-      IGNITE_BINARY_GET_FIELD_ID_AS_HASH      
+      IGNITE_BINARY_GET_FIELD_ID_AS_HASH
 
       static bool IsNull(const Address& obj)
       {

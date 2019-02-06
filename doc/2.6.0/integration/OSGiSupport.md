@@ -1,12 +1,12 @@
 # 4.OSGi支持
 ## 4.1.在Apache Karaf中安装
 ### 4.1.1.摘要
-[Apache Karaf](https://karaf.apache.org/)是一个轻量级、功能强大的企业级OSGi容器，他支持Eclipse Equinox和Apache Felix运行时。
+[Apache Karaf](https://karaf.apache.org/)是一个轻量级、功能强大的企业级OSGi容器，它支持Eclipse Equinox和Apache Felix运行时。
 
 > **支持Apache Karaf4.0.0版本系列**
 Ignite在Karaf4.0.0版本系列上进行了测试，可能也可以工作于更老的版本上，但是未经过明确的测试。
 
-为了方便不同Ignite模块的部署（包括他们的依赖），Ignite提供了一套打包进特性库的[Karaf特性](https://karaf.apache.org/manual/latest/users-guide/provisioning.html)，这使得借助于Karaf Shell的一个命令就可以快速地将Ignite部署进OSGi环境。
+为了方便不同Ignite模块的部署（包括它们的依赖），Ignite提供了一套打包进特性库的[Karaf特性](https://karaf.apache.org/manual/latest/users-guide/provisioning.html)，这使得借助于Karaf Shell的一个命令就可以快速地将Ignite部署进OSGi环境。
 
 ### 4.1.2.准备步骤
 首先，Ignite使用了Oracle/Sun JRE的底层包`sun.nio.ch`(OpenJDK也有效)。
@@ -53,17 +53,17 @@ karaf@root()>
 ### 4.1.4.安装合适的Ignite特性
 下面的特性是有点特别的：
 
- - `ignite-core`：ignite-core模块，他是所有其他特性依赖的，因此不要忘了安装；
- - `ignite-all`：安装其他所有特性的一个汇总；
+ - `ignite-core`：ignite-core模块，它是所有其它特性依赖的，因此不要忘了安装；
+ - `ignite-all`：安装其它所有特性的一个汇总；
 
-所有其他的特性包括对应的Ignite模块+依赖，可以通过如下方式安装他们：
+所有其它的特性包括对应的Ignite模块+依赖，可以通过如下方式安装它们：
 ```
 karaf@root()> feature:install ignite-core
 karaf@root()> feature:install ignite-kafka
 karaf@root()> feature:install ignite-aop ignite-urideploy
 karaf@root()>
 ```
-一些模块是OSGi片段而不是组件，当安装他们时，可能会注意到，Karaf Shell以及/或者`ignite-core`，其中一个或者两者，重新启动。
+一些模块是OSGi片段而不是组件，当安装它们时，可能会注意到，Karaf Shell以及/或者`ignite-core`，其中一个或者两者，重新启动。
 
 ### 4.1.5.ignite-log4j和Pax Logging
 
@@ -73,9 +73,9 @@ Error executing command: Resource has no uri
 这不是一个严重的错误，已经汇报给Karaf社区，问题号是[KARAF-4129](https://issues.apache.org/jira/browse/KARAF-4129)。
 按照如下的说明可以忽略这个错误。
 
-Apache Karaf捆绑了[Pax Logging](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging),他是一个从其他组件收集和汇总日志输出（通过不同的框架输出，比如slf4j，log4j，JULI，commons-logging等）然后用一个典型的log4j配置处理的框架。
+Apache Karaf捆绑了[Pax Logging](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging),它是一个从其它组件收集和汇总日志输出（通过不同的框架输出，比如slf4j，log4j，JULI，commons-logging等）然后用一个典型的log4j配置处理的框架。
 
-`ignite-log4j `模块依赖于log4j，Pax Logging默认不输出它，因此我们开发了一个OSGi片段，SymbolicName为`ignite-osgi-paxlogging`，他加入了`ignite-core`然后输出了缺失的包。
+`ignite-log4j `模块依赖于log4j，Pax Logging默认不输出它，因此我们开发了一个OSGi片段，SymbolicName为`ignite-osgi-paxlogging`，它加入了`ignite-core`然后输出了缺失的包。
 
 `ignite-log4j`特性也安装了这个片段，但是需要用`org.ops4j.pax.logging.pax-logging-api`这个名字强制刷新：
 ```bash
@@ -186,7 +186,7 @@ public class MyActivator extends IgniteAbstractOsgiContextActivator {
  - `CONTAINER_SWEEP`：与`BUNDLE_DELEGATING`一样，但是在类仍然找不到时最终会搜索所有的组件。
 
 > **未来的OSGi类加载策略**
-我们可能会考虑在以后的版本中增加其他的类加载策略，比如使用Service Locator机制来定位通过一个文件自发地希望向Ignite的编组器暴露包的组件，类似于JAXB规范中的jaxb.index。
+我们可能会考虑在以后的版本中增加其它的类加载策略，比如使用Service Locator机制来定位通过一个文件自发地希望向Ignite的编组器暴露包的组件，类似于JAXB规范中的jaxb.index。
 
 确保将`Bundle-Activator`OSGi清单头加入组件，这样才能使OSGi容器在组件启动时调用Activator。
 

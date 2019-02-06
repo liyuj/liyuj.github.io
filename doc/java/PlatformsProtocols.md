@@ -1762,7 +1762,7 @@ Ignite客户端支持如下的命令：
 </bean>
 ```
 ::: tip 配置默认缓存
-需要配置一个默认的`redis-ignite-internal-cache-0`缓存，用于默认的Redis数据库，当切换到SELECT命令时也可以用做其他数据库的模板。
+需要配置一个默认的`redis-ignite-internal-cache-0`缓存，用于默认的Redis数据库，当切换到SELECT命令时也可以用做其它数据库的模板。
 :::
 
 可以使用自己喜欢的[Redis客户端](http://redis.io/clients)接入Ignite，下面是是用几种语言的简单示例：

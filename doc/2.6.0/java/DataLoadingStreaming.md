@@ -16,16 +16,16 @@ Ignite数据加载和流处理功能可以以可扩展以及容错的方式处�
 ![](https://files.readme.io/2994b21-ignite-stream-query.png)
 
 **数据流处理器**
-数据流处理器是通过`IgniteDataStreamer`API定义的，他可以往Ignite数据流缓存中注入大量的持续不断的数据流，数据流处理器对于所有流入Ignite的数据以可扩展和容错的方式提供了**至少一次保证**。
+数据流处理器是通过`IgniteDataStreamer`API定义的，它可以往Ignite数据流缓存中注入大量的持续不断的数据流，数据流处理器对于所有流入Ignite的数据以可扩展和容错的方式提供了**至少一次保证**。
 **查询数据**
 可以和Ignite的SQL、TEXT以及基于谓词的缓存查询一起使用Ignite数据索引能力的全部功能来在数据流中进行查询。
 **与已有的流处理技术集成**
 Ignite可以与各种主要的流处理技术和kuaig进行集成，比如Kafka、Camel、Storm或者JMS，从而为基于Ignite的架构带来更强大的流处理功能。
 ## 5.2.数据加载
 ### 5.2.1.摘要
-用标准的缓存`put(...)`和`putAll(...)`操作加载大量的数据通常是比较低效的。Ignite提供了`IgniteDataStreamer`API来与主要的流技术集成，还有`CacheStore`API，他们有助于以一个更高效的方式将大量数据注入Ignite缓存。
+用标准的缓存`put(...)`和`putAll(...)`操作加载大量的数据通常是比较低效的。Ignite提供了`IgniteDataStreamer`API来与主要的流技术集成，还有`CacheStore`API，它们有助于以一个更高效的方式将大量数据注入Ignite缓存。
 ### 5.2.2.IgniteDataStreamer
-数据流处理器是通过`IgniteDataStreamer`API定义的，他可以将大量的连续数据注入Ignite缓存。数据流处理器以可扩展和容错的方式在数据被发送到集群节点之前通过把批量数据放在一起以获得高性能。
+数据流处理器是通过`IgniteDataStreamer`API定义的，它可以将大量的连续数据注入Ignite缓存。数据流处理器以可扩展和容错的方式在数据被发送到集群节点之前通过把批量数据放在一起以获得高性能。
 
 > 数据流处理器可以用于任何时候将大量数据载入缓存，包括启动时的预加载。
 
@@ -36,7 +36,7 @@ Ignite可以与各种主要的流处理技术和kuaig进行集成，比如Kafka�
 >**Ignite原生持久化**
 Ignite的原生持久化不需要在重启时将数据预热到内存，因此，与IgniteCache.loadCache()有关的加载技术和这种类型的持久化存储没什么关系。
 
-要从比如关系数据库这样的第三方存储中预加载大量的数据可以使用`CacheStore.loadCache()`方法，他可以在不传入要加载的所有键的情况下进行缓存的数据加载。
+要从比如关系数据库这样的第三方存储中预加载大量的数据可以使用`CacheStore.loadCache()`方法，它可以在不传入要加载的所有键的情况下进行缓存的数据加载。
 在所有保存该缓存的每一个集群节点上`IgniteCache.loadCache()`方法会委托给`CacheStore.loadCache()`方法，如果只想在本地节点上加载，可以用`IgniteCache.localLoadCache()`方法。
 
 > 对于分区缓存以及像关系数据库这样的第三方存储，如果键没有映射到某个节点，不管是主节点还是备份节点，都会被自动忽略。
@@ -151,12 +151,12 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 数据流处理器是通过`IgniteDataStreamer`API定义的，用于将大量的持续数据流注入Ignite缓存。数据流处理器以可扩展以及容错的方式，为将所有的数据流注入Ignite提供了**至少一次保证**。
 数据流处理器不参与事务。
 ### 5.3.2.IgniteDataStreamer
-快速地将大量的数据流注入Ignite的主要抽象是`IgniteDataStreamer`，在内部他会适当地将数据整合成批次然后将这些批次与缓存这些数据的节点并置在一起。
+快速地将大量的数据流注入Ignite的主要抽象是`IgniteDataStreamer`，在内部它会适当地将数据整合成批次然后将这些批次与缓存这些数据的节点并置在一起。
 高速加载是通过如下技术获得的：
 
  - 映射到同一个集群节点上的数据条目会作为一个批次保存在缓冲区中；
  - 多个缓冲区可以同时共处；
- - 为了避免内存溢出，数据流处理器有一个缓冲区的最大数，他们可以并行的处理；
+ - 为了避免内存溢出，数据流处理器有一个缓冲区的最大数，它们可以并行的处理；
 
 要将数据加入数据流处理器，调用`IgniteDataStreamer.addData(...)`方法即可。
 ```java
@@ -168,7 +168,7 @@ try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCac
 }
 ```
 **允许覆写**
-默认的话，数据流处理器不会覆写已有的数据，这意味着如果遇到一个缓存内已有的条目，他会忽略这个条目。这是一个最有效的以及高性能的模式，因为数据流处理器不需要在后台考虑数据的版本。
+默认的话，数据流处理器不会覆写已有的数据，这意味着如果遇到一个缓存内已有的条目，它会忽略这个条目。这是一个最有效的以及高性能的模式，因为数据流处理器不需要在后台考虑数据的版本。
 如果预想到数据在数据流缓存中可能存在以及希望覆写它，设置`IgniteDataStreamer.allowOverwrite(true)`即可。
 >**流处理器，CacheStore以及AllowOverwrite**
 `AllowOverwrite`属性如果是`false`（默认），第三方存储的更新会被忽略。
@@ -181,7 +181,7 @@ try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCac
 > 注意`StreamReceiver`不会自动地将数据加入缓存，需要显式地调用任意的`cache.put(...)`方法。
 
 ### 5.3.4.StreamTransformer
-`StreamTransformer`是一个`StreamReceiver`的简单实现，他会基于之前的值来修改数据流缓存中的数据。更新是并置的，即他会明确地在数据缓存的集群节点上发生。
+`StreamTransformer`是一个`StreamReceiver`的简单实现，它会基于之前的值来修改数据流缓存中的数据。更新是并置的，即它会明确地在数据缓存的集群节点上发生。
 在下面的例子中，通过`StreamTransformer`在文本流中为每个发现的确切的单词增加一个计数。
 
 Java8：
@@ -238,8 +238,8 @@ try (IgniteDataStreamer<String, Long> stmr = ignite.dataStreamer(stmCache.getNam
     stmr.addData(word, 1L);
 ```
 ### 5.3.5.StreamVisitor
-`StreamVisitor`也是`StreamReceiver`的一个方便实现，他会访问流中的每个键值组。注意，访问器不会更新缓存。如果键值组需要存储在缓存内，那么需要显式地调用任意的`cache.put(...)`方法。
-在下面的示例中，有两个缓存:`marketData`和`instruments`,收到market数据的瞬间就会将他们放入`marketData`缓存的流处理器，映射到特定market数据的集群节点上的`marketData`的流处理器的`StreamVisitor`就会被调用，在分别收到market数据后就会用最新的市场价格更新`instrument`缓存。
+`StreamVisitor`也是`StreamReceiver`的一个方便实现，它会访问流中的每个键值组。注意，访问器不会更新缓存。如果键值组需要存储在缓存内，那么需要显式地调用任意的`cache.put(...)`方法。
+在下面的示例中，有两个缓存:`marketData`和`instruments`,收到market数据的瞬间就会将它们放入`marketData`缓存的流处理器，映射到特定market数据的集群节点上的`marketData`的流处理器的`StreamVisitor`就会被调用，在分别收到market数据后就会用最新的市场价格更新`instrument`缓存。
 注意，根本不会更新`marketData`缓存，它一直是空的，只是直接在数据将要存储的集群节点上简单利用了market数据的并置处理能力。
 ```java
 CacheConfiguration<String, Double> mrktDataCfg = new CacheConfiguration<>("marketData");

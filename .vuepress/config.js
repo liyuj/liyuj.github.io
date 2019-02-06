@@ -104,7 +104,9 @@ module.exports = {
                     '/doc/cpp/':[
                         '',
                         'Clustering',
-                        'Key-ValueDataGrid'
+                        'Key-ValueDataGrid',
+                        'DistributedSQL',
+                        'ComputeGrid'
                     ],
                     '/doc/sql/': [
                         '',

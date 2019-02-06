@@ -1,7 +1,7 @@
 # 4.安全
 ## 4.1.SSL和TLS
 ### 4.1.1.保护节点间的连接
-Ignite允许在所有节点之间使用SSL Socket进行通信。要使用SSL，需要设置`Factory<SSLContext>`以及配置Ignite配置文件的`SSL`段落，Ignite提供了一个默认的SSL上下文工厂，`org.apache.ignite.ssl.SslContextFactory`，他用一个配置好的keystore来初始化SSL上下文。
+Ignite允许在所有节点之间使用SSL Socket进行通信。要使用SSL，需要设置`Factory<SSLContext>`以及配置Ignite配置文件的`SSL`段落，Ignite提供了一个默认的SSL上下文工厂，`org.apache.ignite.ssl.SslContextFactory`，它用一个配置好的keystore来初始化SSL上下文。
 XML：
 ```xml
 <bean id="cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -28,7 +28,7 @@ factory.setTrustStorePassword("123456".toCharArray());
 
 igniteCfg.setSslContextFactory(factory);
 ```
-某些情况下需要禁用客户端侧的证书认证（比如连接到一个自签名的服务器时），这可以通过给上述工厂设置禁用信任管理器实现，他可以通过`getDisabledTrustManager`获得。
+某些情况下需要禁用客户端侧的证书认证（比如连接到一个自签名的服务器时），这可以通过给上述工厂设置禁用信任管理器实现，它可以通过`getDisabledTrustManager`获得。
 XML:
 ```xml
 <bean id="cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -147,7 +147,7 @@ cfg.setAuthenticationEnabled(true);
 ...
 ```
 **提供用户凭据**
-打开认证之后，Ignite会在集群第一次启动时创建名为`ignite`的超级用户，密码为`ignite`。目前，无法对超级用户改名，也无法将它的权限授予其他用户，但是，可以使用Ignite支持的DDL语句，对用户进行创建、修改和删除，注意，只有超级用户才能创建新的用户。
+打开认证之后，Ignite会在集群第一次启动时创建名为`ignite`的超级用户，密码为`ignite`。目前，无法对超级用户改名，也无法将它的权限授予其它用户，但是，可以使用Ignite支持的DDL语句，对用户进行创建、修改和删除，注意，只有超级用户才能创建新的用户。
 ### 4.2.2.授权
 Ignite还无法方便地提供授权功能，但是对于这样的高级安全特性，可以通过自定义插件的形式，实现`GridSecurityProcessor`接口，或者也可以使用一个第三方的[实现](https://docs.gridgain.com/docs/security-and-audit)。
 ## 4.3.数据反序列化安全性
@@ -204,7 +204,7 @@ Ignite从2.7版本开始，引入了透明数据加密（TDE），使得开发�
  - 磁盘上的数据；
  - WAL记录
 
-如果开启了表/缓存级加密，Ignite会生成一个密钥（叫做*缓存加密密钥*），然后使用这个密钥来对缓存的数据进行加密/解密。缓存加密密钥由系统缓存持有，并且用户无法访问。如果该密钥需要发送到其他节点或者保存到磁盘（节点停止），它会使用用户提供的密钥（主密钥）进行加密。
+如果开启了表/缓存级加密，Ignite会生成一个密钥（叫做*缓存加密密钥*），然后使用这个密钥来对缓存的数据进行加密/解密。缓存加密密钥由系统缓存持有，并且用户无法访问。如果该密钥需要发送到其它节点或者保存到磁盘（节点停止），它会使用用户提供的密钥（主密钥）进行加密。
 
 主密钥必须要每个服务端节点上通过配置进行指定。
 

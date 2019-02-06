@@ -1,9 +1,9 @@
 # 1.介绍
 ![](https://files.readme.io/f35ab94-0bad3a9-ignite_architecture.png)
 
-本系列集成文档包含了已有的所有有关Ignite和其他的技术和产品集成的信息。
+本系列集成文档包含了已有的所有有关Ignite和其它的技术和产品集成的信息。
 
-集成的价值在于简化Ignite和应用、服务中使用的其他技术的结合，以便要么平滑地切换到Ignite，要么有助于将Ignite嵌入已有的系统。
+集成的价值在于简化Ignite和应用、服务中使用的其它技术的结合，以便要么平滑地切换到Ignite，要么有助于将Ignite嵌入已有的系统。
 
 现有的集成被分成下面的若干个领域：
 
@@ -13,7 +13,7 @@ Ignite可以部署在本地，也可以部署在云环境，有赖于和Amazon A
 
 **Hadoop和Spark**
 
-Ignite的Hadoop加速器提供了一套组件，可以进行内存中的作业执行以及文件系统操作。对于Spark，Ignite通过一个SparkRDD抽象的实现对其进行了增强，他可以轻易地在内存中跨Spark作业共享状态。
+Ignite的Hadoop加速器提供了一套组件，可以进行内存中的作业执行以及文件系统操作。对于Spark，Ignite通过一个SparkRDD抽象的实现对其进行了增强，它可以轻易地在内存中跨Spark作业共享状态。
 
 **内存缓存**
 
@@ -21,7 +21,7 @@ Ignite的Hadoop加速器提供了一套组件，可以进行内存中的作业�
 
 **OSGi支持**
 
-为了便于部署Ignite的不同模块，根据他们的依赖，Ignite提供了一组打包成特性库的Karaf特性，这意味着通过在Karaf shell中的一条命令就可以快速地将Ignite部署进OSGi环境。
+为了便于部署Ignite的不同模块，根据它们的依赖，Ignite提供了一组打包成特性库的Karaf特性，这意味着通过在Karaf shell中的一条命令就可以快速地将Ignite部署进OSGi环境。
 
 **与Apache Cassandra的集成**
 

@@ -460,8 +460,8 @@ $ ./ignite-web-agent.sh
 
 ::: tip 注意
  1. 需要使用`sudo`来运行docker命令；
- 2. 如果`80`端口已被占用，那么容器端口需要映射到其他的可用端口。比如，下面的命令将容器的`80`端口绑定的宿主机的`8080`端口：`sudo docker run -d -p 8080:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`;
- 3. `<host_absolute_path>`：是宿主机中MongoDB创建数据库文件的路径。这个文件夹应该在docker运行前创建好，打开`Docker->Preferences->File Sharing`然后在那里创建目录，或者使用其他的方式也行。
+ 2. 如果`80`端口已被占用，那么容器端口需要映射到其它的可用端口。比如，下面的命令将容器的`80`端口绑定的宿主机的`8080`端口：`sudo docker run -d -p 8080:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`;
+ 3. `<host_absolute_path>`：是宿主机中MongoDB创建数据库文件的路径。这个文件夹应该在docker运行前创建好，打开`Docker->Preferences->File Sharing`然后在那里创建目录，或者使用其它的方式也行。
 :::
 
  - 在浏览器中打开Web控制台：`http://localhost`或者`http://host-ip-of-computer-with-docker-image`，如果默认端口有变，那么地址为：`http://localhost:<host_port>`。
@@ -822,7 +822,7 @@ Web代理要和集群安装在同一个命名空间中，在下面的配置中�
  - `image`：Web代理的Docker镜像。
 
 web-agent-deployment.yaml：
-```yml
+```yaml
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:

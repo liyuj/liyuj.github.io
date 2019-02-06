@@ -55,7 +55,7 @@ cfg.setDataStorageConfiguration(storageCfg);
 Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[10.3.2.内存区](/doc/2.6.0/java/DurableMemory.md#_10-3-2-内存区)。
 
 ![](https://files.readme.io/74a2aac-persistent_store_structure_final.png)
-首先，节点中的每个缓存都要有一个唯一的目录，从上图可知，可以看到至少两个缓存（Cache_A和Cache_B），由节点来维护他们的数据和索引。
+首先，节点中的每个缓存都要有一个唯一的目录，从上图可知，可以看到至少两个缓存（Cache_A和Cache_B），由节点来维护它们的数据和索引。
 
 其次，对于节点的每个分区，不管是主还是备，Ignite的原生持久化都会在文件系统中创建一个专用文件。比如，对上面的节点来说，它负责分区1,10到564，索引是每个缓存一个文件。
 >**缓存组和分区文件**<br>
@@ -67,7 +67,7 @@ Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具�
 
 上述的文件层次默认是在一个名为`${IGNITE_HOME}/work/db`的目录中进行维护的，要改变存储和WAL文件的默认位置，可以使用`DataStorageConfiguration`中对应的`setStoragePath(...)`、`setWalPath(...)`和`setWalArchivePath(...)`方法。
 
-如果一台主机启动了若干个节点，那么每个节点进程都会在一个预定义的唯一子目录中，比如`${IGNITE_HOME}/work/db/node{IDX}-{UUID}`，有自己的持久化文件，这里`IDX`和`UUID`参数都是Ignite在节点启动时自动计算的（[这里](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-SubfoldersGeneration)有详细描述）。如果在持久化层次结构中已经有了若干`node{IDX}-{UUID}`子目录，那么他们是按照节点先入先出的顺序进行赋值的。如果希望某节点即使重启也有专用目录和专用的数据分区，需要在集群范围配置唯一的`IgniteConfiguration.setConsistentId`，这个唯一ID会在`node{IDX}-{UUID}`字符串中映射到`UUID`。
+如果一台主机启动了若干个节点，那么每个节点进程都会在一个预定义的唯一子目录中，比如`${IGNITE_HOME}/work/db/node{IDX}-{UUID}`，有自己的持久化文件，这里`IDX`和`UUID`参数都是Ignite在节点启动时自动计算的（[这里](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-SubfoldersGeneration)有详细描述）。如果在持久化层次结构中已经有了若干`node{IDX}-{UUID}`子目录，那么它们是按照节点先入先出的顺序进行赋值的。如果希望某节点即使重启也有专用目录和专用的数据分区，需要在集群范围配置唯一的`IgniteConfiguration.setConsistentId`，这个唯一ID会在`node{IDX}-{UUID}`字符串中映射到`UUID`。
 >**一台主机隔离集群中的节点**<br>
 Ignite可以在一台主机上隔离多个集群，每个集群都要在文件系统的不同目录下存储持久化文件，这时可以通过`DataStorageConfiguration`的`setStoragePath(...)`、`setStoragePath(...)`、`setWalArchivePath(...)`方法来重新定义每个集群的相应的路径。
 
@@ -102,7 +102,7 @@ WAL的目的是以最快的速度向磁盘传播更新，以及为单个节点�
 |---|---|---|
 |`FSYNC`|保证每个原子写或者事务性提交都会持久化到磁盘。|数据更新不会丢失，不管是任何的操作系统或者进程故障，甚至是电源故障。|
 |`LOG_ONLY`|默认模式，对于每个原子写或者事务性提交，保证会刷新到操作系统的缓冲区缓存或者内存映射文件。默认会使用内存映射文件方式，并且可以通过将`IGNITE_WAL_MMAP`系统属性配置为`false`将其关闭。|如果仅仅是进程崩溃数据更新会保留。|
-|`BACKGROUND`|如果打开了`IGNITE_WAL_MMAP`属性（默认），该模式的行为类似于`LOG_ONLY`模式，如果关闭了内存映射文件方式，变更会保持在节点的内部缓冲区，缓冲区刷新到磁盘的频率由`DataStorageConfiguration.setWalFlushFrequency`参数定义。|如果打开了`IGNITE_WAL_MMAP `属性（默认），该模式提供了与`LOG_ONLY`模式一样的保证，否则如果进程故障或者其他的故障发生时，最近的数据更新可能丢失。|
+|`BACKGROUND`|如果打开了`IGNITE_WAL_MMAP`属性（默认），该模式的行为类似于`LOG_ONLY`模式，如果关闭了内存映射文件方式，变更会保持在节点的内部缓冲区，缓冲区刷新到磁盘的频率由`DataStorageConfiguration.setWalFlushFrequency`参数定义。|如果打开了`IGNITE_WAL_MMAP `属性（默认），该模式提供了与`LOG_ONLY`模式一样的保证，否则如果进程故障或者其它的故障发生时，最近的数据更新可能丢失。|
 |`NONE`|WAL被禁用，只有在检查点进程执行过程中或者节点正常关闭时，变更才会正常持久化，使用`Ignite#active(false)`可以优雅地停止节点。|如果一个节点异常终止，可能出现数据丢失，存储于磁盘上的数据很可能会损坏或者不同步，然后持久化目录需要清理以便节点重启。|
 
 下面是如何配置WAL模式的代码示例：
@@ -213,20 +213,20 @@ dsCfg.setWalArchivePath(walAbsPath);
  1. 节点接收到更新请求之后，它会在内存中查找该数据所属的数据页面，该页面会被更新然后标记为脏页面；
  2. 更新会被附加到WAL的尾部；
  3. 节点会向更新发起方发送一个更新成功的确认信息；
- 4. 根据配置或者其他参数配置的频率，检查点会被定期地触发。脏页面会从内存复制到磁盘，然后传递给特定的分区文件；
+ 4. 根据配置或者其它参数配置的频率，检查点会被定期地触发。脏页面会从内存复制到磁盘，然后传递给特定的分区文件；
 
 ## 16.4.第三方存储
 ### 16.4.1.摘要
 Ignite可以做为第三方数据库的一个缓存层（数据网格），包括RDBMS、Apache Cassandra或者MongoDB，该模式可以对底层数据库进行加速。
 
-JCache规范提供了`javax.cache.integration.CacheLoader`和`javax.cache.integration.CacheWriter`API，他们分别用于底层持久化存储的`通读`和`通写`（比如RDBMS中的Oracle或者MySQL，以及NoSQL数据库中的MongoDB或者CouchDB）。除了键-值操作，Ignite还支持INSERT、UPDATE和MERGE操作的通写，但是SELECT查询是无法读取第三方数据库的数据的。
+JCache规范提供了`javax.cache.integration.CacheLoader`和`javax.cache.integration.CacheWriter`API，它们分别用于底层持久化存储的`通读`和`通写`（比如RDBMS中的Oracle或者MySQL，以及NoSQL数据库中的MongoDB或者CouchDB）。除了键-值操作，Ignite还支持INSERT、UPDATE和MERGE操作的通写，但是SELECT查询是无法读取第三方数据库的数据的。
 ![](https://files.readme.io/2b3807b-in_memory_data.png)
-虽然Ignite可以单独地配置`CacheRLoader`和`CacheWriter`，但是在两个单独的类中实现事务化存储是非常尴尬的，因为多个`load`和`put`操作需要在同一个事务中的同一个连接中共享状态。为了解决这个问题，Ignite提供了`org.apacche.ignite.cache.store.CacheStore`接口，他同时扩展了`CacheLoader`和`CacheWriter`。
+虽然Ignite可以单独地配置`CacheRLoader`和`CacheWriter`，但是在两个单独的类中实现事务化存储是非常尴尬的，因为多个`load`和`put`操作需要在同一个事务中的同一个连接中共享状态。为了解决这个问题，Ignite提供了`org.apacche.ignite.cache.store.CacheStore`接口，它同时扩展了`CacheLoader`和`CacheWriter`。
 
 > **事务**<br>
-`CacheStore`是完整事务性的，他会自动地融入当前的缓存事务。
+`CacheStore`是完整事务性的，它会自动地融入当前的缓存事务。
 **CacheJdbcPojoStore**<br>
-Ignite附带了他自己的`CacheJdbcPojoStore`,他会自动地建立Java POJO和数据库模式之间的映射。
+Ignite附带了它自己的`CacheJdbcPojoStore`,它会自动地建立Java POJO和数据库模式之间的映射。
 
 ### 16.4.2.通读和通写
 如果需要通读和通写行为时，就得提供一个正确的`CacheStore`实现。通读意味着当缓存无效时会从底层的持久化存储中读取，通写意味着当缓存更新时会自动地进行持久化。所有的通读和通写都会参与整体的缓存事务以及作为一个整体提交或者回滚。
@@ -246,7 +246,7 @@ Ignite附带了他自己的`CacheJdbcPojoStore`,他会自动地建立Java POJO�
 后写缓存可以通过`CacheConfiguration.setWriteBehindEnabled(boolean)`配置项来开启，下面的`16.5.7.配置`章节显示了一个完整的配置属性列表来进行后写缓存行为的定制。
 
 ### 16.4.4.CacheStore
-Ignite中的`CacheStore`接口用于向底层的数据存储写入或者加载数据。除了标准的JCache加载和存储方法，他还引入了最终事务划界以及从底层数据存储批量载入数据的能力。
+Ignite中的`CacheStore`接口用于向底层的数据存储写入或者加载数据。除了标准的JCache加载和存储方法，它还引入了最终事务划界以及从底层数据存储批量载入数据的能力。
 
 **loadCache()**
 
@@ -262,9 +262,9 @@ Ignite中的`CacheStore`接口用于向底层的数据存储写入或者加载�
 
 **loadAll(), writeAll(), deleteAll()**
 
-当`IgniteCache`接口的`getAll`,`putAll`,`removeAll`方法被调用时，相对应的`CacheStore`的`loadAll()`,`writeAll()`和`deleteAll()`方法会被调用，当与多个缓存数据工作时，这些方法会用于启用**通读**和**通写**行为，他们通常用批量操作的方式实现以提供更好的性能。
+当`IgniteCache`接口的`getAll`,`putAll`,`removeAll`方法被调用时，相对应的`CacheStore`的`loadAll()`,`writeAll()`和`deleteAll()`方法会被调用，当与多个缓存数据工作时，这些方法会用于启用**通读**和**通写**行为，它们通常用批量操作的方式实现以提供更好的性能。
 
-> `CacheStoreAdapter`提供了`loadAll()`,`writeAll()`和`deleteAll()`方法的默认实现，他只是简单地对键进行一个一个地迭代。
+> `CacheStoreAdapter`提供了`loadAll()`,`writeAll()`和`deleteAll()`方法的默认实现，它只是简单地对键进行一个一个地迭代。
 
 **sessionEnd()**
 
@@ -950,7 +950,7 @@ Windows：
   - 集群为非激活状态，无法处理来自客户端的和数据相关的请求（键-值、SQL、扫描查询等）；
   - 基线拓扑未配置。
 
- 2. 通过调用`control.sh --activate`激活集群，或者上面文档描述的其他方式，做了如下事情：
+ 2. 通过调用`control.sh --activate`激活集群，或者上面文档描述的其它方式，做了如下事情：
 
   - 将正在运行的服务端节点全部加入基线拓扑；
   - 将集群切换为激活状态，允许交互。
@@ -983,7 +983,7 @@ Windows：
   - 新节点无法在持久化中存储缓存/表的数据；
   - 新节点可用于计算。
 
-2. 如果希望该节点可以再持久化中存储数据，那么需要通过`control.sh --baseline add <node's consistentId>`或者其他方式将其加入基线拓扑，然后：
+2. 如果希望该节点可以再持久化中存储数据，那么需要通过`control.sh --baseline add <node's consistentId>`或者其它方式将其加入基线拓扑，然后：
 
   - 基线拓扑会调整，包含新的节点；
   - 在新的基线拓扑中进行数据再平衡。
@@ -998,7 +998,7 @@ Windows：
  2. 重启节点，之后：
 
   - 基线拓扑没有必要变化，重启之后节点仍然保留它的`consistentId`，因此集群以及基线拓扑只是将该节点收回；
-  - 在节点下线期间如果有数据更新，修改的分区的数据会从其他节点复制到重启后的节点。
+  - 在节点下线期间如果有数据更新，修改的分区的数据会从其它节点复制到重启后的节点。
 
 > 如果节点重启时间很短，那么不要去碰基线拓扑是安全的（也是高效的），因此也不需要触发再平衡。但是如果时间很长，就需要从基线拓扑中删除该节点，然后触发再平衡以避免可能的数据丢失，因为要下线的节点上存储的主备数据可能丢失。
 
@@ -1017,12 +1017,12 @@ Windows：
 
 > 长时间降低复制因子可能是危险的。例如，考虑具有一个备份的缓存，如果一个节点故障，则没有数据丢失（因为一个副本仍然在线），但是需要尽快触发再平衡，因为如果另一个节点在重新平衡完成之前故障，则可能导致数据丢失。
 
- 2. 通过调用`contol.sh --baseline remove <node's consistentId>`或者其他方式将节点从基线拓扑中删除，之后：
+ 2. 通过调用`contol.sh --baseline remove <node's consistentId>`或者其它方式将节点从基线拓扑中删除，之后：
 
   - 基线拓扑发生变更，排除了停止的节点；
   - 开启原生持久化的缓存/表，会按照配置好的复制因子（或者副本数量）进行数据再平衡。
 
-> 节点从基线拓扑中删除之后，他就无法加入集群然后持有删除之前存储在持久化中的数据。通过在基线拓扑中删除一个节点，可以确定即使该节点重启，也无法再使用存储在该节点上的数据。
+> 节点从基线拓扑中删除之后，它就无法加入集群然后持有删除之前存储在持久化中的数据。通过在基线拓扑中删除一个节点，可以确定即使该节点重启，也无法再使用存储在该节点上的数据。
 
 **非基线节点删除和故障处理**
 
