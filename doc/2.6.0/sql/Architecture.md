@@ -109,15 +109,19 @@ Ignite设计和支持的**非并置**分布式关联就是针对的这样的场�
  - 查询在`本地`缓存上执行；
  - 使用`local = true`参数为查询显式地开启本地模式，该功能只有原生的Java、.NET和C++ API才支持，比如，在Java中该参数是通过`SqlQuery.setLocal(true)`或者`SqlFieldsQuery.setLocal(true)`进行切换；
 
-即使查询执行时网络拓扑发生变化（新节点加入集群或者老节点离开集群），前两个场景也会一直提供完整而一致的结果集。
-然而，在应用显式开启本地模式的第三个场景中需要注意，原因是如果希望在部分节点的`分区`缓存上执行本地查询时网络还发生了变化，那么可能得到结果集的一部分，因为这时会触发一个自动的数据再平衡过程，SQL引擎无法处理这个特殊情况。
+即使查询执行时拓扑发生变化（新节点加入集群或者老节点离开集群），前两个场景也会一直提供完整而一致的结果集。
+
+然而，在应用显式开启本地模式的第三个场景中需要注意，原因是如果希望在部分节点的`分区`缓存上执行本地查询时拓扑还发生了变化，那么可能得到结果集的一部分，因为这时会触发一个自动的数据再平衡过程，SQL引擎无法处理这个特殊情况。
+
 如果仍然希望在`分区`缓存上执行本地查询，那么需要考虑使用[这里](http://apacheignite.gridgain.org/docs/collocate-compute-and-data#affinity-call-and-run-methods)描述的关系计算技术。
 ## 3.4.空间支持
 ### 3.4.1.摘要
 Ignite除了支持标准ANSI-99标准的SQL查询，支持基本数据类型或者特定/自定义对象类型之外，还可以查询和索引几何数据类型，比如点、线以及包括这些几何形状空间关系的多边形。
+
 空间信息的查询功能，以及对应的可用的函数和操作符，是在[SQL的简单特性规范](http://www.opengeospatial.org/docs/is/)中定义的，目前，Ignite通过[JTS Topology Suite](http://tsusiatsoftware.net/jts/main.html)的使用，支持规范的交叉操作。
 ### 3.4.2.引入Ignite空间库
 Ignite的空间库(`ignite-geospatial`)依赖于[JTS](http://tsusiatsoftware.net/jts/main.html)，它是LGPL许可证，不同于Apache的许可证，因此`ignite-geospatial`并没有包含在Ignite的发布版中。
+
 因为这个原因，`ignite-geospatial`的二进制库版本位于如下的Maven仓库中：
 ```xml
 <repositories>
@@ -145,7 +149,9 @@ EXPLAIN SELECT name FROM Person WHERE age = 26;
 执行计划本身是由H2生成的，[这里](http://www.h2database.com/html/performance.html#explain_plan)有详细描述。
 ### 3.5.2.使用H2调试控制台
 当用Ignite进行开发时，有时对于检查表和索引是否正确或者运行在嵌入节点内部的H2数据库中的本地查询是非常有用的，为此Ignite提供了启动H2控制台的功能。要启用该功能，在启动节点时要将`IGNITE_H2_DEBUG_CONSOLE`系统属性或者环境变量设置为`true`。然后就可以在浏览器中打开控制台，可能需要点击控制台中的`刷新`按钮，因为有可能控制台在数据库对象初始化之前打开。
+
 ![](https://files.readme.io/OsddL8lfTOSLKqZWaTlI_Screen%20Shot%202015-08-24%20at%207.06.36%20PM.png)
+
 ### 3.5.3.SQL性能和可用性考量
 当执行SQL查询时有一些常见的陷阱需要注意：
 
@@ -163,8 +169,11 @@ select * from "cache-name".Person p join table(id bigint = (2,3,4)) i on p.id = 
 ```
 ### 3.5.4.结果集延迟加载
 Ignite默认会试图将所有结果集加载到内存然后将其发送给查询发起方(通常为应用客户端），这个方式在查询结果集不太大时提供了比较好的性能。
+
 但是，如果相对于可用内存来说结果集过大，就是导致长期的GC暂停甚至内存溢出。
+
 为了降低内存的消耗，以适度降低性能为代价，可以对结果集进行延迟加载和处理，这个可以通过给JDBC或者ODBC连接串传递`lazy`参数，或者对于Java、.NET和C++来说，使用一个简单的方法也可以实现:
+
 **Java**：
 ```java
 SqlFieldsQuery query = new SqlFieldsQuery("SELECT * FROM Person WHERE id > 10");
@@ -186,12 +195,14 @@ select * from Person where p.id = ?
 select SUM(salary) from Person
 ```
 通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用`CREATE TABLE`生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
+
 如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行化配置。
 > **注意**
 当前，这个属性影响特定缓存上的所有查询，可以加速很重的OLAP查询，但是会减慢其它的简单查询，这个行为在未来的版本中会改进。
 
 ### 3.5.6.索引提示
 当明确知道对于查询来说一个索引比另一个更合适时，索引提示就会非常有用，它也有助于指导查询优化器来选择一个更高效的执行计划。在Ignite中要进行这个优化，可以使用`USE INDEX(indexA,...,indexN)`语句，它会告诉Ignite对于查询的执行只会使用给定名字的索引之一。
+
 下面是一个示例：
 ```sql
 SELECT * FROM Person USE INDEX(index_age)
@@ -205,14 +216,18 @@ SELECT * FROM Person p WHERE p.id = ?
 Ignite会计算`p.id`所属的分区，然后只在该分区所在的节点中执行查询。
 ### 3.5.8.更新时忽略汇总
 当Ignite执行DML操作时，首先，它会获取所有受影响的中间行用于查询发起方的分析（也被称为汇总），然后会准备更新值的批处理,最后发送给远程节点。
+
 如果一个DML操作需要移动大量数据的话，这个方式可能导致性能问题以及网络的堵塞。
+
 使用这个标志可以作为一个提示，它使Ignite会在对应的远程节点上进行中间行的分析和更新，JDBC和ODBC都支持这个提示：
+
 **JDBC**
 ```
 jdbc:ignite:thin://192.168.0.15/skipReducerOnUpdate=true
 ```
 ### 3.5.9.SQL堆内行缓存
 Ignite的固化内存在Java堆外存储数据和索引，这意味着每次数据访问，就会有一部分数据从堆外数据区复制到堆内，然后可能被反序列化并且在应用或者服务端节点引用它期间，一直保持在堆内。
+
 SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象），使反序列化和数据复制的资源消耗最小化，每个缓存的行都会指向堆外数据区的一个数据条目，并且在如下情况下会失效：
 
  1. 存储在堆外数据区的主条目被更新或者删除；

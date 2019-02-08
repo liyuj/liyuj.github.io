@@ -425,7 +425,7 @@ Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处
 ```
  - 创建一个Ignite配置文件（可以以modules/storm/src/test/resources/example-ignite.xml文件作为示例）并且确保它可以被流处理器访问；
  - 确保输入流处理器的键值数据通过名为`ignite`的属性指定（或者通过StormStreamer.setIgniteTupleField(...)也可以指定一个不同的）。作为一个示例可以看`TestStormSpout.declareOutputFields(...)`。
- - 为流处理器创建一个网络，带有所有依赖制作一个jar文件然后运行如下的命令：
+ - 为流处理器创建一个拓扑，带有所有依赖制作一个jar文件然后运行如下的命令：
 ```bash
 storm jar ignite-storm-streaming-jar-with-dependencies.jar my.company.ignite.MyStormTopology
 ```

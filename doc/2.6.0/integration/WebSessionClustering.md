@@ -76,7 +76,7 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 ### 3.1.5.配置
 要在应用中通过Ignite开启Web会话缓存，需要：
 
- 1. **添加Ignite的jar包**，下载Ignite然后将如下的jar包加入应用的类路径(WEB-INF/lib目录)；
+1. **添加Ignite的jar包**，下载Ignite然后将如下的jar包加入应用的类路径(WEB-INF/lib目录)；
 
   - ignite.jar
   - ignite-web.jar
@@ -111,8 +111,8 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 ```
 
 确保将${ignite.version}替换为实际的Ignite版本。
- 2. **配置缓存模式**，配置Ignite的缓存，要么是`分区`模式，要么是`复制`模式（可以看上面的例子）；
- 3. **更新web.xml**，在web.xml中声明一个ContextListener和一个WebSessionsFilter：
+2. **配置缓存模式**，配置Ignite的缓存，要么是`分区`模式，要么是`复制`模式（可以看上面的例子）；
+3. **更新web.xml**，在web.xml中声明一个ContextListener和一个WebSessionsFilter：
 
 ```xml
 ...
@@ -147,8 +147,8 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 ...
 ```
 
-在应用启动时，监听器会在应用中启动一个Ignite节点，它会连接网络中的其它节点以形成一个分布式缓存。
- 4. **设置退出策略（可选）**，为缓存中的旧数据设置退出策略（可以看上面的例子）。
+在应用启动时，监听器会在应用中启动一个Ignite节点，它会连接拓扑中的其它节点以形成一个分布式缓存。
+4. **设置退出策略（可选）**，为缓存中的旧数据设置退出策略（可以看上面的例子）。
 
 **配置参数**
 

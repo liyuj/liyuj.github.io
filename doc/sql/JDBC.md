@@ -46,7 +46,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50")
 |`password`|SQL连接的密码，如果服务端开启了认证则此参数为必需。|`ignite`|
 |`distributedJoins`|对于非并置数据是否使用分布式关联|`false`|
 |`enforceJoinOrder`|是否在查询中强制表的关联顺序，如果配置为`true`，查询优化器在关联中不会对表进行重新排序。|false|
-|`collocated`|数据是否并置，当执行分布式查询时，它会将子查询发送给各个节点，如果事先知道要查询的数据在相同的节点是并置在一起的，那么Ignite会有显著的性能提升和网络优化。|`false`|
+|`collocated`|数据是否并置，当执行分布式查询时，它会将子查询发送给各个节点，如果事先知道要查询的数据在相同的节点是并置在一起的，那么Ignite会有显著的性能提升和拓扑优化。|`false`|
 |`replicatedOnly`|查询是否只包含复制表，这是一个潜在的可能提高性能的提示。|`false`|
 |`autoCloseServerCursor`|当拿到最后一个结果集时是否自动关闭服务端游标。开启之后，对`ResultSet.close()`的调用就不需要网络访问，这样会改进性能。但是，如果服务端游标已经关闭，在调用`ResultSet.getMetadata()`方法时会抛出异常，这时为什么默认值为`false`的原因。|`false`|
 |`socketSendBuffer`|发送套接字缓冲区大小，如果配置为0，会使用操作系统默认值。|`0`|
@@ -260,7 +260,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 |`cache`|缓存名，如果未定义会使用默认的缓存，区分大小写||
 |`nodeId`|要执行的查询所在节点的Id，对于在本地查询是有用的||
 |`local`|查询只在本地节点执行，这个参数和`nodeId`参数都是通过指定节点来限制数据集|false|
-|`collocated`|优化标志，当Ignite执行一个分布式查询时，它会向单个的集群节点发送子查询，如果提前知道要查询的数据已经被并置到同一个节点，Ignite会有显著的性能提升和网络优化|false|
+|`collocated`|优化标志，当Ignite执行一个分布式查询时，它会向单个的集群节点发送子查询，如果提前知道要查询的数据已经被并置到同一个节点，Ignite会有显著的性能提升和拓扑优化|false|
 |`distributedJoins`|可以在非并置的数据上使用分布式关联。|false|
 |`streaming`|通过`INSERT`语句为本链接开启批量数据加载模式，具体可以参照后面的`流模式`相关章节。|false|
 |`streamingAllowOverwrite`|通知Ignite对于重复的已有键，覆写它的值而不是忽略它们，具体可以参照后面的`流模式`相关章节。|false|

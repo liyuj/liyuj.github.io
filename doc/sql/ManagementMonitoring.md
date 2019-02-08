@@ -17,7 +17,7 @@ NODES视图中包括了集群节点的各种信息。
 |`VERSION`|VARCHAR|节点的版本|
 |`IS_CLIENT`|BOOLEAN|节点是否为客户端节点|
 |`IS_DAEMON`|BOOLEAN|节点是否为守护节点|
-|`NODE_ORDER`|INT|节点在网络中的顺序|
+|`NODE_ORDER`|INT|节点在拓扑中的顺序|
 |`ADDRESSES`|VARCHAR|节点的地址|
 |`HOSTNAMES`|VARCHAR|节点的主机名|
 

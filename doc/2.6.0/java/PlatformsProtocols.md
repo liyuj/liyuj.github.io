@@ -942,7 +942,7 @@ http://host:port/ignite?cmd=node&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-7
 |response|jsonObject|一个节点的信息|{"attributes": null,"caches": {},"consistentId": "127.0.0.1:47500","defaultCacheMode": "REPLICATED","metrics": null,"nodeId": "2d0d6510-6fed-4fa3-b813-20f83ac4a1a9","replicaCount": 128,"tcpAddresses": ["127.0.0.1"],"tcpHostNames": [""],"tcpPort": 11211}|
 
 #### 12.2.3.31.top
-**top**命令获取一个网络拓扑的信息。
+**top**命令获取一个拓扑的信息。
 URL:
 ```
 http://host:port/ignite?cmd=top&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70f93a4cd241
@@ -1013,7 +1013,7 @@ http://host:port/ignite?cmd=top&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70
 
 |名称|类型|描述|示例|
 |---|---|---|---|
-|response|jsonObject|一个网络拓扑的信息|[{"attributes": {...},"caches": [{name: "",mode: "PARTITIONED"},{name: "partionedCache",mode: "PARTITIONED",sqlSchema: "partionedCache"}],"consistentId": "127.0.0.1:47500","REPLICATED","metrics": {...},"nodeId": "96baebd6-dedc-4a68-84fd-f804ee1ed995",..."tcpPort": 11211},{"attributes": {...},"caches": [{name: "",mode: "REPLICATED"}],"consistentId": "127.0.0.1:47501","metrics": {...},"nodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",..."tcpPort": 11212}]|
+|response|jsonObject|一个拓扑的信息|[{"attributes": {...},"caches": [{name: "",mode: "PARTITIONED"},{name: "partionedCache",mode: "PARTITIONED",sqlSchema: "partionedCache"}],"consistentId": "127.0.0.1:47500","REPLICATED","metrics": {...},"nodeId": "96baebd6-dedc-4a68-84fd-f804ee1ed995",..."tcpPort": 11211},{"attributes": {...},"caches": [{name: "",mode: "REPLICATED"}],"consistentId": "127.0.0.1:47501","metrics": {...},"nodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",..."tcpPort": 11212}]|
 
 #### 12.2.3.32.exe
 **exe**命令在集群中执行给定的任务。

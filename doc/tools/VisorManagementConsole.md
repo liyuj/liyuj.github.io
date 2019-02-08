@@ -1,7 +1,7 @@
 # 3.Visor管理控制台
 ## 3.1.命令行接口
 ### 3.1.1.摘要
-Visor命令行接口为Ignite提供了脚本化的监控能力，它可以用于从网格获得与节点、缓存和任务有关的统计数据，显示与网络有关的各种指标的一般细节，还有节点的配置属性也可以在这里看到，它还可以用于启动和停止远程节点。
+Visor命令行接口为Ignite提供了脚本化的监控能力，它可以用于从网格获得与节点、缓存和任务有关的统计数据，显示与拓扑有关的各种指标的一般细节，还有节点的配置属性也可以在这里看到，它还可以用于启动和停止远程节点。
 
 ![](https://files.readme.io/T32Eltb1SoaxDK1lEIvd_visor.png)
 
@@ -19,7 +19,7 @@ Ignite附带了`IGNITE_HOME/bin/ignitevisorcmd.{sh|bat}`脚本，用于启动命
 |close||将visor从网格断开|
 |config||输出节点的配置|
 |deploy||将文件或者文件夹复制到远程主机|
-|disco||输出网络变更日志|
+|disco||输出拓扑变更日志|
 |events||从一个节点输出事件|
 |gc||在远程节点运行GC|
 |help|?|输出Visor控制台帮助|
@@ -35,8 +35,8 @@ Ignite附带了`IGNITE_HOME/bin/ignitevisorcmd.{sh|bat}`脚本，用于启动命
 |start||在远程主机启动或者重启节点|
 |status|!|输出Visor控制台状态|
 |tasks||输出任务执行统计数据|
-|top||输出当前的网络|
-|vvm||打开网络节点的VisualVM|
+|top||输出当前的拓扑|
+|vvm||打开节点的VisualVM|
 
 ## 3.2.报警指令
 ### 3.2.1.报警指令规范
@@ -164,7 +164,7 @@ start "-h=10.1.1.10 -u=uname -pw=passwd -n=3"
 ```
 start "-h=192.168.1.100~104 -u=uname -k=/home/uname/.ssh/is_rsa -n=5"
 ```
-启动`start-nodes.ini`文件中定义的网络，已有节点停止：
+启动`start-nodes.ini`文件中定义的拓扑，已有节点停止：
 ```
 start "-f=start-nodes.ini -r"
 ```

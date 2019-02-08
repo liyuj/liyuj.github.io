@@ -292,7 +292,7 @@ IgniteBiFunction<Integer, Object[], Vector> strEncoderPreprocessor = new Encoder
 
 分区化的数据集的主要原理是Ignite的[计算网格](/doc/java/ComputeGrid.md#_7-1-计算网格)实现的经典[MapReduce](https://en.wikipedia.org/wiki/MapReduce)范式。
 
-MapReduce的主要优势在于，可以在分布于整个集群的数据上进行计算，而不需要大量的网络数据传输，这个想法通过如下方式对应于分区化的数据集：
+MapReduce的主要优势在于，可以在分布于整个集群的数据上进行计算，而不需要大量的网络数据移动，这个想法通过如下方式对应于分区化的数据集：
 
  - 每个数据集都是分区的；
  - 分区在每个节点的本地，持有持久化的训练上下文以及可恢复的训练数据；

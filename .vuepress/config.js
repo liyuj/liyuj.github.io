@@ -106,7 +106,9 @@ module.exports = {
                         'Clustering',
                         'Key-ValueDataGrid',
                         'DistributedSQL',
-                        'ComputeGrid'
+                        'ComputeGrid',
+                        'DurableMemory',
+                        'Persistence'
                     ],
                     '/doc/sql/': [
                         '',
