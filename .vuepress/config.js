@@ -148,7 +148,8 @@ module.exports = {
                     ],
                     '/doc/gridgain/':[
                         '',
-                        'OracleGoldenGateIntegration'
+                        'OracleGoldenGateIntegration',
+                        'KafkaConnector'
                     ],
                     '/': [
                         ''

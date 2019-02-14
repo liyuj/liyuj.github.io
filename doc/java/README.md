@@ -371,7 +371,7 @@ city_id = 2;
 ret = SQLExecute(stmt);
 ```
 Java API：
-```
+```java
 // Connecting to the cluster.
 Ignite ignite = Ignition.start();
 
