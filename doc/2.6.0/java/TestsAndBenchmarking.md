@@ -17,7 +17,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
 ### 17.1.3.在远程运行Ignite的基准测试
 如果要在若干远程主机上进行测试，需要按照如下步骤进行：
 
- 1. 打开`config/ignite-remote-config.xml`文件，然后将`<value>127.0.0.1:47500..47509</value>`替换为实际的所有远程主机IP列表，如果要使用其它类型的IP搜索器，可以参照相关的集群配置文档；
+ 1. 打开`config/ignite-remote-config.xml`文件，然后将`<value>127.0.0.1:47500..47509</value>`替换为实际的所有远程主机IP列表，如果要使用其它类型的IP探测器，可以参照相关的集群配置文档；
  2. 打开`config/benchmark-remote-sample.properties`文件，然后将下列位置的`localhost`替换为实际的所有远程主机IP列表：`SERVERS=localhost,localhost`和`DRIVERS=localhost,localhost`，DRIVER是实际执行测试逻辑的主机（通常是Ignite客户端节点），SERVERS是被测试的节点，如果要进行所有测试的话，需要替换`config/benchmark-remote.properties`文件中的相同内容；
  3. 将Yardstick测试上传到`DRIVERS`主机之一的工作目录；
  4. 登录该主机，然后执行如下命令：
@@ -31,7 +31,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
 
 如果要在远程节点执行所有的测试，那么需要在`DRIVER`端执行`/bin/benchmark-run-all.sh config/benchmark-remote.properties`。
 ### 17.1.4.已有的测试点
-目前提供的ceshi点如下：
+目前提供的测试点如下：
 
  1. `GetBenchmark`：测试分布式原子化缓存的`get`操作；
  2. `PutBenchmark`：测试分布式原子化缓存的`put`操作；
@@ -99,4 +99,4 @@ CONFIGS="-b 1 -sm PRIMARY_SYNC -dn PutBenchmark`IgniteNode"
 
 构件位于`modules/yardstick/target/assembly`目录。
 ### 17.1.7.自定义Ignite测试
-所有的测试用例都需要集成`AbstractBenchmark`类，并且实现`test`方法（这个方法实际执行性能测试）。
+所有的测试用例都需要继承`AbstractBenchmark`类，并且实现`test`方法（这个方法实际执行性能测试）。

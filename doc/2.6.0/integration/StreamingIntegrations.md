@@ -7,7 +7,7 @@ Apache Ignite的Kafka流处理器模块提供了从Kafka到Ignite缓存的流处
 
 下面两个方法中的任何一个都可以用于获得这样的流处理功能：
 
- - 使用和Ignite sink的Kafka连接器功能；
+ - 使用带有Ignite接收器的Kafka连接器功能；
  - 在Maven工程中导入Kafka的流处理器模块然后实例化KafkaStreamer用于数据流处理。
 
 ### 7.2.2.通过Kafka连接器的数据流
@@ -515,7 +515,7 @@ streamer.start();
 ### 7.9.1.摘要
 Apache Flume是一个高效的收集、汇总以及移动大量的日志数据的分布式的、高可靠和高可用的服务（[https://github.com/apache/flume](https://github.com/apache/flume)）。
 
-IgniteSink是一个Flume池，它会从相对应的Flume通道中提取事件然后将数据注入Ignite缓存，目前支持Flume的1.6.0版本。
+IgniteSink是一个Flume接收器，它会从相对应的Flume通道中提取事件然后将数据注入Ignite缓存，目前支持Flume的1.6.0版本。
 在启动Flume代理之前，就像下面章节描述的，IgniteSink及其依赖需要包含在代理的类路径中。
 ### 7.9.2.设置
 

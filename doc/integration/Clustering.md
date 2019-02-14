@@ -129,7 +129,7 @@ GCE上的节点发现通常认为很有挑战性。Google云，和其它大部�
 
 > 这个方法可以只配置一次就可以在所有的EC2实例上复用。
 
-下面的例子显示了如何配置基于Google云存储的IP搜索器：
+下面的例子显示了如何配置基于Google云存储的IP探测器：
 
 XML：
 ```xml
@@ -178,13 +178,13 @@ Ignition.start(cfg);
 ### 2.3.2.基于Apache JCloud的发现
 为了减轻不断变化的IP地址的问题，Ignite支持通过使用基于`TcpDiscoveryCloudIpFinder`的Apache jclouds工具包来实现节点的自动发现。要了解有关Apache JCloud的信息，请参照[jclouds.apache.org](https://jclouds.apache.org/)。
 
-该IP搜索器形成节点地址，通过获取云上所有虚拟机的私有和共有IP地址以及给它们增加一个端口号使Ignite可以运行，该端口可以通过`TcpDiscoverySpi.setLocalPort(int)`或者`TcpDiscoverySpi.DFLT_PORT`进行设置，这样所有节点会连接任何生成的的IP地址然后发起网格节点的自动发现。
+该IP探测器形成节点地址，通过获取云上所有虚拟机的私有和共有IP地址以及给它们增加一个端口号使Ignite可以运行，该端口可以通过`TcpDiscoverySpi.setLocalPort(int)`或者`TcpDiscoverySpi.DFLT_PORT`进行设置，这样所有节点会连接任何生成的的IP地址然后发起网格节点的自动发现。
 
 可以参考[Apache jclouds providers section](https://jclouds.apache.org/reference/providers/#compute)来获取它支持的云平台的列表。
 
-> 所有虚拟机都要使用同一个端口启动Ignite实例，否则它们无法通过IP搜索器发现对方。
+> 所有虚拟机都要使用同一个端口启动Ignite实例，否则它们无法通过IP探测器发现对方。
 
-下面的例子显示了如何配置基于Apache JCloud的IP搜索器：
+下面的例子显示了如何配置基于Apache JCloud的IP探测器：
 
 **XML：**
 ```xml

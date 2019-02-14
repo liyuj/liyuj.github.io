@@ -329,7 +329,7 @@ Ignite的发现机制，根据不同的使用场景，有两种实现：
 Ignite中，通过`DiscoverySpi`节点可以彼此发现对方，Ignite提供了`TcpDiscoverySpi`作为`DiscoverySpi`的默认实现，它使用TCP/IP来作为节点发现的实现，可以配置成基于组播的或者基于静态IP的。
 
 #### 2.5.1.2.组播IP探测器
-`TcpDiscoveryMulticastIpFinder`使用组播来发现网格内的每个节点。它也是默认的IP搜索器。除非打算覆盖默认的设置否则不需要指定它。
+`TcpDiscoveryMulticastIpFinder`使用组播来发现网格内的每个节点。它也是默认的IP探测器。除非打算覆盖默认的设置否则不需要指定它。
 
 下面的例子显示了如何通过Spring XML配置文件或者通过Java代码编程式地进行配置：
 
@@ -428,7 +428,7 @@ Ignition.start(cfg);
 #### 2.5.1.4.组播和静态IP探测器
 可以同时使用基于组播和静态IP的发现，这种情况下，除了通过组播接受地址以外，如果有的话，`TcpDiscoveryMulticastIpFinder`也可以与预配置的静态IP地址列表一起工作，就像上面描述的基于静态IP的发现一样。
 
-下面的例子显示了如何配置使用了静态IP地址的组播IP搜索器。
+下面的例子显示了如何配置使用了静态IP地址的组播IP探测器。
 
 XML：
 ```xml
@@ -655,7 +655,7 @@ cfg.setCommunicationSpi(commSpi);
 // Starting a node.
 Ignition.start(cfg);
 ```
-从配置中可以看到，它们的差别是很小的 - 只是SPI的端口号和IP搜索器不同。
+从配置中可以看到，它们的差别是很小的 - 只是SPI的端口号和IP探测器不同。
 
 > 如果希望不同集群的节点之间可以互相探测到，可以使用组播协议然后将`TcpDiscoveryVmIpFinder`替换为`TcpDiscoveryMulticastIpFinder`并且在上面的每个配置中设置唯一的`TcpDiscoveryMulticastIpFinder.multicastGroups`。
 
@@ -663,7 +663,7 @@ Ignition.start(cfg);
 如果隔离的集群使用了Ignite持久化，那么在文件系统中每个集群会将持久化文件保存在不同的路径中。通过`DataStorageConfiguration`中的`setStoragePath(...)`、`setWalPath(...)`、`setWalArchivePath(...)`方法可以针对每个单独的集群进行修改。
 
 #### 2.5.1.6.JDBC探测器
-可以用数据库作为通用共享存储来保存初始的IP地址，通过这个搜索器这些节点会在启动时将IP地址写入数据库，这是通过`TcpDiscoveryJdbcIpFinder`实现的。
+可以用数据库作为通用共享存储来保存初始的IP地址，通过这个探测器这些节点会在启动时将IP地址写入数据库，这是通过`TcpDiscoveryJdbcIpFinder`实现的。
 
 XML：
 ```xml
@@ -796,7 +796,7 @@ Ignition.start(cfg);
 
 |setter方法|描述|默认值|
 |---|---|---|
-|`setIpFinder(TcpDiscoveryIpFinder)`|用于节点IP地址信息共享的IP搜索器|`TcpDiscoveryMulticastIpFinder`,部分实现如下：`TcpDiscoverySharedFsIpFinder`,`TcpDiscoveryS3IpFinder`,`TcpDiscoveryJdbcIpFinder`,`TcpDiscoveryVmIpFinder`|
+|`setIpFinder(TcpDiscoveryIpFinder)`|用于节点IP地址信息共享的IP探测器|`TcpDiscoveryMulticastIpFinder`,部分实现如下：`TcpDiscoverySharedFsIpFinder`,`TcpDiscoveryS3IpFinder`,`TcpDiscoveryJdbcIpFinder`,`TcpDiscoveryVmIpFinder`|
 |`setLocalAddress(String)`|设置发现SPI使用的本地主机IP地址|如果未提供，默认会使用发现的第一个非loopback地址，如果没有可用的非loopback地址，那么会使用`java.net.InetAddress.getLocalHost()`|
 |`setLocalPort(int)`|SPI监听端口|47500|
 |`setLocalPortRange(int)`|本地端口范围，本地节点会试图绑定从localPort开始的第一个可用的端口，直到localPort+localPortRange|100|
@@ -804,7 +804,7 @@ Ignition.start(cfg);
 |`setNetworkTimeout(long)`|用于拓扑操作的最大超时时间|5000|
 |`setSocketTimeout(long)`|设置Socket操作超时时间，这个超时时间用于限制连接时间以及写Socket时间|2000|
 |`setAckTimeout(long)`|设置收到发送消息的确认的超时时间，如果在这个时间段内未收到确认，发送会被认为失败然后SPI会试图重新发送消息|2000|
-|`setJoinTimeout(long)`|设置加入超时时间，如果使用了非共享的IP搜索器然后节点通过IP搜索器无法与任何地址建立连接，节点会在这个时间段内仍然试图加入集群。如果所有地址仍然无响应，会抛出异常然后节点启动失败，0意味着一直等待|0|
+|`setJoinTimeout(long)`|设置加入超时时间，如果使用了非共享的IP探测器然后节点通过IP探测器无法与任何地址建立连接，节点会在这个时间段内仍然试图加入集群。如果所有地址仍然无响应，会抛出异常然后节点启动失败，0意味着一直等待|0|
 |`setThreadPriority(int)`|SPI启动的线程的线程优先级|0|
 |`setStatisticsPrintFrequency(int)`|统计输出的频率（毫秒），0意味着不需要输出。如果值大于0那么日志就会激活，然后每隔一段时间就会以INFO级别输出一个状态，这对于跟踪拓扑的问题非常有用。|0|
 
