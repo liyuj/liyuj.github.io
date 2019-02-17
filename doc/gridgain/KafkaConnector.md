@@ -17,8 +17,8 @@ Kafka连接器具有扩展性和弹性，可以解决很多集成的难题，如
 ### 3.1.2.入门
 参见Kafka连接器入门相关的章节，了解如何安装、配置和运行Kafka的连接器，然后看一些实际的示例：
 
- - [示例：使用Kafka连接器在关系数据库中持久化Ignite数据](#_3-8-使用kafka连接器在关系数据库中持久化ignite数据);
- - [示例：使用Kafka连接器进行Ignite数据复制](#_3-9-使用kafka连接器进行ignite数据复制)。
+ - [示例：使用Kafka连接器在关系数据库中持久化Ignite数据](#_3-8-示例-使用kafka连接器在关系数据库中持久化ignite数据);
+ - [示例：使用Kafka连接器进行Ignite数据复制](#_3-9-示例-使用kafka连接器进行ignite数据复制)。
 
 ## 3.2.Kafka连接器入门
 ### 3.2.1.Kafka连接器生态系统
@@ -195,3 +195,54 @@ Kafka的**单消息转换**（SMT）允许基于配置的消息结构和内容�
 
 参见[Kafka连接器数据模式](#_3-4-kafka连接器数据模式)一节。
 ## 3.4.Kafka连接器数据模式
+GridGain的Kafka连接器支持数据模式。这使得许多现有的非GridGain接收连接器可以理解使用GridGain源连接器注入的数据，而GridGain接收连接器也可以理解非GridGain源连接器注入的数据。
+
+### 3.4.1.Ignite类型支持
+GridGain的源和接收连接器使用Ignite的二进制格式来处理Ignite数据。
+
+下表提供了Kafka模式类型与已知逻辑类型和Ignite二进制类型之间的映射。
+
+|Kafka类型|Ignite类型|
+|---|---|
+|INT8|BYTE|
+|INT16|SHORT, CHAR|
+|INT32|INT|
+|INT64|LONG|
+|FLOAT32|FLOAT|
+|FLOAT64|DOUBLE|
+|BOOLEAN|BOOLEAN|
+|STRING|STRING, UUID, CLASS|
+|BYTES|BYTE_ARR|
+|ARRAY(valueSchema)|COL<br>SHORT_ARR<br>INT_ARR<br>LONG_ARR<br>FLOAT_ARR<br>DOUBLE_ARR<br>CHAR_ARR<br>BOOLEAN_ARR<br>DECIMA<br>L_ARR<br>STRING_ARR<br>UUID_ARR<br>DATE_ARR<br>OBJ_ARR<br>ENUM_ARR<br>TIME_ARR<br>DATE_ARR<br>TIMES<br>TAMP_ARR<br>DECIMAL_ARR|
+|MAP|MAP|
+|STRUCT|OBJ, BINARY_OBJ|
+|Date (逻辑类型)|DATE|
+|Time (逻辑类型)|TIME|
+|Timestamp (逻辑类型)|TIMESTAMP|
+|Decimal (逻辑类型)|DECIMAL|
+
+::: warning 部分Ignite类型信息会丢失
+如上所示，由于没有Kafka模式和逻辑类型与之对应，因此以下Ignite类型的类型信息将丢失：CHAR，UUID，CLASS和相应的数组。
+:::
+::: warning 基于Java注解的配置会丢失
+GridGain的Kafka连接器没有导入和导出使用Java注释指定的字段信息。例如，Kafka中不存在基于注解配置的关系键、SQL可查询字段和索引。
+
+使用基于配置的方法，可以为接收器缓存指定此类信息。
+:::
+### 3.4.2.更新和删除
+源连接器默认不会处理已删除的Ignite缓存条目。将`shallProcessRemovals`配置项设置为`true`可以使源连接器处理删除的数据。这时源连接器会将值为`null`的记录注入Kafka以表示该数据已被删除，然后接收连接器会删除值为`null`的数据。使用`null`作为值来表示数据已被删除是正常的，因为Ignite不支持`null`缓存值。
+
+出于性能原因，接收连接器默认不支持已有的缓存条目更新。将`shallProcessUpdates`配置项设置为`true`可以使接收连接器更新已有的条目。
+### 3.4.3.模式迁移
+模式迁移对于GridGain连接器是隐式的。源和接收连接器都以跨平台的Ignite二进制格式拉取和推送缓存条目，这种格式本质上支持更改模式，Ignite缓存键和值是可以具有不同字段集的动态对象。
+
+出于性能原因，源连接器会缓存键和值的模式，在拉取第一个缓存条目时模式被创建并复用于所有后续条目。仅当模式永远不会更改时，此方式才有效。设置`isSchemaDynamic`为`true`可以支持模式更改。
+### 3.4.4.无模式操作
+如果`isSchemaless`配置项设置为`true`，则源连接器不会生成模式。
+
+禁用模式可以提高性能：连接器不会构建模式，也不会将键和值转换为Kafka格式，不过代价就是非GridGain接收转换器无法理解以Ignite二进制格式注入Kafka的数据。
+
+部分场景禁用模式是有意义的：
+
+ - 已准备通过编码来扩展非Ignite转换器处理Ignite二进制对象以实现更高的性能；
+ - 如[示例：使用Kafka连接器进行Ignite数据复制](#_3-9-示例-使用kafka连接器进行ignite数据复制)所示，其不需要模式，因为源端和接收端都是GridGain连接器。
