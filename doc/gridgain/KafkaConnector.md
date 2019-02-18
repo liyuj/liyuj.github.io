@@ -246,3 +246,46 @@ GridGain的Kafka连接器没有导入和导出使用Java注释指定的字段信
 
  - 已准备通过编码来扩展非Ignite转换器处理Ignite二进制对象以实现更高的性能；
  - 如[示例：使用Kafka连接器进行Ignite数据复制](#_3-9-示例-使用kafka连接器进行ignite数据复制)所示，其不需要模式，因为源端和接收端都是GridGain连接器。
+
+## 3.5.Kafka连接器配置
+源和接收Kafka连接器都是自文档化的，下面的配置参考都是从`IgniteSourceConnectorConfig.conf().toRst()`和`IgniteSinkConnectorConfig.conf().toRst()`方法的输出中捕获的。
+::: tip 所有缓存配置相同
+接收和源连接器都支持多个缓存，下面的所有配置项都可以用于所有的缓存，这样可以最大限度地减少配置量并提高一致性。但是可能需要为不同的缓存设置不同的配置项，解决方法是使用不同的配置文件部署连接器的多个实例。
+:::
+### 3.5.1.源连接器
+
+|配置项|描述|类型|默认值|重要性|
+|---|---|---|---|---|
+|`failoverPolicy`|处理Kafka连接器工作节点故障以及再平衡的模式。选项包括：<br>**NONE**：在连接器由于故障或者再平衡下线期间发生的缓存更新会丢失，该选项提供了最高的性能；<br>**FULL_SNAPSHOT**：每次连接器启动后都会拉取所有的数据，该选项可防止数据丢失，但只适用于小型缓存；<br>**BACKLOG**：从最后提交处继续。连接器会在Ignite中创建一个专门的临时缓存，其数据复制自所有的缓存并被赋予偏移量，然后数据从该Kafka临时缓存拉取。该选项可防止数据丢失，但会消耗额外的Ignite资源来管理Kafka临时缓存，并由于额外的数据编组而效率较低。|string|NONE|高|
+|`igniteCfg`|Ignite配置文件的路径，如果未指定默认会使用`$IGNITE_HOME/config/default-config.xml`|string||高|
+|`shallLoadInitialData`|连接器启动时是否加载Ignite缓存中的已有数据。|boolean|true|高|
+|`shallProcessRemovals`|如果为`true`，连接器会处理删除的数据。这时连接器会往Kafka中注入值为`null`的数据来表示该数据已被删除。|boolean|false|中|
+|`backlogCacheName`|在Ignite中创建的临时缓存的名字，其数据复制自所有的缓存并被赋予偏移量，该配置项只有`failoverPolicy`配置为`BACKLOG`时才有效。|string|kafka-connect-backlog|低|
+|`backlogFlushFreq`|临时缓存服务将数据刷新到临时缓存的频率（毫秒），0表示该配置项被禁用。该配置项只有`failoverPolicy`配置为`BACKLOG`时才有效。|int|500|低|
+|`backlogMemoryRegionName`|Ignite中用于存储临时缓存的内存区名字，该配置项只有`failoverPolicy`配置为`BACKLOG`时才有效。|string|kafka-connect|低|
+|`backlogServiceName`|临时缓存服务名，其会管理Ignite中的临时缓存，该配置项只有`failoverPolicy`配置为`BACKLOG`时才有效。|string|kafka-connect-backlog-service|低|
+|`batchSize`|单批次发送给Kafka的最大数据量|int|10000|低|
+|`cacheBlacklist`|正则表达式列表，用于匹配不进行复制的缓存的名称。如果同时指定了`cacheWhitelist`和`cacheBlacklist`，则首先分析`cacheWhitelist`。|list|null|低|
+|`cacheFilter`|自定义`java.util.function.Predicate<org.gridgain.kafka.CacheEntry>`实现的类名，用于过滤从Ignite缓存中拉取的数据。|class|null|低|
+|`cacheListPollInterval`|轮询Ignite中存在的最新缓存列表的频率（毫秒）。|long|5000|低|
+|`cacheWhitelist`|正则表达式列表，用于匹配要进行复制的缓存的名称。|list|null|低|
+|`isSchemaDynamic`|键和值模式默认只被创建一次并被缓存，如果配置为`true`，则会检测模式的变更。|boolean|false|低|
+|`isSchemaless`|源连接器默认会生成缓存的键和值模式，如果配置为`false`则会禁用模式的生成，这会提高性能，但是非GridGain的接收连接器会无法理解数据的结构。|boolean|false|低|
+|`pollInterval`|轮询每个缓存中的新数据的频率（毫秒）。|long|2000|低|
+|`topicPrefix`|连接器将Ignite缓存中的数据拉取到Kafka主题中，该主题使用此前缀为缓存名添加前缀。|string||低|
+
+### 3.5.2.接收连接器
+
+|配置项|描述|类型|默认值|重要性|
+|---|---|---|---|---|
+|`igniteCfg`|Ignite配置文件的路径，如果未指定默认会使用`$IGNITE_HOME/config/default-config.xml`|string||高|
+|`shallProcessUpdates`|是否启用覆盖或删除缓存中的已有值，如果禁用，则接收连接器的性能会更好。|boolean|false|中|
+|`batchSize`|单批次发送给Ignite的最大数据量|int|10000|低|
+|`cacheFilter`|自定义`java.util.function.Predicate<javax.cache.event.CacheEntryEvent>`实现的类名，用于过滤推送给Ignite缓存的数据。|class|null|低|
+|`cachePrefix`|接收缓存名是根据此前缀和没有主题前缀的Kafka主题名生成的。例如，如果主题为`ignite.person`，则主题前缀为`ignite`，然后缓存前缀是`ignite-`，那么接收缓存名就是`ignite-person`。|string||低|
+|`concurrency`|将数据推送给Ignite的并行线程数。如果配置为0或未指定，连接器将根据工作节点的CPU的数量选择默认数字。|int|0|低|
+|`keyFields`|用于Ignite缓存键的以逗号分隔的字段名称列表。如果`keyPolicy`设置为`kafka`，则不适用。如果未指定，则使用所有字段。|list||低|
+|`keyPolicy`|指定用于Ignite缓存键的数据，选项包括：<br>**key**：使用条目键中的字段；<br>**value**：使用条目值中的字段；<br>**kafka**：Ignite二进制对象有3个字段（Kafka记录的主题、分区和偏移量）用作缓存键。|string|key|低|
+|`pushInterval`|将数据推送到Ignite的频率（毫秒）。|long|2000|低|
+|`topicPrefix`|Kafka主题是根据此前缀和缓存名生成的。|string|ignite-|低|
+|`valueFields`|以逗号分隔的正则表达式列表，用于匹配用于Ignite缓存值的字段名。如果未指定，则使用所有字段。|list||低|
