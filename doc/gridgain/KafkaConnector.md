@@ -17,8 +17,8 @@ Kafka连接器具有扩展性和弹性，可以解决很多集成的难题，如
 ### 3.1.2.入门
 参见Kafka连接器入门相关的章节，了解如何安装、配置和运行Kafka的连接器，然后看一些实际的示例：
 
- - [示例：使用Kafka连接器在关系数据库中持久化Ignite数据](#_3-8-示例-使用kafka连接器在关系数据库中持久化ignite数据);
- - [示例：使用Kafka连接器进行Ignite数据复制](#_3-9-示例-使用kafka连接器进行ignite数据复制)。
+ - [示例：使用Kafka连接器在关系数据库中持久化Ignite数据](#_3-8-示例：使用kafka连接器在关系数据库中持久化ignite数据);
+ - [示例：使用Kafka连接器进行Ignite数据复制](#_3-9-示例：使用kafka连接器进行ignite数据复制)。
 
 ## 3.2.Kafka连接器入门
 ### 3.2.1.Kafka连接器生态系统
@@ -33,11 +33,11 @@ Kafka连接器具有扩展性和弹性，可以解决很多集成的难题，如
 ### 3.2.2.GridGain的Kafka连接器安装
 Kafka连接器安装分为3个步骤：
 
- 1. 准备连接器安装包；
+ 1. 准备连接器程序包；
  2. 在Kafka中注册GridGain连接器；
  3. 在GridGain中注册连接器（可选）。
 
-**1.准备连接器安装包**
+**1.准备连接器程序包**
 
 Kafka连接器是GridGain企业版或旗舰版8.4.9及以后版本的一部分，位于GridGain安装文件夹的`integration/gridgain-kafka-connect`目录中。
 
@@ -51,7 +51,7 @@ cd $GRIDGAIN_HOME/integration/gridgain-kafka-connect
 对于每个Kafka的连接器工作节点：
 
  1. 将连接器包目录复制到期望的目标目录；
- 2. 编辑Kafka连接器工作节点的配置（对于单工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-standalone.properties`文件，对于多工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-distributed.properties`），在插件目录中注册连接器，将`CONNECTORS_PATH`替换为之前复制的连接器安装包目录：
+ 2. 编辑Kafka连接器工作节点的配置（对于单工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-standalone.properties`文件，对于多工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-distributed.properties`），在插件目录中注册连接器，将`CONNECTORS_PATH`替换为之前复制的连接器程序包目录：
 
 connect-standalone.properties：
 ```properties
@@ -60,7 +60,7 @@ plugin.path=CONNECTORS_PATH/gridgain-kafka-connect
 **3.在GridGain中注册连接器**
 
 ::: tip 这是可选的
-只有使用`BACKLOG`作为[故障恢复策略](#-3-3-1-2-故障转移-再平衡和分区偏移量)时，这个步骤才是必须的。
+只有使用`BACKLOG`作为[故障转移策略](#_3-3-1-2-故障转移、再平衡和分区偏移量)时，这个步骤才是必须的。
 :::
 在每个GridGain的服务端节点，将下面的jar包复制到`$GRIDGAIN_HOME/libs/user`目录中：
 
@@ -338,10 +338,248 @@ GridGain的Kafka连接器的生命周期由Kafka连接器框架管理。
 |数据的序列化和反序列化|**有**|**有**|
 |过滤|**受限**，仅源连接器支持过滤器|源和接收连接器都支持过滤器|
 |转换|Kafka SMT|Kafka SMT|
-|DevOps支持|一些文本错误记录|健康模型定义|
+|DevOps|一些文本错误记录|健康模型定义|
 |支持|Ignite社区提供支持|由Confluent认证的GridGain公司提供支持|
 |打包|Uber JAR|连接器包|
 |部署|所有Kafka连接器工作节点的插件目录|所有Kafka连接器工作节点的插件目录，所有GridGain节点的类路径|
 |Kafka API版本|0.10|2.0|
 |源API|Ignite事件|Ignite连续查询|
 |接收API|Ignite数据流处理器|Ignite数据流处理器|
+
+## 3.8.示例：使用Kafka连接器在关系数据库中持久化Ignite数据
+本示例演示了从GridGain到RDBMS进行数据复制的一种方式。GridGain源连接器将GridGain中的数据流式传输到附加数据模式的Kafka。然后JDBC接收连接器使用附加的数据模式将数据从Kafka流式传输到关系表中。
+
+![](https://files.readme.io/13ab534-What_is_Kafka_Connector-GridGain-RDBMS.png)
+
+### 3.8.1.要求
+
+ - 安装了GridGain企业版或旗舰版的[8.4.9](https://www.gridgain.com/resources/download)或更高版本，在每个GridGain节点中，配置`GRIDGAIN_HOME`环境变量，指向GridGain的安装目录；
+ - 安装了[Kafka 2.0](https://kafka.apache.org/downloads)版本，配置`KAFKA_HOME`环境变量，指向每个节点上的Kafka安装目录；
+ - 安装了[MySQL Server 8](https://dev.mysql.com/downloads/mysql)并启动运行；
+ - 使用[DBeaver](https://dbeaver.io/download/)作为数据库管理工具。
+
+### 3.8.2.安装GridGain的源连接器
+**准备GridGain的连接器程序包**
+
+连接器位于`$GRIDGAIN_HOME/integration/gridgain-kafka-connect`目录，在某个GridGain节点中执行下面的脚本，可以在程序包中拉取缺失的连接器依赖：
+```bash
+cd $GRIDGAIN_HOME/integration/gridgain-kafka-connect
+./copy-dependencies.sh
+```
+**在Kafka中注册GridGain的连接器**
+
+本示例中假定Kafka连接器的安装目录位于`/opt/kafka/connect`。
+
+对于每个Kafka连接器工作节点来说：
+
+ 1. 将在上一步中准备的GridGain连接器程序包目录从GridGain节点复制到Kafka连接器工作节点的`/opt/kafka/connect`；
+ 2. 编辑Kafka连接器工作节点的配置（对于单工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-standalone.properties`文件，对于多工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-distributed.properties`），在插件目录中注册连接器：
+
+connect-standalone.properties：
+```properties
+plugin.path=/opt/kafka/connect/gridgain-kafka-connect
+```
+### 3.8.3.安装JDBC接收连接器
+
+ 1. 下载[Confluent的JDBC连接器](https://www.confluent.io/connector/kafka-connect-jdbc)程序包；
+ 2. 解压缩包并将解压缩的目录重命名为`confluentinc-kafka-connect-jdbc`；
+ 3. 在本例中，使用MySQL8作为RDBMS。[下载MySQL的JDBC驱动](https://dev.mysql.com/downloads/connector/j/8.0.html)并将驱动程序JAR复制到`confluentinc-kafka-connect-jdbc/lib`目录中；
+ 4. 将JDBC连接器程序包复制到每个Kafka连接器工作节点的`/opt/kafka/connect`目录；
+ 5. 编辑Kafka连接器工作节点的配置（对于单工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-standalone.properties`文件，对于多工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-distributed.properties`），在插件目录中注册连接器：
+
+connect-standalone.properties：
+```properties
+plugin.path=/opt/kafka/connect/gridgain-kafka-connect,/opt/kafka/connect/confluentinc-kafka-connect-jdbc
+```
+### 3.8.4.配置启动GridGain集群
+本例中只会启动一个GridGain服务端节点。
+
+1.创建`ignite-server.xml`配置文件：
+
+ignite-server.xml：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>127.0.0.1:47500..47502</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>
+```
+2.启动GridGain节点（下面的命令假定当前位于`ignite-server.xml`所在的目录）：
+```bash
+$GRIDGAIN_HOME/bin/ignite.sh ignite-server.xml
+```
+### 3.8.5.创建GridGain表并添加数据
+在GridGain的[Web控制台](https://console.gridgain.com/)中，转到Queries页面，创建`Person`表并往表中注入一些数据：
+```sql
+CREATE TABLE IF NOT EXISTS Person (id int, city_id int, name varchar, PRIMARY KEY (id));
+INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
+INSERT INTO Person (id, name, city_id) VALUES (2, 'John Smith', 4);
+```
+### 3.8.6.初始化MySQL数据库
+在DBeaver中以管理员身份接入MySQL，然后：
+
+ 1. 创建数据库`gridgain-kafka-mysql`；
+ 2. 创建名为`demo`的用户，密码也为`demo`；
+ 3. 将`gridgain-kafka-mysql`数据库的所有权限都授予用户`demo`。
+
+![](https://files.readme.io/49c4b3e-MySQL-Database.PNG)
+
+### 3.8.7.启动Kafka集群
+本例中只会启动一个Kafka代理：
+
+1.启动ZooKeeper；
+```bash
+$KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties
+```
+2.启动Kafka代理：
+```bash
+$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties
+```
+### 3.8.8.配置启动Kafka连接器集群
+本例中只会启动一个Kafka连接器工作节点。
+
+**配置Kafka连接器工作节点**
+
+本例中，需要将数据模式附加到数据中，因此要确保在Kafka连接器工作节点的配置中具有以下属性（对于单工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-standalone.properties`文件，对于多工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-distributed.properties`）：
+
+connect-standalone.properties：
+```properties
+key.converter=org.apache.kafka.connect.json.JsonConverter
+value.converter=org.apache.kafka.connect.json.JsonConverter
+key.converter.schemas.enable=true
+value.converter.schemas.enable=true
+```
+**配置GridGain源连接器**
+
+创建配置文件`kafka-connect-gridgain-source.properties`（将`IGNITE_CONFIG_PATH`替换为之前的`ignite-server.xml`文件的路径）：
+
+kafka-connect-gridgain-source.properties：
+```properties
+name=kafka-connect-gridgain-source
+tasks.max=2
+connector.class=org.gridgain.kafka.source.IgniteSourceConnector
+
+igniteCfg=IGNITE_CONFIG_PATH/ignite-server.xml
+topicPrefix=quickstart-
+```
+**配置JDBC接收连接器**
+
+创建配置文件`kafka-connect-mysql-sink.properties`：
+
+kafka-connect-mysql-sink.properties：
+```properties
+name=kafka-connect-mysql-sink
+tasks.max=2
+connector.class=io.confluent.connect.jdbc.JdbcSinkConnector
+topics=quickstart-SQL_PUBLIC_PERSON,quickstart-SQL_PUBLIC_CITY
+
+connection.url=jdbc:mysql://localhost:3306/gridgain-kafka-mysql
+connection.user=demo
+connection.password=demo
+auto.create=true
+```
+**启动Kafka连接器工作节点**
+
+以下命令假定当前位于源和接收连接器配置所在的目录中：
+```bash
+$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties kafka-connect-gridgain-source.properties kafka-connect-mysql-sink.properties
+```
+确认一下源和接收连接器的状态，如果都没问题了，可以看到每个连接器都运行着两个任务。
+
+比如，如果在Kafka连接器工作节点上`curl`和`jq`可用，那么可以执行下面的命令：
+```bash
+curl http://localhost:8083/connectors/kafka-connect-gridgain-source | jq; \
+curl http://localhost:8083/connectors/kafka-connect-mysql-sink | jq
+```
+控制台输出大致为：
+```json
+{
+  "name": "kafka-connect-gridgain-source",
+  "config": {
+    "connector.class": "org.gridgain.kafka.source.IgniteSourceConnector",
+    "name": "kafka-connect-gridgain-source",
+    "igniteCfg": "/home/kukushal/Documents/gridgain-kafka-h2/ignite-server.xml",
+    "topicPrefix": "quickstart-",
+    "tasks.max": "2"
+  },
+  "tasks": [
+    {
+      "connector": "kafka-connect-gridgain-source",
+      "task": 0
+    },
+    {
+      "connector": "kafka-connect-gridgain-source",
+      "task": 1
+    }
+  ],
+  "type": "source"
+}
+{
+  "name": "kafka-connect-mysql-sink",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "connection.password": "demo",
+    "connection.user": "demo",
+    "tasks.max": "2",
+    "topics": "quickstart-SQL_PUBLIC_PERSON,quickstart-SQL_PUBLIC_CITY",
+    "name": "kafka-connect-mysql-sink",
+    "auto.create": "true",
+    "connection.url": "jdbc:mysql://localhost:3306/gridgain-kafka-mysql"
+  },
+  "tasks": [
+    {
+      "connector": "kafka-connect-mysql-sink",
+      "task": 0
+    },
+    {
+      "connector": "kafka-connect-mysql-sink",
+      "task": 1
+    }
+  ],
+  "type": "sink"
+}
+```
+### 3.8.9.观察初始数据加载
+在DBeaver中接入`gridgain-kafka-mysql`数据库，然后会看到接收连接器已经创建了`quickstart-SQL_PUBLIC_PERSON`表，并且包含了2条数据：
+
+![](https://files.readme.io/9e26e23-MySQL-Initial-Data.PNG)
+
+### 3.8.10.观察运行时数据加载
+在GridGain集群中添加更多的数据，可以在GridGain的Web控制台中执行下面的命令：
+```sql
+INSERT INTO Person (id, name, city_id) VALUES (3, 'Mike', 5);
+```
+然后在DBeaver中刷新`quickstart-SQL_PUBLIC_PERSON`表的最新数据，就会看到已经添加了新的数据：
+
+![](https://files.readme.io/75fe630-MySQL-Runtime-Data.PNG)
+
+### 3.8.11.观察动态配置
+在GridGain中创建名为`City`的新表，然后注入一些数据，在GridGain的Web控制台中执行下面的命令：
+```sql
+CREATE TABLE IF NOT EXISTS City (id int, name varchar, PRIMARY KEY (id));
+INSERT INTO City (id, name) VALUES (3, 'San-Francisco');
+INSERT INTO City (id, name) VALUES (4, 'Oakland');
+```
+在DBeaver中，可以看到接收连接器创建了新的`quickstart-SQL_PUBLIC_CITY`表，并且有2条数据：
+
+![](https://files.readme.io/28825bf-MySQL-Dynamic-Config.PNG)
