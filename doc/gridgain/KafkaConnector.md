@@ -87,7 +87,7 @@ topics=topic1,topic2,topic3
 connector.class=org.gridgain.kafka.sink.IgniteSinkConnector
 igniteCfg=IGNITE_CONFIG_PATH/ignite-server-sink.xml
 ```
-在[池连接器](#_3-5-2-接收连接器)章节中有更详细的属性说明。
+在[接收连接器](#_3-5-2-接收连接器)章节中有更详细的属性说明。
 
 ### 3.2.4.运行Kafka连接器生态系统
 [Kafka连接器的安装和配置](https://docs.confluent.io/current/connect/userguide.html#installing-and-configuring-kconnect-long)，可以看相关的文档，简要来说，要做如下的内容：
