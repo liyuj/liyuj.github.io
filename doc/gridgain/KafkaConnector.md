@@ -583,3 +583,189 @@ INSERT INTO City (id, name) VALUES (4, 'Oakland');
 在DBeaver中，可以看到接收连接器创建了新的`quickstart-SQL_PUBLIC_CITY`表，并且有2条数据：
 
 ![](https://files.readme.io/28825bf-MySQL-Dynamic-Config.PNG)
+
+## 3.9.示例：使用Kafka连接器进行Ignite数据复制
+本示例会演示如何配置和运行源和接收连接器。
+
+![](https://files.readme.io/32dc74b-What_is_Kafka_Connector-GridGain-GridGain.png)
+
+### 3.9.1.要求
+
+ - 安装了GridGain企业版或旗舰版的[8.4.9](https://www.gridgain.com/resources/download)或更高版本，在每个GridGain节点中，配置`GRIDGAIN_HOME`环境变量，指向GridGain的安装目录；
+ - 安装了[Kafka 2.0](https://kafka.apache.org/downloads)版本，配置`KAFKA_HOME`环境变量，指向每个节点上的Kafka安装目录。
+
+### 3.9.2.安装GridGain的Kafka连接器
+**准备GridGain的连接器程序包**
+
+连接器位于`$GRIDGAIN_HOME/integration/gridgain-kafka-connect`目录，在某个GridGain节点中执行下面的脚本，可以在程序包中拉取缺失的连接器依赖：
+```bash
+cd $GRIDGAIN_HOME/integration/gridgain-kafka-connect
+./copy-dependencies.sh
+```
+**在Kafka中注册GridGain的连接器**
+
+本示例中假定Kafka连接器的安装目录位于`/opt/kafka/connect`。
+
+对于每个Kafka连接器工作节点来说：
+
+ 1. 将在上一步中准备的GridGain连接器程序包目录从GridGain节点复制到Kafka连接器工作节点的`/opt/kafka/connect`；
+ 2. 编辑Kafka连接器工作节点的配置（对于单工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-standalone.properties`文件，对于多工作节点Kafka连接器集群，编辑`$KAFKA_HOME/config/connect-distributed.properties`），在插件目录中注册连接器：
+
+connect-standalone.properties：
+```properties
+plugin.path=/opt/kafka/connect/gridgain-kafka-connect
+```
+### 3.9.3.启动Ignite集群并加载数据
+创建源和接收Ignite集群配置，以下配置文件可以在同一主机上运行两个集群：
+
+ignite-server-source.xml：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="igniteInstanceName" value="source" />
+
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>127.0.0.1:47500..47509</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>
+```
+ignite-server-sink.xml：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="igniteInstanceName" value="sink" />
+
+        <property name="clientConnectorConfiguration">
+            <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
+                <property name="port" value="10900"/>
+            </bean>
+        </property>
+
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="localPort" value="47510" />
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>127.0.0.1:47510..47519</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>
+```
+启动源Ignite集群（假定当前位于Ignite配置文件所在的文件夹）：
+```bash
+$GRIDGAIN_HOME/bin/ignite.sh ignite-server-source.xml
+```
+启动接收Ignite集群：
+```bash
+$GRIDGAIN_HOME/bin/ignite.sh -J-DIGNITE_JETTY_PORT=8081 ignite-server-sink.xml
+```
+在接收Ignite集群上运行Ignite的Web代理（假定当前位于GridGain的Web代理的主目录）：
+```bash
+ignite-web-agent.sh -n 'http://localhost:8081'
+```
+在源Ignite集群上加载部分数据：
+```bash
+$GRIDGAIN_HOME/bin/sqlline.sh --color=true --verbose=true -u jdbc:ignite:thin://127.0.0.1
+
+jdbc:ignite:thin://127.0.0.1/> CREATE TABLE IF NOT EXISTS Person (id int, city_id int, name varchar, PRIMARY KEY (id));
+jdbc:ignite:thin://127.0.0.1/> INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
+jdbc:ignite:thin://127.0.0.1/> INSERT INTO Person (id, name, city_id) VALUES (2, 'John Smith', 4);
+```
+打开GridGain的[Web控制台的监控面板](https://console.gridgain.com/monitoring/dashboard)，这时可以看到接收Ignite集群中并没有缓存。
+### 3.9.4.启动Kafka和GridGain的源和接收连接器
+启动Kafka集群：
+```bash
+$KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties
+$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties
+```
+创建GridGain的源和接收连接器配置文件（将`IGNITE_CONFIG_PATH`替换为之前的`ignite-server.xml`文件的路径）：
+
+connect-gridgain-source.properties：
+```properties
+name=gridgain-quickstart-source
+tasks.max=1
+connector.class=org.gridgain.kafka.source.IgniteSourceConnector
+
+igniteCfg=IGNITE_CONFIG_PATH/ignite-server-source.xml
+topicPrefix=quickstart-
+```
+connect-gridgain-sink.properties：
+```properties
+name=gridgain-quickstart-sink
+topics=quickstart-SQL_PUBLIC_PERSON,quickstart-SQL_PUBLIC_CITY
+tasks.max=1
+connector.class=org.gridgain.kafka.sink.IgniteSinkConnector
+
+igniteCfg=<IGNITE_CONFIG_PATH>/ignite-server-sink.xml
+topicPrefix=quickstart-
+```
+启动连接器（假定当前位于连接器配置文件所在的目录）：
+```bash
+$KAFKA_HOME/bin/connect-standalone.sh $KAFKA_HOME/config/connect-standalone.properties connect-gridgain-source.properties connect-gridgain-sink.properties
+```
+### 3.9.5.观察初始数据加载
+打开GridGain的[Web控制台的监控面板](https://console.gridgain.com/monitoring/dashboard)，这时可以看到接收连接器在接收Ignite集群中创建了两个缓存，并且`SQL_PUBLIC_PERSON`缓存中已经有了两条数据：
+
+![](https://files.readme.io/ad7f11c-Screen_Shot_2018-05-30_at_20.15.36.png)
+
+在Web控制台中，新建一个Query页面，然后在`SQL_PUBLIC_PERSON`缓存中执行一个查询，点击`Export`按钮然后确认生成的CSV文件中的Person数据是否与源Ignite集群中添加的数据一致：
+
+![](https://files.readme.io/eca5253-Screen_Shot_2018-05-30_at_20.20.28.png)
+
+### 3.9.6.观察运行时数据复制
+在源集群中添加更多的数据：
+```bash
+$ sqlline.sh --color=true --verbose=true -u jdbc:ignite:thin://127.0.0.1
+
+jdbc:ignite:thin://127.0.0.1/> INSERT INTO Person (id, name, city_id) VALUES (3, 'Mike', 5);
+```
+在Web控制台中，再执行一次查询，可以看到新的名为`Mike`的数据已经被复制到了接收Ignite集群中：
+
+![](https://files.readme.io/3e7d94f-Screen_Shot_2018-05-30_at_20.24.27.png)
+
+### 3.9.7.观察动态缓存复制
+在源Ignite集群中创建一个新的名为`city`的缓存，然后注入一些数据：
+```bash
+$ sqlline.sh --color=true --verbose=true -u jdbc:ignite:thin://127.0.0.1
+
+jdbc:ignite:thin://127.0.0.1/> CREATE TABLE IF NOT EXISTS City (id int, name varchar, PRIMARY KEY (id));
+jdbc:ignite:thin://127.0.0.1/> INSERT INTO City (id, name) VALUES (3, 'San-Francisco');
+jdbc:ignite:thin://127.0.0.1/> INSERT INTO City (id, name) VALUES (4, 'Oakland');
+```
+在Web控制台中，再查询一次，会看到新的`SQL_PUBLIC_CITY`缓存，并且数据也已经复制到接收Ignite缓存中：
+
+![](https://files.readme.io/13bab6a-Screen_Shot_2018-05-30_at_20.26.29.png)
