@@ -1006,13 +1006,13 @@ qry.setLocalListener(names -> {
 ## 3.7.关系并置
 数据和计算以及数据和数据的并置可以显著地提升应用的性能和可扩展性。
 ### 3.7.1.数据与数据的并置
-在许多情况下，如果不同的缓存键被同时访问的话那么将它们并置在一起是很有利的。通常来说业务逻辑需要访问不止一个的缓存键，通过将它们并置在一起可以确保具有同一个`affinityKey`的所有键都会缓存在同一个处理节点上,从而避免从远程节点获取数据的昂贵网络开销。
+在许多情况下，如果不同的缓存键被同时访问的话那么将它们并置在一起是很有利的。通常来说业务逻辑需要访问不止一个的缓存键，通过将它们并置在一起可以确保具有同一个`affinityKey`的所有键都会缓存在同一个处理节点上，从而避免从远程节点获取数据的昂贵网络开销。
 
 例如，有一个`Person`和`Company`对象，然后希望将`Person`对象和其工作的`Company`对象并置在一起。
 
-要做到这一点，用于缓存`Person`对象的缓存键应该有一个属性加注了`@AffinityKeyMapped`注解，它会提供用于并置的`Company`键的值，方便起见，也可以选用`AffinityKey`类。
+具体做法是，用于缓存`Person`对象的缓存键应该有一个属性加注了`@AffinityKeyMapped`注解，它会提供用于并置的`Company`键的值，为了方便也可以选用`AffinityKey`类。
 
-如果缓存是通过SQL创建的，那么关系键是通过`CREATE TABLE`的`AFFINITY_KEY`参数传递的。
+如果缓存是通过SQL创建的，那么关系键是通过[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的`AFFINITY_KEY`参数传递的。
 ::: tip Scala中的注解
 注意，如果Scala的case class用于键类并且它的构造函数参数之一加注了`@AffinityKeyMapped`注解，默认这个注解并不会正确地用于生成的字段，因此也就不会被Ignite识别。要覆盖这个行为，可以使用`@field`[元注解](http://www.scala-lang.org/api/current/#scala.annotation.meta.package)而不是`@AffinityKeyMapped `（看下面的示例）。
 :::
@@ -1078,8 +1078,9 @@ perCache.put(personKey1, p1);
 perCache.put(personKey2, p2);
 ```
 
-> **SQL关联**
-当在分区缓存上的数据执行SQL分布式关联时，一定要确保关联的键是并置的。
+::: tip SQL关联
+当在分区缓存的数据上执行分布式SQL关联时，一定要确保关联的键是并置的。
+:::
 
 ### 3.7.2.数据和计算的并置
 也有可能向缓存数据的节点发送计算，这是一个被称为数据和计算的并置的概念，它可以向特定的节点发送整个的工作单元。
