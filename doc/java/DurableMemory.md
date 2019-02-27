@@ -78,9 +78,9 @@ Ignite在内存和磁盘上维护了同样的二进制格式，这样就不需�
 ### 10.2.4.数据页面
 数据页面存储的是从应用端插入Ignite缓存中的缓存条目（数据页面在上图中标注为绿色）。
 
-通常，一个数据页面持有多个键-值条目，以更高效地利用内存避免内存碎片化。当新的键-值条目加入缓存时，页面内存机制会查找适合该条目的页面然后加入里面。但是，当条目的总大小达到通过`MemoryConfiguration.setPageSize(..)`参数配置的页面大小时，该条目会占据多于一个数据页面。
+通常，一个数据页面持有多个键-值条目，以更高效地利用内存避免内存碎片化。当新的键-值条目加入缓存时，页面内存机制会查找适合该条目的页面然后加入里面。但是，当条目的总大小达到通过`DataStorageConfiguration.setPageSize(..)`参数配置的页面大小时，该条目会占据多于一个数据页面。
 
-::: tip 注意
+::: warning 注意
 如果有很多的缓存条目都不适合单个页面，那么就需要增加配置参数中的页面大小。
 :::
 
@@ -122,20 +122,27 @@ B+树的元页面需要获得特定B+树的根和它的层次，以高效地执�
  6. 该缓存条目会加入该数据页面。
 
 ## 10.3.内存配置
-Ignite节点默认会至多消费本地可用内存的20%，大多数情况下这也是唯一需要调整的参数，要修改默认内存区大小，代码如下所示：
+Ignite节点默认会至多消耗本地可用内存的20%，大多数情况下这也是唯一需要调整的参数，要修改默认内存区大小，代码如下所示：
 
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
-<property name="memoryConfiguration">
-  <bean class="org.apache.ignite.configuration.MemoryConfiguration">
-    <!-- Set the size of default memory region to 4GB. -->
-    <property name="defaultMemoryPolicySize" value="#{4L * 1024 * 1024 * 1024}"/>
+<!-- Redefining maximum memory size for the cluster node usage. -->  
+<property name="dataStorageConfiguration">
+  <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+    <!-- Redefining the default region's settings -->
+    <property name="defaultDataRegionConfiguration">
+      <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+        <property name="name" value="Default_Region"/>
+        <!-- Setting the size of the default region to 4GB. -->
+        <property name="maxSize" value="#{4L * 1024 * 1024 * 1024}"/>
+      </bean>
+    </property>
   </bean>
 </property>
   
-<!-- The rest of the parameters -->
+<!-- The rest of the parameters. -->
 </bean>
 ```
 Java：
@@ -143,12 +150,13 @@ Java：
 IgniteConfiguration cfg = new IgniteConfiguration();
 
 // Changing total RAM size to be used by Ignite Node.
-MemoryConfiguration memCfg = new MemoryConfiguration();
+DataStorageConfiguration storageCfg = new DataStorageConfiguration();
 
 // Setting the size of the default memory region to 4GB to achieve this.
-memCfg.setDefaultMemoryPolicySize(4L * 1024 * 1024 * 1024);
+storageCfg.getDefaultDataRegionConfiguration().setMaxSize(
+    4L * 1024 * 1024 * 1024);
 
-cfg.setMemoryConfiguration(memCfg);
+cfg.setDataStorageConfiguration(storageCfg);
 
 // Starting the node.
 Ignition.start(cfg);

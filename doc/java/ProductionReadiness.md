@@ -172,14 +172,19 @@ XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
-<property name="memoryConfiguration">
-  <bean class="org.apache.ignite.configuration.MemoryConfiguration">
-    <!-- Set the size of default memory region to 4GB. -->
-    <property name="defaultMemoryPolicySize" value="#{4L * 1024 * 1024 * 1024}"/>
+<!-- Redefining maximum memory size for the cluster node usage. -->  
+<property name="dataStorageConfiguration">
+  <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+    <property name="defaultDataRegionConfiguration">
+      <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+        <!-- Setting the size of the default region to 4GB. -->
+        <property name="maxSize" value="#{4L * 1024 * 1024 * 1024}"/>
+      </bean>
+    </property>
   </bean>
 </property>
   
-<!-- The rest of the parameters -->
+<!-- The rest of the parameters. -->
 </bean>
 ```
 Java：
@@ -187,12 +192,13 @@ Java：
 IgniteConfiguration cfg = new IgniteConfiguration();
 
 // Changing total RAM size to be used by Ignite Node.
-MemoryConfiguration memCfg = new MemoryConfiguration();
+DataStorageConfiguration storageCfg = new DataStorageConfiguration();
 
 // Setting the size of the default memory region to 4GB to achieve this.
-memCfg.setDefaultMemoryPolicySize(4L * 1024 * 1024 * 1024);
+storageCfg.getDefaultDataRegionConfiguration().setMaxSize(
+    4L * 1024 * 1024 * 1024);
 
-cfg.setMemoryConfiguration(memCfg);
+cfg.setDataStorageConfiguration(storageCfg);
 
 // Starting the node.
 Ignition.start(cfg);
@@ -202,7 +208,7 @@ Ignition.start(cfg);
 
 #### 11.4.2.1.页面大小
 
-Ignite的页面大小（`MemoryConfiguration.pageSize`）不要小于存储设备（SSD、闪存等）的页面大小以及操作系统缓存页面的大小。
+Ignite的页面大小（`DataStorageConfiguration.pageSize`）不要小于存储设备（SSD、闪存等）的页面大小以及操作系统缓存页面的大小。
 
 操作系统的缓存页面大小很容易就可以通过[系统工具和参数](https://unix.stackexchange.com/questions/128213/how-is-page-size-determined-in-virtual-address-space)获取到。
 
@@ -213,30 +219,29 @@ Ignite的页面大小（`MemoryConfiguration.pageSize`）不要小于存储设�
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
-   <property name="memoryConfiguration">
-    		<bean class="org.apache.ignite.configuration.MemoryConfiguration">
-        		<!-- Setting the page size to 4 KB -->
-            <property name="pageSize" value="#{4 * 1024}"/>
-        </bean>
-    </property>
-    ...
+  <property name="dataStorageConfiguration">
+    <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+      <!-- Set the page size to 4 KB -->
+      <property name="pageSize" value="#{4 * 1024}"/>
+    </bean>
+  </property>
+  
+  <!--- Additional settings ---->
 </bean>
 ```
 Java：
 ```java
+// Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
 
-// Changing total RAM size to be used by Ignite Node.
-MemoryConfiguration memCfg = new MemoryConfiguration();
+// Durable memory configuration.
+DataStorageConfiguration storageCfg = new DataStorageConfiguration();
 
-// Setting the page size to 4 KB.
-memCfg.setPageSize(4096);
+// Changing the page size to 4 KB.
+storageCfg.setPageSize(4096);
 
-cfg.setMemoryConfiguration(memCfg);
-
-// Starting the node.
-Ignition.start(cfg);
+// Applying the new configuration.
+cfg.setDataStorageConfiguration(storageCfg);
 ```
 #### 11.4.2.2.为WAL使用单独的磁盘设备
 
