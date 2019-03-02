@@ -289,3 +289,175 @@ XML：
  - Visor管理控制台只有查看权限（SQL查询和数据加载都是不允许的）；
  - `defaultAllow`标志为`false`，会拒绝任何未显式指定的缓存或者任务操作（即不允许`org.mytasks`包之外的任务的执行）。
 
+## 4.6.多租户
+在多租户应用中，需要将属于不同租户的数据子集彼此隔离，GridGain通过为不同的租户创建单独的缓存并分配适当的缓存级安全权限来支持此功能。
+
+由于可以根据需要动态创建和销毁缓存，因此无需为所有租户预先配置缓存。当需要将新租户添加到系统时，就应该为该租户创建新的缓存，然后修改租户用户的权限以允许访问这些缓存，并拒绝访问所有其它缓存。这样就可以保证其它租户永远不会读取或更新此新租户的数据。
+
+例如，有两个租户，每个租户都需要拥有自己独立的数据集，为此，可以创建两个独立的缓存：
+```java
+// Create two caches with default configuration.
+ignite.createCache(new CacheConfiguration("dataCache_tenant1"));
+ignite.createCache(new CacheConfiguration("dataCache_tenant2"));
+```
+每个租户都应该使用自己的缓存，因此，每个租户都应该赋予一组权限，这些权限只允许此租户访问属于自己的缓存。
+
+`tenant1`要求对缓存`dataCache_tenant1`有完整的访问权限，并拒绝访问其它缓存：
+```java
+{
+    {
+        "cache":"dataCache_tenant1",
+        "permissions":["CACHE_READ", "CACHE_PUT", "CACHE_REMOVE"]
+    },
+    "defaultAllow":"false"
+}
+```
+`tenant2`的权限类似，但是只允许访问`dataCache_tenant2`缓存：
+```java
+{
+    {
+        "cache":"dataCache_tenant2",
+        "permissions":["CACHE_READ", "CACHE_PUT", "CACHE_REMOVE"]
+    },
+    "defaultAllow":"false"
+}
+```
+## 4.7.保护Visor
+### 4.7.1.Visor权限
+Visor（包括命令行和GUI）可以和其它集群客户端一样进行认证。因此要启用安全性，需要提供`Authenticator`，以为Visor用户分配正确的权限。GridGain提供了`JAAS`和`密码`认证机制，但是可以有自己的实现。
+
+Visor的授权基于以下管理权限：
+
+ - `ADMIN_VIEW`：允许在Visor中查看集群统计信息（指标，图形，缓存大小等）；
+ - `ADMIN_QUERY`：允许从Visor执行SQL查询；
+ - `ADMIN_CACHE`：允许从Visor执行缓存操作（数据加载，手动再平衡等）；
+ - `ADMIN_OPS`：允许执行所有其它非读取Visor操作（例如重启/停止节点等）。
+
+注意，除`ADMIN_VIEW`之外的权限都将自动隐含`ADMIN_VIEW`权限。
+
+以下是有关如何配置`PasscodeAuthenticator`授权`visor-user`以查看统计信息和执行查询的权限的示例：
+```xml
+<bean id="visor.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+    <property name="login" value="visor-user"/>
+    <property name="password" value="P@ssw0rd"/>
+</bean>
+
+<bean class="org.gridgain.grid.configuration.GridGainConfiguration">
+    ...
+    <property name="authenticator">
+        <bean class="org.gridgain.grid.security.passcode.PasscodeAuthenticator">
+            <property name="aclProvider">
+                <bean class="org.gridgain.grid.security.passcode.AuthenticationAclBasicProvider">
+                    <constructor-arg>
+                        <map>
+                            <entry key-ref="visor.creds"
+                                value="
+                                    {
+                                        {
+                                            system:[ADMIN_VIEW, ADMIN_QUERY]
+                                        },
+                                        defaultAllow:false
+                                    }
+                                "/>
+                        </map>
+                    </constructor-arg>
+                </bean>
+            </property>
+        </bean>
+    </property>
+</bean>
+```
+::: tip 注意
+注意，使用此配置，visor-user仅允许使用Visor，因此将无法对集群执行任何其它操作（缓存读取/更新，任务执行等），当然也可以为此用户授予任何其它权限。
+:::
+### 4.7.2.验证图形化Visor
+**外部模式**
+
+当Visor以外部模式接入安全集群时（通过二进制REST协议），它将显示一个要求输入凭据的弹出窗口。只需在此窗口中输入正确的登录名和密码，然后单击`Connect`按钮：
+
+![](https://files.readme.io/NE1XbyE3SyIuwVMs4cW5_creds.png)
+
+如果想提供自定义凭据（例如会话令牌而不是登录名/密码对），可以提供`SecurityCredentialsProvider`的自定义实现，如下所示：
+```java
+public class MySecurityCredentialsProvider implements SecurityCredentialsProvider {
+    @Override public SecurityCredentials credentials() throws IgniteCheckedException {
+        return new SecurityCredentials(
+            null,             // Empty login.
+            null,             // Empty password.
+            "session-token"); // Custom token.
+    }
+}
+```
+在现实中，该`SecurityCredentialsProvider`很有可能首先要在某些外部系统中进行认证（例如连接到LDAP服务器）并从那里获取会话令牌，而`SecurityCredentialsProvider`仅在本地调用，因此可以避免通过网络发送登录名和密码。
+::: warning 注意
+确保在服务端节点上正确配置了认证器，以便它可以根据提供的令牌进行认证。
+:::
+要使用自定义`SecurityCredentialsProvider`进行认证，要求该实现类位于Visor的类路径上，并在弹出窗口中提供其完整的类名：
+
+![](https://files.readme.io/YybG9WneQgCDBsvpb0Ij_custom.png)
+
+**内部模式**
+
+在内部模式下，Visor会启动一个嵌入式的守护节点并通过此节点接入集群。要接入，必须提供一个配置文件，可以直接在此配置文件中定义凭据。例如，如果像前面的[Visor权限](#_4-7-1-visor权限)部分中的描述配置了认证器，则Visor的`GridGainConfiguration`应如下所示：
+```xml
+<bean class="org.gridgain.grid.configuration.GridGainConfiguration">
+    <property name="securityCredentialsProvider">
+        <bean class="org.apache.ignite.plugin.security.SecurityCredentialsBasicProvider">
+            <constructor-arg>
+                <bean id="visor.creds" class="org.apache.ignite.plugin.security.SecurityCredentials">
+                    <property name="login" value="visor-user"/>
+                    <property name="password" value="P@ssw0rd"/>
+                </bean>
+            </constructor-arg>
+        </bean>
+    </property>
+</bean>
+```
+::: tip 注意
+如果不在配置文件中提供凭据，Visor将显示一个弹出窗口并询问，就像在`外部模式`部分中所述。
+:::
+### 4.7.3.验证命令行Visor
+命令行Visor的工作方式类似于GUI Visor中的内部模式，因此需要提供具有正确凭据的配置以接入安全集群。有关此类配置的示例，请参见前述`内部模式`。
+## 4.8.保护JMX
+### 4.8.1.启用JMX安全性
+使用`ignite.[sh|bat]`脚本启动GridGain节点时，它会自动启动JMX服务器并允许来自VisualVM等监控工具的远程连接。虽然这提供了很好的监控功能（例如，通过MX bean公开所有指标），但它并不安全。
+
+如果不想通过JMX连接到节点，那么可以使用`-nojmx`命令行参数简单地禁用它：
+```bash
+./ignite.sh -nojmx
+```
+这时应该在日志中看到下面的一行：
+```
+[18:45:20,178][INFO][main][IgniteKernal] Remote Management [restart: on, REST: on, JMX (remote: off)]
+```
+这里，**JMX (remote: off)**显示JMX已经被禁用。
+
+如果仍需要JMX连接，则可以使用登录/密码认证和/或SSL进行保护，要启用简单的基于文件的认证，需要执行以下操作：
+
+1.转到`JRE_HOME/lib/management`文件夹并将`jmxremote.password.template`文件重命名为`jmxremote.password`；
+
+2.在任意编辑器中打开`jmxremote.password`文件并取消注释最后两行（如果需要，可以更改密码）：
+
+```
+monitorRole  QED
+controlRole  R&D
+```
+3.更改`jmxremote.password`文件的权限，以使只有当前用户可以可以对其读写：
+```bash
+chmod 600 jmxremote.password
+```
+4.启动开启JMX认证的GridGain节点：
+```bash
+./ignite.sh -J-Dcom.sun.management.jmxremote.authenticate=true
+```
+这时可以在日志中看到如下信息：
+```
+[18:13:46,747][INFO][main][IgniteKernal] Remote Management [restart: on, REST: on, JMX (remote: on, port: 49115, auth: on, ssl: off)]
+```
+注意，现在启用了认证。如果试图使用VisualVM或任何其他工具连接到端口49115，则会要求输入用户名和密码。
+
+::: warning 注意
+注意可能需要具有root访问权限才能执行上述某些命令。
+:::
+### 4.8.2.高级认证技术
+上述基于文件的认证在大多数情况下不能提供足够的安全性，并且仅在开发过程中适用。在生产中运行时，应考虑使用SSL和安全认证协议（如LDAP），有关更详细的信息，请参见[Oracle文档](http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html)。
