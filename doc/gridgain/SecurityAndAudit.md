@@ -96,3 +96,196 @@ GridGain支持由`Authenticator.isGlobalNodeAuthentication()`方法调节的两�
 |---|---|
 |`false`|如果`isGlobalNodeAuthentication()`返回`false`，则只有集群中最老的服务端节点会为加入中的节点进行认证并为其分配安全权限。如果最老的服务端节点下线，则下一个最老的节点将接管并使用它的`Authenticator`实例为新节点进行认证和分配安全权限。<br>在使用集中式身份认证系统（如LDAP）时，此操作模式非常有用，因为它允许动态更改主体的安全权限，而无需重启整个集群，即只需重启安全权限已更改的单个集群节点即可。|
 |`true`|如果`isGlobalNodeAuthentication()`返回`true`，集群的所有现有节点都将对主体进行认证，并且必须就分配给主体的安全权限达成一致，以便认证成功。<br>这种操作模式用于`PasscodeAuthenticator`，因为权限是在每个节点上独立定义的，这样可以最小化错误配置的可能性。|
+
+## 4.3.JAAS认证
+`JaasAuthenticator`提供了基于JAAS标准的认证机制，接收到认证请求后，该SPI根据[JAAS参考指南](http://docs.oracle.com/javase/7/docs/technotes/guides/security/jaas/JAASRefGuide.html)，会将认证委托给配置好的外部JAAS登录模块。JAAS配置文件的路径是通过`-Djava.security.auth.login.config=/my/path/jass.config`系统属性指定的，下面是一个LDAP登录模块的JAAS配置文件示例：
+```
+GridJaasLoginContext {
+    com.sun.security.auth.module.LdapLoginModule REQUIRED
+    userProvider="ldap://serverName/ou=People,dc=nodomain"
+    userFilter="uid={USERNAME}"
+    authzIdentity="{<ATTR_NAME_OF_GRIDGAIN_PERMISSIONS>}"
+    useSSL=false
+    debug=false;
+};
+```
+这里`<ATTR_NAME_OF_GRIDGAIN_PERMISSIONS>`是用户的LDAP条目的属性名，它包含了JSON格式的GridGain权限，下面是如何为多个缓存和任务授予不同权限集的示例，关于可用权限的完整列表，可以参见[授权和权限](#_4-5-授权和权限)。
+```
+{
+    {
+        "cache":"partitioned",
+        "permissions":["CACHE_PUT", "CACHE_REMOVE", "CACHE_READ"]
+    },
+    {
+        "cache":"*",
+        "permissions":["CACHE_READ"]
+    },
+    {
+        "task":"org.mytasks.*",
+        "permissions":["TASK_EXECUTE"]
+    },
+    "defaultAllow":"false"
+}
+```
+`JaasAuthenticator`可以在`GridGainConfiguration`中指定：
+
+Java：
+```java
+// GridGain plugin configuration.
+GridGainConfiguration cfg = new GridGainConfiguration();
+ 
+// Set JAAS authenticator. 
+cfg.setAuthenticator(new JaasAuthenticator());
+```
+XML：
+```xml
+<bean class="org.gridgain.grid.configuration.GridGainConfiguration">
+    ...
+    <property name="authenticator">
+        <bean class="org.gridgain.grid.security.jaas.JaasAuthenticator"/>
+    </property>
+    ...
+</bean>
+```
+## 4.4.密码认证
+`PasscodeAuthenticator`通过访问控制列表（ACL）提供认证和授权，ACL会将安全凭据映射到将分配给通过认证主体的一组权限，节点和客户端的权限应以JSON格式提供。
+
+以下是`PasscodeAuthenticator`配置的示例：
+
+Java：
+```java
+// Provide security credentials.
+SecurityCredentials serverCreds = new SecurityCredentials("server", "password");
+SecurityCredentials clientCreds = new SecurityCredentials("client", "password");
+ 
+// GridGain plugin configuration.
+GridGainConfiguration cfg = new GridGainConfiguration();
+ 
+PasscodeAuthenticator authenticator = new PasscodeAuthenticator();
+ 
+// Create map for node and client with their security credentials and permissions.       
+Map<SecurityCredentials, String> authMap = new HashMap<>();
+ 
+// Allow all operations on server nodes.
+authMap.put(serverCreds, "{defaultAllow:true}");
+ 
+// Allow only cache reads on client nodes.
+authMap.put(clientCreds, "{defaultAllow:false, {cache:'*', permissions:[CACHE_READ]}}");
+ 
+authenticator.setAclProvider(new AuthenticationAclBasicProvider(authMap));
+ 
+cfg.setAuthenticator(authenticator);
+```
+XML：
+```xml
+<!-- Server node credentials. -->
+<bean id="server.cred" class="org.apache.ignite.plugin.security.SecurityCredentials">
+    <constructor-arg value="server"/>
+    <constructor-arg value="password"/>
+</bean>
+ 
+<!-- Client node credentials. -->
+<bean id="client.cred" class="org.apache.ignite.plugin.security.SecurityCredentials">
+    <constructor-arg value="client"/>
+    <constructor-arg value="password"/>
+</bean>
+ 
+<bean class="org.gridgain.grid.configuration.GridGainConfiguration">
+    ...
+    <property name="authenticator">
+        <bean class="org.gridgain.grid.security.passcode.PasscodeAuthenticator">
+            <property name="aclProvider">
+                <bean class="org.gridgain.grid.security.passcode.AuthenticationAclBasicProvider">
+                    <constructor-arg>
+                        <map>
+                            <!-- Allow all operations on server nodes. -->
+                            <entry key-ref="server.cred" value="{defaultAllow:true}"/>
+                            
+                            <!-- Allow only cache reads on client nodes. -->
+                            <entry key-ref="client.cred"
+                                value="
+                                    {
+                                        defaultAllow:false,
+                                        {
+                                            cache:'*',
+                                            permissions:[CACHE_READ]
+                                        }
+                                    }"
+                            />
+                        </map>
+                    </constructor-arg>
+                </bean>
+            </property>
+        </bean>
+    </property>
+    ...
+</bean>
+```
+## 4.5.授权和权限
+主体（远程节点或客户端）通过认证之后就会进行授权。主体通过认证之后，它会被授予由`SecurityPermissionSet`对象表示的一组权限，GridGain提供了缓存、任务执行、服务和系统层面的权限：
+
+**缓存权限**
+
+ - `CACHE_READ`：允许缓存读操作；
+ - `CACHE_PUT`：允许缓存写操作；
+ - `CACHE_REMOVE`：允许缓存删除操作；
+
+**任务权限**
+
+ - `TASK_EXECUTE`：允许任务执行；
+ - `TASK_CANCEL`：允许任务取消；
+
+**服务权限**
+
+ - `SERVICE_DEPLOY`：允许服务部署；
+ - `SERVICE_INVOKE`：允许服务调用；
+ - `SERVICE_CANCEL`：允许服务取消；
+
+**系统权限**
+
+ - `JOIN_AS_SERVER`：允许节点以服务端加入集群；
+ - `EVENTS_ENABLE`：允许运行时启用事件；
+ - `EVENTS_DISABLE`：允许运行时禁用事件；
+ - `ADMIN_OPS`：允许在Visor中执行各种操作；
+ - `ADMIN_VIEW`：允许在Visor中查看集群的各种统计信息（指标、图形、缓存大小等）；
+ - `ADMIN_QUERY`：允许在Visor中执行SQL查询；
+ - `ADMIN_CACHE`：允许在Visor中执行缓存操作（数据加载、数据再平衡等）；
+ - `CACHE_CREATE`：允许创建新的缓存（包括在节点配置中指定的）；
+ - `CACHE_DESTROY`：允许销毁已有的缓存。
+
+缓存、服务和任务执行权限是基于每个缓存、每个服务和每个任务分配的。注意通配符也是支持的，因此可以为多个缓存、任务或服务定义相同的权限集。
+
+如果直接用`JAAS`或`Passcode`认证来启用安全性，则应使用JSON格式配置权限，下面是如何为多个缓存和任务授予不同的权限集的示例：
+```json
+{
+    {
+        "cache":"mycache",
+        "permissions":["CACHE_READ", "CACHE_PUT", "CACHE_REMOVE"]
+    },
+    {
+        "cache":"*",
+        "permissions":["CACHE_READ"]
+    },
+    {
+        "task":"org.mytasks.*",
+        "permissions":["TASK_EXECUTE"]
+    },
+    {
+        "service":"*",
+        "permissions":["SERVICE_INVOKE"]
+    },
+    {
+        "system":["ADMIN_VIEW", "CACHE_CREATE", "JOIN_AS_SERVER"]
+    },
+    "defaultAllow":"false"
+}
+```
+其中：
+
+ - `mycache`缓存有读、写和删除权限；
+ - 其他缓存只有读权限；
+ - `org.mytasks`包中的任务有执行权限；
+ - 所有的服务都有执行权限；
+ - Visor管理控制台只有查看权限（SQL查询和数据加载都是不允许的）；
+ - `defaultAllow`标志为`false`，会拒绝任何未显式指定的缓存或者任务操作（即不允许`org.mytasks`包之外的任务的执行）。
+
