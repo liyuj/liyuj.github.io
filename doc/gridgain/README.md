@@ -1,6 +1,6 @@
 # 1.入门
 ## 1.1.入门
-![](https://files.readme.io/5c0c967-gridgain_platform.png)
+![](https://files.readme.io/58b7901-gg_platform.png)
 ### 1.1.1.要求
 GridGain官方在如下环境中进行了测试：
 
