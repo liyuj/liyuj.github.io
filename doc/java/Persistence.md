@@ -89,7 +89,7 @@ Ignite的原生持久化可以将Ignite作为一个分布式的SQL数据库。
  - [Ignite原生持久化架构](https://cwiki.apache.org/confluence/display/IGNITE/Persistent+Store+Architecture)
 
 ### 16.1.6.性能提示
-在[11.4.固化内存调优](https://www.zybuluo.com/liyuj/note/896268#114固化内存调优)章节中有关于性能方面的建议。
+在[固化内存调优](/doc/java/ProductionReadiness.md#_11-4-固化内存调优)章节中有关于性能方面的建议。
 ### 16.1.7.示例
 要了解Ignite的原生持久化在实践中的应用，可以看Github中的这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/persistentstore)。
 ## 16.2.预写日志(WAL)

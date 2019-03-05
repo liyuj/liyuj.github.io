@@ -288,7 +288,7 @@ Ignite有自己的JDBC驱动，这样就使得通过Pentaho平台接入Ignite成
  - 打开一个命令行工具，切换到`{pentaho}/jdbc-distribution`目录然后执行脚本：`./distribute-files.sh ignite-core-{version}.jar`。
 
 ### 6.4.3.JDBC驱动配置
-下一步是配置JDBC驱动然后接入集群，下面做的都是必要的，[这个文档](https://www.zybuluo.com/liyuj/note/856752#4111jdbc-thin模式驱动)有更多的细节信息。
+下一步是配置JDBC驱动然后接入集群，下面做的都是必要的，[JDBC Thin模式驱动](/doc/sql/JDBC.md#_4-1-1-jdbc-thin模式驱动)有更多的细节信息。
 
  - 打开命令行工具，切换到`{pentaho}/design-tools/data-integration`目录，然后使用`./spoon.sh`脚本启动Pentaho；
  - 出现下面的界面之后，点击`File`菜单然后创建一个新的转换：`New`->`Transformation`；
