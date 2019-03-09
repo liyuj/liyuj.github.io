@@ -263,7 +263,7 @@ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json
  - 某些表可能没有唯一的标识，或者有多个组合的列表示行的唯一标识（联合主键），不过JDBC连接器只支持单个标识列；
  - `时间戳+自增列`选项为识别新行和更新行提供了最大的覆盖范围；
  - 许多RDBMS支持声明更新时间戳列的DDL，该列会自动更新。例如：
-  - MySQL：
+   - MySQL：
 ```sql
 CREATE TABLE foo (
         …
@@ -271,7 +271,7 @@ CREATE TABLE foo (
 );
 ```
 
-  - Postgres：
+   - Postgres：
 
 ```sql
 CREATE TABLE foo (
@@ -292,7 +292,7 @@ $$;
 CREATE TRIGGER t1_updated_at_modtime BEFORE UPDATE ON foo FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 ```
 
-  - Oracle：
+   - Oracle：
 
 ```sql
 CREATE TABLE foo (
