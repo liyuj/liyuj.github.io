@@ -261,7 +261,7 @@ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json
  - 要使用的时间戳和/或自增列必须在连接器处理的所有表上。如果不同的表具有不同名称的时间戳/自增列，则需要创建单独的连接器配置；
  - 如果只使用自增列，则不会捕获对数据的更新，除非每次更新时自增列也会增加（在主键的情况下几乎不可能）；
  - 某些表可能没有唯一的标识，或者有多个组合的列表示行的唯一标识（联合主键），不过JDBC连接器只支持单个标识列；
- -`时间戳+自增列`选项为识别新行和更新行提供了最大的覆盖范围；
+ - `时间戳+自增列`选项为识别新行和更新行提供了最大的覆盖范围；
  - 许多RDBMS支持声明更新时间戳列的DDL，该列会自动更新。例如：
 	 - MySQL：
 ```sql
@@ -270,7 +270,9 @@ CREATE TABLE foo (
         UPDATE_TS TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 ```
+
 	 - Postgres：
+
 ```sql
 CREATE TABLE foo (
         …
@@ -289,7 +291,9 @@ $$;
 
 CREATE TRIGGER t1_updated_at_modtime BEFORE UPDATE ON foo FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 ```
+
 	 - Oracle：
+
 ```sql
 CREATE TABLE foo (
         …
