@@ -152,6 +152,9 @@ module.exports = {
                         'KafkaConnector',
                         'SecurityAndAudit'
                     ],
+                    '/blog/':[
+                        ''
+                    ],
                     '/': [
                         ''
                     ]
