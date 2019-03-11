@@ -573,14 +573,16 @@ XML:
 <property name="cacheConfiguration"> 
    <list> 
        <bean id="cache-template-bean" abstract="true" class="org.apache.ignite.configuration.CacheConfiguration"> 
-          <property name="name" value="myCacheTemplate"/> 
+         <!-- when you create a template via XML configuration, 
+         you must add an asterisk to the name of the template -->
+          <property name="name" value="myCacheTemplate*"/> 
           <property name="cacheMode" value="PARTITIONED" /> 
           <property name="backups" value="2" /> 
           <!-- Other cache configurations -->
           ...
        </bean> 
-   </list> 
-</property> 
+   </list>
+</property>
 ```
 就像上面的代码片段，缓存模板在集群中注册之后，就可以使用这个模板名创建其它配置相同的缓存。
 

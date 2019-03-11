@@ -153,7 +153,8 @@ module.exports = {
                         'SecurityAndAudit'
                     ],
                     '/blog/':[
-                        ''
+                        '',
+                        'ApacheIgniteBaselineTopology'
                     ],
                     '/': [
                         ''
