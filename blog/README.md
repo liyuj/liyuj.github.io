@@ -23,7 +23,7 @@ mysql> SELECT table_schema, table_name FROM INFORMATION_SCHEMA.tables WHERE TABL
 ## JDBC驱动
 在进行配置之前，要确保Kafka连接器可以实际连接到数据库，即确保JDBC驱动可用。如果使用的是SQLite或Postgres，那么驱动已经包含在内，就可以跳过此步骤。对于所有其它数据库，需要将相关的JDBC驱动JAR文件放在和`kafka-connect-jdbc`JAR相同的文件夹中。此文件夹的标准位置为：
 
- 1. Confluent CLII：下载的Confluent Platform文件夹中的`share/java/kafka-connect-jdbc/`；
+ 1. Confluent CLI：下载的Confluent Platform文件夹中的`share/java/kafka-connect-jdbc/`；
  2. Docker，DEB / RPM安装：`/usr/share/java/kafka-connect-jdbc/`，关于如何将JDBC驱动添加到Kafka连接器的Docker容器，请参阅[此处](https://rmoff.net/2018/12/15/docker-tips-and-tricks-with-ksql-and-kafka/)；
  3. 如果`kafka-connect-jdbc`JAR位于其它位置，则可以使用`plugin.path`指向包含它的文件夹，并确保JDBC驱动位于同一文件夹中。
 
