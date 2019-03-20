@@ -101,7 +101,7 @@ module.exports = {
                         'KubernetesDeployment',
                         'DeepLearning'
                     ],
-                    '/doc/cpp/':[
+                    '/doc/cpp/': [
                         '',
                         'Clustering',
                         'Key-ValueDataGrid',
@@ -146,14 +146,15 @@ module.exports = {
                         'ControlScript',
                         'Informatica'
                     ],
-                    '/doc/gridgain/':[
+                    '/doc/gridgain/': [
                         '',
                         'OracleGoldenGateIntegration',
                         'KafkaConnector',
                         'SecurityAndAudit'
                     ],
-                    '/blog/':[
-                        ''                        
+                    '/blog/': [
+                        '',
+                        'TensorFlowOnIgnite'
                     ],
                     '/': [
                         ''

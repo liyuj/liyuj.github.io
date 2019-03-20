@@ -216,7 +216,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
 
 `CREATE TABLE`会创建一个新的缓存，然后在其上定义一个新的SQL表，缓存以键-值对的形式存储数据，并且该表允许在数据上执行SQL查询。
 
-该表将存储在连接参数中指定的模式中。如果未指定模式，将使用`PUBLIC`模式。有关Ignite中模式的详细信息，请参见[模式}(/doc/sql/Architecture.md#_3-6-模式)。
+该表将存储在连接参数中指定的模式中。如果未指定模式，将使用`PUBLIC`模式。有关Ignite中模式的详细信息，请参见[模式](/doc/sql/Architecture.md#_3-6-模式)。
 
 注意`CREATE TABLE`操作是同步的，在`CREATE TABLE`执行过程中会阻塞其它DDL命令的执行，DML命令的执行不受影响，还会以并行的方式执行。
 
