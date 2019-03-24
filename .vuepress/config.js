@@ -25,6 +25,7 @@ module.exports = {
     evergreen: true,
     themeConfig: {
         lastUpdated: '最后更新时间：',
+        search: false,
         serviceWorker: {
             updatePopup: {
                 message: "内容有更新。",
@@ -71,6 +72,10 @@ module.exports = {
                     {
                         text: '博客',
                         link: 'https://my.oschina.net/liyuj'
+                    },
+                    {
+                        text: 'Confluent平台',
+                        link: '/confluent/'
                     },
                     {
                         text: '历史版本',
@@ -152,9 +157,9 @@ module.exports = {
                         'KafkaConnector',
                         'SecurityAndAudit'
                     ],
-                    '/blog/': [
+                    '/confluent/':[
                         '',
-                        'TensorFlowOnIgnite'
+                        'Kafka-ConvertersSerialization'
                     ],
                     '/': [
                         ''
@@ -191,10 +196,6 @@ module.exports = {
                     {
                         text: '博客',
                         link: 'https://my.oschina.net/liyuj'
-                    },
-                    {
-                        text: '历史版本',
-                        link: 'https://www.zybuluo.com/liyuj/note/230739'
                     }
                 ],
                 sidebar: {
