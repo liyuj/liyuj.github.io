@@ -420,7 +420,7 @@ cfg.setCacheConfiguration(cacheCfg);
 Ignition.start(cfg);
 ```
 #### 3.3.3.3.同步和异步备份
-`CacheWriteSynchronizationMode`枚举可以用来配置主节点和备份部分的同步和异步更新。同步写模式告诉Ignite在完成写或者提交之前客户端节点是否要等待来自远程节点的响应。
+`CacheWriteSynchronizationMode`枚举可以用来配置主节点和备份部分的同步和异步更新。写同步模式告诉Ignite在完成写或者提交之前客户端节点是否要等待来自远程节点的响应。
 
 同步写模式可以设置为下面的三种之一：
 

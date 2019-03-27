@@ -1,4 +1,4 @@
-# Kafka连接器深度解读之转换器和序列化释疑
+# Kafka连接器深度解读之转换器和序列化
 [Kafka连接器](https://docs.confluent.io/current/connect/index.html)是Apache Kafka®的一部分，提供数据存储与Kafka之间的流式集成。对于数据工程师来说，只需要使用JSON格式配置文件即可。目前已经有很多数据存储的连接器，仅举几例来说，包括[JDBC](https://www.confluent.io/connector/kafka-connect-jdbc/)，[Elasticsearch](https://www.confluent.io/connector/kafka-connect-elasticsearch/)，[IBM MQ](https://www.confluent.io/connector/kafka-connect-ibm-mq/)，[S3](https://www.confluent.io/connector/kafka-connect-s3/)和[BigQuery](https://www.confluent.io/connector/bigquery-sink-connector/)。
 
 对于开发者，Kafka连接器有丰富的[API](https://docs.confluent.io/current/connect/javadocs/index.html)，如有必要，可以[开发](https://docs.confluent.io/current/connect/devguide.html)自己的连接器。此外它还具有用于配置和管理连接器的[REST API](https://docs.confluent.io/current/connect/references/restapi.html)。
