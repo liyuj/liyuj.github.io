@@ -529,7 +529,9 @@ SqlFieldsQuery query = new SqlFieldsQuery(
 // Executing the query.
 cache.query(query).getAll();
 ```
-> 在自定义SQL函数可能要执行的所有节点上，通过`CacheConfiguration.setSqlFunctionClasses(...)`注册的类都需要添加到类路径中，否则在自定义函数执行时会抛出`ClassNotFoundException`异常。
+::: warning 注意
+在自定义SQL函数可能要执行的所有节点上，通过`CacheConfiguration.setSqlFunctionClasses(...)`注册的类都需要添加到类路径中，否则在自定义函数执行时会抛出`ClassNotFoundException`异常。
+:::
 
 ## 7.4.查询取消
 Ignite中有两种方式停止长时间运行的SQL查询，SQL查询时间长的原因，比如使用了未经优化的索引等。
