@@ -18,7 +18,7 @@ Ignite实现了`JCache`(JSR107)规范。
 
 ## 3.2.超越JCache
 ### 3.2.1.摘要
-Ignite是**JCache(JSR107)**规范的一个实现，JCache为数据访问提供了简单易用且功能强大的API。然而规范忽略了任何有关数据分布以及一致性的细节来允许开发商在自己的实现中有足够的自由度。
+Ignite是**JCache(JSR107)**规范的一个实现，JCache为数据访问提供了简单易用且功能强大的API。不过规范忽略了任何有关数据分布以及一致性的细节来允许开发商在自己的实现中有足够的自由度。
 
 可以通过JCache实现：
 
@@ -32,7 +32,7 @@ Ignite是**JCache(JSR107)**规范的一个实现，JCache为数据访问提供�
 
 ### 3.2.2.IgniteCache
 `IgniteCache`接口是Ignite缓存实现的一个入口，提供了保存和获取数据，执行查询，包括SQL，迭代和扫描等等的方法。
-`IgniteCache`是基于**JCache(JSR107)**的，所以在非常基本的API上可以减少到`javax.cache.Cache`接口，然而`IgniteCache`还提供了JCache规范之外的、有用的功能，比如数据加载，查询，异步模型等。
+`IgniteCache`是基于**JCache(JSR107)**的，所以在非常基本的API上可以减少到`javax.cache.Cache`接口，不过`IgniteCache`还提供了JCache规范之外的、有用的功能，比如数据加载，查询，异步模型等。
 可以从`Ignite`中直接获得`IgniteCache`的实例：
 ```java
 Ignite ignite = Ignition.ignite();
@@ -190,7 +190,7 @@ System.out.println(cache.get(key));
 ```
 注意，上述的`Cache<K, V>`实例只支持`javax.cache.Cache`类型。
 
-要使用Ignite提供的扩展功能，比如SQL、扫描或者连续查询，需要将`javax.cache.Cache`实例转换成`IgniteCache`实例，这样的：
+要使用Ignite提供的扩展功能，比如SQL、扫描或者持续查询，需要将`javax.cache.Cache`实例转换成`IgniteCache`实例，这样的：
 ```java
 // Get or create a cache manager.
 CacheManager cacheMgr = Caching.getCachingProvider().getCacheManager(
@@ -214,7 +214,7 @@ Ignite提供了三种不同的缓存操作模式，`分区`、`复制`和`本地
 ### 3.3.2.分区模式
 `分区`模式是扩展性最好的分布式缓存模式，这种模式下，所有数据被均等地分布在分区中，所有的分区也被均等地拆分在相关的节点中，实际上就是为缓存的数据创建了一个巨大的内存内分布式存储。这个方式可以在所有节点上只要匹配总可用存储(内存和磁盘)就可以存储尽可能多的数据，因此，可以在集群的所有节点的内存中可以存储TB级的数据。也就是说，只要有足够多的节点，就可以存储足够多的数据。
 
-与`复制`模式不同，它更新是很昂贵的，因为集群内的每个节点都需要更新，而`分区`模式更新就很廉价，因为对于每个键只需要更新一个主节点（可选择一个或者多个备份节点），然而，读取变得较为昂贵，因为只有特定节点才持有缓存的数据。
+与`复制`模式不同，它更新是很昂贵的，因为集群内的每个节点都需要更新，而`分区`模式更新就很廉价，因为对于每个键只需要更新一个主节点（可选择一个或者多个备份节点），不过读取变得较为昂贵，因为只有特定节点才持有缓存的数据。
 
 为了避免额外的数据移动，总是访问恰好缓存有要访问的数据的节点是很重要的，这个方法叫做*关系并置*，当工作在分区化缓存时强烈建议使用。
 
@@ -226,7 +226,7 @@ Ignite提供了三种不同的缓存操作模式，`分区`、`复制`和`本地
 下面的配置章节显示了如何配置缓存模式的例子。
 
 ### 3.3.3.复制模式
-`复制`模式中，所有数据都被复制到集群内的每个节点，因为每个节点都有效所以这个缓存模式提供了最大的数据可用性。然而，这个模式每个数据更新都要传播到其它所有节点，因而会对性能和可扩展性产生影响。
+`复制`模式中，所有数据都被复制到集群内的每个节点，因为每个节点都有效所以这个缓存模式提供了最大的数据可用性。不过这个模式每个数据更新都要传播到其它所有节点，因而会对性能和可扩展性产生影响。
 
 Ignite中，*复制缓存*的实现类似于*分区缓存*，每个键都有一个主拷贝而且在集群内的其它节点也会有备份。比如下图中，对于键A，运行于JVM1的节点为主节点，但是同时它还存储了其它数据的拷贝（B、C、D）。
 ![3.3.3](https://files.readme.io/0yOEFydERAyggehGP75B_replicated_catche_8_sm.png)
@@ -601,13 +601,13 @@ queryEntity.setIndexes(indexes);
 cacheCfg.setQueryEntities(Arrays.asList(queryEntity));
 ...
 ```
-## 3.7.连续查询
-### 3.7.1.连续查询
-连续查询可以监听缓存中数据的变更。连续查询一旦启动，如果有，就会收到符合查询条件的数据变化的通知。
+## 3.7.持续查询
+### 3.7.1.持续查询
+持续查询可以监听缓存中数据的变更。持续查询一旦启动，如果有，就会收到符合查询条件的数据变化的通知。
 
-连续查询的功能是通过`ContinuousQuery`类启用的，详细描述如下：
+持续查询的功能是通过`ContinuousQuery`类启用的，详细描述如下：
 #### 3.7.1.1.初始化查询
-当要执行连续查询时，在将连续查询注册在集群中以及开始接收更新之前，可以有选择地指定一个初始化查询。
+当要执行持续查询时，在将持续查询注册在集群中以及开始接收更新之前，可以有选择地指定一个初始化查询。
 
 初始化查询可以通过`ContinuousQuery.setInitialQuery(Query)`方法进行设置，并且可以是任意查询类型，包括扫描查询，SQL查询和文本查询。
 #### 3.7.1.2.远程过滤器
@@ -617,7 +617,7 @@ cacheCfg.setQueryEntities(Arrays.asList(queryEntity));
 
 远程过滤器可以通过`ContinuousQuery.setRemoteFilter(CacheEntryEventFilter<K, V>)`方法进行设置。
 #### 3.7.1.3.本地监听器
-当缓存被修改时（一个条目被插入、更新或者删除），更新对应的事件就会发送给连续查询的本地监听器，之后应用就可以做出对应的反应。
+当缓存被修改时（一个条目被插入、更新或者删除），更新对应的事件就会发送给持续查询的本地监听器，之后应用就可以做出对应的反应。
 当事件通过了远程过滤器，它们就会被发送给客户端，通知哪里的本地监听器。
 
 本地监听器是通过`ContinuousQuery.setLocalListener(CacheEntryUpdatedListener<K, V>)`方法设置的。
@@ -698,7 +698,7 @@ try (QueryCursor<Cache.Entry<Integer, String>> cur = cache.query(qry)) {
 }
 ```
 #### 3.7.1.4.远程转换器
-连续查询默认会将整个更新后的对象发送给应用端的监听器，这会导致网络的过度使用，如果传输的对象很大，更是如此。另外，应用通常更希望得到所有字段的子集，而不是整个对象。
+持续查询默认会将整个更新后的对象发送给应用端的监听器，这会导致网络的过度使用，如果传输的对象很大，更是如此。另外，应用通常更希望得到所有字段的子集，而不是整个对象。
 
 为了解决这个问题，可以使用`ContinuousQueryWithTransformer`，它可以配置一个自定义的转换器工厂，它会在远程节点执行，处理每个更新后的对象，然后只将转换后的结果发给监听器。
 ```java
@@ -722,7 +722,7 @@ qry.setLocalListener(names -> {
 ```
 `ContinuousQueryWithTransformer`的使用示例，[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryWithTransformerExample.java)上有。
 ### 3.7.2.事件传递保证
-连续查询的实现会明确地保证，一个事件只会传递给客户端的本地监听器一次。
+持续查询的实现会明确地保证，一个事件只会传递给客户端的本地监听器一次。
 
 因为除了主节点，在每个备份节点维护一个更新队列是可行的。如果主节点故障或者由于某些其它原因拓扑发生了改变，之后每个备份节点会刷新它的内部队列的内容给客户端来确保事件都会被传递给客户端的本地监听器。
 
@@ -730,7 +730,7 @@ qry.setLocalListener(names -> {
 
 一旦客户端确认一个事件已经收到，主节点和备份节点会从它们的备份队列中删除该事件的记录。
 ### 3.7.3.示例
-关于描述连续查询如何使用的完整示例，已经随着Ignite的发行版一起发布，名为`CacheContinuousQueryExample`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryExample.java)上也有。
+关于描述持续查询如何使用的完整示例，已经随着Ignite的发行版一起发布，名为`CacheContinuousQueryExample`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryExample.java)上也有。
 ## 3.8.事务
 ### 3.8.1.原子化模式
 Ignite支持两种类型的缓存操作，*事务性*和*原子性*，在`事务性`模式中可以在一个事务中组合多个缓存操作，而`原子性`模式支持多个原子性操作，一次一个。
@@ -901,7 +901,7 @@ while (retries < retryCount) {
 当处理分布式事务时必须要遵守的主要规则是参与一个事务的键的锁，必须按照同样的顺序获得，违反这个规则就可能导致分布式死锁。
 Ignite无法避免分布式死锁，而是有一个内建的功能来使调试和解决这个问题更容易。
 
-就像下面的代码片段所示，一个带有超时时间的事务启动。如果过了超时时间，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。然而，如果检测到了一个死锁，返回的`TransactionTimeoutException`的cause会是`TransactionDeadlockException`（至少涉及死锁的一个事务）。
+就像下面的代码片段所示，一个带有超时时间的事务启动。如果过了超时时间，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。不过如果检测到了一个死锁，返回的`TransactionTimeoutException`的cause会是`TransactionDeadlockException`（至少涉及死锁的一个事务）。
 ```java
 try (Transaction tx = ignite.transactions().txStart(TransactionConcurrency.PESSIMISTIC,
     TransactionIsolation.READ_COMMITTED, 300, 0)) {
@@ -956,7 +956,7 @@ K2 [key=2, cache=default]
  - 在该`乐观可序列化`事务获得所有必要的锁时，存在在提交之前的版本与当前版本不同的条目；
 
 > 在一个高并发环境中，乐观锁可能导致一个很高的事务失败率。但是悲观锁如果锁被事务以一个不同的顺序获得可能导致死锁。
-然而，在一个同质化的环境中，乐观可序列化锁对于大的事务可能提供更好的性能，因为网络交互的数量只取决于事务相关的节点的数量，而不取决于事务中的键的数量。
+不过在一个同质化的环境中，乐观可序列化锁对于大的事务可能提供更好的性能，因为网络交互的数量只取决于事务相关的节点的数量，而不取决于事务中的键的数量。
 
 ### 3.8.9.失败事务处理
 如下的异常可能导致事务失败：
@@ -1050,7 +1050,7 @@ finally {
 }
 ```
 ## 3.9.锁
-缓存事务会隐式地获得锁，然而，有些情况下显式锁是很有用的。`IgniteCache`API的`lock()`方法会返回一个`java.util.concurrent.locks.Lock`的实例，它可以在任意给定的键上定义显式的分布式锁，也可以通过`IgniteCache.lockAll()`方法给集合对象加锁。
+缓存事务会隐式地获得锁，不过有些情况下显式锁是很有用的。`IgniteCache`API的`lock()`方法会返回一个`java.util.concurrent.locks.Lock`的实例，它可以在任意给定的键上定义显式的分布式锁，也可以通过`IgniteCache.lockAll()`方法给集合对象加锁。
 ```java
 IgniteCache<String, Integer> cache = ignite.cache("myCache");
 
@@ -1195,7 +1195,7 @@ ignite.compute().affinityRun("myCache", companyId, new IgniteRunnable() {
 ### 3.10.4.关系函数
 分区的关系控制一个分区缓存在哪个网格节点或者哪些节点上。`AffinityFunction`是一个可插拔的API用于确定网格中分区到节点的一个理想映射。当拓扑发生变化时，分区到节点的映射可能不同于关系函数提供的理想分布，直到再平衡结束。
 
-Ignite提供了`RendezvousAffinityFunction`，这个函数允许分区到节点的映射有点区别（即一些节点可能比其它节点负责稍微多一点的分区数量）。然而，它保证当拓扑发生变化时，分区只会迁移到一个新加入的节点或者只来自一个离开的节点，集群内已有的节点间不会发生数据的交换。
+Ignite提供了`RendezvousAffinityFunction`，这个函数允许分区到节点的映射有点区别（即一些节点可能比其它节点负责稍微多一点的分区数量）。不过它保证当拓扑发生变化时，分区只会迁移到一个新加入的节点或者只来自一个离开的节点，集群内已有的节点间不会发生数据的交换。
 
 注意，缓存关系函数不会直接映射键和节点，它映射的是键和分区。分区只是来自一个有限集合的简单的数字（默认0-1024）。在键映射到它们的分区之后（即获得了它们的分区号），已有的分区到节点的映射会用于当前的拓扑版本，键到分区的映射在时间上并不会改变。
 下面的代码显示了如何自定义和配置一个关系函数：
@@ -1253,7 +1253,7 @@ cfg.setCacheConfiguration(cacheCfg);
  - `assignPartitions(...)`：这个方法在拓扑发生变化时每次都会被调用，这个方法对于给定的拓扑返回一个分区到节点的映射。
 
 ### 3.10.5.CacheAffinityKeyMapper
-`CacheAffinityKeyMapper`是一个可插拔的API，负责为一个缓存键获取关系键。通常缓存键本身就用于关系键，然而为了与其它的缓存键并置，有时改变一个缓存键的关系是很重要的。
+`CacheAffinityKeyMapper`是一个可插拔的API，负责为一个缓存键获取关系键。通常缓存键本身就用于关系键，不过为了与其它的缓存键并置，有时改变一个缓存键的关系是很重要的。
 
 `CacheAffinityKeyMapper`的主要方法是`affinityKey(key)`，它会为一个缓存键返回一个`affinityKey`。Ignite默认会查找加注`@CacheAffinityKeyMapped`注解的所有属性和方法。如果没有找到这样的属性或者方法，那么缓存键本身就会用做关系键。如果找到了这样的属性或者方法，那么这个属性或者方法的值就会从`CacheAffinityKeyMapper.affinityKey(key)`方法返回，这样只要需要，就可以指定一个替代的关系键，而不是缓存键本身。
 
@@ -1334,7 +1334,7 @@ boolean lostPartiion = cache.lostPartitions().isEmpty()
 ### 3.12.1.摘要
 当一个新节点加入集群时，已有节点会放弃一部分缓存条目的所有权转交给新的节点，以使整个网格在任何时候都保持键的均等平衡。
 
-如果新的节点成为一些分区的主节点或者备份节点，它会从该分区之前的主节点获取数据，或者从该分区的备份节点之一获取数据。一旦分区全部载入新的节点，旧节点就会被标记为过时然后该节点在所有当前的事务完成之后最终会被退出。因此，在一些很短的时间段，在拓扑发生变化之后，有一种情况是在缓存中对于一个键备份的数量可能比事先配置的多。然而，一旦再平衡完成，额外的备份会被删除。
+如果新的节点成为一些分区的主节点或者备份节点，它会从该分区之前的主节点获取数据，或者从该分区的备份节点之一获取数据。一旦分区全部载入新的节点，旧节点就会被标记为过时然后该节点在所有当前的事务完成之后最终会被退出。因此，在一些很短的时间段，在拓扑发生变化之后，有一种情况是在缓存中对于一个键备份的数量可能比事先配置的多。不过一旦再平衡完成，额外的备份会被删除。
 
 ### 3.12.2.再平衡模式
 下面的再平衡模式是在`CacheRebalanceMode`枚举中定义的：
@@ -1385,7 +1385,7 @@ Ignition.start(cfg);
 假定将`IgniteConfiguration.setRebalanceThreadPoolSize`的值设为4然后考虑上述的示例，再平衡的过程会如下所示：
 
  - 如果集群有两个节点和一个缓存，那么缓存的分区逻辑上会分为4个不同的组，它们会以并行的方式进行处理，每个线程处理一个组，属于一个特定组的分区会按照顺序一个一个地进行再平衡。
- - 如果集群有两个节点和两个不同的缓存，那么每个缓存的分区逻辑上都会分为四个不同的组（每个缓存都会有四个组，总共8个组），然后会有四个不同的线程并行地处理这些组，然而在一个特定的时间点，就像上面解释的那样，只有属于一个特定组（总共8个）的数据会被处理。
+ - 如果集群有两个节点和两个不同的缓存，那么每个缓存的分区逻辑上都会分为四个不同的组（每个缓存都会有四个组，总共8个组），然后会有四个不同的线程并行地处理这些组，不过在一个特定的时间点，就像上面解释的那样，只有属于一个特定组（总共8个）的数据会被处理。
 
 > 在内部，系统线程池广泛用于和缓存有关的所有操作（put，get等），SQL引擎和其它模块，因此将`IgniteConfiguration.setRebalanceThreadPoolSize`设置为一个很大的值会显著提高再平衡的性能，但是会影响应用的性能。
 

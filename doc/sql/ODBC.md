@@ -782,7 +782,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |通过调用`SQLGetDiagField`、`SQLGetDiagRec`，获得诊断信息。|是||
 |通过调用`SQLGetFunctions`和`SQLGetInfo`，检测驱动兼容性，以及通过调用`SQLNativeSql`，在发送到数据源之前检测SQL语句中的任何文本代换的结果|是||
 |使用`SQLEndTran`的语法提交一个事务，驱动的核心级别不需要支持真事务，因此，应用无法指定`SQL_ROLLBACK`或者为`SQL_ATTR_AUTOCOMMIT`连接属性指定`SQL_AUTOCOMMIT_OFF`|是||
-|调用`SQLCancel`取消数据执行对话框，以及多线程环境中，在另一个线程中取消ODBC函数的执行，核心级别的接口一致性不需要支持函数的异步执行，也不需要使用`SQLCancel`取消一个ODBC函数的异步执行。平台和ODBC驱动都不需要多线程地同时自主活动，然而在多线程环境中，ODBC驱动必须是线程安全的，从应用来的请求的序列化是实现这个规范的一致的方式，即使它导致了一系列的性能问题。|否|当前的ODBC驱动实现不支持异步执行|
+|调用`SQLCancel`取消数据执行对话框，以及多线程环境中，在另一个线程中取消ODBC函数的执行，核心级别的接口一致性不需要支持函数的异步执行，也不需要使用`SQLCancel`取消一个ODBC函数的异步执行。平台和ODBC驱动都不需要多线程地同时自主活动，不过在多线程环境中，ODBC驱动必须是线程安全的，从应用来的请求的序列化是实现这个规范的一致的方式，即使它导致了一系列的性能问题。|否|当前的ODBC驱动实现不支持异步执行|
 |通过调用`SQLSpecialColumns`获得表的行标识符`SQL_BEST_ROWID`。|部分|当前的实现总是返回空|
 
 ### 5.4.3.Level1接口一致性

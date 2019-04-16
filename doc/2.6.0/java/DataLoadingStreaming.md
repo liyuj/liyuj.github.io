@@ -97,7 +97,7 @@ for (int personId = 0; personId < PERSONS_CNT; personId++) {
 }
 ```
 当Person对象知道自己的分区ID，每个节点就可以只查询属于自己所属分区的数据。要做到这一点，可以将一个Ignite实例注入到自己的CacheStore，然后用它来确定本地节点所属的分区。
-下面的代码片段演示了用`Affinity`来只加载本地分区的数据，注意例子代码是单线程的，然而它可以通过分区ID高效地并行化。
+下面的代码片段演示了用`Affinity`来只加载本地分区的数据，注意例子代码是单线程的，不过它可以通过分区ID高效地并行化。
 ```java
 public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   // Will be automatically injected.

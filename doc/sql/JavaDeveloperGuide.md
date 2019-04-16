@@ -342,7 +342,7 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
  - `java.util.UUID`。
 :::
 
-然而，如果决定引入复杂的自定义缓存键，那么在DML语句中要指向这些字段就需要：
+不过如果决定引入复杂的自定义缓存键，那么在DML语句中要指向这些字段就需要：
 
  - 在`QueryEntity`中定义这些字段，与在值对象中配置字段一样；
  - 使用新的配置参数`QueryEntitty.setKeyFields(..)`来对键和值进行区分；
