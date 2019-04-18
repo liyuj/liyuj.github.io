@@ -94,8 +94,9 @@ Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内
  - 通过在Ignite中读写DataFrame，可以在Spark作业间共享数据和状态；
  - 使用Ignite的SQL引擎，包括高级索引以及避免Ignite和Spark之间的网络数据移动，可以优化Spark的查询执行计划，从而实现更快的SparkSQL查询。
 
->**SparkSQL在Ignite中的执行**
+::: tip SparkSQL在Ignite中的执行
 目前，大多数的分组、联接或者排序操作都是在Spark端实现的，在未来的版本中，这些操作会在Ignite端进行优化和处理。
+:::
 
 ### 4.3.2.集成
 `IgniteRelationProvider`是Spark`RelationProvider`和`CreatableRelationProvider`接口的一个实现，`IgniteRelationProvider`可以通过SparkSQL接口，直接访问Ignite表。数据通过`IgniteSQLRelation`进行加载和交换，其在Ignite端执行过滤操作。目前，分组、联接或者排序操作，是在Spark端进行的，在即将发布的版本中，这些操作会在Ignite端进行优化和处理。`IgniteSQLRelation`利用了Ignite架构的分区特性，并且为Spark提供了分区信息。
@@ -165,8 +166,9 @@ df.createOrReplaceTempView("person")
 val igniteDF = spark.sql("SELECT * FROM person WHERE name = 'Mary Major'")
 ```
 ### 4.3.5.保存DataFrames
->**实现细节**
+::: tip 实现细节
 从内部来说，所有的插入操作都是通过`IgniteDataStreamer`实现的，内部的流处理器是可以通过参数进行控制的。
+:::
 
 Ignite可以作为Spark创建和维护的DataFrame的存储层，下面的保存模式，决定了Ignite中DataFrame的处理方式：
 
