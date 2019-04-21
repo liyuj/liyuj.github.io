@@ -4,7 +4,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 ### 4.1.1.激活、冻结和拓扑管理
 首先，`./control.sh`用于集群基线拓扑的激活/冻结以及节点的管理，具体可以看相关的章节。
 ### 4.1.2.缓存状态监控
-`./control.sh`提供了若干以`--cache list`开头的命令用于缓存的监控，这些命令可以看到部署的带有关系参数的缓存的列表，及其在缓存组内的分布，还有一个命令可以看已有的原子化的序列。
+`./control.sh`提供了若干以`--cache list`开头的命令用于缓存的监控，这些命令可以看到部署的带有类同参数的缓存的列表，及其在缓存组内的分布，还有一个命令可以看已有的原子化的序列。
 ```bash
 # Displays list of all caches with affinity parameters.
 ./control.sh --cache list .*

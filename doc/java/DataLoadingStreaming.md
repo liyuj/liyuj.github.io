@@ -154,8 +154,8 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   ...
 }
 ```
-::: tip 注意
-注意键和分区的映射依赖于affinity函数中配置的分区数量(参照org.apache.ignite.cache.affinity.AffinityFunctio)。如果affinity函数配置改变，数据库中存储的分区ID必须相应地更新。
+::: warning 注意
+注意键和分区的映射依赖于affinity函数中配置的分区数量(参照`org.apache.ignite.cache.affinity.AffinityFunction`)。如果affinity函数配置改变，数据库中存储的分区ID必须相应地更新。
 :::
 
 ::: tip 性能改进

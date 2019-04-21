@@ -225,7 +225,7 @@ GridGain的源和接收连接器使用Ignite的二进制格式来处理Ignite数
 如上所示，由于没有Kafka模式和逻辑类型与之对应，因此以下Ignite类型的类型信息将丢失：CHAR，UUID，CLASS和相应的数组。
 :::
 ::: warning 基于Java注解的配置会丢失
-GridGain的Kafka连接器没有导入和导出使用Java注释指定的字段信息。例如，Kafka中不存在基于注解配置的关系键、SQL可查询字段和索引。
+GridGain的Kafka连接器没有导入和导出使用Java注释指定的字段信息。例如，Kafka中不存在基于注解配置的类同键、SQL可查询字段和索引。
 
 使用基于配置的方法，可以为接收器缓存指定此类信息。
 :::

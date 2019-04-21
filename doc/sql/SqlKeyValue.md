@@ -94,13 +94,13 @@ try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
 ```
 如何进行SQL查询的更多细节，可以看[SQL API](/doc/sql/JavaDeveloperGuide.md#_7-1-sql-api)的文档。
 ### 10.1.4.执行计算任务
-在上例中，更新Amsterdam记录的地方，数据是从服务端节点获取的，如果使用[关系并置](/doc/java/Key-ValueDataGrid.md#_3-7-关系并置)，可以在指定键所在的节点执行自定义业务逻辑，这样就不需要将数据传输到客户端。
+在上例中，更新Amsterdam记录的地方，数据是从服务端节点获取的，如果使用[类同并置](/doc/java/Key-ValueDataGrid.md#_3-7-类同并置)，可以在指定键所在的节点执行自定义业务逻辑，这样就不需要将数据传输到客户端。
 
 ::: tip 对等类加载
-如果在关系并置中使用自定义的类，然后在服务端节点的类路径中又没有，可以配置`IgniteConfiguration.peerClassLoadingEnabled`属性值为`true`，已开启对等类加载功能。
+如果在类同并置中使用自定义的类，然后在服务端节点的类路径中又没有，可以配置`IgniteConfiguration.peerClassLoadingEnabled`属性值为`true`，已开启对等类加载功能。
 :::
 
-在下面的示例中，直接在服务端节点更新了Amsterdam记录，注意在`affinityRun()`方法的第二个参数中，需要将国家代码配置为关系键的值。
+在下面的示例中，直接在服务端节点更新了Amsterdam记录，注意在`affinityRun()`方法的第二个参数中，需要将国家代码配置为类同键的值。
 ```java
 ignite.compute().affinityRun(CITY_CACHE_NAME, "NLD", new IgniteRunnable() {
 

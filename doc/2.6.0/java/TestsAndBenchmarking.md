@@ -41,7 +41,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
  6. `SqlQueryBenchmark`：测试在缓存数据上执行分布式SQL查询；
  7. `SqlQueryJoinBenchmark`：测试在缓存数据上执行带关联的分布式SQL查询；
  8. `SqlQueryPutBenchmark`：测试在执行分布式SQL查询的时候同时进行缓存的更新；
- 9. `AffinityCallBenchmark`：测试关系调用操作；
+ 9. `AffinityCallBenchmark`：测试类同调用操作；
  10. `ApplyBenchmark`：测试`apply`操作；
  11. `BroadcastBenchmark`：测试`broadcast`操作；
  12. `ExecuteBenchmark`：测试`execute`操作；

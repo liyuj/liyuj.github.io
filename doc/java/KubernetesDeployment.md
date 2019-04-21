@@ -631,7 +631,7 @@ Ignite的`KubernetesIPFinder`需要用户配置和部署一个特定的Kubernete
 
 通过下面的方式可以配置服务，它考虑了所有的必要条件：
 
-::: tip 会话关系属性
+::: tip 会话类同属性
 只有在Kubernetes中部署了Ignite集群并且应用不在其中时，才需要下面使用的`sessionAffinity`。该属性确保Ignite瘦客户端、JDBC/ODBC驱动保留与特定的Ignite配置组的连接。
 如果集群和应用都由Kubernetes管理，那么该属性是冗余的，可以删除。
 :::

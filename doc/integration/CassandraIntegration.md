@@ -17,7 +17,7 @@
  6. 对于键值支持[Java](https://docs.oracle.com/javase/tutorial/jndi/objects/serial.html)和[Kryo](https://github.com/EsotericSoftware/kryo)序列化，它会以BLOB形式存储于Cassandra；
  7. 通过为特定的Ignite缓存指定持久化配置，或者通过使用`@QuerySqlField(index = true)`注解自动进行配置的检测，支持Cassandra的[第二索引](http://docs.datastax.com/en/cql/3.0/cql/cql_reference/create_index_r.html)（包括定制索引）;
  8. 通过持久化配置，或者通过使用`@QuerySqlField(descending = true)`注解自动进行配置的检测，支持Cassandra集群键字段的排序；
- 9. 对于POJO的键类，如果它的属性之一加注了`@AffinityKeyMapped`注解，也会支持关系的并置，这时，Ignite缓存中存储在某个节点上的键值对，也会存储（并置）于Cassandra中的同一个节点上。
+ 9. 对于POJO的键类，如果它的属性之一加注了`@AffinityKeyMapped`注解，也会支持类同并置，这时，Ignite缓存中存储在某个节点上的键值对，也会存储（并置）于Cassandra中的同一个节点上。
 
 ## 6.2.基本概念
 要将Cassandra设置为一个持久化存储，需要将Ignite缓存的`CacheStoreFactory`设置为`org.apache.ignite.cache.store.cassandra.CassandraCacheStoreFactory`。

@@ -2671,7 +2671,7 @@ readResponseHeader(in);
 |bool|false:二进制类型不存在，响应结束，true：二进制类型存在，内容如下|
 |int|类型ID，Java风格类型名字的哈希值|
 |string|类型名|
-|string|关系键字段名|
+|string|类同键字段名|
 |int|BinaryField计数|
 |BinaryField*count|BinaryField结构。String：字段名；int：类型ID，Java风格类型名哈希值；int：字段ID，Java风格字段名哈希值|
 |bool|是否枚举值，如果为true，则需要传入下面两个参数，否则会被忽略|
@@ -2742,7 +2742,7 @@ private static void readBinaryTypeField (DataInputStream in) throws IOException{
 |头信息|请求头|
 |int|类型ID，Java风格类型名字的哈希值|
 |string|类型名|
-|string|关系键字段名|
+|string|类同键字段名|
 |int|BinaryField计数|
 |BinaryField|BinaryField结构。String：字段名；int：类型ID，Java风格类型名哈希值；int：字段ID，Java风格字段名哈希值；重复多次，重复次数为前一个参数传递的值|
 |bool|是否枚举值，如果为true，则需要传入下面两个参数，否则会被忽略|
@@ -2998,7 +2998,7 @@ for (int i = 0; i < cacheCount; i++) {
 |string|SQL模式|
 |int|写同步模式。FULL_SYNC：0；FULL_ASYNC：1；PRIMARY_SYNC：2|
 |int|CacheKeyConfiguration计数|
-|CacheKeyConfiguration|CacheKeyConfiguration结构。String：类型名；String：关系键字段名。重复多次，重复次数为前一参数返回值|
+|CacheKeyConfiguration|CacheKeyConfiguration结构。String：类型名；String：类同键字段名。重复多次，重复次数为前一参数返回值|
 |int|QueryEntity计数|
 |QueryEntity|QueryEntity结构，具体见下表|
 
@@ -3101,7 +3101,7 @@ boolean copyOnRead = readBooleanLittleEndian(in);
 |204|int|SqlIndexInlineMaxSize|
 |203|String|SQL模式|
 |4|int|WriteSynchronizationMode。FULL_SYNC：0；FULL_ASYNC：1；PRIMARY_SYNC：2|
-|401|int+CacheKeyConfiguration|CacheKeyConfiguration计数+CacheKeyConfiguration。CacheKeyConfiguration结构。String：类型名；String：关系键字段名|
+|401|int+CacheKeyConfiguration|CacheKeyConfiguration计数+CacheKeyConfiguration。CacheKeyConfiguration结构。String：类型名；String：类同键字段名|
 |200|int+QueryEntity|QueryEntity计数+QueryEntity。QueryEntity结构如下表|
 
 **QueryEntity**
@@ -4510,7 +4510,7 @@ my_cache = client.create_cache(cache_config)
 **缓存键**
 
  - `type_name`：复杂对象名；
- - `affinity_key_field_name`：关系键字段名；
+ - `affinity_key_field_name`：类同键字段名；
 
 #### 19.5.2.4.数据类型
 Ignite使用一个复杂的可序列化数据类型系统来存储和检索用户数据，并通过Ignite的二进制协议管理其缓存的配置。

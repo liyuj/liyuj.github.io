@@ -1,6 +1,6 @@
 # 3.键-值数据网格
 ## 3.1.数据网格
-Ignite针对越来越火的水平扩展概念而构建，具有实时按需增加节点的能力。它可以线性扩展至几百个节点，通过数据位置的强语义以及数据关系路由来降低冗余数据噪声。
+Ignite针对越来越火的水平扩展概念而构建，具有实时按需增加节点的能力。它可以线性扩展至几百个节点，通过数据位置的强语义以及类同数据路由来降低冗余数据噪声。
 
 Ignite数据网格是一个`基于内存的分布式键值存储`，它可以视为一个分布式的分区化哈希，每个集群节点都持有所有数据的一部分，这意味着随着集群节点的增加，就可以缓存更多的数据。
 
@@ -238,7 +238,7 @@ Ignite提供了三种不同的缓存操作模式，`分区`、`复制`和`本地
 
 与`复制`模式不同，它更新是很昂贵的，因为集群内的每个节点都需要更新，而`分区`模式更新就很廉价，因为对于每个键只需要更新一个主节点（可选择一个或者多个备份节点），不过读取变得较为昂贵，因为只有特定节点才持有缓存的数据。
 
-为了避免额外的数据移动，总是访问恰好缓存有要访问的数据的节点是很重要的，这个方法叫做*关系并置*，当工作在分区化缓存时强烈建议使用。
+为了避免额外的数据移动，总是访问恰好缓存有要访问的数据的节点是很重要的，这个方法叫做*类同并置*，当工作在分区化缓存时强烈建议使用。
 
 ::: tip 注意
 分区化缓存适合于数据量很大而更新频繁的场合。
@@ -850,7 +850,7 @@ XML:
     </property>
 </bean>
 ```
-在大多数情况下，只要用了Ignite的关系并置，近缓存就不应该用了。如果计算与相应的分区化缓存节点是并置的，那么近缓存也不需要了，因为所有数据只在分区缓存的本地才有效。但是，有时没有必要将计算任务发送给远端节点，比如近缓存可以显著提升可扩展性或者提升应用的整体性能的场景。
+在大多数情况下，只要用了Ignite的类同并置，近缓存就不应该用了。如果计算与相应的分区化缓存节点是并置的，那么近缓存也不需要了，因为所有数据只在分区缓存的本地才有效。但是，有时没有必要将计算任务发送给远端节点，比如近缓存可以显著提升可扩展性或者提升应用的整体性能的场景。
 
 ::: tip 事务
 近缓存是完全事务性的，当服务端的数据发生改变时会自动地获得更新或者失效。
@@ -1005,16 +1005,16 @@ qry.setLocalListener(names -> {
 一旦客户端确认一个事件已经收到，主节点和备份节点会从它们的备份队列中删除该事件的记录。
 ### 3.6.3.示例
 关于描述持续查询如何使用的完整示例，已经随着Ignite的发行版一起发布，名为`CacheContinuousQueryExample`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryExample.java)上也有。
-## 3.7.关系并置
+## 3.7.类同并置
 数据和计算以及数据和数据的并置可以显著地提升应用的性能和可扩展性。
 ### 3.7.1.数据与数据的并置
-在许多情况下，如果不同的缓存键被同时访问的话那么将它们并置在一起是很有利的。通常来说业务逻辑需要访问不止一个的缓存键，通过将它们并置在一起可以确保具有同一个`affinityKey`的所有键都会缓存在同一个处理节点上，从而避免从远程节点获取数据的昂贵网络开销。
+在许多情况下，如果不同的缓存键被同时访问，那么将它们并置在一起是很有利的。通常来说业务逻辑需要访问不止一个的缓存键，通过将它们并置在一起可以确保具有同一个`affinityKey`的所有键都会缓存在同一个处理节点上，从而避免从远程节点获取数据的昂贵网络开销。
 
 例如，有一个`Person`和`Company`对象，然后希望将`Person`对象和其工作的`Company`对象并置在一起。
 
 具体做法是，用于缓存`Person`对象的缓存键应该有一个属性加注了`@AffinityKeyMapped`注解，它会提供用于并置的`Company`键的值，为了方便也可以选用`AffinityKey`类。
 
-如果缓存是通过SQL创建的，那么关系键是通过[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的`AFFINITY_KEY`参数传递的。
+如果缓存是通过SQL创建的，那么类同键是通过[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的`AFFINITY_KEY`参数传递的。
 ::: tip Scala中的注解
 注意，如果Scala的case class用于键类并且它的构造函数参数之一加注了`@AffinityKeyMapped`注解，默认这个注解并不会正确地用于生成的字段，因此也就不会被Ignite识别。要覆盖这个行为，可以使用`@field`[元注解](http://www.scala-lang.org/api/current/#scala.annotation.meta.package)而不是`@AffinityKeyMapped `（看下面的示例）。
 :::
@@ -1122,19 +1122,21 @@ ignite.compute().affinityRun("myCache", companyId, new IgniteRunnable() {
 ```
 ### 3.7.3.IgniteCompute和EntryProcessor
 `IgniteCompute.affinityRun(...)`和`IgniteCache.invoke(...)`方法都提供了数据和计算的并置。主要的不同在于`invoke(...)`方法是原子的并且执行时在键上加了锁，无法从`EntryProcessor`逻辑内部访问其它的键，因为它会触发一个死锁。
-另一方面，`affinityRun(...)`和`affinityCall(...)`不持有任何锁。比如，在这些方法内开启多个事务或者执行缓存查询是绝对合法的，不用担心死锁。这时Ignite会自动检测处理是并置的然后对事务采用优化过的一阶段提交而不是二阶段提交。
+
+而`affinityRun(...)`和`affinityCall(...)`不持有任何锁。比如，在这些方法内开启多个事务或者执行缓存查询是绝对合法的，不用担心死锁，这时Ignite会自动检测处理是并置的然后对事务采用优化过的一阶段提交而不是二阶段提交。
 
 ::: tip 注意
 关于`IgniteCache.invoke(...)`方法的更多信息，请参照[EntryProcessor](/doc/java/Key-ValueDataGrid.md#_3-2-4-entryprocessor)文档。
 :::
 
-### 3.7.4.关系函数
-分区的关系控制一个分区缓存在哪个网格节点或者哪些节点上。`AffinityFunction`是一个可插拔的API用于确定网格中分区到节点的一个理想映射。当集群拓扑发生变化时，分区到节点的映射可能不同于关系函数提供的理想分布，直到再平衡结束。
+### 3.7.4.类同函数
+分区的”类同“控制一个分区缓存在哪个网格节点或者哪些节点上。`AffinityFunction`是一个可插拔的API用于确定网格中分区到节点的一个理想映射。当集群拓扑发生变化时，分区到节点的映射可能不同于类同函数提供的理想分布，直到再平衡结束。
 
-Ignite提供了`RendezvousAffinityFunction`，这个函数允许分区到节点的映射有点区别（即一些节点可能比其它节点负责稍微多一点的分区数量）。不过它保证当拓扑发生变化时，分区只会迁移到一个新加入的节点或者只来自一个离开的节点，集群内已有的节点间不会发生数据的交换。
+Ignite提供了`RendezvousAffinityFunction`，这个函数允许分区到节点的映射有点区别（即一些节点可能比其它节点持有稍微多一点的分区数量）。不过它保证当拓扑发生变化时，分区只会迁移到一个新加入的节点或者只来自一个离开的节点，集群内已有的节点间不会发生数据的交换。
 
-注意，缓存关系函数不会直接映射键和节点，它映射的是键和分区。分区只是来自一个有限集合的简单的数字（默认0-1024）。在键映射到它们的分区之后（即获得了它们的分区号），已有的分区到节点的映射会用于当前的拓扑版本，键到分区的映射在时间上并不会改变。
-下面的代码显示了如何自定义和配置一个关系函数：
+注意，缓存类同函数不会直接映射键和节点，它映射的是键和分区。分区只是来自一个有限集合的简单的数字（0-默认的1024）。在键映射到它们的分区之后（即获得了它们的分区号），已有的分区到节点的映射会用于当前的拓扑版本，键到分区的映射在时间上并不会改变。
+
+下面的代码显示了如何自定义和配置一个类同函数：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     <property name="cacheConfiguration">
@@ -1176,25 +1178,24 @@ cacheCfg.setAffinity(affFunc);
 // Setting the cache configuration.
 cfg.setCacheConfiguration(cacheCfg);
 ```
-
-::: tip 关系的故障安全
-主备副本不位于同一台物理机上，以这样的方式调整集群内的分区是很有用的，要确保这个属性，可以在`RendezvousAffinityFunction`上设置`excludeNeighbors`标志。
-
-有时将一个分区的主备副本放在不同的机架上也是很有用的。这时，可以为每个节点赋予一个特别的属性然后在`RendezvousAffinityFunction`上使用`AffinityBackupFilter`属性来排除同一个机架中分配用于备份副本的若干节点。
-
-此外，可以用`ClusterNodeAttributeAffinityBackupFilter`创建`AffinityBackupFilter`，该`AffinityBackupFilter`根据节点对某些环境变量（例如`AVAILABILITY_ZONE`）的值来分离主节点和备份副本。有关如何配置此属性的更多信息，请参考`ClusterNodeAttributeAffinityBackupFilter.java`类的[javadoc](https://ignite.apache.org/releases/latest/javadoc/index.html)。
-:::
-
 `AffinityFunction`是一个可插拔的API，也可以提供这个函数的自定义实现，`AffinityFunction`API的三个主要方法是：
 
  - `partitions()`：获取一个缓存的分区总数量，集群启动之后无法改变。
  - `partition(...)`：给定一个键，这个方法确定一个键属于哪个分区，这个映射在时间上不会改变。
  - `assignPartitions(...)`：这个方法在拓扑发生变化时每次都会被调用，这个方法对于给定的拓扑返回一个分区到节点的映射。
 
-### 3.7.5.关系键映射器
-`CacheAffinityKeyMapper`是一个可插拔的API，负责为一个缓存键获取关系键。通常缓存键本身就用于关系键，不过为了与其它的缓存键并置，有时改变一个缓存键的关系是很重要的。
+**类同的故障安全**
 
-`CacheAffinityKeyMapper`的主要方法是`affinityKey(key)`，它会为一个缓存键返回一个`affinityKey`。Ignite默认会查找加注`@CacheAffinityKeyMapped`注解的所有属性和方法。如果没有找到这样的属性或者方法，那么缓存键本身就会用做关系键。如果找到了这样的属性或者方法，那么这个属性或者方法的值就会从`CacheAffinityKeyMapper.affinityKey(key)`方法返回，这样只要需要，就可以指定一个替代的关系键，而不是缓存键本身。
+分区的安排要遵循主备副本不在于同一台物理机上，要确保不发生这样的情况，可以在`RendezvousAffinityFunction`上设置`excludeNeighbors`标志。
+
+有时将一个分区的主备副本放在不同的机架上也是很有用的。这时，可以为每个节点赋予一个特别的属性然后在`RendezvousAffinityFunction`上使用`AffinityBackupFilter`属性来排除同一个机架中被分配用于备份副本的若干节点。
+
+此外，可以用`ClusterNodeAttributeAffinityBackupFilter`创建`AffinityBackupFilter`，该`AffinityBackupFilter`根据节点对某些环境变量（例如`AVAILABILITY_ZONE`）的值来分离主节点和备份副本。有关如何配置此属性的更多信息，请参考`ClusterNodeAttributeAffinityBackupFilter.java`类的[javadoc](https://ignite.apache.org/releases/latest/javadoc/index.html)。
+
+### 3.7.5.类同键映射器
+`CacheAffinityKeyMapper`是一个可插拔的API，负责为一个缓存键获取类同键。通常缓存键本身就用于类同键，不过为了与其它的缓存键并置，有时改变一个缓存键的类同是很重要的。
+
+`CacheAffinityKeyMapper`的主要方法是`affinityKey(key)`，它会为一个缓存键返回一个`affinityKey`。Ignite默认会查找加注`@CacheAffinityKeyMapped`注解的所有属性和方法。如果没有找到这样的属性或者方法，那么缓存键本身就会用做类同键。如果找到了这样的属性或者方法，那么这个属性或者方法的值就会从`CacheAffinityKeyMapper.affinityKey(key)`方法返回，这样只要需要，就可以指定一个替代的类同键，而不是缓存键本身。
 ## 3.8.事务
 ### 3.8.1.事务
 #### 3.8.1.1.原子化模式
