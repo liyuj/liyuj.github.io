@@ -83,7 +83,7 @@ serverURI=https://console.example.com:3001
 
 `http.proxyPort `：代理服务器的端口号。
 
-如果代理需要认证的话，还需要提供如下的系统属性：
+如果代理需要认证，还需要提供如下的系统属性：
 
 `http.proxyUsername`：用户名；
 
@@ -104,7 +104,7 @@ set JVM_OPTS=-Dhttp.proxyHost=<proxy-hostname> -Dhttp.proxyPort=<proxy-port> -Dh
 
 `https.proxyPort `：代理服务器的端口号。
 
-如果代理需要认证的话，还需要提供如下的系统属性：
+如果代理需要认证，还需要提供如下的系统属性：
 
 `https.proxyUsername`：用户名；
 
@@ -125,7 +125,7 @@ set JVM_OPTS=-Dhttps.proxyHost=<proxy-hostname> -Dhttps.proxyPort=<proxy-port> -
 
 `socksProxyPort`：代理服务器的端口号。
 
-如果代理需要认证的话，还需要提供如下的系统属性：
+如果代理需要认证，还需要提供如下的系统属性：
 
 `java.net.socks.username`：用户名；
 

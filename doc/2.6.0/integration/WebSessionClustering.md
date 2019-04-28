@@ -11,7 +11,7 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 
 ![](https://files.readme.io/dae81d5-web_sessions_failed_instance-small.png)
 
-这里的一个解决方案就是用Ignite来缓存Web会话-维护每个创建的会话的拷贝的分布式缓存，在所有的实例中共享。如果任何一个应用实例故障，Ignite会马上从分布式缓存中恢复故障实例所属的会话，而不管下一个请求会被转发到哪个应用服务器。这样的话，随着Web会话被缓存粘性连接就变得不那么重要，因为会话可以用于请求被路由到的任何应用服务器。
+这里的一个解决方案就是用Ignite来缓存Web会话-维护每个创建的会话的拷贝的分布式缓存，在所有的实例中共享。如果任何一个应用实例故障，Ignite会马上从分布式缓存中恢复故障实例所属的会话，而不管下一个请求会被转发到哪个应用服务器。这样随着Web会话被缓存粘性连接就变得不那么重要，因为会话可以用于请求被路由到的任何应用服务器。
 
 ![](https://files.readme.io/43c16d4-web_sessions_clustering.png)
 

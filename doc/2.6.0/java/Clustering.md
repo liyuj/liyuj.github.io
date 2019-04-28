@@ -426,7 +426,7 @@ Ignition.start(cfg);
 ```
 
 #### 2.5.1.4.组播和静态IP探测器
-可以同时使用基于组播和静态IP的发现，这种情况下，除了通过组播接受地址以外，如果有的话，`TcpDiscoveryMulticastIpFinder`也可以与预配置的静态IP地址列表一起工作，就像上面描述的基于静态IP的发现一样。
+可以同时使用基于组播和静态IP的发现，这种情况下，除了通过组播接受地址以外，如果有，`TcpDiscoveryMulticastIpFinder`也可以与预配置的静态IP地址列表一起工作，就像上面描述的基于静态IP的发现一样。
 
 下面的例子显示了如何配置使用了静态IP地址的组播IP探测器。
 
@@ -883,7 +883,7 @@ tickTime=2000
 # sending a request and getting an acknowledgement
 syncLimit=5
 ```
-如果这样配置的话，只有过了`tickTime * syncLimit`时限，ZooKeeper服务器才会发觉它是否与剩余的ZooKeeper集群分割，在ZooKeeper的这段时间之内，所有的Ignite节点都会接入该已分割的ZooKeeper服务器，而不会与其它的ZooKeeper服务器进行连接。
+如果这样配置，只有过了`tickTime * syncLimit`时限，ZooKeeper服务器才会发觉它是否与剩余的ZooKeeper集群分割，在ZooKeeper的这段时间之内，所有的Ignite节点都会接入该已分割的ZooKeeper服务器，而不会与其它的ZooKeeper服务器进行连接。
 
 另一方面，在Ignite端有一个`sessionTimeout`参数，它定义了如果节点与ZooKeeper集群断开，多长时间ZooKeeper会关闭Ignite节点的会话，如果`sessionTimeout`比`tickTime * syncLimit`小，那么Ignite节点就会被分割的ZooKeeper服务器过早地通知，即会话会在其试图连接其它的ZooKeeper服务器之前过期。
 
@@ -1030,7 +1030,7 @@ Ignition.start(cfg);
 
 `TcpCommuncationSpi.setLocalPortRange(int)`配置参数控制了SPI可以尝试的最大端口数量。
 > **本地端口范围**
-当在一台机器上甚至是在同一个JVM上启动多个网格节点时，端口范围会非常方便，这样的话所有的节点都会启动而不用一个个地进行单独的配置。
+当在一台机器上甚至是在同一个JVM上启动多个网格节点时，端口范围会非常方便，这所有的节点都会启动而不用一个个地进行单独的配置。
 
 ### 2.8.2.配置
 下面`TcpCommunicationSpi`中的配置参数都是可选的：

@@ -8,7 +8,7 @@ Ignite的一个突出特性是完全支持分布式的SQL关联，Ignite支持�
 
 ![](https://files.readme.io/86e6f24-d3e1d15-sql_database.png)
 
-和很多的分布式SQL数据库不同，对于数据和索引，Ignite将内存和磁盘都视为完整有效的存储层，但是磁盘是可选的，如果禁用的话，Ignite就变为纯内存数据库。
+和很多的分布式SQL数据库不同，对于数据和索引，Ignite将内存和磁盘都视为完整有效的存储层，但是磁盘是可选的，如果禁用，Ignite就变为纯内存数据库。
 
 可以像其它的SQL存储一样，根据需要与Ignite进行交互，比如通过外部的工具或者应用使用JDBC或者ODBC驱动进行连接。在这之上，Java、.NET和C++开发者也可以使用Ignite的原生SQL API。
 ## 1.2.入门

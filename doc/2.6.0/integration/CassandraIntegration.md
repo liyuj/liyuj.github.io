@@ -388,7 +388,7 @@ Ignite缓存值的持久化配置。
 |column|否|Cassandra表列名，如果不指定，会使用POJO字段名的小写形式|
 |static|否|布尔类型标志，它指定了在一个分区内列是否为静态的|
 |index|否|布尔类型标志，指定了对于特定字段是否要创建第二索引|
-|indexClass|否|自定义索引Java类名，如果要使用自定义索引的话|
+|indexClass|否|如果要使用自定义索引，则为自定义索引Java类名|
 |indexOptions|否|自定义索引选项|
 
 ## 6.3.示例
@@ -502,7 +502,7 @@ XML：
 ```
 如果希望为过期条目使用持久化存储，这个对于Ignite缓存就是必要的。
 
-如果希望异步更新持久化存储的话，也可以有选择地配置后写参数。
+如果希望异步更新持久化存储，也可以有选择地配置后写参数。
 
 XML：
 ```xml
@@ -582,7 +582,7 @@ XML:
     <valuePersistence class="java.lang.String" strategy="PRIMITIVE" />
 </persistence>
 ```
-键会存储于`my_key`列，值会存储于`value`列（如果`column`属性不指定的话会使用默认值）。
+键会存储于`my_key`列，值会存储于`value`列（如果`column`属性不指定，则会使用默认值）。
 ### 6.3.2.示例2
 Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，`any`类型的值（`BLOB`持久化策略中无需指定类型）在Cassandra中会以`BLOB`的形式存储，这个场景的唯一解决方案就是在Cassandra中将值存储为`BLOB`。
 
@@ -593,7 +593,7 @@ XML：
     <valuePersistence strategy="BLOB"/>
 </persistence>
 ```
-键会存储于`key`列（如果`column`属性不指定的话会使用默认值），值会存储于`value`列。
+键会存储于`key`列（如果`column`属性不指定则会使用默认值），值会存储于`value`列。
 ### 6.3.3.示例3
 Ignite缓存的持久化配置中，`Integer`类型的键和`any`类型的值在Cassandra中都以`BLOB`的形式存储。
 ```xml
@@ -610,7 +610,7 @@ Ignite缓存的持久化配置中，`Integer`类型的键和`any`类型的值在
 ```
 键会存储于`BLOB`类型的`key`列，使用[Java标准序列化](https://docs.oracle.com/javase/tutorial/jndi/objects/serial.html)，值会存储于`BLOB`类型的`value`列，使用[Kryo序列化](https://github.com/EsotericSoftware/kryo)。
 ### 6.3.4.示例4
-Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，自定义POJO`org.apache.ignite.tests.pojos.Person`类型的值在动态分析后会被持久化到一组表列中，这样的话每个POJO字段都会被映射到相对应的表列，关于更多动态POJO字段发现的信息，可以查看上一章的介绍。
+Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，自定义POJO`org.apache.ignite.tests.pojos.Person`类型的值在动态分析后会被持久化到一组表列中，这样每个POJO字段都会被映射到相对应的表列，关于更多动态POJO字段发现的信息，可以查看上一章的介绍。
 
 XML：
 ```xml
@@ -1028,8 +1028,8 @@ Cassandra模块的负载测试是作为模块测试源代码的一部分提供�
 ### 6.5.4.运行负载测试
 运行负载测试前，要确保：
 
- 1. Ignite缓存的所有节点都要配置为使用相同的Cassandra缓存存储配置。可以从测试源代码包的一个资源文件中找到一个远程Ignite节点配置的示例：`settings/org/apache/ignite/tests/persistence/primitive/ignite-remote-server-config.xml`，如果只打算使用Cassandra负载测试的话，可以忽略这一步；
- 2. `tests.properties`的`load.tests.ignite.config`属性，指向了正确的Ignite客户端节点配置（它应该有相同的Cassandra连接和持久化配置，比如远程Ignite节点配置文件），如果只打算使用Cassandra负载测试的话，可以忽略这一步；
+ 1. Ignite缓存的所有节点都要配置为使用相同的Cassandra缓存存储配置。可以从测试源代码包的一个资源文件中找到一个远程Ignite节点配置的示例：`settings/org/apache/ignite/tests/persistence/primitive/ignite-remote-server-config.xml`，如果只打算使用Cassandra进行负载测试，可以忽略这一步；
+ 2. `tests.properties`的`load.tests.ignite.config`属性，指向了正确的Ignite客户端节点配置（它应该有相同的Cassandra连接和持久化配置，比如远程Ignite节点配置文件），如果只打算使用Cassandra进行负载测试，可以忽略这一步；
  3. Cassandra连接配置，在`org/apache/ignite/tests/cassandra/connection.properties`和`org/apache/ignite/tests/cassandra/credentials.properties`文件中正确指定；
 
 之后，只要执行相应的shell脚本，就可以轻易地运行负载测试了：

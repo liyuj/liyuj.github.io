@@ -84,7 +84,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 ### 5.1.3.动态缓存
 虽然通过Ignite配置文件可以获得所有必要的缓存，但是这不是必要的。如果Spring要使用一个不存在的缓存时，`SpringCacheManager`会自动创建它。
 
-如果不指定，会使用默认值创建一个新的缓存。要定制的话，可以通过`dynamicCacheConfiguration`属性提供一个配置模板，比如，如果希望使用`复制`缓存而不是`分区`缓存，可以像下面这样配置`SpringCacheManager`:
+如果不指定，会使用默认值创建一个新的缓存。也可以通过`dynamicCacheConfiguration`属性提供一个配置模板进行定制，比如，如果希望使用`复制`缓存而不是`分区`缓存，可以像下面这样配置`SpringCacheManager`:
 ```xml
 <bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
     ...
@@ -125,7 +125,7 @@ public long averageSalary(int organizationId) {
     return jdbc.queryForObject(sql, Long.class, organizationId);
 }
 ```
-当这个方法第一次被调用时，`SpringCacheManager`会自动创建一个`averageSalary`缓存，它也会在缓存中查找事先计算好的平均值然后如果存在的话就会直接返回，如果这个组织的平均值还没有被计算过，那么这个方法就会被调用然后将结果保存在缓存中，因此下一次请求这个组织的平均值，就不需要访问数据库了。
+当这个方法第一次被调用时，`SpringCacheManager`会自动创建一个`averageSalary`缓存，它也会在缓存中查找事先计算好的平均值然后如果存在，就会直接返回，如果这个组织的平均值还没有被计算过，那么这个方法就会被调用然后将结果保存在缓存中，因此下一次请求这个组织的平均值，就不需要访问数据库了。
 
 > **缓存键**
 因为`organizationId`是唯一的方法参数，所以它会自动作为缓存键。

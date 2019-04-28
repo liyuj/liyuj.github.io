@@ -58,7 +58,7 @@ val result = cache.filter(_._2.contains("Ignite")).collect()
 ```
 **向Ignite保存数据**
 
-因为Ignite缓存操作于键-值对，因此向Ignite缓存保存数据的最明确的方法是使用Spark数组RDD以及`savePairs`方法，如果可能的话，这个方法会利用RDD分区的优势然后以并行的方式将数据存入缓存。
+因为Ignite缓存操作于键-值对，因此向Ignite缓存保存数据的最明确的方法是使用Spark数组RDD以及`savePairs`方法，如果可能，这个方法会利用RDD分区的优势然后以并行的方式将数据存入缓存。
 
 也可能使用`saveValues`方法将只有值的RDD存入Ignite缓存，这时，`IgniteRDD`会为每个要存入缓存的值生成一个唯一的本地类同键。
 
@@ -383,7 +383,7 @@ Spark应用部署模型可以在应用启动期间动态地发布jar，但是这
 有一个方法来对每一个启动的应用修改默认的Spark类路径（这个可以在每个Spark集群的机器上实现，包括主节点，工作节点以及驱动节点）。
 
  1. 定位到`$SPARK_HOME/conf/spark-env.sh`文件，如果该文件不存在，用`$SPARK_HOME/conf/spark-env.sh.template`这个模板创建它；
- 2. 将下面的行加入`spark-env.sh`文件的末尾（如果没有全局定义`IGNITE_HOME`的话，需要将设置`IGNITE_HOME`的行的注释去掉）。
+ 2. 将下面的行加入`spark-env.sh`文件的末尾（如果没有全局定义`IGNITE_HOME`，则需要将设置`IGNITE_HOME`的行的注释去掉）。
 ```bash
 # Optionally set IGNITE_HOME here.
 # IGNITE_HOME=/path/to/ignite
@@ -521,7 +521,7 @@ bin/ignite.sh
 ```
 这时可以看到Spark shell已经启动了。
 
-注意，如果打算使用Spring的配置进行加载的话，那么需要同时添加`ignite-spring`的依赖。
+注意，如果打算使用Spring的配置进行加载，则需要同时添加`ignite-spring`的依赖。
 ```bash
 ./bin/spark-shell 
 	--packages org.apache.ignite:ignite-spark:1.8.0,org.apache.ignite:ignite-spring:1.8.0
@@ -584,4 +584,4 @@ res0: Long = 50000
  - **在IgniteRDD上调用任何活动时Spark应用或者Spark shell没有响应**
 如果在客户端模式（默认模式）下创建`IgniteContext`然后又没有任何Ignite服务端节点启动时，就会发生这种情况，这时Ignite客户端会一直等待服务端节点启动或者超过集群连接超时时间后失败。当在客户端节点使用`IgniteContext`时应该启动至少一个服务端节点。
  - **当使用IgniteContext时，抛出了` java.lang.ClassNotFoundException`和`org.apache.ignite.logger.java.JavaLoggerFileHandler`**
-在类路径中没有任何日志实现然后Ignite会试图使用标准的Java日志时，这个问题就会发生。默认的话，Spark会使用单独的类加载器加载用户的所有jar文件，而Java日志框架是使用应用级类加载器来初始化日志处理器。要解决这个问题，可以将`ignite-log4j`模块加入使用的jar列表以使Ignite使用log4J作为日志记录器，或者就像[安装与部署](#_4-4-安装和部署)章节中描述的那样修改Spark的默认类路径。
+在类路径中没有任何日志实现然后Ignite会试图使用标准的Java日志时，这个问题就会发生。Spark默认会使用单独的类加载器加载用户的所有jar文件，而Java日志框架是使用应用级类加载器来初始化日志处理器。要解决这个问题，可以将`ignite-log4j`模块加入使用的jar列表以使Ignite使用log4J作为日志记录器，或者就像[安装与部署](#_4-4-安装和部署)章节中描述的那样修改Spark的默认类路径。

@@ -67,7 +67,7 @@ cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
 Ignite的发布版包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
 ## 7.2.模式和索引
 ### 7.2.1.摘要
-不管是通过注解或者通过QueryEntity的方式，表和索引建立之后，它们所属的模式名为`CacheConfiguration`对象中配置的缓存名，要修改的话，需要使用`CacheConfiguration.setSqlSchema`方法。
+不管是通过注解或者通过QueryEntity的方式，表和索引建立之后，它们所属的模式名为`CacheConfiguration`对象中配置的缓存名，也可以使用`CacheConfiguration.setSqlSchema`方法进行修改。
 
 但是，如果表和索引是通过DDL语句的形式定义的，那么模式名就会完全不同，这时，表和索引所属的模式名默认为`PUBLIC`。
 
@@ -206,7 +206,7 @@ QueryCursor<List<?>> cursor = personCache.query(new SqlFieldsQuery(
 ```
 注意在查询的where子句中不需要指定**address.street**，这是因为`Address`类的字段会被合并到`Person`表中，这样会简化对`Address`中的字段的访问。
 >**Scala注解**
-在Scala类中，`@QuerySqlField`注解必须和`@Field`注解一起使用，这样的话这个字段对于Ignite才是可见的，就像这样的:`@(QuerySqlField @field)`。
+在Scala类中，`@QuerySqlField`注解必须和`@Field`注解一起使用，这样这个字段对于Ignite才是可见的，就像这样的:`@(QuerySqlField @field)`。
 也可以使用`ignite-scalar`模块的`@ScalarCacheQuerySqlField`注解作为替代，它不过是`@Field`注解的别名。
 
 **注册索引类型**

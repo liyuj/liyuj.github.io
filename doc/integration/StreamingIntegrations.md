@@ -434,7 +434,7 @@ Apache Ignite Flink Sink模块是一个流处理连接器，它可以将Flink数
 
 通过如下步骤，可以开启到Ignite缓存的数据注入：
  
- - 在Maven工程中导入Ignite的Flink Sink模块。如果使用Maven来管理项目的依赖的话，可以像下面这样添加Flink模块依赖（将`${ignite.version}`替换为实际使用的版本）；
+ - 在Maven工程中导入Ignite的Flink接收器模块。如果使用Maven来进行项目依赖管理，可以像下面这样添加Flink模块依赖（将`${ignite.version}`替换为实际使用的版本）；
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

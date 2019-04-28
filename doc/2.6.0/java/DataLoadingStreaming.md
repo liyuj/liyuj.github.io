@@ -79,7 +79,7 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 }
 ```
 **分区感知的数据加载**
-在上面描述的**第三方存储**场景中同样的查询会在所有节点上执行，每个节点会迭代所有的结果集，忽略掉不属于该节点的所有键，效率不是很高。如果数据库中的每条记录都保存分区ID的话这个情况会有所改善。可以通过`org.apache.ignite.cache.affinity.Affinity`接口来获得要存储在缓存中的任何键的分区ID。
+在上面描述的**第三方存储**场景中同样的查询会在所有节点上执行，每个节点会迭代所有的结果集，忽略掉不属于该节点的所有键，效率不是很高。如果数据库中的每条记录都保存有分区ID，这个情况会有所改善。可以通过`org.apache.ignite.cache.affinity.Affinity`接口来获得要存储在缓存中的任何键的分区ID。
 下面的代码片段可以获得每个要存储在缓存中的`Person`对象的分区ID。
 ```java
 IgniteCache cache = ignite.cache(cacheName);
@@ -168,7 +168,7 @@ try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCac
 }
 ```
 **允许覆写**
-默认的话，数据流处理器不会覆写已有的数据，这意味着如果遇到一个缓存内已有的条目，它会忽略这个条目。这是一个最有效的以及高性能的模式，因为数据流处理器不需要在后台考虑数据的版本。
+数据流处理器默认不会覆写已有的数据，这意味着如果遇到一个缓存内已有的条目，它会忽略这个条目。这是一个最有效的以及高性能的模式，因为数据流处理器不需要在后台考虑数据的版本。
 如果预想到数据在数据流缓存中可能存在以及希望覆写它，设置`IgniteDataStreamer.allowOverwrite(true)`即可。
 >**流处理器，CacheStore以及AllowOverwrite**
 `AllowOverwrite`属性如果是`false`（默认），第三方存储的更新会被忽略。

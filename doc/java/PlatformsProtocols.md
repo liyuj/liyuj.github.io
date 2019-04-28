@@ -816,7 +816,7 @@ http://host:port/ignite?cmd=conkeys&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=p
 |response|boolean|存在给定键对应的映射则为true|true|
 
 #### 12.2.3.24.getput
-**getput**命令在缓存中存储给定的键值对，如果之前存在该映射的话则返回原值。
+**getput**命令在缓存中存储给定的键值对，如果之前存在该映射，则返回原值。
 
 URL:
 ```
@@ -846,7 +846,7 @@ http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCach
 |response|jsonObject|给定键的原值|{"name": "bob"}|
 
 #### 12.2.3.25.putifabs
-**putifabs**命令只有在缓存中存在该映射的话才会存储给定的键值对。
+**putifabs**命令只有在缓存中存在该映射时才会存储给定的键值对。
 
 URL:
 ```
@@ -933,7 +933,7 @@ http://host:port/ignite?cmd=size&cacheName=partionedCache
 |response|number|给定缓存的总条目数量|5|
 
 #### 12.2.3.28.getorcreate
-**getorcreate**命令如果不存在的话会创建给定名字的缓存。
+**getorcreate**命令如果不存在给定名字的缓存，则会进行缓存的创建。
 
 URL:
 ```

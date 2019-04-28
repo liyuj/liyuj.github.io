@@ -322,7 +322,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 
 `result(...)`方法在每次作业在集群节点上执行时都会被调用，它接收计算作业返回的结果，以及迄今为止收到的作业结果的列表。该方法会返回一个`ComputeJobResultPolicy`的实例，说明下一步要做什么。
 
- - `WAIT`:等待所有剩余的作业完成（如果有的话）
+ - `WAIT`:等待所有剩余的作业完成（如果有）
  - `REDUCE`：立即进入Reduce阶段，丢弃剩余的作业和还未收到的结果
  - `FAILOVER`：将作业转移到另一个节点（参照[容错](#_7-7-容错)章节），所有已经收到的作业结果也会在`reduce(...)`方法中有效
 
@@ -340,7 +340,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 
 `ComputeTaskSplitAdapter`继承了`ComputeTaskAdapter`,它增加了将作业自动分配给节点的功能。它隐藏了`map(...)`方法然后增加了一个新的`split(...)`方法，使得开发者只需要提供一个待执行的作业集合（这些作业到节点的映射会被适配器以负载平衡的方式自动处理）。
 
-这个适配器对于所有节点都适于执行作业的同质化环境是非常有用的，这样的话映射阶段就可以隐式地完成。
+这个适配器对于所有节点都适于执行作业的同质化环境是非常有用的，这样映射阶段就可以隐式地完成。
 
 ### 7.4.4.ComputeJob
 任务触发的所有作业都实现了`ComputeJob`接口，这个接口的`execute()`方法定义了作业的逻辑然后应该返回一个作业的结果。`cancel()`方法定义了当一个作业被丢弃时的逻辑（比如，当任务决定立即进入Reduce阶段或者被取消）。
@@ -462,7 +462,7 @@ private static class CharacterCountTask extends ComputeTaskAdapter<String, Integ
 在下面的例子中，让所有的作业在步骤1移动到步骤2之前是同步的：
 
 > **@ComputeTaskSessionFullSupport注解**
-注意由于性能的原因分布式任务会话默认是禁用的，要启用的话需要在任务类上加注`@ComputeTaskSessionFullSupport`注解。
+注意由于性能的原因分布式任务会话默认是禁用的，可以在任务类上加注`@ComputeTaskSessionFullSupport`注解启用。
 
 ```java
 IgniteCompute compute = ignite.commpute();
@@ -644,7 +644,7 @@ Ignite支持作业的自动故障转移，当一个节点崩溃时，作业会�
 ### 7.7.2.至少一次保证
 只要有一个节点是有效的，作业就不会丢失。
 
-默认的话，Ignite会自动对停止或者故障的节点上的所有作业进行故障转移，如果要定制故障转移的行为，需要实现`ComputeTask.result()`方法。下面的例子显示了当一个作业抛出任何的`IgniteException`(或者它的子类)时会触发故障转移。
+Ignite默认会自动对停止或者故障的节点上的所有作业进行故障转移，如果要定制故障转移的行为，需要实现`ComputeTask.result()`方法。下面的例子显示了当一个作业抛出任何的`IgniteException`(或者它的子类)时会触发故障转移。
 ```java
 public class MyComputeTask extends ComputeTaskSplitAdapter<String, String> {
     ...
@@ -876,7 +876,7 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 注意检查点因为性能的原因默认是禁用的，要启用它需要在任务或者闭包类上加注`@ComputeTaskSessionFullSupport`注解。
 
 ### 7.9.2.主节点故障保护
-检查点的一个重要使用场景是避免“主”节点（启动了原来的执行的节点）的故障。当主节点故障时，Ignite不知道将作业的执行结果发送给谁，这样的话结果就会被丢弃。
+检查点的一个重要使用场景是避免“主”节点（启动了原来的执行的节点）的故障。当主节点故障时，Ignite不知道将作业的执行结果发送给谁，这样结果就会被丢弃。
 
 这种情况下要恢复，可以先将作业的最终执行结果保存为一个检查点然后在”主”节点故障时有一个逻辑来重新运行整个任务。这时任务的重新运行会非常快因为所有的作业都可以从已保存的检查点启动。
 ### 7.9.3.设置检查点
@@ -1096,7 +1096,7 @@ Ignition.start(cfg);
 ```
 ## 7.10.作业调度
 ### 7.10.1.摘要
-Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行阶段被映射到集群节点上的。不过一旦作业到达被分配的节点，就需要有序地执行。默认情况下，作业被提交到一个线程池然后随机地执行，如果要对作业执行顺序进行细粒度控制的话，需要启用`CollisionSpi`。
+Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行阶段被映射到集群节点上的。不过一旦作业到达被分配的节点，就需要有序地执行。默认情况下，作业被提交到一个线程池然后随机地执行，如果要对作业执行顺序进行细粒度控制，需要启用`CollisionSpi`。
 ### 7.10.2.FIFO排序
 `FifoQueueCollisionSpi`可以使一定数量的作业无中断地以先入先出的顺序执行，所有其它的作业都会被放入一个等待列表，直到轮到它。
 
@@ -1104,7 +1104,7 @@ Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行�
 
 **一次一个**
 
-注意如果将`parallelJobsNumber`设置为1，可以保证所有作业同时只会执行一个，这样的话没有任何两个作业并发执行。
+注意如果将`parallelJobsNumber`设置为1，可以保证所有作业同时只会执行一个，这样就没有任何两个作业并发执行。
 
 XML:
 ```xml
@@ -1256,9 +1256,9 @@ xyz.class
  - `lib/`:包含所有库依赖的入口。
  - 编译过的java类必须放在GAR文件的低一层。
 
-没有描述文件GAR文件也可以部署。如果没有描述文件，SPI会扫描包里的所有类然后实例化其中实现`ComputeTask`接口的。那样的话，所有的任务类必须有一个公开的无参数的构造函数。创建任务时为了方便可以使用`ComputeTaskAdapter`适配器。
+当然没有描述文件GAR文件也可以部署。如果没有描述文件，SPI会扫描包里的所有类然后实例化其中实现`ComputeTask`接口的，但是所有的任务类必须有一个公开的无参数的构造函数。不过为了方便，创建任务时也可以使用`ComputeTaskAdapter`适配器。
 
-默认的话，所有下载的GAR文件在`META-INF`文件夹都要有待认证的数字签名，然后只有在签名有效时才会被部署。
+所有下载的GAR文件默认在`META-INF`文件夹都要有待认证的数字签名，然后只有在签名有效时才会被部署。
 
 **示例**
 
@@ -1321,7 +1321,7 @@ XML配置
 
 |属性|描述|可选|默认值|
 |---|---|---|---|
-|`uriList`|SPI扫描新任务的URI列表|是|`file://${IGNITE_HOME}/work/deployment/file`,注意要使用默认文件夹的话,`IGNITE_HOME`必须设置。|
+|`uriList`|SPI扫描新任务的URI列表|是|`file://${IGNITE_HOME}/work/deployment/file`,注意要使用默认文件夹,`IGNITE_HOME`必须设置。|
 |`scanners`|用于部署资源的`UriDeploymentScanner`实现的数组|是|`UriDeploymentFileScanner`和`UriDeploymentHttpScanner`|
 |`temporaryDirectoryPath`|要扫描的GAR文件和目录要拷贝的目标临时目录路径|是|`java.io.tmpdir`系统属性值|
 |`encodeUri`|控制URI中路径部分编码的标志|是|`true`|

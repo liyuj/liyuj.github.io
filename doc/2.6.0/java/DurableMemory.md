@@ -474,7 +474,7 @@ Random-LRU退出模式中，一个数据页面只会保存一份最近访问时�
 
 **退出的触发**
 
-一个数据页面退出算法的触发默认是当内存区的总消耗量达到了90%，如果要调整的话，可以使用`DataRegionConfiguration.setEvictionThreshold(...)`参数。
+一个数据页面退出算法的触发默认是当内存区的总消耗量达到了90%，也可以使用`DataRegionConfiguration.setEvictionThreshold(...)`参数进行调整。
 
 ### 10.4.3.堆内缓存
 如果通过`CacheConfiguration.setOnheapCacheEnabled(...)`开启了堆内缓存，那么固化内存是可以将热数据存储于Java堆中的。开启了堆内缓存之后，就可以使用一个缓存条目退出策略来管理不断增长的堆内缓存了。

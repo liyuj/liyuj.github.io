@@ -211,7 +211,7 @@ cfg.setIncludeEventTypes(EVTS_CACHE);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-默认的话，因为性能原因事件通知是关闭的。
+因为性能原因事件通知默认是关闭的。
 
 ::: tip 注意
 因为每秒生成上千的事件，它会在系统中产生额外的负载，这会导致显著的性能下降。因此强烈建议只有在应用逻辑必需时才启用这些事件。
