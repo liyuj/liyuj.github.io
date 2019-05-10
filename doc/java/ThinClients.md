@@ -5,7 +5,7 @@
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 
 瘦客户端基于二进制客户端协议，这样任何语言都可以接入Ignite集群，目前如下的客户端可用：
- 
+
   - Java瘦客户端
   - .NET瘦客户端
   - C++瘦客户端
@@ -15,7 +15,7 @@
 
 ## 19.2.二进制客户端协议
 ### 19.2.1.二进制客户端协议
-#### 19.2.1.1.摘要
+#### 19.2.1.1.概述
 Ignite的二进制客户端协议使得应用不用启动一个全功能的节点，就可以与已有的集群进行通信。应用使用原始的TCP套接字，就可以接入集群。连接建立之后，就可以使用定义好的格式执行缓存操作。
 
 与集群通信，客户端必须遵守下述的数据格式和通信细节。
@@ -123,9 +123,9 @@ XML：
             <property name="portRange" value="30"/>
         </bean>
     </property>
-    
+
     <!-- Other Ignite Configurations. -->
-    
+
 </bean>
 ```
 Java：
@@ -190,8 +190,8 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 int length = readIntLittleEndian(in);
 int successFlag = readByteLittleEndian(in);
 
-// Since Ignite binary protocol uses little-endian byte order, 
-// we need to implement big-endian to little-endian 
+// Since Ignite binary protocol uses little-endian byte order,
+// we need to implement big-endian to little-endian
 // conversion methods for write and read.
 
 // Write int in little-endian byte order
@@ -788,7 +788,7 @@ int32_t HashCode(const char* val, size_t size)
 {
   if (!val && size == 0)
     return 0;
-  
+
   int32_t hash = 0;
 
   for (size_t i = 0; i < size; ++i)
@@ -865,15 +865,15 @@ static int calculateSchemaId(int fieldIds[])
 {
   if (fieldIds == null || fieldIds.length == 0)
     return 0;
-  
+
   int len = fieldIds.length;
-  
+
   int schemaId = FNV1_OFFSET_BASIS;
-  
+
   for (size_t i = 0; i < len; ++i)
   {
     fieldId = fieldIds[i];
-    
+
     schemaId = schemaId ^ (fieldId & 0xFF);
     schemaId = schemaId * FNV1_PRIME;
     schemaId = schemaId ^ ((fieldId >> 8) & 0xFF);
@@ -897,13 +897,13 @@ int32_t CalculateSchemaId(const int32_t* fieldIds, size_t num)
 {
   if (!fieldIds || num == 0)
     return 0;
-  
+
   int32_t schemaId = FNV1_OFFSET_BASIS;
-  
+
   for (size_t i = 0; i < num; ++i)
   {
     fieldId = fieldIds[i];
-    
+
     schemaId ^= fieldId & 0xFF;
     schemaId *= FNV1_PRIME;
     schemaId ^= (fieldId >> 8) & 0xFF;
@@ -1166,7 +1166,7 @@ readResponseHeader(in);
 
 // Resulting cache value (Data Object)
 int resTypeCode = readByteLittleEndian(in);
-int value = readIntLittleEndian(in); 
+int value = readIntLittleEndian(in);
 ```
 #### 19.2.3.3.OP_CACHE_GET_ALL
 从一个缓存中获得多个键值对。
@@ -1521,8 +1521,8 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 readResponseHeader(in);
 
 // Resulting cache value (Data Object)
-int resTypeCode = readByteLittleEndian(in); 
-int value = readIntLittleEndian(in); 
+int resTypeCode = readByteLittleEndian(in);
+int value = readIntLittleEndian(in);
 ```
 #### 19.2.3.10.OP_CACHE_GET_AND_REMOVE
 删除缓存中给定键对应的数据，然后返回原值，如果缓存中该键不存在，该操作会返回`null`。
@@ -1663,7 +1663,7 @@ readResponseHeader(in);
 
 // Resulting cache value (Data Object)
 int resTypeCode = readByteLittleEndian(in);
-int value = readIntLittleEndian(in); 
+int value = readIntLittleEndian(in);
 ```
 #### 19.2.3.13.OP_CACHE_REPLACE
 替换缓存中已有键的值。
@@ -2245,7 +2245,7 @@ DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 writeRequestHeader(8, OP_QUERY_SQL_CURSOR_GET_PAGE, 1, out);
 
 // Cursor Id (received from Sql query operation)
-writeLongLittleEndian(cursorId, out); 
+writeLongLittleEndian(cursorId, out);
 ```
 响应：
 ```java
@@ -2939,7 +2939,7 @@ int cacheCount = readIntLittleEndian(in);
 // Cache names
 for (int i = 0; i < cacheCount; i++) {
   int type = readByteLittleEndian(in); // type code
-  
+
   int strLen = readIntLittleEndian(in); // length
 
   byte[] buf = new byte[strLen];
@@ -3235,7 +3235,7 @@ readResponseHeader(in);
 ```
 ## 19.3.Java瘦客户端
 ### 19.3.1.Java瘦客户端
-#### 19.3.1.1.摘要
+#### 19.3.1.1.概述
 Java瘦客户端将[二进制客户端协议](#_19-2-二进制客户端协议)暴露给Java开发者。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
@@ -3255,7 +3255,7 @@ Maven：
             <groupId>org.apache.ignite</groupId>
             <artifactId>ignite-core</artifactId>
             <version>${ignite.version}</version>
-        </dependency>      
+        </dependency>
     </dependencies>
 ```
 Gradle：
@@ -3352,7 +3352,7 @@ Windows：
 ```java
 try (IgniteClient client = Ignition.startClient(
   new ClientConfiguration().setAddresses("127.0.0.1:10800")
-)) { 
+)) {
   // Do something here.
 }
 ```
@@ -3582,7 +3582,7 @@ catch (ClientAuthenticationException e) {
 目前，Ignite本身还不支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这个](https://docs.gridgain.com/docs/security-and-audit)。
 ## 19.4.Node.js瘦客户端
 ### 19.4.1.Node.js瘦客户端
-#### 19.4.1.1.摘要
+#### 19.4.1.1.概述
 这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
@@ -4153,7 +4153,7 @@ async function putGetComplexAndBinaryObjects() {
         const cache = await igniteClient.getOrCreateCache('myPersonCache');
         // Complex Object type for JavaScript Person class instances
         const personComplexObjectType = new ComplexObjectType(new Person(0, '', 0)).
-            setFieldType('id', ObjectType.PRIMITIVE_TYPE.INTEGER); 
+            setFieldType('id', ObjectType.PRIMITIVE_TYPE.INTEGER);
         // set cache key and value types
         cache.setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER).
             setValueType(personComplexObjectType);
@@ -4169,7 +4169,7 @@ async function putGetComplexAndBinaryObjects() {
             setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER);
         // get Complex Object from the cache in a binary form, returned value is an instance of BinaryObject class
         let binaryPerson = await binaryCache.get(2);
-        console.log('Binary form of Person:');       
+        console.log('Binary form of Person:');
         for (let fieldName of binaryPerson.getFieldNames()) {
             let fieldValue = await binaryPerson.getField(fieldName);
             console.log(fieldName + ' : ' + fieldValue);
@@ -4214,7 +4214,7 @@ const cfg = new IgniteClientConfiguration(ENDPOINT).
  - 或者为正在使用的Ignite服务端生成新证书；
 
 2.需要以下文件：
- 
+
  - `keystore.jks`，`truststore.jks` - 用于服务端；
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
@@ -4341,7 +4341,7 @@ authTlsExample.start();
 ```
 ## 19.5.Python瘦客户端
 ### 19.5.1.Python瘦客户端
-#### 19.5.1.1.摘要
+#### 19.5.1.1.概述
 Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
@@ -4705,7 +4705,7 @@ my_cache.put('my key', 42, value_hint=ShortObject)
 my_cache.put('a', 1)
 # ‘a’ is a key of type String
 
-my_cache.put('a', 2, key_hint=CharObject) 
+my_cache.put('a', 2, key_hint=CharObject)
 # another key ‘a’ of type CharObject was created
 
 value = my_cache.get('a')
@@ -4894,7 +4894,7 @@ result = client.sql(MOST_POPULATED_QUERY)
 print('Most 10 populated cities:')
 for row in result:
     print(row)
-    
+
 # Most 10 populated cities:
 # ['Mumbai (Bombay)', 10500000]
 # ['Shanghai', 9696300]
@@ -5343,7 +5343,7 @@ client = Client(username='ignite', password='ignite', use_ssl=False)
 注意，Ignite瘦客户端无法通过二进制协议获得集群的身份验证设置。服务端会简单地忽略意外的凭据。在相反的情况下，用户会收到以下消息：`pyignite.exceptions.HandshakeError: Handshake error: Unauthenticated sessions are prohibited. Expected protocol version: 0.0.0`。
 ## 19.6.PHP瘦客户端
 ### 19.6.1.PHP瘦客户端
-#### 19.6.1.1.摘要
+#### 19.6.1.1.概述
 这个瘦客户端使得PHP应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
@@ -5657,7 +5657,7 @@ function performCacheKeyValueOperations(): void
         $client->connect(new ClientConfiguration('127.0.0.1:10800'));
         $cache = $client->getOrCreateCache('myCache')->
             setKeyType(ObjectType::INTEGER);
-        
+
         // put and get value
         $cache->put(1, 'abc');
         $value = $cache->get(1);
@@ -5700,13 +5700,13 @@ function performScanQuery(): void
         $client->connect(new ClientConfiguration('127.0.0.1:10800'));
         $cache = $client->getOrCreateCache('myCache')->
             setKeyType(ObjectType::INTEGER);
-        
+
         // put multiple values using putAll()
         $cache->putAll([
             new CacheEntry(1, 'value1'),
-            new CacheEntry(2, 'value2'), 
+            new CacheEntry(2, 'value2'),
             new CacheEntry(3, 'value3')]);
-        
+
         // create and configure scan query
         $scanQuery = (new ScanQuery())->
             setPageSize(1);
@@ -5716,7 +5716,7 @@ function performScanQuery(): void
         foreach ($cursor->getAll() as $cacheEntry) {
             echo($cacheEntry->getValue() . PHP_EOL);
         }
-        
+
         $client->destroyCache('myCache');
     } catch (ClientException $e) {
         echo($e->getMessage());
@@ -5859,7 +5859,7 @@ class Person
     public $id;
     public $name;
     public $salary;
-            
+
     public function __construct(int $id = 0, string $name = null, float $salary = 0)
     {
         $this->id = $id;
@@ -5877,7 +5877,7 @@ function putGetComplexAndBinaryObjects(): void
             setKeyType(ObjectType::INTEGER);
         // Complex Object type for PHP Person class instances
         $personComplexObjectType = (new ComplexObjectType())->
-            setFieldType('id', ObjectType::INTEGER); 
+            setFieldType('id', ObjectType::INTEGER);
         // set cache key and value types
         $cache->setKeyType(ObjectType::INTEGER)->
             setValueType($personComplexObjectType);
@@ -5936,7 +5936,7 @@ $config = (new ClientConfiguration(AuthTlsExample::ENDPOINT))->
  - 或者为正在使用的Ignite服务端生成新证书；
 
 2.需要以下文件：
- 
+
  - `keystore.jks`，`truststore.jks` - 用于服务端；
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
@@ -5970,12 +5970,12 @@ class AuthTlsExample
                 'local_cert' => AuthTlsExample::TLS_CLIENT_CERT_FILE_NAME,
                 'cafile' => AuthTlsExample::TLS_CA_FILE_NAME
             ];
-            
+
             $config = (new ClientConfiguration(AuthTlsExample::ENDPOINT))->
                 setUserName(AuthTlsExample::USER_NAME)->
                 setPassword(AuthTlsExample::PASSWORD)->
                 setTLSOptions($tlsOptions);
-                    
+
             $client->connect($config);
             echo("Client connected successfully (with TLS and authentication enabled)" . PHP_EOL);
             $cache = $client->getOrCreateCache(AuthTlsExample::CACHE_NAME)->

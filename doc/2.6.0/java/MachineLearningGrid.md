@@ -1,12 +1,12 @@
 # 15.机器学习网格
 ## 15.1.机器学习网格
-### 15.1.1.摘要
+### 15.1.1.概述
 Ignite的机器学习（ML）是一组简单的、可扩展以及高效的工具，在不需要成本高昂的数据转换的前提下，就可以构建可预测的机器学习模型。
 
-将机器和深度学习加入Ignite的原理是很简单的，当前，如果要想让机器学习成为主流，数据科学家要解决两个主要的问题： 
+将机器和深度学习加入Ignite的原理是很简单的，当前，如果要想让机器学习成为主流，数据科学家要解决两个主要的问题：
 
  - 首先，模型是在不同的系统中训练和部署（训练结束之后）的，数据科学家需要等待ETL或者其它的数据传输过程，来将数据移至比如Apache Mahout或者Apache Spark这样的系统进行训练，然后还要等待这个过程结束并且将模型部署到生产环境。在系统间移动TB级的数据可能花费数小时的时间，此外，训练部分通常发生在旧的数据集上；
- - 第二个问题和扩展性有关。机器学习和深度学习需要处理的数据量不断增长，已经无法放在单一的服务器上。这促使数据科学家要么提出更复杂的解决方案，要么切换到比如Spark或者TensorFlow这样的分布式计算平台上。但是这些平台通常只能解决模型训练的一部分问题，这给开发者之后的生产部署带来了很多的困难。 
+ - 第二个问题和扩展性有关。机器学习和深度学习需要处理的数据量不断增长，已经无法放在单一的服务器上。这促使数据科学家要么提出更复杂的解决方案，要么切换到比如Spark或者TensorFlow这样的分布式计算平台上。但是这些平台通常只能解决模型训练的一部分问题，这给开发者之后的生产部署带来了很多的困难。
 ![](https://files.readme.io/6def194-machine_learning-2.png)
 
 **无ETL和大规模可扩展性**
@@ -91,18 +91,18 @@ mvn clean package -DskipTests
 ```
 如果必要，可以参考项目根目录的`DEVNOTES.txt`文件以及`ignite-ml`模块的`README`文件，以了解更多的信息。
 ## 15.2.预处理
-### 15.2.1.摘要
+### 15.2.1.概述
 预处理是将存储于Ignite中的原始数据转换为特征向量，以便于机器学习算法的进一步使用，这个过程可以被视为一个转换链。正常流程是从Ignite数据中提取特征，对特征进行转换然后进行归一化，相关的转换代码如下：
 ```java
 // Define feature extractor.
 IgniteBiFunction<Integer, double[], double[]> extractor = (k, v) -> v;
 
 // Define feature transformer on top of extractor.
-IgniteBiFunction<Integer, double[], double[]> extractorTransformer = 
+IgniteBiFunction<Integer, double[], double[]> extractorTransformer =
     extractor.andThen(v -> transform(v));
 
 // Define feature normalizer on top of transformer and extractor.
-IgniteBiFunction<Integer, double[], double[]> extractorTransformerNormalizer = 
+IgniteBiFunction<Integer, double[], double[]> extractorTransformerNormalizer =
     normalizationTrainer.fit(ignite, upstreamCache, transformer);
 ```
 ### 15.2.2.归一化预处理器
@@ -113,7 +113,7 @@ IgniteBiFunction<Integer, double[], double[]> extractorTransformerNormalizer =
 基于缓存的数据集：
 ```java
 // Create normalization trainer.
-NormalizationTrainer<Integer, double[]> normalizationTrainer = 
+NormalizationTrainer<Integer, double[]> normalizationTrainer =
     new NormalizationTrainer<>();
 
 // Train normalization preprocessor.
@@ -135,13 +135,13 @@ LinearRegressionModel mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(preprocessor.apply(coordinates));
 ```
 本地数据集：
 ```java
 // Create normalization trainer.
-NormalizationTrainer<Integer, double[]> normalizationTrainer = 
+NormalizationTrainer<Integer, double[]> normalizationTrainer =
     new NormalizationTrainer<>();
 
 // Train normalization preprocessor.
@@ -163,13 +163,13 @@ LinearRegressionModel mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
 ### 15.2.3.示例
 要了解归一化预处理器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/NormalizationExample.java)，该实例也会随着每个Ignite发行版进行发布。
 ## 15.3.分区化的数据集
-### 15.3.1.摘要
+### 15.3.1.概述
 分区化的数据集是在Ignite的计算和存储能力之上构建的抽象层，可以在遵循无ETL和容错的原则下，进行算法运算。
 
 分区化的数据集的主要原理是Ignite的计算网格实现的经典MapReduce范式。
@@ -232,7 +232,7 @@ dataset.close();
 ### 15.3.3.示例
 要了解分区化的数据集在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/dataset/AlgorithmSpecificDatasetExample.java)，该实例也会随着每个Ignite发行版进行发布。
 ## 15.4.线性回归
-### 15.4.1.摘要
+### 15.4.1.概述
 Ignite支持普通最小二乘线性回归算法，这是最基本也是最强大的机器学习算法之一，本文会说明该算法的工作方式以及Ignite是如何实现的。
 
 线性回归算法的基本原理是，假定因变量y和自变量x有如下的关系：
@@ -269,7 +269,7 @@ LinearRegressionModel mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
 本地数据集：
@@ -285,7 +285,7 @@ LinearRegressionModel mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
 
@@ -301,7 +301,7 @@ LinearRegressionSGDTrainer<?> trainer = new LinearRegressionSGDTrainer<>(
         new RPropUpdateCalculator(),
         RPropParameterUpdate::sumLocal,
         RPropParameterUpdate::avg
-    ), 
+    ),
     100000,  // Max iterations.
     10,      // Batch size.
     100,     // Local iterations.
@@ -316,7 +316,7 @@ LinearRegressionModel mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
 本地数据集：
@@ -327,7 +327,7 @@ LinearRegressionSGDTrainer<?> trainer = new LinearRegressionSGDTrainer<>(
         new RPropUpdateCalculator(),
         RPropParameterUpdate::sumLocal,
         RPropParameterUpdate::avg
-    ), 
+    ),
     100000,  // Max iterations.
     10,      // Batch size.
     100,     // Local iterations.
@@ -342,7 +342,7 @@ LinearRegressionModel mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
 ### 15.4.4.示例
@@ -393,7 +393,7 @@ KMeansModel knnMdl = trainer.fit(
 
 训练数据集是鸢尾花数据集的一个子集（具有标签1和标签2，它们是线性可分离的两类数据集），可以从[UCL机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
 ## 15.6.遗传算法
-### 15.6.1.摘要
+### 15.6.1.概述
 Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过模拟生物进化过程来解决优化问题的一种方法。 遗传算法非常适合于以最优的方式检索大量复杂的数据集，在现实世界中，遗传算法的应用包括：汽车设计、计算机游戏、机器人、投资、交通和运输等等。
 
 所有的遗传操作，比如适应度计算、交叉和变异，都会被建模为分布式的ComputeTask。此外，这些ComputeTask会通过Ignite的类同并置，将ComputeJob分发到染色体实际存储的节点。
@@ -426,7 +426,7 @@ for (int i = 0; i < chars.length; i++) {
     Gene gene = new Gene(new Character(chars[i]));
     genePool.add(gene);
 }
-    
+
 gaConfig.setGenePool(genePool);
 ```
 下一步，需要定义染色体，这是遗传算法的核心，因为它要对最优解进行建模。染色体由`Gene`构成，它表示了特定解的离散部分。
@@ -459,7 +459,7 @@ public class HelloWorldFitnessFunction implements IFitnessFunction {
                 matches = matches + 1;
             }
         }
-        
+
         return matches;
     }
 }
@@ -479,7 +479,7 @@ public class HelloWorldTerminateCriteria implements ITerminateCriteria {
 
     private IgniteLogger igniteLogger = null;
     private Ignite ignite = null;
-    
+
     public HelloWorldTerminateCriteria(Ignite ignite) {
         this.ignite = ignite;
         this.igniteLogger = ignite.log();
@@ -498,20 +498,20 @@ public class HelloWorldTerminateCriteria implements ITerminateCriteria {
         if (!(fittestChromosome.getFitnessScore() > 10)) {
             isTerminate = false;
         }
-        
+
         return isTerminate;
     }
-    
-    
+
+
     /**
      * Helper to print Phrase
-     * 
+     *
      * @param genes
      */
     private void printPhrase(List<Gene> genes) {
-        
+
         StringBuffer sbPhrase = new StringBuffer();
-        
+
         for (Gene gene : genes) {
             sbPhrase.append(((Character) gene.getValue()).toString());
         }
@@ -558,7 +558,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 [19:04:17,307][INFO][main][] Chromosome: Chromosome [fitnessScore=11.0, id=319, genes=[8, 5, 12, 12, 15, 27, 23, 15, 18, 12, 4]]
 [19:04:17,310][INFO][main][] HELLO WORLD
 [19:04:17,311][INFO][main][] Avg Chromosome Fitness: 5.252
-[19:04:17,311][INFO][main][] 
+[19:04:17,311][INFO][main][]
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 53.883 sec
 ```
 ### 15.6.4.Apache Zeppelin集成
@@ -662,7 +662,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 **选择**：是为下一代选择候选解（染色体）的过程。
 
 ## 15.7.多层感知
-### 15.7.1.摘要
+### 15.7.1.概述
 多层感知（MLP）是神经网络的基本形式，它由一个输入层和0或多个转换层组成，每个转换层都通过如下的方程依赖于前一个转换层：
 ![](https://files.readme.io/60458a8-333.gif)
 在上面的方程中，点运算符是两个向量的点积，由σ表示的函数称为激活函数，`w`表示的向量称为权重，`b`表示的向量成为偏差。每个转换层都和权重、激活以及可选的偏差有关，MLP中中所有权重和偏差的集合，就被称为MLP的参数集。
@@ -670,7 +670,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 神经网络的模型由`MultilayerPerceptron`类表示，它可以对给定的特征向量通过如下方式进行预测：
 ```java
 MultilayerPerceptron mlp = ...
-Matrix prediction = mlp.apply(coordinates); 
+Matrix prediction = mlp.apply(coordinates);
 ```
 模型是完全独立的对象，训练后可以保存、序列化和恢复。
 ### 15.7.3.训练法
@@ -710,8 +710,8 @@ MultilayerPerceptron mlp = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
-Matrix prediction = mlp.apply(coordinates); 
+// Make a prediction.
+Matrix prediction = mlp.apply(coordinates);
 ```
 本地数据集：
 ```java
@@ -743,13 +743,13 @@ MultilayerPerceptron mlp = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
-Matrix prediction = mlp.apply(coordinates); 
+// Make a prediction.
+Matrix prediction = mlp.apply(coordinates);
 ```
 ### 15.7.4.示例
 要了解多层感知在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/nn/MLPTrainerExample.java)，该实例也会随着每个Ignite发行版进行发布。
 ## 15.8.决策树
-### 15.8.1.摘要
+### 15.8.1.概述
 决策树是监督学习中一个简单而强大的模型。其主要思想是将特征空间分割成区域，每个区域中的值变化不大。一个区域中的值变化的度量被称为区域的纯度。
 
 Ignite对于行数据存储，提供了一种优化算法，具体可以看[15.3.分区化的数据集](#_15-3-分区化的数据集)。
@@ -781,7 +781,7 @@ double prediction = mdl.apply(observation);
 ```java
 // Create decision tree classification trainer.
 DecisionTreeClassificationTrainer trainer = new DecisionTreeClassificationTrainer(
-    4, // Max deep. 
+    4, // Max deep.
     0  // Min impurity decrease.
 );
 
@@ -793,14 +793,14 @@ DecisionTreeNode mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
 本地数据集：
 ```java
 // Create decision tree classification trainer.
 DecisionTreeClassificationTrainer trainer = new DecisionTreeClassificationTrainer(
-    4, // Max deep. 
+    4, // Max deep.
     0  // Min impurity decrease.
 );
 
@@ -812,7 +812,7 @@ DecisionTreeNode mdl = trainer.fit(
     (k, pnt) -> pnt.label
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
 **回归**
@@ -823,7 +823,7 @@ double prediction = mdl.apply(coordinates);
 ```java
 // Create decision tree classification trainer.
 DecisionTreeRegressionTrainer trainer = new DecisionTreeRegressionTrainer(
-    4, // Max deep. 
+    4, // Max deep.
     0  // Min impurity decrease.
 );
 
@@ -835,14 +835,14 @@ DecisionTreeNode mdl = trainer.fit(
     (k, pnt) -> pnt.y
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(x);
 ```
 本地数据集：
 ```java
 // Create decision tree classification trainer.
 DecisionTreeRegressionTrainer trainer = new DecisionTreeRegressionTrainer(
-    4, // Max deep. 
+    4, // Max deep.
     0  // Min impurity decrease.
 );
 
@@ -854,7 +854,7 @@ DecisionTreeNode mdl = trainer.fit(
     (k, pnt) -> pnt.y
 );
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = mdl.apply(x);
 ```
 ### 15.8.4.示例
@@ -890,7 +890,7 @@ KNNClassificationModel knnMdl = trainer.fit(
   .withDistanceMeasure(new EuclideanDistance())
   .withStrategy(KNNStrategy.SIMPLE);
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = knnMdl.apply(vectorizedData);
 ```
 ### 15.9.2.示例
@@ -926,7 +926,7 @@ KNNRegressionModel knnMdl = (KNNRegressionModel) trainer.fit(
   .withDistanceMeasure(new ManhattanDistance())
   .withStrategy(KNNStrategy.WEIGHTED);
 
-// Make a prediction. 
+// Make a prediction.
 double prediction = knnMdl.apply(vectorizedData);
 ```
 ### 15.10.2.示例

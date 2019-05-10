@@ -1,6 +1,6 @@
 # 9.消息和事件
 ## 9.1.基于主题的消息
-### 9.1.1.摘要
+### 9.1.1.概述
 Ignite分布式消息可以在集群内的所有节点间进行基于主题的通信，带有特定消息主题的消息可以分布到订阅了该主题的所有节点或者节点的子集。
 
 Ignite消息基于发布-订阅范式，发布者和订阅者通过一个通用的主题连接在一起。当一个节点针对主题T发布了一个消息A，它会被分布到所有订阅了主题T的节点。
@@ -46,16 +46,16 @@ listen方法可以监听/订阅消息。当这些方法被调用时，带有指�
 Java8：有序消息：
 ```java
 Ignite ignite = Ignition.ignite();
- 
+
 IgniteMessaging rmtMsg = ignite.message(ignite.cluster().forRemotes());
- 
+
 // Add listener for unordered messages on all remote nodes.
 rmtMsg.remoteListen("MyOrderedTopic", (nodeId, msg) -> {
     System.out.println("Received ordered message [msg=" + msg + ", from=" + nodeId + ']');
- 
+
     return true; // Return true to continue listening.
 });
- 
+
 // Send ordered messages to remote nodes.
 for (int i = 0; i < 10; i++)
     rmtMsg.sendOrdered("MyOrderedTopic", Integer.toString(i));
@@ -63,16 +63,16 @@ for (int i = 0; i < 10; i++)
 Java8：无序消息：
 ```java
 Ignite ignite = Ignition.ignite();
- 
+
 IgniteMessaging rmtMsg = ignite.message(ignite.cluster().forRemotes());
- 
+
 // Add listener for unordered messages on all remote nodes.
 rmtMsg.remoteListen("MyUnOrderedTopic", (nodeId, msg) -> {
     System.out.println("Received unordered message [msg=" + msg + ", from=" + nodeId + ']');
- 
+
     return true; // Return true to continue listening.
 });
- 
+
 // Send unordered messages to remote nodes.
 for (int i = 0; i < 10; i++)
     rmtMsg.send("MyUnOrderedTopic", Integer.toString(i));
@@ -101,7 +101,7 @@ for (int i = 0; i < 10; i++)
     msg.sendOrdered("myOrderedTopic", Integer.toString(i), 0);
 ```
 ## 9.2.本地和远程事件
-### 9.2.1.摘要
+### 9.2.1.概述
 Ignite分布式事件功能使得在分布式集群环境下发生各种各样事件时应用可以接收到通知。可以自动获得比如任务执行、发生在本地或者远程节点上的读写或者查询操作的通知。
 ### 9.2.2.IgniteEvents API
 分布式事件功能是通过`IgniteEvents`接口提供的，可以通过如下方式从Ignite中获得`IgniteEvents`的实例：
@@ -128,7 +128,7 @@ Ignite ignite = Ignition.ignite();
 
 // Local listener that listenes to local events.
 IgnitePredicate<CacheEvent> locLsnr = evt -> {
-  System.out.println("Received event [evt=" + evt.name() + ", key=" + evt.key() + 
+  System.out.println("Received event [evt=" + evt.name() + ", key=" + evt.key() +
     ", oldVal=" + evt.oldValue() + ", newVal=" + evt.newValue());
 
   return true; // Continue listening.
@@ -193,7 +193,7 @@ for (int i = 0; i < 20; i++)
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ... 
+    ...
     <!-- Enable cache events. -->
     <property name="includeEventTypes">
         <util:constant static-field="org.apache.ignite.events.EventType.EVTS_CACHE"/>
@@ -225,28 +225,28 @@ Ignite会自动地对集群内发生的，作为缓存事件的结果生成的�
 Ignite中，事件通知可以被分组然后分批地或者定时地发送，下面是一个如何实现这一点的示例：
 ```java
 Ignite ignite = Ignition.ignite();
- 
+
 // Get an instance of named cache.
 final IgniteCache<Integer, String> cache = ignite.jcache("cacheName");
- 
+
 // Sample remote filter which only accepts events for keys
 // that are greater than or equal to 10.
 IgnitePredicate<CacheEvent> rmtLsnr = new IgnitePredicate<CacheEvent>() {
     @Override public boolean apply(CacheEvent evt) {
         System.out.println("Cache event: " + evt);
- 
+
         int key = evt.key();
- 
+
         return key >= 10;
     }
 };
- 
-// Subscribe to cache events occuring on all nodes 
-// that have the specified cache running. 
+
+// Subscribe to cache events occuring on all nodes
+// that have the specified cache running.
 // Send notifications in batches of 10.
 ignite.events(ignite.cluster().forCacheNodes("cacheName")).remoteListen(
     10 /*batch size*/, 0 /*time intervals*/, false, null, rmtLsnr, EVTS_CACHE);
- 
+
 // Generate cache events.
 for (int i = 0; i < 20; i++)
     cache.put(i, Integer.toString(i));

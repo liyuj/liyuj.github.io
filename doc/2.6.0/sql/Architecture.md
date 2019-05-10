@@ -1,6 +1,6 @@
 # 3.架构
 ## 3.1.IgniteSQL的工作方式
-### 3.1.1.摘要
+### 3.1.1.概述
 Ignite的SQL引擎是与[H2数据库](http://www.h2database.com/)紧紧绑定在一起的，简而言之，H2是一个Java写的，遵循一组开源许可证，基于内存和磁盘的速度很快的数据库。
 当`ignite-indexing`模块加入节点的类路径之后，一个嵌入式的H2数据库实例就会作为Ignite节点进程的一部分被启动。如果节点是在终端中通过`ignite.sh{bat}`脚本启动的，那么该模块会自动地加入类路径，因为它已经被放入了`{apache_ignite}\libs\`目录中。
 如果使用的是maven，那么需要将如下的依赖加入`pom.xml`文件：
@@ -74,7 +74,7 @@ SELECT _key, _val FROM Person WHERE id IN
 目前DML操作不支持`EXPLAIN`。
 一个方法就是执行`UPDATE`或`DELETE`语句自动生成的`SELECT`语句或者DML语句使用的`INSERT`或`MERGE`语句的执行计划，这样会提供一个要执行的DML操作所使用的索引情况。
 ## 3.2.分布式关联
-### 3.2.1.摘要
+### 3.2.1.概述
 Ignite支持并置和非并置的分布式SQL关联，此外，如果数据位于不同的缓存，Ignite还可以进行跨缓存的关联。
 ```sql
 SELECT from Person as p, Organization as org
@@ -96,7 +96,7 @@ Ignite设计和支持的**非并置**分布式关联就是针对的这样的场�
 可以查看JDBC, ODBC, Java, .NET, C++的相关文档来了解详细的信息。
 以Jdbc为例，它需要在连接的URL连接串中添加`distributedJoins=true`参数。
 
-正如**图2**所示，有一个潜在的数据移动步骤（D(Q)）。潜在的单播请求只会在关联在主键（缓存键）或者类同键上完成之后才会发送，因为执行关联的节点知道缺失数据的位置，其它所有的情况都会发送广播请求。 
+正如**图2**所示，有一个潜在的数据移动步骤（D(Q)）。潜在的单播请求只会在关联在主键（缓存键）或者类同键上完成之后才会发送，因为执行关联的节点知道缺失数据的位置，其它所有的情况都会发送广播请求。
 ![](https://files.readme.io/95f09db-Non_collocated_sql_queries.png)
 
 >因为性能的原因，不管是广播还是单播请求，都是批量处理的，这个批量的大小是由`page size`参数管理的。
@@ -115,7 +115,7 @@ Ignite设计和支持的**非并置**分布式关联就是针对的这样的场�
 
 如果仍然希望在`分区`缓存上执行本地查询，那么需要考虑使用[这里](/doc/2.6.0/java/ComputeGrid.md#_7-6-2-基于类同的call方法和run方法)描述的类同计算技术。
 ## 3.4.空间支持
-### 3.4.1.摘要
+### 3.4.1.概述
 Ignite除了支持标准ANSI-99标准的SQL查询，支持基本数据类型或者特定/自定义对象类型之外，还可以查询和索引几何数据类型，比如点、线以及包括这些几何形状空间关系的多边形。
 
 空间信息的查询功能，以及对应的可用的函数和操作符，是在[SQL的简单特性规范](http://www.opengeospatial.org/docs/is/)中定义的，目前，Ignite通过[JTS Topology Suite](http://tsusiatsoftware.net/jts/main.html)的使用，支持规范的交叉操作。

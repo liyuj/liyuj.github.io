@@ -1,8 +1,8 @@
 # 7.流计算集成
-## 7.1.摘要
+## 7.1.概述
 Ignite可以和主要的流处理技术和框架进行集成，比如Kafka、Camel、Storm或者JMS，为基于Ignite的架构带来了更强大的功能。
 ## 7.2.Kafka流处理器
-### 7.2.1.摘要
+### 7.2.1.概述
 Apache Ignite的Kafka流处理器模块提供了从Kafka到Ignite缓存的流处理功能。
 
 下面两个方法中的任何一个都可以用于获得这样的流处理功能：
@@ -125,22 +125,22 @@ KafkaStreamer<String, String, String> kafkaStreamer = new KafkaStreamer<>();
 try (IgniteDataStreamer<String, String> stmr = ignite.dataStreamer(null)) {
     // allow overwriting cache data
     stmr.allowOverwrite(true);
-    
+
     kafkaStreamer.setIgnite(ignite);
     kafkaStreamer.setStreamer(stmr);
-    
+
     // set the topic
     kafkaStreamer.setTopic(someKafkaTopic);
 
     // set the number of threads to process Kafka streams
     kafkaStreamer.setThreads(4);
-    
+
     // set Kafka consumer configurations
     kafkaStreamer.setConsumerConfig(kafkaConsumerConfig);
-    
+
     // set extractor
     kafkaStreamer.setSingleTupleExtractor(strExtractor);
-    
+
     kafkaStreamer.start();
 }
 finally {
@@ -149,7 +149,7 @@ finally {
 ```
 要了解有关Kafka消费者属性的详细信息，可以参照[Kafka文档](http://kafka.apache.org/documentation.html)。
 ## 7.3.Camel流处理器
-### 7.3.1.摘要
+### 7.3.1.概述
 本章节聚焦于[Apache Camel](http://camel.apache.org/)流处理器，它也可以被视为一个*统一的流处理器*，因为它可以从Camel支持的任何技术或者协议中消费消息然后注入一个Ignite缓存。
 
 > **Apache Camel是什么？**
@@ -184,8 +184,8 @@ Ignite ignite = Ignition.start();
 IgniteDataStreamer<String, String> pipe = ignite.dataStreamer("mycache");
 
 // Create a Camel streamer and connect it.
-CamelStreamer<String, String> streamer = new CamelStreamer<>();  
-streamer.setIgnite(ignite);  
+CamelStreamer<String, String> streamer = new CamelStreamer<>();
+streamer.setIgnite(ignite);
 streamer.setStreamer(pipe);
 
 // This endpoint starts a Jetty server and consumes from all network interfaces on port 8080 and context path /ignite.
@@ -194,7 +194,7 @@ streamer.setEndpointUri("jetty:http://0.0.0.0:8080/ignite?httpMethodRestrict=POS
 // This is the tuple extractor. We'll assume each message contains only one tuple.
 // If your message contains multiple tuples, use a StreamMultipleTupleExtractor.
 // The Tuple Extractor receives the Camel Exchange and returns a Map.Entry<?,?> with the key and value.
-streamer.setSingleTupleExtractor(new StreamSingleTupleExtractor<Exchange, String, String>() {  
+streamer.setSingleTupleExtractor(new StreamSingleTupleExtractor<Exchange, String, String>() {
     @Override public Map.Entry<String, String> extract(Exchange exchange) {
         String stationId = exchange.getIn().getHeader("X-StationId", String.class);
         String temperature = exchange.getIn().getBody(String.class);
@@ -213,8 +213,8 @@ streamer.start();
 //  (2) transform incoming JSON into a Java object with Jackson.
 //  (3) uses JSR 303 Bean Validation to validate the object.
 //  (4) dispatches to the direct:ignite.ingest endpoint, where the streamer is consuming from.
-CamelContext context = new DefaultCamelContext();  
-context.addRoutes(new RouteBuilder() {  
+CamelContext context = new DefaultCamelContext();
+context.addRoutes(new RouteBuilder() {
     @Override
     public void configure() throws Exception {
         from("jetty:http://0.0.0.0:8080/ignite?httpMethodRestrict=POST")
@@ -230,7 +230,7 @@ streamer.setEndpointUri("direct:ignite.ingest");
 ### 7.3.4.设置一个响应
 响应默认只是简单地将一个原来的请求的副本反馈给调用者（如果是一个同步端点）。如果希望定制这个响应，需要设置一个Camel的`Processor`作为一个`responseProcessor`。
 ```java
-streamer.setResponseProcessor(new Processor() {  
+streamer.setResponseProcessor(new Processor() {
     @Override public void process(Exchange exchange) throws Exception {
         exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
         exchange.getOut().setBody("OK");
@@ -260,7 +260,7 @@ Camel可以运行在各种环境中，同时也被Ignite支持：独立的Java�
 
 要了解更多的信息，可以参照[Camel是什么？](https://camel.apache.org/what-is-camel.html)。
 ## 7.4.JMS流处理器
-### 7.4.1.摘要
+### 7.4.1.概述
 Ignite提供了一个JMS数据流处理器，它会从JMS代理中消费消息，将消息转换为缓存数据格式然后插入Ignite缓存。
 ### 7.4.2.特性
 这个数据流处理器支持如下的特性：
@@ -348,7 +348,7 @@ dataStreamer.close();
 </dependency>
 ```
 ## 7.5.MQTT流处理器
-### 7.5.1.摘要
+### 7.5.1.概述
 该流处理器使用[Eclipse Paho](https://eclipse.org/paho/)作为MQTT客户端，从一个MQTT主题消费消息，然后将键值对提供给`IgniteDataStreamer`实例。
 
 必须提供一个流的元组提取器(不管是单条目的，还是多条目的提取器)来处理传入的消息，然后提取元组以插入缓存。
@@ -371,7 +371,7 @@ Ignite ignite = Ignition.start();
 // Get a data streamer reference.
 IgniteDataStreamer<Integer, String> dataStreamer = grid().dataStreamer("mycache");
 
-// Create an MQTT data streamer  
+// Create an MQTT data streamer
 MqttStreamer<Integer, String> streamer = new MqttStreamer<>();
 streamer.setIgnite(ignite);
 streamer.setStreamer(dataStreamer);
@@ -429,7 +429,7 @@ storm jar ignite-storm-streaming-jar-with-dependencies.jar my.company.ignite.MyS
 Apache Ignite Flink Sink模块是一个流处理连接器，它可以将Flink数据注入Ignite缓存，该Sink会将输入的数据注入Ignite缓存。每当创建一个Sink，都需要提供一个Ignite缓存名和Ignite网格配置文件。
 
 通过如下步骤，可以开启到Ignite缓存的数据注入：
- 
+
  - 在Maven工程中导入Ignite的Flink接收器模块。如果使用Maven来进行项目的依赖管理，可以像下面这样添加Flink模块依赖（将`${ignite.version}`替换为实际使用的版本）；
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -512,7 +512,7 @@ streamer.start();
 ```
 可以参考[Twitter流API文档](https://dev.twitter.com/streaming/overview)来了解各种参数的详细信息。
 ## 7.9.Flume流处理器
-### 7.9.1.摘要
+### 7.9.1.概述
 Apache Flume是一个高效的收集、汇总以及移动大量的日志数据的分布式的、高可靠和高可用的服务（[https://github.com/apache/flume](https://github.com/apache/flume)）。
 
 IgniteSink是一个Flume接收器，它会从相对应的Flume通道中提取事件然后将数据注入Ignite缓存，目前支持Flume的1.6.0版本。
@@ -581,7 +581,7 @@ Ignite的ZeroMQ流处理器模块具有将[ZeroMQ](http://zeromq.org/)数据流�
 ```java
 try (IgniteDataStreamer<Integer, String> dataStreamer =
      grid().dataStreamer("myCacheName")) {
-    
+
     dataStreamer.allowOverwrite(true);
     dataStreamer.autoFlushFrequency(1);
 

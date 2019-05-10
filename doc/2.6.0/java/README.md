@@ -197,7 +197,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1/");
 try (Statement stmt = conn.createStatement()) {
 
     // Create table based on REPLICATED template.
-    stmt.executeUpdate("CREATE TABLE City (" + 
+    stmt.executeUpdate("CREATE TABLE City (" +
     " id LONG PRIMARY KEY, name VARCHAR) " +
     " WITH \"template=replicated\"");
 
@@ -206,7 +206,7 @@ try (Statement stmt = conn.createStatement()) {
     " id LONG, name VARCHAR, city_id LONG, " +
     " PRIMARY KEY (id, city_id)) " +
     " WITH \"backups=1, affinityKey=city_id\"");
-  
+
     // Create an index on the City table.
     stmt.executeUpdate("CREATE INDEX idx_city_name ON City (name)");
 
@@ -485,7 +485,7 @@ try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
 
   // Add up all the results.
   int sum = res.stream().mapToInt(Integer::intValue).sum();
- 
+
 	System.out.println("Total number of characters is '" + sum + "'.");
 }
 ```
@@ -493,7 +493,7 @@ Java7:
 ```java
 try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
     Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
- 
+
     // Iterate through all the words in the sentence and create Callable jobs.
     for (final String word : "Count characters using callable".split(" ")) {
         calls.add(new IgniteCallable<Integer>() {
@@ -502,16 +502,16 @@ try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
             }
         });
     }
- 
+
     // Execute collection of Callables on the grid.
     Collection<Integer> res = ignite.compute().call(calls);
- 
+
     int sum = 0;
- 
+
     // Add up individual word lengths received from remote nodes.
     for (int len : res)
         sum += len;
- 
+
     System.out.println(">>> Total number of characters in the phrase is '" + sum + "'.");
 }
 ```
@@ -531,30 +531,30 @@ long cityId = 2; // Id for Denver
 
 // Sending the logic to a cluster node that stores Denver and its residents.
 ignite.compute().affinityRun("SQL_PUBLIC_CITY", cityId, new IgniteRunnable() {
-  
+
   @IgniteInstanceResource
   Ignite ignite;
-  
+
   @Override
   public void run() {
     // Getting an access to Persons cache.
     IgniteCache<BinaryObject, BinaryObject> people = ignite.cache(
         "Person").withKeepBinary();
- 
-    ScanQuery<BinaryObject, BinaryObject> query = 
+
+    ScanQuery<BinaryObject, BinaryObject> query =
         new ScanQuery <BinaryObject, BinaryObject>();
- 
+
     try (QueryCursor<Cache.Entry<BinaryObject, BinaryObject>> cursor =
            people.query(query)) {
-      
+
       // Iteration over the local cluster node data using the scan query.
       for (Cache.Entry<BinaryObject, BinaryObject> entry : cursor) {
         BinaryObject personKey = entry.getKey();
- 
+
         // Picking Denver residents only only.
         if (personKey.<Long>field("CITY_ID") == cityId) {
             person = entry.getValue();
- 
+
             // Sending the warning message to the person.
         }
       }
@@ -574,11 +574,11 @@ Put和Get：
 ```java
 try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
     IgniteCache<Integer, String> cache = ignite.getOrCreateCache("myCacheName");
- 
+
     // Store keys in cache (values will end up on different cache nodes).
     for (int i = 0; i < 10; i++)
         cache.put(i, Integer.toString(i));
- 
+
     for (int i = 0; i < 10; i++)
         System.out.println("Got [key=" + i + ", val=" + cache.get(i) + ']');
 }
@@ -587,19 +587,19 @@ try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
 ```java
 // Put-if-absent which returns previous value.
 Integer oldVal = cache.getAndPutIfAbsent("Hello", 11);
-  
+
 // Put-if-absent which returns boolean success flag.
 boolean success = cache.putIfAbsent("World", 22);
-  
+
 // Replace-if-exists operation (opposite of getAndPutIfAbsent), returns previous value.
 oldVal = cache.getAndReplace("Hello", 11);
- 
+
 // Replace-if-exists operation (opposite of putIfAbsent), returns boolean success flag.
 success = cache.replace("World", 22);
-  
+
 // Replace-if-matches operation.
 success = cache.replace("World", 2, 22);
-  
+
 // Remove-if-matches operation.
 success = cache.remove("Hello", 1);
 ```
@@ -607,12 +607,12 @@ success = cache.remove("Hello", 1);
 ```java
 try (Transaction tx = ignite.transactions().txStart()) {
     Integer hello = cache.get("Hello");
-  
+
     if (hello == 1)
         cache.put("Hello", 11);
-  
+
     cache.put("World", 22);
-  
+
     tx.commit();
 }
 ```
@@ -620,9 +620,9 @@ try (Transaction tx = ignite.transactions().txStart()) {
 ```java
 // Lock cache key "Hello".
 Lock lock = cache.lock("Hello");
- 
+
 lock.lock();
- 
+
 try {
     cache.put("Hello", 11);
     cache.put("World", 22);
@@ -685,8 +685,8 @@ public class WeatherServiceImpl implements WeatherService {
     /** {@inheritDoc}. */
     @Override public String getCurrentTemperature(String cityName,
         String countryCode) throws Exception {
-        
-        System.out.println(">>> Requested weather forecast [city=" 
+
+        System.out.println(">>> Requested weather forecast [city="
             + cityName + ", countryCode=" + countryCode + "]");
 
         String connStr = WEATHER_URL + "q=" + cityName + ","
@@ -733,7 +733,7 @@ public class ServiceGridExample {
     public static void main(String[] args) throws Exception {
         try (Ignite ignite = Ignition.start()) {
 
-            // Deploying a single instance of the Weather Service 
+            // Deploying a single instance of the Weather Service
             // in the whole cluster.
             ignite.services().deployClusterSingleton("WeatherService",
                new WeatherServiceImpl());
@@ -821,13 +821,13 @@ sudo systemctl enable apache-ignite@<config name>
 # Unpack the source package
 $ unzip -q apache-ignite-{version}-src.zip
 $ cd apache-ignite-{version}-src
- 
+
 # Build In-Memory Data Fabric release (without LGPL dependencies)
 $ mvn clean package -DskipTests
- 
+
 # Build In-Memory Data Fabric release (with LGPL dependencies)
 $ mvn clean package -DskipTests -Prelease,lgpl
- 
+
 #
 Build In-Memory Hadoop Accelerator release
 # (optionally specify version of hadoop to use)
@@ -835,7 +835,7 @@ $ mvn clean package -DskipTests -Dignite.edition=hadoop [-Dhadoop.version=X.X.X]
 ```
 源码包中的DEVNOTES.txt文件，有更多的细节。
 ## 1.4.Maven配置
-### 1.4.1.摘要
+### 1.4.1.概述
 如果项目里用Maven管理依赖，可以单独地导入各个Ignite模块。
 
 > 注意，在下面的例子中，要将`${ignite.version}`替换为实际的版本。
@@ -918,7 +918,7 @@ GridGain提供自己的[Maven仓库](http://www.gridgainsystems.com/nexus/conten
 注意位于GridGain的Maven库中的构件仅仅为了方便使用，并不是官方的Apache Ignite构件。
 
 ## 1.5.Ignite生命周期
-### 1.5.1.摘要
+### 1.5.1.概述
 Ignite是基于JVM的，一个JVM可以运行一个或者多个逻辑Ignite节点（大多数情况下，一个JVM运行一个Ignite节点）。在整个Ignite文档中，会交替地使用术语Ignite运行时以及Ignite节点，比如说可以该主机运行5个节点，技术上通常意味着主机上启动5个JVM，每个JVM运行一个节点，Ignite也支持一个JVM运行多个节点，事实上，通常作为Ignite内部测试用。
 
 > Ignite运行时 == JVM进程 == Ignite节点（多数情况下）
@@ -952,10 +952,10 @@ Ignite ignite = Ignition.start("examples/config/example-cache.xml");
 ```java
 // Create new configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Provide lifecycle bean to configuration.
 cfg.setLifecycleBeans(new MyLifecycleBean());
- 
+
 // Start Ignite node with given configuration.
 Ignite ignite = Ignition.start(cfg)
 ```
@@ -981,7 +981,7 @@ public class MyLifecycleBean implements LifecycleBean {
  - `AFTER_NODE_STOP`：Ignite节点停止之后调用
 
 ## 1.6.异步支持
-### 1.6.1.摘要
+### 1.6.1.概述
 Ignite的多数API即可以支持同步模式，也可以支持异步模式，异步方法后面追加了`Async`后缀。
 ```java
 // Synchronous get
@@ -1020,7 +1020,7 @@ fut.listen(f -> System.out.println("Job result: " + f.get()));
 要实现Ignite计算操作异步嵌套执行，可以使用自定义线程池，相关内容可以查看[线程池](#_1-9-线程池)中的相关内容。
 
 ## 1.7.客户端和服务端
-### 1.7.1.摘要
+### 1.7.1.概述
 Ignite有一个可选的概念，就是**客户端节点**和**服务端节点**，服务端节点参与缓存、计算执行、流式处理等等，而原生的客户端节点提供了远程连接服务端的能力。Ignite原生客户端可以使用完整的`Ignite` API集合，包括近缓存、事务、计算、流、服务等等。
 所有的Ignite节点默认都是以`服务端`模式启动的，`客户端`模式需要显式地启用。
 
@@ -1030,7 +1030,7 @@ Ignite有一个可选的概念，就是**客户端节点**和**服务端节点**
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ...   
+    ...
     <!-- Enable client mode. -->
     <property name="clientMode" value="true"/>
     ...
@@ -1071,7 +1071,7 @@ CacheConfiguration cfg = new CacheConfiguration("myCache");
 ...
 
 // Create cache on all the existing and future server nodes.
-// Note that since the local node is a client, it will not 
+// Note that since the local node is a client, it will not
 // be caching any data.
 IgniteCache<?, ?> cache = ignite.getOrCreateCache(cfg);
 ```
@@ -1117,7 +1117,7 @@ XML：
 ```xml
 <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   <!-- Configure Ignite here. -->
-  
+
   <property name="communicationSpi">
     <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
       <property name="slowClientQueueLimit" value="1000"/>
@@ -1215,7 +1215,7 @@ cfg.setDiscoverySpi(discoverySpi);
 > 这种情况下为了发现能正常工作，发现SPI在所有节点上使用的所有地址应该是可以相互访问的。
 
 ## 1.8.资源注入
-### 1.8.1.摘要
+### 1.8.1.概述
 Ignite中，预定义的资源都是可以进行依赖注入的，同时支持基于属性和基于方法的注入。任何加注正确注解的资源都会在初始化之前注入相对应的任务、作业、闭包或者SPI。
 ### 1.8.2.基于属性和基于方法
 可以通过在一个属性或者方法上加注注解来注入资源。当加注在属性上时，Ignite只是在注入阶段简单地设置属性的值（不会理会该属性的访问修饰符）。如果在一个方法上加注了资源注解，它会访问一个与注入资源相对应的输入参数的类型，如果匹配，那么在注入阶段，就会将适当的资源作为输入参数，然后调用该方法。
@@ -1225,12 +1225,12 @@ Ignite中，预定义的资源都是可以进行依赖注入的，同时支持�
 Ignite ignite = Ignition.ignite();
 
 Collection<String> res = ignite.compute().broadcast(new IgniteCallable<String>() {
-  // Inject Ignite instance.  
+  // Inject Ignite instance.
   @IgniteInstanceResource
   private Ignite ignite;
 
   @Override
-  public String call() throws Exception { 
+  public String call() throws Exception {
     IgniteCache<Object, Object> cache = ignite.getOrCreateCache(CACHE_NAME);
 
     // Do some stuff with cache.
@@ -1244,7 +1244,7 @@ public class MyClusterJob implements ComputeJob {
     ...
     private Ignite ignite;
     ...
-    // Inject Ignite instance.  
+    // Inject Ignite instance.
     @IgniteInstanceResource
     public void setIgnite(Ignite ignite) {
         this.ignite = ignite;
@@ -1270,7 +1270,7 @@ public class MyClusterJob implements ComputeJob {
 |`TaskSessionResource`|注入`ComputeTaskSession`资源的实例，它为一个特定的任务执行定义了一个分布式的会话。|
 
 ## 1.9.线程池
-### 1.9.1.摘要
+### 1.9.1.概述
 Ignite创建并且维护着一组线程池，根据使用的API不同分别用于不同的目的。本章节中会列出一些众所周知的内部线程池，然后会展示如何自定义线程池。在`IgniteConfiguration`的javadoc中，可以看到Ignite中可用的完整线程池列表。
 ### 1.9.2.系统线程池
 系统线程池处理所有与缓存相关的操作，除了SQL以及其它的查询类型，它们会使用查询线程池，同时这个线程池也负责处理Ignite计算任务的取消操作。
@@ -1324,7 +1324,7 @@ XML:
 ```
 这样，假定下面的计算任务由上面定义的`myPool`线程池中的线程执行：
 ```java
-public class InnerRunnable implements IgniteRunnable {    
+public class InnerRunnable implements IgniteRunnable {
     @Override public void run() {
         System.out.println("Hello from inner runnable!");
     }
@@ -1332,10 +1332,10 @@ public class InnerRunnable implements IgniteRunnable {
 ```
 怎么做呢，需要使用`IgniteCompute.withExecutor()`，它会被上级任务的实现马上执行，像下面这样：
 ```java
-public class OuterRunnable implements IgniteRunnable {    
+public class OuterRunnable implements IgniteRunnable {
     @IgniteInstanceResource
     private Ignite ignite;
-    
+
     @Override public void run() {
         // Synchronously execute InnerRunnable in custom executor.
         ignite.compute().withExecutor("myPool").run(new InnerRunnable());
@@ -1375,10 +1375,10 @@ ignite.compute().run(new OuterRunnable());
 配置二进制类型：
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
-    
+
   <property name="binaryConfiguration">
     <bean class="org.apache.ignite.configuration.BinaryConfiguration">
-      
+
       <property name="nameMapper" ref="globalNameMapper"/>
       <property name="idMapper" ref="globalIdMapper"/>
 
@@ -1497,12 +1497,12 @@ public class CacheExampleBinaryStore extends CacheStoreAdapter<Integer, BinaryOb
         BinaryType type = obj.type();
 
         Collection<String> fields = type.fieldNames();
-        
+
         List<Object> row = new ArrayList<>(fields.size());
 
         for (String fieldName : fields)
             row.add(obj.field(fieldName));
-        
+
         saveRow(entry.getKey(), row);
     }
 }
@@ -1641,7 +1641,7 @@ Java：
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
-IgniteLogger log = new JclLogger(new 
+IgniteLogger log = new JclLogger(new
   org.apache.commons.logging.impl.Log4JLogger("log4j.xml"));
 
 cfg.setGridLogger(log);

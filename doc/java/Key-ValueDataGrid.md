@@ -19,7 +19,7 @@ Ignite数据网格轻量快速，是目前在集群中支持数据的事务性�
 Ignite实现了`JCache`(JSR107)规范。
 
 ## 3.2.超越JCache
-### 3.2.1.摘要
+### 3.2.1.概述
 Ignite是**JCache(JSR107)**规范的一个实现，JCache为数据访问提供了简单易用且功能强大的API。不过规范忽略了任何有关数据分布以及一致性的细节来允许开发商在自己的实现中有足够的自由度。
 
 可以通过JCache实现：
@@ -69,11 +69,11 @@ Put和Get：
 ```java
 try (Ignite ignite = Ignition.start("examples/config/example-cache.xml")) {
     IgniteCache<Integer, String> cache = ignite.cache(CACHE_NAME);
- 
+
     // Store keys in cache (values will end up on different cache nodes).
     for (int i = 0; i < 10; i++)
         cache.put(i, Integer.toString(i));
- 
+
     for (int i = 0; i < 10; i++)
         System.out.println("Got [key=" + i + ", val=" + cache.get(i) + ']');
 }
@@ -82,19 +82,19 @@ try (Ignite ignite = Ignition.start("examples/config/example-cache.xml")) {
 ```java
 // Put-if-absent which returns previous value.
 Integer oldVal = cache.getAndPutIfAbsent("Hello", 11);
-  
+
 // Put-if-absent which returns boolean success flag.
 boolean success = cache.putIfAbsent("World", 22);
-  
+
 // Replace-if-exists operation (opposite of getAndPutIfAbsent), returns previous value.
 oldVal = cache.getAndReplace("Hello", 11);
- 
+
 // Replace-if-exists operation (opposite of putIfAbsent), returns boolean success flag.
 success = cache.replace("World", 22);
-  
+
 // Replace-if-matches operation.
 success = cache.replace("World", 2, 22);
-  
+
 // Remove-if-matches operation.
 success = cache.remove("Hello", 1);
 ```
@@ -127,7 +127,7 @@ IgniteCache<String, Integer> cache = ignite.jcache("mycache");
 // Increment cache value 10 times.
 for (int i = 0; i < 10; i++)
   cache.invoke("mykey", new EntryProcessor<String, Integer, Void>() {
-    @Override 
+    @Override
     public Object process(MutableEntry<Integer, String> entry, Object... args) {
       Integer val = entry.getValue();
 
@@ -226,7 +226,7 @@ IgniteCache igniteCache = (IgniteCache) cache;
 `缓存模板`：如果希望用和集群中已有缓存相同的配置创建新的缓存时，缓存模板会非常有用，这样不用定义一长串的配置参数就可以创建一个缓存。
 
 ### 3.3.1.分区和复制
-#### 3.3.1.1.摘要
+#### 3.3.1.1.概述
 Ignite提供了三种不同的缓存操作模式，`分区`、`复制`和`本地`。缓存模型可以为每个缓存单独配置，缓存模型是通过`CacheMode`枚举定义的。
 
 ::: tip 数据分区内部实现
@@ -280,7 +280,7 @@ XML：
             <!-- Set cache mode. -->
             <property name="cacheMode" value="PARTITIONED"/>
             <!-- Other cache configurations. -->
-            ... 
+            ...
         </bean>
     </property>
 </bean>
@@ -324,7 +324,7 @@ XML：
             <!-- Set partition loss policy. -->
             <property name="partitionLossPolicy" value="READ_ONLY_SAFE"/>
             <!-- Other cache configurations. -->
-            ... 
+            ...
         </bean>
     </property>
 </bean>
@@ -375,7 +375,7 @@ ignite.resetLostPartitions(Arrays.asList("cache1", "cache2"));
 boolean lostPartiion = cache.lostPartitions().isEmpty()
 ```
 ### 3.3.3.主节点和备份副本
-#### 3.3.3.1.摘要
+#### 3.3.3.1.概述
 在`分区`模式下，数据的主键归属的节点叫做这些主键的主节点，对于缓存的数据，也可以可选地配置任意多个备份节点。如果副本数量大于0，那么Ignite会自动地为每个独立的键赋予备份节点，比如，如果副本数量为1，那么数据网格内缓存的每个键都会有2个备份，一主一备。
 
 ::: tip 注意
@@ -397,7 +397,7 @@ XML：
             <property name="cacheMode" value="PARTITIONED"/>
             <!-- Number of backup nodes. -->
             <property name="backups" value="1"/>
-            ... 
+            ...
         </bean>
     </property>
 </bean>
@@ -445,8 +445,8 @@ XML：
           <!-- Set a cache name. -->
           <property name="name" value="cacheName"/>
           <!-- Set write synchronization mode. -->
-          <property name="writeSynchronizationMode" value="FULL_SYNC"/> 
-          ... 
+          <property name="writeSynchronizationMode" value="FULL_SYNC"/>
+          ...
         </bean>
     </property>
 </bean>
@@ -491,7 +491,7 @@ XML：
       <bean class="org.apache.ignite.configuration.CacheConfiguration">
         <property name="name" value="Person"/>
         <property name="backups" value="1"/>
-                    
+
         <!-- Group the cache belongs to. -->
         <property name="groupName" value="group1"/>
       </bean>
@@ -500,7 +500,7 @@ XML：
       <bean class="org.apache.ignite.configuration.CacheConfiguration">
         <property name="name" value="Organization"/>
         <property name="backups" value="1"/>
-                    
+
         <!-- Group the cache belongs to. -->
         <property name="groupName" value="group1"/>
       </bean>
@@ -515,9 +515,9 @@ IgniteConfiguration cfg = new IgniteConfiguration();
 
 // Defining Person cache configuration.
 CacheConfiguration personCfg = new CacheConfiguration("Person");
-        
+
 personCfg.setBackups(1);
-        
+
 // Group the cache belongs to.
 personCfg.setGroupName("group1");
 
@@ -528,9 +528,9 @@ orgCfg.setBackups(1);
 
 // Group the cache belongs to.
 orgCfg.setGroupName("group1");
-        
+
 cfg.setCacheConfiguration(personCfg, orgCfg);
-        
+
 //Starting the node.
 Ignition.start(cfg);
 ```
@@ -547,7 +547,7 @@ Ignition.start(cfg);
 因此，如果集群中有几十个节点上百个缓存，可以考虑使用缓存组，这样可以降低内部结构的Java堆使用量，但同时会降低检查点的性能，节点接入集群的速度也会下降。
 :::
 ### 3.3.5.缓存模板
-#### 3.3.5.1.摘要
+#### 3.3.5.1.概述
 模板是`CacheConfiguration`类的实例，可以通过`Ignite.addCacheConfiguration(...)`方法在集群中注册。基本上来说，可以使用某个名称创建一个`CacheConfiguration`并将其注册。这样做之后就可以将此配置用作模板，其中模板的名称与注册的配置的名称相对应。
 
 如果希望用和集群中已有缓存相同的配置创建新的缓存时，缓存模板会非常有用，这样不用定义一长串的配置参数就可以创建一个缓存。目前，Ignite中的模板支持[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)和[REST](/doc/java/PlatformsProtocols.md#_12-2-rest-api)命令。如果使用了模板名，Ignite就会用模板中的所有配置来实例化新缓存。
@@ -570,17 +570,17 @@ ignite.addCacheConfiguration(cfg);
 ```
 XML:
 ```xml
-<property name="cacheConfiguration"> 
-   <list> 
-       <bean id="cache-template-bean" abstract="true" class="org.apache.ignite.configuration.CacheConfiguration"> 
-         <!-- when you create a template via XML configuration, 
+<property name="cacheConfiguration">
+   <list>
+       <bean id="cache-template-bean" abstract="true" class="org.apache.ignite.configuration.CacheConfiguration">
+         <!-- when you create a template via XML configuration,
          you must add an asterisk to the name of the template -->
-          <property name="name" value="myCacheTemplate*"/> 
-          <property name="cacheMode" value="PARTITIONED" /> 
-          <property name="backups" value="2" /> 
+          <property name="name" value="myCacheTemplate*"/>
+          <property name="cacheMode" value="PARTITIONED" />
+          <property name="backups" value="2" />
           <!-- Other cache configurations -->
           ...
-       </bean> 
+       </bean>
    </list>
 </property>
 ```
@@ -599,13 +599,13 @@ CREATE TABLE IF NOT EXISTS Person (
   id int,
   city_id int,
   name varchar,
-  age int, 
+  age int,
   company varchar,
   PRIMARY KEY (id, city_id)
 ) WITH "template=myCacheTemplate, key_type=PersonKey, value_type=MyPerson";
 ```
 ## 3.4.缓存查询
-### 3.4.1.摘要
+### 3.4.1.概述
 Ignite提供了非常优雅的查询API，支持基于谓词的扫描查询、SQL查询（ANSI-99兼容）、文本查询。对于SQL查询，Ignite提供了内存索引，因此所有的数据检索都是非常快的。
 
 Ignite也通过`IndexingSpi`和`SpiQuery`类提供对自定义索引的支持。
@@ -731,7 +731,7 @@ public class Person implements Serializable {
   /** Salary (indexed). */
   @QuerySqlField(index = true)
   private double salary;
-  
+
   ...
 }
 ```
@@ -822,14 +822,14 @@ cacheCfg.setQueryEntities(Arrays.asList(queryEntity));
 Java：
 ```java
 // Create near-cache configuration for "myCache".
-NearCacheConfiguration<Integer, Integer> nearCfg = 
+NearCacheConfiguration<Integer, Integer> nearCfg =
     new NearCacheConfiguration<>();
 
 // Use LRU eviction policy to automatically evict entries
 // from near-cache, whenever it reaches 100_000 in size.
 nearCfg.setNearEvictionPolicy(new LruEvictionPolicy<>(100_000));
 
-// Create a distributed cache on server nodes and 
+// Create a distributed cache on server nodes and
 // a near cache on the local node, named "myCache".
 IgniteCache<Integer, Integer> cache = ignite.getOrCreateCache(
     new CacheConfiguration<Integer, Integer>("myCache"), nearCfg);
@@ -903,12 +903,12 @@ IgniteCache<Integer, String> cache = ignite.cache("mycache");
 // Creating a continuous query.
 ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
 
-// Setting an optional initial query. 
+// Setting an optional initial query.
 // The query will return entries for the keys greater than 10.
 qry.setInitialQuery(new ScanQuery<Integer, String>((k, v) -> k > 10));
 
 // Local listener that is called locally when an update notification is received.
-qry.setLocalListener((evts) -> 
+qry.setLocalListener((evts) ->
 	evts.forEach(e -> System.out.println("key=" + e.getKey() + ", val=" + e.getValue())));
 
 // This filter will be evaluated remotely on all nodes.
@@ -934,7 +934,7 @@ IgniteCache<Integer, String> cache = ignite.cache(CACHE_NAME);
 // // Creating a continuous query.
 ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
 
-// Setting an optional initial query. 
+// Setting an optional initial query.
 // The query will return entries for the keys greater than 10.
 qry.setInitialQuery(new ScanQuery<Integer, String>(
   new IgniteBiPredicate<Integer, String>() {
@@ -1024,7 +1024,7 @@ qry.setLocalListener(names -> {
 public class PersonKey {
     // Person ID used to identify a person.
     private String personId;
- 
+
     // Company ID which will be used for affinity.
     @AffinityKeyMapped
     private String companyId;
@@ -1034,10 +1034,10 @@ public class PersonKey {
 // Instantiate person keys with the same company ID which is used as affinity key.
 Object personKey1 = new PersonKey("myPersonId1", "myCompanyId");
 Object personKey2 = new PersonKey("myPersonId2", "myCompanyId");
- 
+
 Person p1 = new Person(personKey1, ...);
 Person p2 = new Person(personKey2, ...);
- 
+
 // Both, the company and the person objects will be cached on the same node.
 comCache.put("myCompanyId", new Company(...));
 perCache.put(personKey1, p1);
@@ -1048,7 +1048,7 @@ perCache.put(personKey2, p2);
 case class PersonKey (
     // Person ID used to identify a person.
     personId: String,
- 
+
     // Company ID which will be used for affinity.
     @(AffinityKeyMapped @field)
     companyId: String
@@ -1057,10 +1057,10 @@ case class PersonKey (
 // Instantiate person keys with the same company ID which is used as affinity key.
 val personKey1 = PersonKey("myPersonId1", "myCompanyId");
 val personKey2 = PersonKey("myPersonId2", "myCompanyId");
- 
+
 val p1 = new Person(personKey1, ...);
 val p2 = new Person(personKey2, ...);
- 
+
 // Both, the company and the person objects will be cached on the same node.
 compCache.put("myCompanyId", Company(...));
 perCache.put(personKey1, p1);
@@ -1070,10 +1070,10 @@ perCache.put(personKey2, p2);
 ```java
 Object personKey1 = new AffinityKey("myPersonId1", "myCompanyId");
 Object personKey2 = new AffinityKey("myPersonId2", "myCompanyId");
- 
+
 Person p1 = new Person(personKey1, ...);
 Person p2 = new Person(personKey2, ...);
- 
+
 // Both, the company and the person objects will be cached on the same node.
 comCache.put("myCompanyId", new Company(..));
 perCache.put(personKey1, p1);
@@ -1093,7 +1093,7 @@ perCache.put(personKey2, p2);
 Java8:
 ```java
 String companyId = "myCompanyId";
- 
+
 // Execute Runnable on the node where the key is cached.
 ignite.compute().affinityRun("myCache", companyId, () -> {
   Company company = cache.get(companyId);
@@ -1102,18 +1102,18 @@ ignite.compute().affinityRun("myCache", companyId, () -> {
   // access to the persons objects is local.
   Person person1 = cache.get(personKey1);
   Person person2 = cache.get(personKey2);
-  ...  
+  ...
 });
 ```
 Java7:
 ```java
 final String companyId = "myCompanyId";
- 
+
 // Execute Runnable on the node where the key is cached.
 ignite.compute().affinityRun("myCache", companyId, new IgniteRunnable() {
   @Override public void run() {
     Company company = cache.get(companyId);
-    
+
     Person person1 = cache.get(personKey1);
     Person person2 = cache.get(personKey2);
     ...
@@ -1161,20 +1161,20 @@ Java:
 ```java
 // Preparing Apache Ignite node configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
-        
+
 // Creating a cache configuration.
 CacheConfiguration cacheCfg = new CacheConfiguration("myCache");
 
 // Creating the affinity function with custom setting.
 RendezvousAffinityFunction affFunc = new RendezvousAffinityFunction();
-        
+
 affFunc.setExcludeNeighbors(true);
-        
+
 affFunc.setPartitions(2048);
 
 // Applying the affinity function configuration.
 cacheCfg.setAffinity(affFunc);
-        
+
 // Setting the cache configuration.
 cfg.setCacheConfiguration(cacheCfg);
 ```
@@ -1222,13 +1222,13 @@ XML：
             <!-- Set a cache name. -->
             <property name="name" value="myCache"/>
 
-            <!-- Set atomicity mode, can be ATOMIC, TRANSACTIONAL or TRANSACTIONAL_SNAPSHOT. 
+            <!-- Set atomicity mode, can be ATOMIC, TRANSACTIONAL or TRANSACTIONAL_SNAPSHOT.
                 ATOMIC is default. -->
             <property name="atomicityMode" value="TRANSACTIONAL"/>
-            ... 
+            ...
         </bean>
     </property>
-     
+
     <!-- Optional transaction configuration. -->
     <property name="transactionConfiguration">
         <bean class="org.apache.ignite.configuration.TransactionConfiguration">
@@ -1288,12 +1288,12 @@ IgniteTransactions transactions = ignite.transactions();
 ```java
 try (Transaction tx = transactions.txStart()) {
     Integer hello = cache.get("Hello");
-  
+
     if (hello == 1)
         cache.put("Hello", 11);
-  
+
     cache.put("World", 22);
-  
+
     tx.commit();
 }
 ```
@@ -1340,8 +1340,8 @@ try (Transaction tx = ignite.transactions().txStart(TransactionConcurrency.PESSI
 }
 catch (CacheException e) {
     if (e.getCause() instanceof TransactionTimeoutException &&
-        e.getCause().getCause() instanceof TransactionDeadlockException)    
-        
+        e.getCause().getCause() instanceof TransactionDeadlockException)
+
         System.out.println(e.getCause().getCause().getMessage());
 }
 ```
@@ -1432,7 +1432,7 @@ Java：
 ```java
 // Create Ignite configuration
 IgniteConfiguration cfg = new IgniteConfiguration();
-        
+
 // Create Ignite Transactions configuration
 TransactionConfiguration txCfg = new TransactionConfiguration();
 
@@ -1516,13 +1516,13 @@ int retries = 0;
 // Start transaction in optimistic mode with serializable isolation level.
 while (retries < retryCount) {
     retries++;
-    try (Transaction tx =  
+    try (Transaction tx =
         ignite.transactions().txStart(TransactionConcurrency.OPTIMISTIC,
                                       TransactionIsolation.SERIALIZABLE)) {
         // Modify cache entries as part of this transaction.
         ....
-        
-        // commit transaction.  
+
+        // commit transaction.
         tx.commit();
 
         // Transaction succeeded. Leave the while loop.
@@ -1548,7 +1548,7 @@ while (retries < retryCount) {
 如果没有使用悲观的可重复读或者可序列化事务，或者也没有使用乐观的序列化事务，那么就可以看到部分的事务状态，这意味着如果一个事务更新对象A和B，那么另一个事务可能看到A的新值和B的旧值。
 :::
 ### 3.8.3.多版本并发控制
-#### 3.8.3.1.摘要
+#### 3.8.3.1.概述
 配置为`TRANSACTIONAL_SNAPSHOT`原子化模式的缓存，支持SQL事务以及键-值事务，并且为两种类型的事务开启了多版本并发控制（MVCC）。
 
 #### 3.8.3.2.多版本并发控制
@@ -1566,15 +1566,15 @@ XML：
     ...
     <property name="cacheConfiguration">
         <bean class="org.apache.ignite.configuration.CacheConfiguration">
-          
+
             <property name="name" value="myCache"/>
-          
+
             <property name="atomicityMode" value="TRANSACTIONAL_SNAPSHOT"/>
-            ... 
+            ...
         </bean>
     </property>
 </bean>
- 
+
 ```
 SQL：
 ```sql
@@ -1603,7 +1603,7 @@ for(int i = 1; i <=5 ; i++) {
             break;
         } catch (CacheException e) {
             if (!tx.isRollbackOnly()) {
-              // Transaction was not marked as "rollback only", 
+              // Transaction was not marked as "rollback only",
               // so it's not a concurrent update issue.
               // Process the exception here.
                 break;
@@ -1700,7 +1700,7 @@ IgniteCache<String, Integer> cache = ignite.cache("myCache");
 Lock lock = cache.lock("keyLock");
 // Acquire the lock
 lock.lock();
-try {  
+try {
     cache.put("Hello", 11);
     cache.put("World", 22);
 }
@@ -1717,7 +1717,7 @@ Ignite中，只有在`TRANSACTIONAL`原子化模式中才支持锁，它可以�
 
 显式锁是非事务性的，不能在事务中使用（会抛出异常）。如果确实需要在事务中使用显式锁，那么需要使用事务的`TransactionConcurrency.PESSIMISTIC`并发控制，它会为相关的缓存操作获得显式锁。
 ## 3.10.数据再平衡
-### 3.10.1.摘要
+### 3.10.1.概述
 当一个新节点加入集群时，已有节点会放弃一部分缓存条目的所有权转交给新的节点，以使整个网格在任何时候都保持键的均等平衡。
 
 如果新的节点成为一些分区的主节点或者备份节点，它会从该分区之前的主节点获取数据，或者从该分区的备份节点之一获取数据。一旦分区全部载入新的节点，旧节点就会被标记为过时然后该节点在所有当前的事务完成之后最终会被退出。因此，在一些很短的时间段，在拓扑发生变化之后，有一种情况是在缓存中对于一个键备份的数量可能比事先配置的多。不过一旦再平衡完成，额外的备份会被删除。
@@ -1741,7 +1741,7 @@ XML：
         <bean class="org.apache.ignite.configuration.CacheConfiguration">
           <!-- Set synchronous rebalancing. -->
           <property name="rebalanceMode" value="SYNC"/>
-          ... 
+          ...
         </bean
     </property>
 </bean>
@@ -1797,14 +1797,14 @@ XML：
           <!-- ... -->
       </bean>
     </property>
-</bean> 
+</bean>
 ```
 Java：
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
 
 cacheCfg.setRebalanceBatchSize(2 * 1024 * 1024);
-            
+
 cacheCfg.setRebalanceThrottle(100);
 
 IgniteConfiguration cfg = new IgniteConfiguration();

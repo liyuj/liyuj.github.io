@@ -127,10 +127,10 @@ XML：
 
     <!-- Enabling authentication. -->
     <property name="authenticationEnabled" value="true"/>
-   
+
   <!-- Other Ignite configurations. -->
   ...
-    
+
 </bean>
 ```
 Java：
@@ -209,7 +209,7 @@ System.setProperty(IGNITE_MARSHALLER_BLACKLIST, "Path/to/blacklist.txt");
 Exception in thread "main" javax.cache.CacheException: class org.apache.ignite.IgniteCheckedException: Deserialization of class ignite.myexamples.model.SomeOtherFile is disallowed.
 ```
 ## 4.4.透明数据加密
-### 4.4.1.摘要
+### 4.4.1.概述
 Ignite从2.7版本开始，引入了透明数据加密（TDE），使得开发者可以对数据进行加密。
 
 如果开启了Ignite的原生持久化，加密可以在表/缓存级开启，其中下面的数据会被加密：
@@ -227,32 +227,32 @@ Ignite使用的是JDK提供的加密算法，`AES/CBC/PKCS5Padding`用于WAL记�
 
 XML：
 ```xml
-<bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration"> 
-    <!-- We need to configure EncryptionSpi to enable encryption feature. --> 
-    <property name="encryptionSpi"> 
-        <!-- Using EncryptionSpi implementation based on java keystore. --> 
-        <bean class="org.apache.ignite.spi.encryption.keystore.KeystoreEncryptionSpi"> 
-            <!-- Path to the keystore file. --> 
-            <property name="keyStorePath" value="ignite_keystore.jks" /> 
-            <!-- Password for keystore file. --> 
-            <property name="keyStorePassword" value="mypassw0rd" /> 
-            <!-- Name of the key in keystore to be used as a master key. --> 
-            <property name="masterKeyName" value="ignite.master.key" /> 
-            <!-- Size of the cache encryption keys in bits. Can be 128, 192, or 256 bits.--> 
-            <property name="keySize" value="256" /> 
-        </bean> 
-    </property> 
+<bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+    <!-- We need to configure EncryptionSpi to enable encryption feature. -->
+    <property name="encryptionSpi">
+        <!-- Using EncryptionSpi implementation based on java keystore. -->
+        <bean class="org.apache.ignite.spi.encryption.keystore.KeystoreEncryptionSpi">
+            <!-- Path to the keystore file. -->
+            <property name="keyStorePath" value="ignite_keystore.jks" />
+            <!-- Password for keystore file. -->
+            <property name="keyStorePassword" value="mypassw0rd" />
+            <!-- Name of the key in keystore to be used as a master key. -->
+            <property name="masterKeyName" value="ignite.master.key" />
+            <!-- Size of the cache encryption keys in bits. Can be 128, 192, or 256 bits.-->
+            <property name="keySize" value="256" />
+        </bean>
+    </property>
     <!-- rest of configuration -->
 </bean>
 ```
 Java：
 ```java
-IgniteConfiguration cfg = new IgniteConfiguration(“encrypted-instance”); 
+IgniteConfiguration cfg = new IgniteConfiguration(“encrypted-instance”);
 
-KeystoreEncryptionSpi encSpi = new KeystoreEncryptionSpi(); 
+KeystoreEncryptionSpi encSpi = new KeystoreEncryptionSpi();
 
-encSpi.setKeyStorePath("/home/user/ignite-keystore.jks”); 
-encSpi.setKeyStorePassword("secret"); 
+encSpi.setKeyStorePath("/home/user/ignite-keystore.jks”);
+encSpi.setKeyStorePassword("secret");
 
 cfg.setEncryptionSpi(encSpi);
 ```
@@ -260,10 +260,10 @@ cfg.setEncryptionSpi(encSpi);
 
 XML：
 ```xml
-<bean id="cache.cfg" 
-      class="org.apache.ignite.configuration.CacheConfiguration"> 
-    <property name="name" value="encrypted-cache"/> 
-    <property name="encryptionEnabled" value="true"/> 
+<bean id="cache.cfg"
+      class="org.apache.ignite.configuration.CacheConfiguration">
+    <property name="name" value="encrypted-cache"/>
+    <property name="encryptionEnabled" value="true"/>
 </bean>
 ```
 Java：
@@ -271,15 +271,15 @@ Java：
 CacheConfiguration<Long, String> ccfg = new CacheConfiguration<Long, String>("encrypted-cache");
 
 ccfg.setEncryptionEnabled(true);
- 
-ignite.createCache(ccfg); 
+
+ignite.createCache(ccfg);
 ```
 SQL：
 ```sql
 CREATE TABLE encrypted(
-  ID BIGINT, 
-  NAME VARCHAR(10), 
-  PRIMARY KEY (ID)) 
+  ID BIGINT,
+  NAME VARCHAR(10),
+  PRIMARY KEY (ID))
 WITH "ENCRYPTED=true";
 ```
 ### 4.4.3.主密钥生成示例
@@ -309,7 +309,7 @@ Keystore provider: SunJSSE
 
 Your keystore contains 1 entry
 
-ignite.master.key, 07.11.2018, SecretKeyEntry, 
+ignite.master.key, 07.11.2018, SecretKeyEntry,
 ```
 ### 4.4.4.代码示例
 

@@ -1,6 +1,6 @@
 # 5.Spring
 ## 5.1.Spring缓存
-### 5.1.1.摘要
+### 5.1.1.概述
 Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)的实现。它提供了基于注解的方式来启用Java方法的缓存，这样方法的执行结果就会存储在Ignite缓存中。如果之后同一个方法通过同样的参数集被调用，结果会直接从缓存中获得而不是实际执行这个方法。
 
 > **Spring缓存抽象文档**
@@ -88,7 +88,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 ```xml
 <bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
     ...
-  
+
     <property name="dynamicCacheConfiguration">
         <bean class="org.apache.ignite.configuration.CacheConfiguration">
             <property name="cacheMode" value="REPLICATED"/>
@@ -100,7 +100,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 ```xml
 <bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
     ...
-  
+
     <property name="dynamicNearCacheConfiguration">
         <bean class="org.apache.ignite.configuration.NearCacheConfiguration">
             <property name="nearStartSize" value="1000"/>
@@ -140,7 +140,7 @@ public void updateSalary(Employee e) {
         "UPDATE Employee " +
         "SET salary = ? " +
         "WHERE id = ?";
-  
+
     jdbc.update(sql, e.getSalary(), e.getId());
 }
 ```
@@ -151,7 +151,7 @@ public void updateSalary(Employee e) {
 `#e.organizationId`表达式的意思是从e变量中获取`organizationId`属性的值。本质上会在提供的雇员对象上调用`getOrganizationId()`方法，以及将返回的值作为缓存键。
 
 ## 5.2.Spring Data
-### 5.2.1.摘要
+### 5.2.1.概述
 [Spring Data框架](http://projects.spring.io/spring-data/)提供了一套统一并且广泛使用的API，它从应用层抽象了底层的数据存储，Spring Data有助于避免锁定到特定的数据库厂商，通过很小的代价就可以从一个数据库切换到另一个。
 
 Ignite实现了Spring Data的`CrudRepository`接口，它不仅仅支持基本的CRUD操作，还支持通过统一的Spring Data API访问Ignite的SQL网格。
@@ -289,7 +289,7 @@ for (Person person: persons)
 
 Cache.Entry<Long, Person> topPerson = repo.findTopByLastNameLike("Smith");
 
-System.out.println("\n>>> Top Person with surname 'Smith': " + 
+System.out.println("\n>>> Top Person with surname 'Smith': " +
 		topPerson.getValue());
 ```
 ### 5.2.6.示例

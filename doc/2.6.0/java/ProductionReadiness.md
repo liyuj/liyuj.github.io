@@ -2,7 +2,7 @@
 ## 11.1.生产准备
 本章涵盖了在准备将系统迁移到生产环境时的主要考虑因素。
 ## 11.2.容量规划
-### 11.2.1.摘要
+### 11.2.1.概述
 对系统容量进行编制和规划是设计的一个必要组成部分。理解需要的缓存大小有助于决定需要多少物理内存、多少JVM、多少CPU和服务器。本章节会讨论有助于规划和确定一个部署的最小硬件需求的各种技术。
 ### 11.2.2.规划内存使用量
 
@@ -51,7 +51,7 @@
 不是，磁盘上的数据大小不能直接1：1地映射到内存中，粗略估计，如果不计算索引和其它的负载，和磁盘比大概是2.5/3的关系，如果要得到精确值，可以通过将记录导入Ignite来得出对象大小的平均值，然后乘以期望的对象数量。
 
 ## 11.3.性能提示
-### 11.3.1.摘要
+### 11.3.1.概述
 Ignite内存数据网格的性能和吞吐量很大程度上依赖于使用的功能以及配置，在几乎所有的场景中都可以通过简单地调整缓存的配置来优化缓存的性能。
 ### 11.3.2.禁用内部事件通知
 Ignite有丰富的事件系统来向用户通知各种各样的事件，包括缓存的修改，退出，压缩，拓扑的变化以及很多其它的。因为每秒钟可能产生上千的事件，它会对系统产生额外的负载，这会导致显著地性能下降。因此，强烈建议只有应用逻辑必要时才启用这些事件，事件通知默认是禁用的：
@@ -59,7 +59,7 @@ Ignite有丰富的事件系统来向用户通知各种各样的事件，包括�
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ... 
+    ...
     <!-- Enable only some events and leave other ones disabled. -->
     <property name="includeEventTypes">
         <list>
@@ -108,16 +108,16 @@ XML：
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     ...
     <property name="cacheConfiguration">
-        <bean class="org.apache.ignite.configuration.CacheConfiguration">             
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
             <!-- Set rebalance batch size to 1 MB. -->
             <property name="rebalanceBatchSize" value="#{1024 * 1024}"/>
- 
+
             <!-- Explicitly disable rebalance throttling. -->
             <property name="rebalanceThrottle" value="0"/>
- 
+
             <!-- Set 4 threads for rebalancing. -->
             <property name="rebalanceThreadPoolSize" value="4"/>
-            ... 
+            ...
         </bean
     </property>
 </bean>
@@ -127,10 +127,10 @@ Ignite使用了一组线程池，它们的大小默认由`max(8, CPU总核数)`�
 XML:
 ```
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ... 
+    ...
     <!-- Configure internal thread pool. -->
     <property name="publicThreadPoolSize" value="64"/>
-    
+
     <!-- Configure system thread pool. -->
     <property name="systemThreadPoolSize" value="32"/>
     ...
@@ -148,9 +148,9 @@ Ignite可以在内存内执行MapReduce计算。不过通常很多计算都会�
 JCache标准要求缓存供应商支持基于值存储的语义，这意味着当从缓存中读取一个值时，无法得到真实存储的对象的引用，而是这个对象的一个副本。Ignite默认遵守这个方式，但是可以通过`CacheConfiguration.copyOnRead`这个配置属性覆盖这个行为。
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
-    <!-- 
+    <!--
         Force cache to return the instance that is stored in cache
-        instead of creating a copy. 
+        instead of creating a copy.
     -->
     <property name="copyOnRead" value="false"/>
 </bean>
@@ -181,7 +181,7 @@ XML：
     <property name="defaultMemoryPolicySize" value="#{4L * 1024 * 1024 * 1024}"/>
   </bean>
 </property>
-  
+
 <!-- The rest of the parameters -->
 </bean>
 ```
@@ -210,7 +210,7 @@ Ignite的页面大小（`MemoryConfiguration.pageSize`）不要小于存储设�
 XML：
 ```
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
+   ...
    <property name="memoryConfiguration">
     		<bean class="org.apache.ignite.configuration.MemoryConfiguration">
         		<!-- Setting the page size to 4 KB -->
@@ -240,7 +240,7 @@ Ignition.start(cfg);
 XML：
 ```
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
+   ...
   <!-- Enabling Ignite Native Persistence. -->
   <property name="dataStorageConfiguration">
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
@@ -301,7 +301,7 @@ Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页�
 XML：
 ```
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
+   ...
   <!-- Enabling Ignite Native Persistence. -->
   <property name="dataStorageConfiguration">
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
@@ -332,20 +332,20 @@ Ignition.start(cfg);
 XML：
 ```
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
+   ...
   <!-- Enabling Ignite Native Persistence. -->
   <property name="dataStorageConfiguration">
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
       <!-- Enable write throttling. -->
       <property name="writeThrottlingEnabled" value="true"/>
-      
+
       <property name="defaultDataRegionConfiguration">
         <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
           <!-- Enabling persistence. -->
           <property name="persistenceEnabled" value="true"/>
-                
+
           <!-- Increasing the buffer size to 1 GB. -->
-          <property name="checkpointPageBufferSize" 
+          <property name="checkpointPageBufferSize"
                     value="#{1024L * 1024 * 1024}"/>
         </bean>
       </property>
@@ -393,8 +393,8 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 集群中的JVM需要不断地进行监控和调优，GC的调优非常依赖于应用以及Ignite的使用模式。
 对于JDK1.8来说，建议使用G1垃圾收集器，在下面的示例中，一台开启了G1的64核CPU的机器，配置10G的堆空间：
 ```
--server 
--Xms10g 
+-server
+-Xms10g
 -Xmx10g
 -XX:+AlwaysPreTouch
 -XX:+UseG1GC
@@ -412,7 +412,7 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 -XX:+UseParNewGC
 -XX:+UseConcMarkSweepGC
 -XX:+CMSClassUnloadingEnabled
--XX:+CMSPermGenSweepingEnabled 
+-XX:+CMSPermGenSweepingEnabled
 -XX:+ScavengeBeforeFullGC
 -XX:+CMSScavengeBeforeRemark
 -XX:+DisableExplicitGC
@@ -540,7 +540,7 @@ ulimit -n 32768 -u 32768
 > 可以参照[增加打开文件数限制](https://easyengine.io/tutorials/linux/increase-open-files-limit/)了解更多细节。
 
 ## 11.6.严重错误处理
-### 11.6.1.摘要
+### 11.6.1.概述
 Ignite是一个健壮且容错的系统，但在现实中，一些无法预知的问题，可能导致节点无法操作，以致影响整个集群的状态，这样的问题可以在运行时进行检测，然后根据预配置的错误处理程序进行处理。
 ### 11.6.2.严重故障
 下面的故障会被视为严重：

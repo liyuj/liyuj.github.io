@@ -295,7 +295,7 @@ RewriteRule .* ws://localhost:3000%{REQUEST_URI} [P,L]
 RewriteCond %{REQUEST_URI} ^/api/v1/.*$
 RewriteRule ^/api/v1/(.*)$ http://localhost:3000/$1 [P,L]
 
-RewriteRule ^ /index.html [L]  
+RewriteRule ^ /index.html [L]
 ```
 
 ::: warning 注意
@@ -373,7 +373,7 @@ server {
 
 如果在浏览器中出现了`Forbidden`这样的错误，那么需要检查操作系统中所有的安全策略都配置正确了。
 ## 1.4.演示模式
-### 1.4.1.摘要
+### 1.4.1.概述
 可以使用Web控制台的演示模式来研究和评估它有关配置和管理集群的各种功能，这个模式中，可以检查预定义的集群、缓存以及领域模型，它还启动了一个内置的H2数据库实例，可以执行各种SQL查询以及查看数据报表，还可以监控各种缓存和节点的指标，比如集群的CPU和堆使用量等。
 ### 1.4.2.启动演示模式
 要开启演示模式，需要点击控制台顶部菜单的`Start demo`按钮。
@@ -597,7 +597,7 @@ metadata:
   creationTimestamp: null
   name: mongodb
   namespace: mongodb
-  labels: 
+  labels:
     app: mongodb
 spec:
   replicas: 1
@@ -682,7 +682,7 @@ kubectl create secret docker-registry registrykey --docker-server=https://index.
 web-console-deployment.yaml：
 ```yaml
 
-# creating deployment for the backend; specify a Docker Image 
+# creating deployment for the backend; specify a Docker Image
 # in the 'image' field.
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -717,7 +717,7 @@ spec:
           value: "3000"
         - name: server_sessionSecret
           value: CHANGE_ME
-        image: 
+        image:
         name: backend
         resources: {}
       restartPolicy: Always
@@ -746,7 +746,7 @@ status:
   loadBalancer: {}
 
 ---
-# creating deployment for the frontend; specify a Docker Image 
+# creating deployment for the frontend; specify a Docker Image
 # in the 'image' field.
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -764,7 +764,7 @@ spec:
         app: frontend
     spec:
       containers:
-      - image: 
+      - image:
         name: frontend
         ports:
         - containerPort: 80
@@ -772,7 +772,7 @@ spec:
       restartPolicy: Always
       # remove this property if you use a public Docker repository
       imagePullSecrets:
-        - name: registrykey      
+        - name: registrykey
 status: {}
 
 ---
@@ -844,7 +844,7 @@ spec:
         image: apacheignite/web-agent:mytag3
         resources:
           limits:
-            cpu: 500m 
+            cpu: 500m
             memory: 500Mi
         env:
         - name: DRIVER_FOLDER

@@ -1,6 +1,6 @@
 # 3.Visor管理控制台
 ## 3.1.命令行接口
-### 3.1.1.摘要
+### 3.1.1.概述
 Visor命令行接口为Ignite提供了脚本化的监控能力，它可以用于从网格获得与节点、缓存和任务有关的统计数据，显示与拓扑有关的各种指标的一般细节，还有节点的配置属性也可以在这里看到，它还可以用于启动和停止远程节点。
 
 ![](https://files.readme.io/T32Eltb1SoaxDK1lEIvd_visor.png)
@@ -191,7 +191,7 @@ cfg=/examples/exmaple-ignite.xml
 # ignite node start script
 script=/bin/ignite.sh
 ```
- 
+
 ## 3.4.批处理模式
 ### 3.4.1.使用批处理模式启动VVisor
 Visor命令行可以开启一个批处理模式（运行一组命令）。

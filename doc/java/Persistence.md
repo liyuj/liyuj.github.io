@@ -1,6 +1,6 @@
 # 16.持久化
 ## 16.1.Ignite持久化
-### 16.1.1.摘要
+### 16.1.1.概述
 Ignite的原生持久化是一个分布式的ACID和兼容SQL的磁盘存储，它可以透明地与Ignite的固化内存进行集成。Ignite的持久化是可选的，可以打开也可以关闭，当关闭时Ignite就会变成一个纯内存存储。
 
 Ignite的原生持久化会在磁盘上存储一个数据的超集，以及根据容量在内存中存储一个子集。比如，如果有100个条目，然后内存只能存储20条，那么磁盘上会存储所有的100条，然后为了提高性能在内存中缓存20条。
@@ -31,9 +31,9 @@ XML：
       </property>
     </bean>
   </property>
-  
+
   <!-- Additional setting. -->
- 
+
 </bean>
 ```
 Java：
@@ -43,10 +43,10 @@ IgniteConfiguration cfg = new IgniteConfiguration();
 
 // Ignite persistence configuration.
 DataStorageConfiguration storageCfg = new DataStorageConfiguration();
-            
+
 // Enabling the persistence.
 storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
-            
+
 // Applying settings.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
@@ -93,7 +93,7 @@ Ignite的原生持久化可以将Ignite作为一个分布式的SQL数据库。
 ### 16.1.7.示例
 要了解Ignite的原生持久化在实践中的应用，可以看Github中的这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/persistentstore)。
 ## 16.2.预写日志(WAL)
-### 16.2.1.摘要
+### 16.2.1.概述
 Ignite的持久化会为节点的每个分区创建和维护一个专有文件，但是当内存中的页面更新时，更新是不会直接写入对应的分区文件的，因为会严重影响性能，而是将数据写入预写日志的尾部（WAL）。
 
 WAL的目的是为单个节点或者整个集群故障的场景提供一种恢复机制。值得一提的是，集群可以根据WAL的内容在故障或者重启时随时恢复到最近成功提交的事务。
@@ -116,17 +116,17 @@ WAL的目的是为单个节点或者整个集群故障的场景提供一种恢�
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   
+
   <property name="dataStorageConfiguration">
      <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
-       <!-- Enabling Apache Ignite Persistent Store. -->     
+       <!-- Enabling Apache Ignite Persistent Store. -->
        <property name="defaultDataRegionConfiguration">
          <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
            <property name="persistenceEnabled" value="true"/>
          </bean>
        </property>
 
-       <!-- Changing WAL Mode. --> 
+       <!-- Changing WAL Mode. -->
        <property name="walMode" value="FSYNC"/>
      </bean>
    </property>
@@ -186,11 +186,11 @@ XML:
       <property name="persistenceEnabled" value="true"/>
     </bean>
   </property>
-  
+
   <property name="walCompactionEnabled" value="true" />
   <property name="walCompactionLevel" value="6" />
 </bean>
- 
+
 ```
 Java:
 ```java
@@ -210,20 +210,20 @@ dsCfg.setWalCompactionEnabled(true);
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   
+
   <property name="dataStorageConfiguration">
      <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
-  		<!-- Enabling Apache Ignite Persistent Store. -->     
+  		<!-- Enabling Apache Ignite Persistent Store. -->
        <property name="defaultDataRegionConfiguration">
          <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
            <property name="persistenceEnabled" value="true"/>
 
            <property name="walPath" value="/wal/path"/>
-           
+
            <property name="walArchivePath" value="/wal/path"/>
          </bean>
        </property>
-     
+
      </bean>
    </property>
 
@@ -246,7 +246,7 @@ dsCfg.setWalPath(walAbsPath);
 dsCfg.setWalArchivePath(walAbsPath);
 ```
 ## 16.3.检查点
-### 16.3.1.摘要
+### 16.3.1.概述
 由于[WAL](https://apacheignite.readme.io/docs/write-ahead-log)文件会一直增长，并且通过WAL从头到尾地恢复集群会花费大量的时间。为了解决这个问题，Ignite引入了一个检查点过程。
 
 **检查点**是一个将脏页面从内存复制到磁盘上的分区文件的过程，脏页面是指页面已经在内存中进行了更新但是还没有写入对应的分区文件（只是添加到了WAL中）。
@@ -263,7 +263,7 @@ dsCfg.setWalArchivePath(walAbsPath);
  4. 根据配置或者其它参数配置的频率，检查点会被定期地触发。脏页面会从内存复制到磁盘，然后传递给特定的分区文件；
 
 ## 16.4.第三方存储
-### 16.4.1.摘要
+### 16.4.1.概述
 Ignite可以做为已有的第三方数据库之上的一个缓存层（数据网格），包括RDBMS、Apache Cassandra，该模式可以对底层数据库进行加速。Ignite对于在任何RDBMS和[Cassandra](/doc/integration/CassandraIntegration.md#_6-1-ignite和apache-cassandra)中进行数据库记录的读写，提供了直接的支持，而对于其它NoSQL数据库的通读和通写功能，则没有现成的实现，不过Ignite提供了API，可以实现自定义的CacheStore。
 
 JCache规范提供了[javax.cache.integration.CacheLoader](https://ignite.apache.org/jcache/1.0.0/javadoc/javax/cache/integration/CacheLoader.html)和[javax.cache.integration.CacheWriter](https://ignite.apache.org/jcache/1.0.0/javadoc/javax/cache/integration/CacheWriter.html)API，它们分别用于底层持久化存储的`通读`和`通写`（比如RDBMS中的Oracle或者MySQL，以及NoSQL数据库中的MongoDB或者CouchDB）。除了键-值操作，Ignite还支持INSERT、UPDATE和MERGE操作的通写，但是SELECT查询是无法读取第三方数据库的数据的。
@@ -489,7 +489,7 @@ POJO配置：
               </list>
             </property>
           </bean>
-          
+
           <!-- Provide similar configurations for other caches/tables -->
       </list>
   </property>
@@ -500,7 +500,7 @@ POJO配置：
 try (Ignite ignite = Ignition.start("path/to/xml-config/file")) {
   // Load data from person table into PersonCache.
   ignite.cache("PersonCache").loadCache(null);
-  
+
   // Populate other caches
   ...
 }
@@ -543,7 +543,7 @@ public class Person implements Serializable {
 
     /**
      * Gets orgid
-     * 
+     *
      * @return Value for orgid.
      **/
     public Integer getOrgid() {
@@ -552,7 +552,7 @@ public class Person implements Serializable {
 
     /**
      * Sets orgid
-     * 
+     *
      * @param orgid New value for orgid.
      **/
     public void setOrgid(Integer orgid) {
@@ -561,7 +561,7 @@ public class Person implements Serializable {
 
     /**
      * Gets name
-     * 
+     *
      * @return Value for name.
      **/
     public String getName() {
@@ -570,7 +570,7 @@ public class Person implements Serializable {
 
     /**
      * Sets name
-     * 
+     *
      * @param name New value for name.
      **/
     public void setName(String name) {
@@ -579,7 +579,7 @@ public class Person implements Serializable {
 
     /**
      * Gets salary
-     * 
+     *
      * @return Value for salary.
      **/
     public Integer getSalary() {
@@ -588,7 +588,7 @@ public class Person implements Serializable {
 
     /**
      * Sets salary
-     * 
+     *
      * @param salary New value for salary.
      **/
     public void setSalary(Integer salary) {
@@ -597,7 +597,7 @@ public class Person implements Serializable {
 
     /**
      * Gets id
-     * 
+     *
      * @return Value for id.
      **/
     public int getId() {
@@ -606,7 +606,7 @@ public class Person implements Serializable {
 
     /**
      * Sets id
-     * 
+     *
      * @param id New value for id.
      **/
     public void setId(int id) {
@@ -617,27 +617,27 @@ public class Person implements Serializable {
     @Override public boolean equals(Object o) {
         if (this == o)
             return true;
-        
+
         if (!(o instanceof Person))
             return false;
-        
+
         Person that = (Person)o;
 
         if (orgid != null ? !orgid.equals(that.orgid) : that.orgid != null)
             return false;
-        
+
 
         if (name != null ? !name.equals(that.name) : that.name != null)
             return false;
-        
+
 
         if (salary != null ? !salary.equals(that.salary) : that.salary != null)
             return false;
-        
+
 
         if (id != that.id)
             return false;
-        
+
         return true;
     }
 
@@ -656,10 +656,10 @@ public class Person implements Serializable {
 
     /** {@inheritDoc} **/
     @Override public String toString() {
-        return "Person [" + 
-            "orgid=" + orgid + ", " + 
-            "name=" + name + ", " + 
-            "salary=" + salary + ", " + 
+        return "Person [" +
+            "orgid=" + orgid + ", " +
+            "name=" + name + ", " +
+            "salary=" + salary + ", " +
             "id=" + id +
         "]";
     }
@@ -675,7 +675,7 @@ public class Person implements Serializable {
 <bean id= "simpleDataSource" class="org.h2.jdbcx.JdbcDataSource">
         <property name="url" value="jdbc:h2:mem:jdbcCacheStore;DB_CLOSE_DELAY=-1" />
 </bean>
-  
+
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
    <property name="cacheConfiguration">
@@ -702,7 +702,7 @@ public class Person implements Serializable {
 可以使用`CacheJdbcPojoStoreFactory`工厂向`CacheConfiguration`传入`CacheJdbcPojoStore`:
 ```xml
 <bean id= "simpleDataSource" class="org.h2.jdbcx.JdbcDataSource"/>
-  
+
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
     <property name="cacheConfiguration">
@@ -741,7 +741,7 @@ public class Person implements Serializable {
          </bean>
        </list>
     </property>
-  ...    
+  ...
 </bean>
 ```
 ### 16.4.6.NoSQL集成
@@ -821,11 +821,11 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
         "merge into PERSONS (id, firstName, lastName) key (id) VALUES (?, ?, ?)")) {
         for (Cache.Entry<Long, Person> entry : entries) {
           Person val = entry.getValue();
-          
+
           st.setLong(1, entry.getKey());
           st.setString(2, val.getFirstName());
           st.setString(3, val.getLastName());
-          
+
           st.executeUpdate();
         }
       }
@@ -940,15 +940,15 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
         "merge into PERSONS (id, firstName, lastName) key (id) VALUES (?, ?, ?)")) {
         for (Cache.Entry<Long, Person> entry : entries) {
           Person val = entry.getValue();
-          
+
           st.setLong(1, entry.getKey());
           st.setString(2, val.getFirstName());
           st.setString(3, val.getLastName());
-          
+
           st.executeUpdate();
         }
       }
-    }        
+    }
     catch (SQLException e) {
       throw new CacheWriterException("Failed to write [key=" + key + ", val=" + val + ']', e);
     }
@@ -1038,17 +1038,17 @@ public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
   // Skip single operations and open connection methods.
   // You can copy them from jdbc non-transactional or jdbc transactional examples.
   ...
-  
+
   // This method is called whenever "getAll(...)" methods are called on IgniteCache.
   @Override public Map<K, V> loadAll(Iterable<Long> keys) {
     try (Connection conn = connection()) {
       try (PreparedStatement st = conn.prepareStatement(
         "select firstName, lastName from PERSONS where id=?")) {
         Map<K, V> loaded = new HashMap<>();
-        
+
         for (Long key : keys) {
           st.setLong(1, key);
-          
+
           try(ResultSet rs = st.executeQuery()) {
             if (rs.next())
               loaded.put(key, new Person(key, rs.getString(1), rs.getString(2));
@@ -1062,7 +1062,7 @@ public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
       throw new CacheLoaderException("Failed to loadAll: " + keys, e);
     }
   }
-  
+
   // This method is called whenever "putAll(...)" methods are called on IgniteCache.
   @Override public void writeAll(Collection<Cache.Entry<Long, Person>> entries) {
     try (Connection conn = connection()) {
@@ -1072,14 +1072,14 @@ public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
         "merge into PERSONS (id, firstName, lastName) key (id) VALUES (?, ?, ?)")) {
         for (Cache.Entry<Long, Person> entry : entries) {
           Person val = entry.getValue();
-          
+
           st.setLong(1, entry.getKey());
           st.setString(2, val.getFirstName());
           st.setString(3, val.getLastName());
-          
+
           st.addBatch();
         }
-        
+
 				st.executeBatch();
       }
     }
@@ -1087,17 +1087,17 @@ public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
       throw new CacheWriterException("Failed to writeAll: " + entries, e);
     }
   }
-  
+
   // This method is called whenever "removeAll(...)" methods are called on IgniteCache.
   @Override public void deleteAll(Collection<Long> keys) {
     try (Connection conn = connection()) {
       try (PreparedStatement st = conn.prepareStatement("delete from PERSONS where id=?")) {
         for (Long key : keys) {
           st.setLong(1, key);
-          
+
           st.addBatch();
         }
-        
+
 				st.executeBatch();
       }
     }
@@ -1118,7 +1118,7 @@ Ignite无法保证原生持久化和第三方持久化之间的严格一致性�
 
 在恢复时，必须对两个存储的提交日志进行比较。不一致时，相应的缺失事务要么重做要么回滚。
 ## 16.5.基线拓扑
-### 16.5.1.摘要
+### 16.5.1.概述
 如果启用了原生持久化，Ignite引入了一个*基线拓扑*的概念，它表示集群中将数据持久化到磁盘的一组服务端节点。
 
 通常，打开原生持久化第一次启动集群后，集群处于非激活状态，无法进行任何CRUD操作。比如，如果尝试执行一个SQL或者键-值操作，会抛出一个异常，如下图所示：
@@ -1160,8 +1160,8 @@ Java：
 // Connect to the cluster.
 Ignite ignite = Ignition.start();
 
-// Activate the cluster. Automatic topology initialization occurs 
-// only if you manually activate the cluster for the very first time. 
+// Activate the cluster. Automatic topology initialization occurs
+// only if you manually activate the cluster for the very first time.
 ignite.cluster().active(true);
 ```
 Linux：
@@ -1521,7 +1521,7 @@ public class BaselineWatcher {
 }
 ```
 ## 16.6.交换空间
-### 16.6.1.摘要
+### 16.6.1.概述
 如果使用纯内存存储，随着数据量的大小逐步达到物理内存大小，可能导致内存溢出。要避免这种情况的发生，可能的想法包括开启原生的持久化或者使用第三方的持久化。但是，如果不想使用原生或者第三方的持久化，还可以开启交换，这时，Ignite会将内存中的数据移动到磁盘上的交换空间，注意Ignite不会提供自己的交换空间实现，而是利用了操作系统（OS）提供的交换功能。
 
 打开交换空间之后，Ignite会将数据存储在内存映射文件（MMF）中，操作系统会根据内存使用情况，将其内容交换到磁盘，但是这时数据访问的性能会下降，另外，还没有数据持久性保证，这意味着交换空间中的数据只在节点在线期间才可用。一旦节点停止，所有数据都会丢失。因此，应该使用交换空间作为内存的扩展，以便留出足够的时间向集群中添加更多的节点，以便数据重新分布并避免集群未及时扩容导致内存溢出的错误（OOM）发生。
@@ -1544,7 +1544,7 @@ XML：
       <property name="dataRegionConfigurations">
         <list>
           <!--
-              Defining a data region that will consume up to 500 MB of RAM 
+              Defining a data region that will consume up to 500 MB of RAM
               with swap enabled.
           -->
           <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
@@ -1564,7 +1564,7 @@ XML：
       </property>
     </bean>
   </property>
-  
+
   <!-- Other configurations. -->
 </bean>
 ```
@@ -1587,13 +1587,13 @@ regionCfg.setInitialSize(100L * 1024 * 1024);
 
 // Setting region max size equal to physical RAM size(5 GB)
 regionCfg.setMaxSize(5L * 1024 * 1024 * 1024);
-        
+
 // Enable swap space.
 regionCfg.setSwapPath("/path/to/some/directory");
-        
+
 // Setting the data region configuration.
 storageCfg.setDataRegionConfigurations(regionCfg);
-        
+
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```

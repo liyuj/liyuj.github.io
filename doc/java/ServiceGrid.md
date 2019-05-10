@@ -1,6 +1,6 @@
 # 8.服务网格
 ## 8.1.服务网格
-### 8.1.1.摘要
+### 8.1.1.概述
 服务网格可以在集群上部署任意用户定义的服务，比如自定义计数器，ID生成器，分层映射等。
 
 比如，服务网格可以作为基于微服务架构的解决方案或者应用的技术基础，了解更多的信息可以参考下面的文章：
@@ -75,21 +75,21 @@ public class ServiceFilter implements IgnitePredicate<ClusterNode> {
 ```
 之后可以将其传给`ServiceConfiguration.setNodeFilter(...)`方法，然后使用这个配置启动服务。
 ```java
-/ Initiating cache configuration. 
+/ Initiating cache configuration.
 ServiceConfiguration cfg = new ServiceConfiguration();
-        
+
 // Setting service instance to deploy.
 cfg.setService(service);
-        
+
 // Setting service name.
 cfg.setName("serviceName");
-        
+
 // Providing the nodes filter.
 cfg.setNodeFilter(new ServiceFilter());
-        
+
 // Getting instance of Ignite Service Grid.
 IgniteServices services = ignite.services();
-        
+
 // Deploying the service.
 services.deploy(cfg);
 ```
@@ -152,7 +152,7 @@ public interface MyCounterService {
      * Increment counter value and return the new value.
      */
     int increment() throws CacheException;
-     
+
     /**
      * Get current counter value.
      */
@@ -193,7 +193,7 @@ public class MyCounterServiceImpl implements Service, MyCounterService {
   @Override public void cancel(ServiceContext ctx) {
     // Remove counter from cache.
     cache.remove(svcName);
-    
+
     System.out.println("Service was cancelled: " + svcName);
   }
 
@@ -223,12 +223,12 @@ public class MyCounterServiceImpl implements Service, MyCounterService {
   private static class CounterEntryProcessor implements EntryProcessor<String, Integer, Integer> {
     @Override public Integer process(MutableEntry<String, Integer> e, Object... args) {
       int newVal = e.exists() ? e.getValue() + 1 : 1;
-      
+
       // Update cache.
       e.setValue(newVal);
 
       return newVal;
-    }      
+    }
   }
 }
 ```
@@ -240,7 +240,7 @@ ClusterGroup cacheGrp = ignite.cluster().forCacheNodes("myCounterService");
 
 // Get an instance of IgniteServices for the cluster group.
 IgniteServices svcs = ignite.services(cacheGrp);
- 
+
 // Deploy per-node singleton. An instance of the service
 // will be deployed on every node within the cluster group.
 svcs.deployNodeSingleton("myCounterService", new MyCounterServiceImpl());
@@ -270,7 +270,7 @@ IgniteCompute compute = ignite.compute();
 compute.run(new IgniteRunnable() {
   @ServiceResource(serviceName = "myCounterService");
   private MyCounterService counterSvc;
-  
+
   public void run() {
     // Ivoke a method on 'MyCounterService' interface.
     int newValue = cntrSvc.increment();
@@ -281,7 +281,7 @@ compute.run(new IgniteRunnable() {
 });
 ```
 ## 8.3.集群单例
-### 8.3.1.摘要
+### 8.3.1.概述
 `IgniteServices`可以在任意的集群节点上部署任意数量的的服务，不过最常用的特性是在集群中部署一个服务的单例，Ignite会管理这个单例除非拓扑发生变化或者节点发生故障。
 
 ::: tip 注意
@@ -322,14 +322,14 @@ svcs.deployKeyAffinitySingleton("myKeySingleton", new MyService(), "myCache", ne
 IgniteServices svcs = ignite.services();
 
 ServiceConfiguration cfg = new ServiceConfiguration();
- 
+
 cfg.setName("myKeySingleton");
 cfg.setService(new MyService());
 cfg.setCacheName("myCache");
 cfg.setAffinityKey(new MyCacheKey());
 cfg.setTotalCount(1);
 cfg.setMaxPerNodeCount(1);
- 
+
 svcs.deploy(cfg);
 ```
 ## 8.4.服务配置
@@ -339,7 +339,7 @@ svcs.deploy(cfg);
 XML：
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration">
-    ...  
+    ...
     <!-- Distributed Service configuration. -->
     <property name="serviceConfiguration">
         <list>
@@ -354,7 +354,7 @@ XML：
         </list>
     </property>
 </bean>
- 
+
 <bean id="myServiceImpl" class="foo.bar.MyServiceImpl">
   ...
 </bean>
@@ -362,22 +362,22 @@ XML：
 Java：
 ```java
 ServiceConfiguration svcCfg1 = new ServiceConfiguration();
- 
+
 // Cluster-wide singleton configuration.
 svcCfg1.setName("MyClusterSingletonSvc");
 svcCfg1.setMaxPerNodeCount(1);
 svcCfg1.setTotalCount(1);
 svcCfg1.setService(new MyClusterSingletonImpl());
- 
+
 ServiceConfiguration svcCfg2 = new ServiceConfiguration();
- 
+
 // Per-node singleton configuration.
 svcCfg2.setName("MyNodeSingletonSvc");
 svcCfg2.setMaxPerNodeCount(1);
 svcCfg2.setService(new MyNodeSingletonImpl());
 
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
- 
+
 igniteCfg.setServiceConfiguration(svcCfg1, svcCfg2);
 ...
 
@@ -397,6 +397,6 @@ cfg.setTotalCount(4);
 
 // Maximum of 2 service instances per each Ignite node.
 cfg.setMaxPerNodeCount(2);
- 
+
 ignite.services().deploy(cfg);
 ```

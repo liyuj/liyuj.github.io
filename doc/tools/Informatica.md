@@ -1,6 +1,6 @@
 # 5.Informatica
 ## 5.1.Informatica
-### 5.1.1.摘要
+### 5.1.1.概述
 Informatica是一个云数据管理和集成工具，可以通过ODBC连接将Informatica接入Ignite。
 ### 5.1.2.从Informatica PowerCenter Designer接入
 在PowerCenter Designer中，必须安装32位的Ignite ODBC驱动才能接入Ignite，可以按照下面链接的内容安装ODBC驱动并且创建DSN：
@@ -45,7 +45,7 @@ Driver  = /usr/local/lib/libignite-odbc.so
 UNIXODBC_LIB=/opt/unixodbc/lib/
 IGNITE_ODBC_LIB=/opt/igniteodbc/lib
 LD_LIBRARY_PATH=<UNIXODBC_LIB>:<IGNITE_ODBC_LIB>
- 
+
 <INFORMATICA_HOME>/tools/debugtools/ssgodbc/linux64/ssgodbc.linux64 -d ApacheIgnite -u ignite -p ignite -v
 ```
 ### 5.1.4.配置相关的连接
@@ -76,11 +76,11 @@ sudo zypper install libtool-2.4.6-7.1.x86_64
 Loading repository data...
 Reading installed packages...
 Resolving package dependencies...
- 
+
 Problem: nothing provides m4 >= 1.4.16 needed by libtool-2.4.6-7.1.x86_64
  Solution 1: do not install libtool-2.4.6-7.1.x86_64
  Solution 2: break libtool-2.4.6-7.1.x86_64 by ignoring some of its dependencies
- 
+
 Choose from above solutions by number or cancel [1/2/c] (c): 2
 ```
 *1.4.安装OpenSSL*
@@ -91,7 +91,7 @@ Loading repository data...
 Reading installed packages...
 'openssl-devel' not found in package names. Trying capabilities.
 Resolving package dependencies...
- 
+
 Problem: libopenssl-devel-1.0.0c-17.1.x86_64 requires zlib-devel, but this requirement cannot be provided
   uninstallable providers: zlib-devel-1.2.5-8.1.i586[oss]
                    zlib-devel-1.2.5-8.1.x86_64[oss]
@@ -99,7 +99,7 @@ Problem: libopenssl-devel-1.0.0c-17.1.x86_64 requires zlib-devel, but this requi
  Solution 2: do not ask to install a solvable providing openssl-devel
  Solution 3: do not ask to install a solvable providing openssl-devel
  Solution 4: break libopenssl-devel-1.0.0c-17.1.x86_64 by ignoring some of its dependencies
- 
+
 Choose from above solutions by number or cancel [1/2/3/4/c] (c): 1
 ```
 *1.5.安装gcc编译器*
@@ -112,7 +112,7 @@ Resolving package dependencies...
 2 Problems:
 Problem: gcc5-5.5.0+r253576-1.1.x86_64 requires libgcc_s1 >= 5.5.0+r253576-1.1, but this requirement cannot be provided
 Problem: gcc5-c++-5.5.0+r253576-1.1.x86_64 requires gcc5 = 5.5.0+r253576-1.1, but this requirement cannot be provided
- 
+
 Problem: gcc5-5.5.0+r253576-1.1.x86_64 requires libgcc_s1 >= 5.5.0+r253576-1.1, but this requirement cannot be provided
   uninstallable providers: libgcc_s1-5.5.0+r253576-1.1.i586[devel_gcc]
                    libgcc_s1-5.5.0+r253576-1.1.x86_64[devel_gcc]
@@ -127,9 +127,9 @@ Problem: gcc5-5.5.0+r253576-1.1.x86_64 requires libgcc_s1 >= 5.5.0+r253576-1.1, 
  Solution 2: do not install gcc5-5.5.0+r253576-1.1.x86_64
  Solution 3: do not install gcc5-5.5.0+r253576-1.1.x86_64
  Solution 4: break gcc5-5.5.0+r253576-1.1.x86_64 by ignoring some of its dependencies
- 
+
 Choose from above solutions by number or skip, retry or cancel [1/2/3/4/s/r/c] (c): 1
- 
+
 Problem: gcc5-c++-5.5.0+r253576-1.1.x86_64 requires gcc5 = 5.5.0+r253576-1.1, but this requirement cannot be provided
   uninstallable providers: gcc5-5.5.0+r253576-1.1.i586[devel_gcc]
                    gcc5-5.5.0+r253576-1.1.x86_64[devel_gcc]
@@ -138,11 +138,11 @@ Problem: gcc5-c++-5.5.0+r253576-1.1.x86_64 requires gcc5 = 5.5.0+r253576-1.1, bu
  Solution 2: do not install gcc5-c++-5.5.0+r253576-1.1.x86_64
  Solution 3: do not install gcc5-c++-5.5.0+r253576-1.1.x86_64
  Solution 4: break gcc5-c++-5.5.0+r253576-1.1.x86_64 by ignoring some of its dependencies
- 
+
 Choose from above solutions by number or skip, retry or cancel [1/2/3/4/s/r/c] (c): 1
 Resolving dependencies...
 Resolving package dependencies...
- 
+
 Problem: gcc5-c++-5.5.0+r253576-1.1.x86_64 requires libstdc++6-devel-gcc5 = 5.5.0+r253576-1.1, but this requirement cannot be provided
   uninstallable providers: libstdc++6-devel-gcc5-5.5.0+r253576-1.1.i586[devel_gcc]
                    libstdc++6-devel-gcc5-5.5.0+r253576-1.1.x86_64[devel_gcc]
@@ -151,14 +151,14 @@ Problem: gcc5-c++-5.5.0+r253576-1.1.x86_64 requires libstdc++6-devel-gcc5 = 5.5.
  Solution 2: do not install gcc5-c++-5.5.0+r253576-1.1.x86_64
  Solution 3: do not install gcc5-c++-5.5.0+r253576-1.1.x86_64
  Solution 4: break gcc5-c++-5.5.0+r253576-1.1.x86_64 by ignoring some of its dependencies
- 
+
 Choose from above solutions by number or cancel [1/2/3/4/c] (c): 1
 ```
 *1.6.创建编译器执行文件的符号链接*
 ```bash
 sudo rm /usr/bin/gcc
 sudo rm /usr/bin/g++
- 
+
 sudo ln -s /usr/bin/g++-5 /usr/bin/g++
 sudo ln -s /usr/bin/gcc-5 /usr/bin/gcc
 ```
@@ -186,7 +186,7 @@ g++ (SUSE Linux) 5.5.0 20171010 [gcc-5-branch revision 253640]
 ```bash
 cd $IGNITE_HOME/platforms/cpp
 export LDFLAGS=-lrt
- 
+
 libtoolize && aclocal && autoheader && automake --add-missing && autoreconf
 ./configure --enable-odbc
 make

@@ -1,6 +1,6 @@
 # 5.ODBC
 ## 5.1.ODBC驱动
-### 5.1.1.摘要
+### 5.1.1.概述
 Ignite包括一个ODBC驱动，可以通过标准SQL查询和原生ODBC API查询和修改存储于分布式缓存中的数据。
 
 要了解ODBC的细节，可以参照[ODBC开发者参考](https://msdn.microsoft.com/en-us/library/ms714177.aspx)。
@@ -276,7 +276,7 @@ driver=Apache Ignite
 ```
 ## 5.3.查询和修改数据
 像数据库一样访问Ignite。
-### 5.3.1.摘要
+### 5.3.1.概述
 本章会详细描述如何接入Ignite集群，如何使用ODBC驱动执行各种SQL查询。
 
 在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](/doc/sql/JavaDeveloperGuide.md#_7-2-模式和索引)的字段。
@@ -382,7 +382,7 @@ SQLExecDirect(stmt, query3, SQL_NTS);
             </list>
           </property>
         </bean>
-        
+
         <bean class="org.apache.ignite.configuration.CacheConfiguration">
           <property name="name" value="Organization"/>
           <property name="cacheMode" value="PARTITIONED"/>
@@ -401,7 +401,7 @@ SQLExecDirect(stmt, query3, SQL_NTS);
                     <entry key="name" value="java.lang.String"/>
                   </map>
                 </property>
-                
+
                 <property name="indexes">
                     <list>
                         <bean class="org.apache.ignite.cache.QueryIndex">
@@ -456,17 +456,17 @@ if (!SQL_SUCCEEDED(ret))
   SQLSMALLINT errMsgLen = static_cast<SQLSMALLINT>(sizeof(errMsg));
 
   SQLGetDiagRec(SQL_HANDLE_DBC, dbc, 1, sqlstate, &nativeCode, errMsg, errMsgLen, &errMsgLen);
-  
-  std::cerr << "Failed to connect to Apache Ignite: " 
+
+  std::cerr << "Failed to connect to Apache Ignite: "
             << reinterpret_cast<char*>(sqlstate) << ": "
             << reinterpret_cast<char*>(errMsg) << ", "
-            << "Native error code: " << nativeCode 
+            << "Native error code: " << nativeCode
             << std::endl;
 
   // Releasing allocated handles.
   SQLFreeHandle(SQL_HANDLE_DBC, dbc);
   SQLFreeHandle(SQL_HANDLE_ENV, env);
-  
+
   return;
 }
 ```
@@ -493,11 +493,11 @@ if (!SQL_SUCCEEDED(ret))
   SQLSMALLINT errMsgLen = static_cast<SQLSMALLINT>(sizeof(errMsg));
 
   SQLGetDiagRec(SQL_HANDLE_DBC, dbc, 1, sqlstate, &nativeCode, errMsg, errMsgLen, &errMsgLen);
-  
-  std::cerr << "Failed to perfrom SQL query upon Apache Ignite: " 
+
+  std::cerr << "Failed to perfrom SQL query upon Apache Ignite: "
             << reinterpret_cast<char*>(sqlstate) << ": "
             << reinterpret_cast<char*>(errMsg) << ", "
-            << "Native error code: " << nativeCode 
+            << "Native error code: " << nativeCode
             << std::endl;
 }
 else
@@ -508,7 +508,7 @@ else
     SQLCHAR buffer[BUFFER_SIZE];
     SQLLEN resLen;
   };
-  
+
   // Getting a number of columns in the result set.
   SQLSMALLINT columnsCnt = 0;
   SQLNumResultCols(stmt, &columnsCnt);
@@ -529,7 +529,7 @@ else
       std::cout << std::setw(16) << std::left << columns[i].buffer << " ";
 
     std::cout << std::endl;
-    
+
     ret = SQLFetch(stmt);
   }
 }
@@ -642,7 +642,7 @@ void AdjustSalary(SQLHDBC dbc, int64_t key, double salary)
 
   SQLBindParameter(stmt, 1, SQL_PARAM_INPUT,
       SQL_C_DOUBLE, SQL_DOUBLE, 0, 0, &salary, 0, 0);
-  
+
   SQLBindParameter(stmt, 2, SQL_PARAM_INPUT, SQL_C_SLONG,
       SQL_BIGINT, 0, 0, &key, 0, 0);
 
@@ -758,7 +758,7 @@ Ignite的ODBC驱动可以通过`SET STREAMING`命令对流化数据进行批量�
 :::
 
 ## 5.4.规范
-### 5.4.1.摘要
+### 5.4.1.概述
 ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接口一致性级别，在本章中可以知道Ignite的ODBC驱动支持了哪些特性。
 ### 5.4.2.核心接口一致性
 
@@ -1095,7 +1095,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
  - `SQL_TYPE_DATE`
  - `SQL_TYPE_TIMESTAMP`
  - `SQL_TYPE_TIME`
- 
+
 ## 5.6.错误码
 要获取错误码， 可以使用`SQLGetDiagRec()`函数，它会返回一个ANSI SQL标准定义的错误码字符串，比如：
 ```cpp
@@ -1126,13 +1126,13 @@ if (ret != SQL_SUCCESS)
 	int i = 1;
 	ret = SQLGetDiagRec(SQL_HANDLE_STMT, stmt, i, sqlstate,
                       &nativeCode, message, sizeof(message), &reallen);
-	
+
 	while (ret != SQL_NO_DATA)
 	{
 		std::cout << sqlstate << ": " << message;
-	
+
 		++i;
-		ret = SQLGetDiagRec(SQL_HANDLE_STMT, stmt, i, sqlstate, 
+		ret = SQLGetDiagRec(SQL_HANDLE_STMT, stmt, i, sqlstate,
                         &nativeCode, message, sizeof(message), &reallen);
 	}
 }

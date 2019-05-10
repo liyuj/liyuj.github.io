@@ -22,7 +22,7 @@ Ignite数据加载和流处理功能可以以可扩展以及容错的方式处�
 **与已有的流处理技术集成**
 Ignite可以与各种主要的流处理技术和kuaig进行集成，比如Kafka、Camel、Storm或者JMS，从而为基于Ignite的架构带来更强大的流处理功能。
 ## 5.2.数据加载
-### 5.2.1.摘要
+### 5.2.1.概述
 用标准的缓存`put(...)`和`putAll(...)`操作加载大量的数据通常是比较低效的。Ignite提供了`IgniteDataStreamer`API来与主要的流技术集成，还有`CacheStore`API，它们有助于以一个更高效的方式将大量数据注入Ignite缓存。
 ### 5.2.2.IgniteDataStreamer
 数据流处理器是通过`IgniteDataStreamer`API定义的，它可以将大量的连续数据注入Ignite缓存。数据流处理器以可扩展和容错的方式在数据被发送到集群节点之前通过把批量数据放在一起以获得高性能。
@@ -88,11 +88,11 @@ Affinity aff = ignite.affinity(cacheName);
 for (int personId = 0; personId < PERSONS_CNT; personId++) {
     // Get partition ID for the key under which person is stored in cache.
     int partId = aff.partition(personId);
-  
+
     Person person = new Person(personId);
     person.setPartitionId(partId);
     // Fill other fields.
-  
+
     cache.put(personId, person);
 }
 ```
@@ -103,31 +103,31 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   // Will be automatically injected.
   @IgniteInstanceResource
   private Ignite ignite;
-  
+
 	...
   // This mehtod is called whenever "IgniteCache.loadCache()" or
   // "IgniteCache.localLoadCache()" methods are called.
   @Override public void loadCache(IgniteBiInClosure<Long, Person> clo, Object... args) {
     Affinity aff = ignite.affinity(cacheName);
     ClusterNode locNode = ignite.cluster().localNode();
-    
+
     try (Connection conn = connection()) {
       for (int part : aff.primaryPartitions(locNode))
         loadPartition(conn, part, clo);
-      
+
       for (int part : aff.backupPartitions(locNode))
         loadPartition(conn, part, clo);
     }
   }
-  
+
   private void loadPartition(Connection conn, int part, IgniteBiInClosure<Long, Person> clo) {
     try (PreparedStatement st = conn.prepareStatement("select * from PERSONS where partId=?")) {
       st.setInt(1, part);
-      
+
       try (ResultSet rs = st.executeQuery()) {
         while (rs.next()) {
           Person person = new Person(rs.getLong(1), rs.getString(2), rs.getString(3));
-          
+
           clo.apply(person.getId(), person);
         }
       }
@@ -136,7 +136,7 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
       throw new CacheLoaderException("Failed to load values from cache store.", e);
     }
   }
-  
+
   ...
 }
 ```
@@ -147,7 +147,7 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 为了保证一致性和持久性，Ignite的原生持久化支持**预写日志**，预写日志默认是开启的。但是这会影响数据预加载的性能，因此建议在数据预加载时禁用WAL，加载完成启用WAL，具体可以看WAL的Java API文档，以及SQL的ALTER TABLE文档。
 
 ## 5.3.数据流处理器
-### 5.3.1.摘要
+### 5.3.1.概述
 数据流处理器是通过`IgniteDataStreamer`API定义的，用于将大量的持续数据流注入Ignite缓存。数据流处理器以可扩展以及容错的方式，为将所有的数据流注入Ignite提供了**至少一次保证**。
 数据流处理器不参与事务。
 ### 5.3.2.IgniteDataStreamer
@@ -161,7 +161,7 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 要将数据加入数据流处理器，调用`IgniteDataStreamer.addData(...)`方法即可。
 ```java
 // Get the data streamer reference and stream data.
-try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCache")) {    
+try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCache")) {
     // Stream entries.
     for (int i = 0; i < 100000; i++)
         stmr.addData(i, Integer.toString(i));

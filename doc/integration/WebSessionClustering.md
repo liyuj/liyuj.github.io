@@ -1,6 +1,6 @@
 # 3.Web会话集群化
 ## 3.1.Web会话集群化
-### 3.1.1.摘要
+### 3.1.1.概述
 Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web Session的能力。包括Apache Tomcat,Eclipse Jetty,Oracle WebLogic以及其它的。
 
 缓存Web会话对于运行一个应用服务器集群时是有用的。当在一个Servlet容器中运行一个Web应用时，可能面临性能和可扩展性的问题，一个单独的应用服务器通常可能无法自己处理很大的流量，一个常规的解决方案就是跨越多个集群实例扩展Web应用。
@@ -66,7 +66,7 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
     <!-- Cache name. -->
     <property name="name" value="session-cache"/>
- 
+
     <!-- Set up LRU eviction policy with 10000 sessions limit. -->
     <property name="evictionPolicy">
         <bean class="org.apache.ignite.cache.eviction.lru.LruEvictionPolicy">

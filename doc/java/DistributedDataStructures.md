@@ -13,7 +13,7 @@ Ignite为开发者提供了采用自己熟悉的数据结构的能力，然后�
  - Semaphore
 
 ## 6.2.队列和集合
-### 6.2.1.摘要
+### 6.2.1.概述
 Ignite除了提供了标准的键-值的类似于Map的存储以外，也提供了一个快速的分布式阻塞队列和分布式集合的实现。
 
 `IgniteQueue`和`IgniteSet`分别是`java.util.concurrent.BlockingQueue`和`java.util.Set`接口的实现，也支持`java.util.Collection`接口的所有功能，这两个实现既可以以并置模式也可以以非并置模式创建。
@@ -50,7 +50,7 @@ Ignite ignite = Ignition.ignite();
 
 CollectionConfiguration colCfg = new CollectionConfiguration();
 
-colCfg.setCollocated(true); 
+colCfg.setCollocated(true);
 
 // Create collocated queue.
 IgniteQueue<String> queue = ignite.queue("queueName", 0, colCfg);
@@ -61,7 +61,7 @@ Ignite ignite = Ignition.ignite();
 
 CollectionConfiguration colCfg = new CollectionConfiguration();
 
-colCfg.setCollocated(true); 
+colCfg.setCollocated(true);
 
 // Create collocated set.
 IgniteSet<String> set = ignite.set("setName", colCfg);
@@ -86,7 +86,7 @@ Ignite的集合可以通过`CollectionConfiguration`的API进行配置（可以�
 |`setNodeFilter(IgnitePredicate<ClusterNode>`)|设置可选的谓词，该谓词可以指定其存储在哪些节点上|无|
 
 ## 6.3.原子类型
-### 6.3.1.摘要
+### 6.3.1.概述
 Ignite支持分布式的原子类型*long*和*reference*，分别类似于`java.util.concurrent.atomic.AtomicLong`和`java.util.concurrent.atomic.AtomicReference`。
 
 Ignite的原子性是跨集群分布式的，从根本上支持了对全局可见的数值的原子性操作（比如增量-获取或者比较-赋值）。比如，可以更新一个节点上的原子性的long类型值，然后从另一个节点读取。
@@ -103,7 +103,7 @@ Ignite的原子性是跨集群分布式的，从根本上支持了对全局可�
 AtomicLong:
 ```java
 Ignite ignite = Ignition.ignite();
- 
+
 IgniteAtomicLong atomicLong = ignite.atomicLong(
     "atomicName", // Atomic long name.
     0,            // Initial value.
@@ -168,7 +168,7 @@ XML：
         <bean class="org.apache.ignite.configuration.AtomicConfiguration">
             <!-- Set number of backups. -->
             <property name="backups" value="1"/>
-            
+
             <!-- Set number of sequence values to be reserved. -->
             <property name="atomicSequenceReserveSize" value="5000"/>
         </bean>
@@ -178,18 +178,18 @@ XML：
 Java:
 ```java
 AtomicConfiguration atomicCfg = new AtomicConfiguration();
- 
+
 // Set number of backups.
 atomicCfg.setBackups(1);
 
-// Set number of sequence values to be reserved. 
+// Set number of sequence values to be reserved.
 atomicCfg.setAtomicSequenceReserveSize(5000);
 
 IgniteConfiguration cfg = new IgniteConfiguration();
-  
+
 // Use atomic configuration in Ignite configuration.
 cfg.setAtomicConfiguration(atomicCfg);
-  
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -227,13 +227,13 @@ for (int i = 0; i < 10; i++)
 latch.await();
 ```
 ## 6.5.ID生成器
-### 6.5.1.摘要
+### 6.5.1.概述
 `IgniteCacheAtomicSequence`接口提供的分布式原子性序列类似于分布式原子性的long类型，但是它的值只能增长。它也支持预留一定范围的序列值，来避免每次一个序列必须提供下一个值时导致的昂贵的网络消耗以及缓存更新。也就是，当在一个原子性序列上执行了`incrementAndGet()`（或者任何其它的原子性操作），数据结构会往前预留一定范围的序列值，它会保证对于这个序列实例来说跨集群的唯一性。
 
 下面的例子显示了如何创建原子性序列：
 ```java
 Ignite ignite = Ignition.ignite();
- 
+
 IgniteAtomicSequence seq = ignite.atomicSequence(
     "seqName", // Sequence name.
     0,       // Initial value for sequence.
@@ -251,7 +251,7 @@ final IgniteAtomicSequence seq = ignite.atomicSequence("seqName", 0, true);
 for (int i = 0; i < 20; i++) {
   long currentValue = seq.get();
   long newValue = seq.incrementAndGet();
-  
+
   ...
 }
 ```
@@ -265,7 +265,7 @@ for (int i = 0; i < 20; i++) {
 :::
 
 ## 6.6.Semaphore（信号量）
-### 6.6.1.摘要
+### 6.6.1.概述
 Ignite的分布式Semaphore的实现和行为类似于众所周知的`java.util.concurrent.Semaphore`。和任何其它的Semaphore一样，它维护了一个许可的集合，通过`acquire()`方法获得许可，通过`release()`方法释放许可，相对应的可以限制对一些逻辑或者物理资源的访问或者同步执行流程，唯一不同的是Ignite的Semaphone不仅仅在单一JVM的范围内具有这些行为，而是一个跨越多个远程节点的集群的范围。
 ### 6.6.2.示例
 要使用分布式的Semaphore，可以用下面的方式进行创建：
@@ -297,7 +297,7 @@ try {
     // Semaphore permit is acquired. Execute a distributed task.
     ignite.compute().run(() -> {
         System.out.println("Executed on:" + ignite.cluster().localNode().id());
-  
+
         // Additional logic.
     });
 }

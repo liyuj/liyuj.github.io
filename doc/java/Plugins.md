@@ -1,6 +1,6 @@
 # 13.插件
 ## 13.1.插件
-### 13.1.1.摘要
+### 13.1.1.概述
 Ignite的插件系统可以使第三方扩展Ignite的核心功能，理解Ignite插件工作方式的最佳途径是去看一下Ignite的生命周期插件。
 ### 13.1.2.插件的配置
 每个插件都需要一个`PluginConfiguration`，然后在`IgniteConfiguration.pluginConfigurations`属性中注册，如下所示：

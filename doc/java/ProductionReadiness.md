@@ -2,7 +2,7 @@
 ## 11.1.生产准备
 本章涵盖了在准备将系统迁移到生产环境时的主要考虑因素。
 ## 11.2.容量规划
-### 11.2.1.摘要
+### 11.2.1.概述
 对系统容量进行编制和规划是设计的一个必要组成部分。理解需要的缓存大小有助于决定需要多少物理内存、多少JVM、多少CPU和服务器。本章节会讨论有助于规划和确定一个系统所需最小硬件需求的各种技术。
 ### 11.2.2.规划内存使用量
 
@@ -42,7 +42,7 @@ Ignite通常会为每个条目增加200个字节。
 如果在没有代码的情况下规划计算通常来说很难进行估计，理解应用中要执行的每个操作要花费的成本是非常重要的，然后再乘以各种情况下预期要执行的操作的数量。为此最好从Ignite的基准测试结果切入，它详细描述了标准操作的执行结果，以及提供这种性能所必要的粗略的容量需求。
 
 在32核4.large的AWS实例上，性能测试结果如下：
- 
+
   - PUT/GET: 26k/s
   - PUT (事务): 68k/s
   - PUT (事务 - 悲观): 20k/s
@@ -78,7 +78,7 @@ Ignite通常会为每个条目增加200个字节。
 不是，磁盘上的数据大小不能直接1：1地映射到内存中，粗略估计，如果不计算索引和其它的负载，和磁盘比大概是2.5/3倍的关系，如果要得到精确值，可以通过将记录导入Ignite来得出对象大小的平均值，然后乘以期望的对象数量。
 
 ## 11.3.性能提示
-### 11.3.1.摘要
+### 11.3.1.概述
 Ignite内存数据网格的性能和吞吐量很大程度上依赖于使用的功能以及配置，在几乎所有的场景中都可以通过简单地调整缓存的配置来优化缓存的性能。
 ### 11.3.2.禁用内部事件通知
 Ignite有丰富的事件系统来向用户通知各种各样的事件，包括缓存的修改、退出、压缩、拓扑的变化以及很多其它的。因为每秒钟可能产生上千的事件，它会对系统产生额外的负载，这会导致显著地性能下降。因此，强烈建议只有应用逻辑必要时才启用这些事件。事件通知默认是禁用的：
@@ -86,7 +86,7 @@ Ignite有丰富的事件系统来向用户通知各种各样的事件，包括�
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ... 
+    ...
     <!-- Enable only some events and leave other ones disabled. -->
     <property name="includeEventTypes">
         <list>
@@ -132,10 +132,10 @@ Ignite使用了一组线程池，它们的大小默认由`max(8, CPU总核数)`�
 XML:
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ... 
+    ...
     <!-- Configure internal thread pool. -->
     <property name="publicThreadPoolSize" value="64"/>
-    
+
     <!-- Configure system thread pool. -->
     <property name="systemThreadPoolSize" value="32"/>
     ...
@@ -172,7 +172,7 @@ XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
-<!-- Redefining maximum memory size for the cluster node usage. -->  
+<!-- Redefining maximum memory size for the cluster node usage. -->
 <property name="dataStorageConfiguration">
   <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
     <property name="defaultDataRegionConfiguration">
@@ -183,7 +183,7 @@ XML：
     </property>
   </bean>
 </property>
-  
+
 <!-- The rest of the parameters. -->
 </bean>
 ```
@@ -225,7 +225,7 @@ XML：
       <property name="pageSize" value="#{4 * 1024}"/>
     </bean>
   </property>
-  
+
   <!--- Additional settings ---->
 </bean>
 ```
@@ -250,7 +250,7 @@ cfg.setDataStorageConfiguration(storageCfg);
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
+   ...
   <!-- Enabling Ignite Native Persistence. -->
   <property name="dataStorageConfiguration">
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
@@ -330,7 +330,7 @@ Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页�
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
+   ...
   <!-- Enabling Ignite Native Persistence. -->
   <property name="dataStorageConfiguration">
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
@@ -371,20 +371,20 @@ Ignition.start(cfg);
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-   ...		
+   ...
   <!-- Enabling Ignite Native Persistence. -->
   <property name="dataStorageConfiguration">
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
       <!-- Enable write throttling. -->
       <property name="writeThrottlingEnabled" value="true"/>
-      
+
       <property name="defaultDataRegionConfiguration">
         <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
           <!-- Enabling persistence. -->
           <property name="persistenceEnabled" value="true"/>
-                
+
           <!-- Increasing the buffer size to 1 GB. -->
-          <property name="checkpointPageBufferSize" 
+          <property name="checkpointPageBufferSize"
                     value="#{1024L * 1024 * 1024}"/>
         </bean>
       </property>
@@ -449,8 +449,8 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 
 对于JDK1.8来说，建议使用G1垃圾收集器，在下面的示例中，一台开启了G1的64核CPU的机器，配置10G的堆空间：
 ```bash
--server 
--Xms10g 
+-server
+-Xms10g
 -Xmx10g
 -XX:+AlwaysPreTouch
 -XX:+UseG1GC
@@ -470,7 +470,7 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 -XX:+UseParNewGC
 -XX:+UseConcMarkSweepGC
 -XX:+CMSClassUnloadingEnabled
--XX:+CMSPermGenSweepingEnabled 
+-XX:+CMSPermGenSweepingEnabled
 -XX:+ScavengeBeforeFullGC
 -XX:+CMSScavengeBeforeRemark
 -XX:+DisableExplicitGC
@@ -617,7 +617,7 @@ ulimit -n 32768 -u 32768
 :::
 
 ## 11.6.严重错误处理
-### 11.6.1.摘要
+### 11.6.1.概述
 Ignite是一个健壮且容错的系统，但在现实中，一些无法预知的问题，可能导致节点无法操作，以致影响整个集群的状态，这样的问题可以在运行时进行检测，然后根据预配置的错误处理程序进行处理。
 ### 11.6.2.严重错误
 下面的错误会被视为严重：
@@ -673,24 +673,24 @@ Ignite有一个内部机制用于验证关键进程是否正常工作。会定�
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    
+
     <property name="systemWorkerBlockedTimeout" value="#{60 * 60 * 1000}"/>
-    
+
     <property name="failureHandler">
         <bean class="org.apache.ignite.failure.StopNodeFailureHandler">
-          
-          <!-- uncomment to enable this handler to 
+
+          <!-- uncomment to enable this handler to
            process critical workers' hung-ups -->
           <!--property name="ignoredFailureTypes">
             <list>
             </list>
           </property-->
-         
+
       </bean>
-        	
+
     </property>
 </bean>
- 
+
 ```
 ::: tip 注意
 关键进程的有效性检查也可以通过`FailureHandlingMxBean`JMX MBean进行配置。

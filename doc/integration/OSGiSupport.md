@@ -1,6 +1,6 @@
 # 4.OSGi支持
 ## 4.1.在Apache Karaf中安装
-### 4.1.1.摘要
+### 4.1.1.概述
 [Apache Karaf](https://karaf.apache.org/)是一个轻量级、功能强大的企业级OSGi容器，它支持Eclipse Equinox和Apache Felix运行时。
 
 > **支持Apache Karaf4.0.0版本系列**
@@ -96,7 +96,7 @@ Hit '<ctrl-d>' or type 'system:shutdown' or 'logout' to shutdown Karaf.
 
 karaf@root()> la | grep ignite-osgi-paxlogging
 75 | Resolved  |   8 | 1.5.0.SNAPSHOT                            | ignite-osgi-paxlogging, Hosts: 1
-karaf@root()> 
+karaf@root()>
 ```
 
 ## 4.2.支持的模块
@@ -160,13 +160,13 @@ import org.apache.ignite.osgi.classloaders.OsgiClassLoadingStrategyType;
 public class MyActivator extends IgniteAbstractOsgiContextActivator {
 
     /**
-     * Configure your Ignite instance as you would normally do, 
+     * Configure your Ignite instance as you would normally do,
      * and return it.
      */
     @Override public IgniteConfiguration igniteConfiguration() {
         IgniteConfiguration config = new IgniteConfiguration();
         config.setGridName("testGrid");
-      
+
         // ...
 
         return config;

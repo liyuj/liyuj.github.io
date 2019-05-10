@@ -1,6 +1,6 @@
 # 8.Hibernate
 ## 8.1.Hibernate二级缓存
-### 8.1.1.摘要
+### 8.1.1.概述
 Ignite可以用做Hibernate的二级缓存，它可以显著地提升应用持久化层的性能。
 
 Hibernate是著名的、应用广泛的对象关系映射框架(ORM),在与SQL数据库紧密互动的同时，它通过对查询结果集的缓存来最小化昂贵的数据库请求。
@@ -59,23 +59,23 @@ Hibernate4:
         ...
         <!-- Enable L2 cache. -->
         <property name="cache.use_second_level_cache">true</property>
-        
+
         <!-- Generate L2 cache statistics. -->
         <property name="generate_statistics">true</property>
-        
+
         <!-- Specify Ignite as L2 cache provider. -->
         <property name="cache.region.factory_class">org.apache.ignite.cache.hibernate.HibernateRegionFactory</property>
-        
+
         <!-- Specify the name of the grid, that will be used for second level caching. -->
         <property name="org.apache.ignite.hibernate.ignite_instance_name">hibernate-grid</property>
-        
+
         <!-- Set default L2 cache access type. -->
         <property name="org.apache.ignite.hibernate.default_access_type">READ_ONLY</property>
-        
+
         <!-- Specify the entity classes for mapping. -->
         <mapping class="com.mycompany.MyEntity1"/>
         <mapping class="com.mycompany.MyEntity2"/>
-        
+
         <!-- Per-class L2 cache settings. -->
         <class-cache class="com.mycompany.MyEntity1" usage="read-only"/>
         <class-cache class="com.mycompany.MyEntity2" usage="read-only"/>
@@ -101,23 +101,23 @@ Hibernate4:
     <property name="atomicityMode" value="ATOMIC"/>
     <property name="writeSynchronizationMode" value="FULL_SYNC"/>
 </bean>
- 
+
 <!-- Basic configuration for transactional cache. -->
 <bean id="transactional-cache" class="org.apache.ignite.configuration.CacheConfiguration" abstract="true">
     <property name="cacheMode" value="PARTITIONED"/>
     <property name="atomicityMode" value="TRANSACTIONAL"/>
     <property name="writeSynchronizationMode" value="FULL_SYNC"/>
 </bean>
- 
+
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
-    <!-- 
-        Specify the name of the caching grid (should correspond to the 
+    <!--
+        Specify the name of the caching grid (should correspond to the
         one in Hibernate configuration).
     -->
     <property name="igniteInstanceName" value="hibernate-grid"/>
     ...
-    <!-- 
-        Specify cache configuration for each L2 cache region (which corresponds 
+    <!--
+        Specify cache configuration for each L2 cache region (which corresponds
         to a full class name or a full association name).
     -->
     <property name="cacheConfiguration">
@@ -134,12 +134,12 @@ Hibernate4:
             <bean parent="transactional-cache">
                 <property name="name" value="com.mycompany.MyEntity1.children"/>
             </bean>
- 
+
             <!-- Configuration for update timestamps cache. -->
             <bean parent="atomic-cache">
                 <property name="name" value="org.hibernate.cache.spi.UpdateTimestampsCache"/>
             </bean>
- 
+
             <!-- Configuration for query result cache. -->
             <bean parent="atomic-cache">
                 <property name="name" value="org.hibernate.cache.internal.StandardQueryCache"/>
@@ -195,13 +195,13 @@ $IGNITE_HOME/bin/ignite.sh my-config-folder/my-ignite-configuration.xml
 ```java
 
 Session ses = ...;
- 
+
 // Create Criteria query.
 Criteria criteria = ses.createCriteria(cls);
- 
+
 // Enable cacheable flag.
 criteria.setCacheable(true);
- 
+
 ...
 ```
 这个完成之后，查询结果就会被缓存了。

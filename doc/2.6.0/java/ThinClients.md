@@ -5,13 +5,13 @@
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 
 瘦客户端基于二进制客户端协议，这样任何语言都可以接入Ignite集群，目前如下的客户端可用：
- 
+
   - Java瘦客户端
   - .NET瘦客户端
 
 NodeJS、Go、Python、PHP以及其它的客户端在未来的版本中会发布。
 ## 19.2.二进制客户端协议
-### 19.2.1.摘要
+### 19.2.1.概述
 Ignite的二进制客户端协议使得应用不用启动一个全功能的节点，就可以与已有的集群进行通信。应用使用原始的TCP套接字，就可以接入集群。连接建立之后，就可以使用定义好的格式执行缓存操作。
 
 与集群通信，客户端必须遵守下述的数据格式和通信细节。
@@ -117,9 +117,9 @@ XML：
             <property name="portRange" value="30"/>
         </bean>
     </property>
-    
+
     <!-- Other Ignite Configurations. -->
-    
+
 </bean>
 ```
 Java：
@@ -183,8 +183,8 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 int length = readIntLittleEndian(in);
 int successFlag = readByteLittleEndian(in);
 
-// Since Ignite binary protocol uses little-endian byte order, 
-// we need to implement big-endian to little-endian 
+// Since Ignite binary protocol uses little-endian byte order,
+// we need to implement big-endian to little-endian
 // conversion methods for write and read.
 
 // Write int in little-endian byte order
@@ -256,7 +256,7 @@ Maven：
             <groupId>org.apache.ignite</groupId>
             <artifactId>ignite-core</artifactId>
             <version>${ignite.version}</version>
-        </dependency>      
+        </dependency>
     </dependencies>
 ```
 Gradle：
@@ -350,7 +350,7 @@ Windows：
 ```java
 try (IgniteClient client = Ignition.startClient(
   new ClientConfiguration().setAddresses("127.0.0.1:10800")
-)) { 
+)) {
 }
 ```
 #### 19.3.2.2.缓存管理

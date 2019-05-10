@@ -34,12 +34,12 @@ IgniteContext是Spark和Ignite集成的主要入口点。要创建一个Ignite�
 
 比如，下面的代码会用默认的Ignite配置创建一个Ignite上下文：
 ```scala
-val igniteContext = new IgniteContext(sparkContext, 
+val igniteContext = new IgniteContext(sparkContext,
     () => new IgniteConfiguration())
 ```
 下面的代码会从`example-shared-rdd.xml`的配置创建一个Ignite上下文：
 ```scala
-val igniteContext = new IgniteContext(sparkContext, 
+val igniteContext = new IgniteContext(sparkContext,
     "examples/config/spark/example-shared-rdd.xml")
 ```
 ### 4.2.2.IgniteRDD
@@ -86,7 +86,7 @@ GitHub上有一些示例，演示了`IgniteRDD`如何使用：
  - [Java示例](https://github.com/apache/ignite/blob/master/examples/src/main/spark/org/apache/ignite/examples/spark/SharedRDDExample.java)
 
 ## 4.3.Ignite DataFrame
-### 4.3.1.摘要
+### 4.3.1.概述
 Spark DataFrame API引入了描述数据的模式的概念，这样Ignite就可以管理模式并且将数据组织成表格的形式。简单来说，DataFrame就是一个将数据组织成命名列的分布式集合，它在概念上等价于关系数据库中的表，Spark会利用催化剂查询优化器的优势，生成一个比RDD更高效的查询执行计划，而RDD只是一个集群范围的、分区化的元素的集合。
 
 Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内存存储，还会改进数据访问的时间，好处包括：
@@ -123,11 +123,11 @@ implicit val spark = SparkSession.builder()
 ### 4.3.4.读取DataFrame
 要从Ignite中读取数据，需要指定格式以及Ignite配置文件的路径，假定如下名为`person`的Ignite表已经创建和部署：
 ```sql
-CREATE TABLE person ( 
-    id LONG,  
-    name VARCHAR,  
-    city_id LONG,  
-    PRIMARY KEY (id, city_id) 
+CREATE TABLE person (
+    id LONG,
+    name VARCHAR,
+    city_id LONG,
+    PRIMARY KEY (id, city_id)
 ) WITH "backups=1, affinityKey=city_id”;
 
 ```
@@ -137,9 +137,9 @@ Java：
 ```java
 SparkSession spark = _
 String cfgPath = “path/to/config/file”;
-  
+
 Dataset<Row> df = spark.read()
-  .format(IgniteDataFrameSettings.FORMAT_IGNITE())              //Data source 
+  .format(IgniteDataFrameSettings.FORMAT_IGNITE())              //Data source
   .option(IgniteDataFrameSettings.OPTION_TABLE(), "person")     //Table to read.
   .option(IgniteDataFrameSettings.OPTION_CONFIG_FILE(), CONFIG) //Ignite config.
   .load();
@@ -151,9 +151,9 @@ Dataset<Row> igniteDF = spark.sql(
 ```
 Scala：
 ```scala
-val spark: SparkSession = … 
+val spark: SparkSession = …
 val cfgPath: String = “path/to/config/file”
- 
+
 val df = spark.read
   .format(FORMAT_IGNITE)               // Data source type.
   .option(OPTION_TABLE, "person")      // Table to read.
@@ -200,9 +200,9 @@ jsonDataFrame.write()
 ```
 Scala：
 ```scala
-val spark: SparkSession = … 
+val spark: SparkSession = …
 
-val cfgPath: String = “path/to/config/file” 
+val cfgPath: String = “path/to/config/file”
 
 val jsonDataFrame = spark.read.json(“path/to/file.json”)
 
@@ -237,9 +237,9 @@ jsonDataFrame.write()
 ```
 Scala：
 ```scala
-val spark: SparkSession = … 
+val spark: SparkSession = …
 
-val cfgPath: String = “path/to/config/file” 
+val cfgPath: String = “path/to/config/file”
 
 val jsonDataFrame = spark.read.json(“path/to/file.json”)
 
@@ -263,13 +263,13 @@ jsonDataFrame.write
 CREATE TABLE city (
     id LONG PRIMARY KEY,
     name VARCHAR
-) WITH "template=replicated"; 
+) WITH "template=replicated";
 
-CREATE TABLE person ( 
-    id LONG,  
-    name VARCHAR,  
-    city_id LONG,  
-    PRIMARY KEY (id, city_id) 
+CREATE TABLE person (
+    id LONG,
+    name VARCHAR,
+    city_id LONG,
+    PRIMARY KEY (id, city_id)
 ) WITH "backups=1, affinityKey=city_id";
 ```
 然后执行下面的代码，列出表的元数据信息：
@@ -301,12 +301,12 @@ val igniteSession = IgniteSparkSession.builder()
   .appName("Spark Ignite catalog example")
   .master("local")
   .config("spark.executor.instances", "2")
-  //Only additional option to refer to Ignite cluster. 
+  //Only additional option to refer to Ignite cluster.
   .igniteConfig("/path/to/ignite/config.xml")
-  .getOrCreate() 
+  .getOrCreate()
 
 // This will print out info about all SQL tables existed in Ignite.
-igniteSession.catalog.listTables().show() 
+igniteSession.catalog.listTables().show()
 
 // This will print out schema of PERSON table.
 igniteSession.catalog.listColumns("person").show()
@@ -323,7 +323,7 @@ igniteSession.catalog.listColumns("city").show()
 |PERSON|        |       null| EXTERNAL|      false|
 +------+--------+-----------+---------+-----------+
 
-PERSON table description: 
+PERSON table description:
 
 +-------+-----------+--------+--------+-----------+--------+
 |   name|description|dataType|nullable|isPartition|isBucket|
@@ -331,9 +331,9 @@ PERSON table description:
 |   NAME|       null|  string|    true|      false|   false|
 |     ID|       null|  bigint|   false|       true|   false|
 |CITY_ID|       null|  bigint|   false|       true|   false|
-+-------+-----------+--------+--------+-----------+--------+ 
++-------+-----------+--------+--------+-----------+--------+
 
-CITY table description: 
+CITY table description:
 
 +----+-----------+--------+--------+-----------+--------+
 |name|description|dataType|nullable|isPartition|isBucket|
@@ -450,29 +450,29 @@ libraryDependencies += "org.apache.ignite" % "ignite-spark_2.10" % "ignite.versi
 
 下面的片段演示了如何使用`spark.driver.extraClassPath`参数：
 ```bash
-spark.executor.extraClassPath /opt/ignite/libs/*:/opt/ignite/libs/optional/ignite-spark/*:/opt/ignite/libs/optional/ignite-log4j/*:/opt/ignite/libs/optional/ignite-yarn/*:/opt/ignite/libs/ignite-spring/* 
+spark.executor.extraClassPath /opt/ignite/libs/*:/opt/ignite/libs/optional/ignite-spark/*:/opt/ignite/libs/optional/ignite-log4j/*:/opt/ignite/libs/optional/ignite-yarn/*:/opt/ignite/libs/ignite-spring/*
 ```
 **源代码配置**
 
 Spark也提供了在源代码中配置额外的库的API，比如像下面的代码片段：
 ```scala
-private val MAVEN_HOME = "/home/user/.m2/repository" 
+private val MAVEN_HOME = "/home/user/.m2/repository"
 
-val spark = SparkSession.builder() 
-       .appName("Spark Ignite data sources example") 
-       .master("spark://172.17.0.2:7077") 
-       .getOrCreate() 
+val spark = SparkSession.builder()
+       .appName("Spark Ignite data sources example")
+       .master("spark://172.17.0.2:7077")
+       .getOrCreate()
 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-core/2.4.0/ignite-core-2.4.0.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-spring/2.4.0/ignite-spring-2.4.0.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-log4j/2.4.0/ignite-log4j-2.4.0.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-spark/2.4.0/ignite-spark-2.4.0.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-indexing/2.4.0/ignite-indexing-2.4.0.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-beans/4.3.7.RELEASE/spring-beans-4.3.7.RELEASE.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-core/4.3.7.RELEASE/spring-core-4.3.7.RELEASE.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-context/4.3.7.RELEASE/spring-context-4.3.7.RELEASE.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-expression/4.3.7.RELEASE/spring-expression-4.3.7.RELEASE.jar") 
-spark.sparkContext.addJar(MAVEN_HOME + "/javax/cache/cache-api/1.0.0/cache-api-1.0.0.jar") 
+spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-core/2.4.0/ignite-core-2.4.0.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-spring/2.4.0/ignite-spring-2.4.0.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-log4j/2.4.0/ignite-log4j-2.4.0.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-spark/2.4.0/ignite-spark-2.4.0.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/apache/ignite/ignite-indexing/2.4.0/ignite-indexing-2.4.0.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-beans/4.3.7.RELEASE/spring-beans-4.3.7.RELEASE.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-core/4.3.7.RELEASE/spring-core-4.3.7.RELEASE.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-context/4.3.7.RELEASE/spring-context-4.3.7.RELEASE.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-expression/4.3.7.RELEASE/spring-expression-4.3.7.RELEASE.jar")
+spark.sparkContext.addJar(MAVEN_HOME + "/javax/cache/cache-api/1.0.0/cache-api-1.0.0.jar")
 spark.sparkContext.addJar(MAVEN_HOME + "/com/h2database/h2/1.4.195/h2-1.4.195.jar")
 ```
 ## 4.5.用Spark-shell测试Ignite
@@ -507,7 +507,7 @@ bin/ignite.sh
 
  - 还可能需要提供Ignite部件的Maven坐标（如果需要，可以使用`--repositories`参数，但是它可能会被忽略）：
 ```bash
-./bin/spark-shell 
+./bin/spark-shell
 	--packages org.apache.ignite:ignite-spark:1.8.0
   --master spark://master_host:master_port
   --repositories http://repo.maven.apache.org/maven2/org/apache/ignite
@@ -520,7 +520,7 @@ bin/ignite.sh
 
 注意，如果打算使用Spring的配置进行加载，则需要同时添加`ignite-spring`的依赖。
 ```bash
-./bin/spark-shell 
+./bin/spark-shell
 	--packages org.apache.ignite:ignite-spark:1.8.0,org.apache.ignite:ignite-spring:1.8.0
   --master spark://master_host:master_port
 ```

@@ -207,7 +207,7 @@ spec:
        </property>
      </bean>
    </property>
-  
+
  <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
 <property name="discoverySpi">
   <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
@@ -334,7 +334,7 @@ cd /opt/ignite/apache-ignite-fabric/bin/
 ./control.sh --activate
 ```
 ### 20.2.3.RBAC授权
-#### 20.2.3.1.摘要
+#### 20.2.3.1.概述
 [基于角色的访问控制（RBAC）](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)是一种企业内基于单个用户的角色来调节对计算机或网络资源访问的常规方法。
 
 RBAC使用`rbac.authorization.k8s.io`API组来驱动授权决策，允许管理员通过Kubernetes API动态地配置策略。
@@ -439,7 +439,7 @@ ignite-service.yaml：
 ```yaml
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   # The name must be equal to TcpDiscoveryKubernetesIpFinder.serviceName
   name: ignite
   # The name must be equal to TcpDiscoveryKubernetesIpFinder.namespaceName
@@ -456,7 +456,7 @@ spec:
     - name: thinclients
       port: 10900
       targetPort: 10900
-  sessionAffinity: ClientIP    
+  sessionAffinity: ClientIP
   selector:
     # Must be equal to the label set for Ignite pods.
     app: ignite
@@ -470,7 +470,7 @@ kubectl create -f ignite-service.yaml
  kubectl get svc ignite --namespace=ignite
 ```
 ### 20.2.5.Kubernetes IP探测器
-#### 20.2.5.1.摘要
+#### 20.2.5.1.概述
 将Ignite节点以Kubernetes配置组的形式进行部署，对Ignite节点的发现机制有一定的要求。因为防火墙通常会阻止组播通信的原因，很可能无法直接使用基于组播的IP探测器。但是，只要Kubernetes动态地分配了地址，就可以列出所有节点的IP地址，然后使用静态IP探测器。
 
 也可以考虑Amazon AWS IP探测器、Google Compute Engine IP探测器或者JClouds IP探测器，但是Kubernetes必须部署在这些云环境中。另外，也可以使用共享文件系统或者关系型数据库用于节点的自动发现，但是必须单独维护数据库或者共享文件系统。
@@ -499,7 +499,7 @@ TcpDiscoverySpi spi = new TcpDiscoverySpi();
 
 // Configuring IP finder.
 TcpDiscoveryKubernetesIpFinder ipFinder = new TcpDiscoveryKubernetesIpFinder();
-        
+
 spi.setIpFinder(ipFinder);
 
 IgniteConfiguration cfg = new IgniteConfiguration();

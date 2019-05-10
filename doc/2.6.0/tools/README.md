@@ -283,7 +283,7 @@ RewriteRule .* ws://localhost:3000%{REQUEST_URI} [P,L]
 RewriteCond %{REQUEST_URI} ^/api/v1/.*$
 RewriteRule ^/api/v1/(.*)$ http://localhost:3000/$1 [P,L]
 
-RewriteRule ^ /index.html [L]  
+RewriteRule ^ /index.html [L]
 ```
 >上面的**EXTERNAL_SERVER_IP**，需要替换为部署Web控制台实例的机器的主机名。
 
@@ -354,7 +354,7 @@ server {
 
 如果在浏览器中出现了`Forbidden`这样的错误，那么需要检查操作系统中所有的安全策略都配置正确了。
 ## 1.4.演示模式
-### 1.4.1.摘要
+### 1.4.1.概述
 可以使用Web控制台的演示模式来研究和评估它有关配置和管理集群的各种功能，这个模式中，可以检查预定义的集群、缓存以及领域模型，它还启动了一个内置的H2数据库实例，可以执行各种SQL查询以及查看数据报表，还可以监控各种缓存和节点的指标，比如集群的CPU和堆使用量等。
 ### 1.4.2.启动演示模式
 要开启演示模式，需要点击控制台顶部菜单的`Start demo`按钮。

@@ -1,6 +1,6 @@
 # 6.Cassandra集成
 ## 6.1.Ignite和Apache Cassandra
-### 6.1.1.摘要
+### 6.1.1.概述
 对于过期的缓存记录，通过使用[Cassandra](http://cassandra.apache.org/)作为持久化存储，Ignite的Cassandra模块为缓存实现了一个CacheStore。
 
 它在功能上和`CacheJdbcBlobStore`以及`CacheJdbcPojoStore`的方式几乎是相同的，但是又提供了如下的好处；
@@ -937,7 +937,7 @@ create table if not exists test1.pojo_test3
  birth_date timestamp,
  phones blob,
  primary key ((company, department), number)
-) 
+)
 with comment = 'A most excellent and useful table' AND read_repair_chance = 0.2 and clustering order by (number desc);
 ```
 不要忘了设置正确的`CLASSPATH`环境变量：
@@ -1087,7 +1087,7 @@ Cassandra模块的负载测试是作为模块测试源代码的一部分提供�
 20:01:42,639  INFO [main] - Worker WRITE-worker-18 successfully completed
 20:01:42,639  INFO [main] - Worker WRITE-worker-19 successfully completed
 20:01:42,639  INFO [main] - WRITE test execution successfully completed.
-20:01:42,639  INFO [main] - 
+20:01:42,639  INFO [main] -
 -------------------------------------------------
 WRITE test statistics
 WRITE messages: 1681780
@@ -1121,7 +1121,7 @@ WRITE speed: 5597 msg/sec
 20:09:45,258  INFO [main] - Worker BULK_WRITE-worker-18 successfully completed
 20:09:45,258  INFO [main] - Worker BULK_WRITE-worker-19 successfully completed
 20:09:45,258  INFO [main] - BULK_WRITE test execution successfully completed.
-20:09:45,258  INFO [main] - 
+20:09:45,258  INFO [main] -
 -------------------------------------------------
 BULK_WRITE test statistics
 BULK_WRITE messages: 2021500
@@ -1155,7 +1155,7 @@ BULK_WRITE speed: 6748 msg/sec
 20:17:57,145  INFO [main] - Worker READ-worker-18 successfully completed
 20:17:57,145  INFO [main] - Worker READ-worker-19 successfully completed
 20:17:57,145  INFO [main] - READ test execution successfully completed.
-20:17:57,145  INFO [main] - 
+20:17:57,145  INFO [main] -
 -------------------------------------------------
 READ test statistics
 READ messages: 1974957
@@ -1189,7 +1189,7 @@ READ speed: 6404 msg/sec
 20:25:59,586  INFO [main] - Worker BULK_READ-worker-18 successfully completed
 20:25:59,586  INFO [main] - Worker BULK_READ-worker-19 successfully completed
 20:25:59,586  INFO [main] - BULK_READ test execution successfully completed.
-20:25:59,586  INFO [main] - 
+20:25:59,586  INFO [main] -
 -------------------------------------------------
 BULK_READ test statistics
 BULK_READ messages: 3832300

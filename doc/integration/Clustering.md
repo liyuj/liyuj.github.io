@@ -1,6 +1,6 @@
 # 2.集群发现
 ## 2.1.Amazon AWS发现
-### 2.1.1.摘要
+### 2.1.1.概述
 AWS云上的节点发现通常认为很有挑战性。Amazon EC2，和其它大部分的虚拟环境一样，有如下的限制：
 
  - 组播被禁用
@@ -52,10 +52,10 @@ ipFinder.setBucketName("yourBucketName");
 spi.setIpFinder(ipFinder);
 
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default discovery SPI.
 cfg.setDiscoverySpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -72,7 +72,7 @@ XML：
     <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
       <property name="ipFinder">
         <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.elb.TcpDiscoveryElbIpFinder">
-          <property name="credentialsProvider"> 
+          <property name="credentialsProvider">
               <bean class="com.amazonaws.auth.AWSStaticCredentialsProvider">
                   <constructor-arg ref="aws.creds"/>
               </bean>
@@ -116,7 +116,7 @@ Ignition.start(cfg);
 上面的两个方法可以只配置一次然后就可以在所有的EC2示例中复用。
 :::
 ## 2.2.Google计算发现
-### 2.2.1.摘要
+### 2.2.1.概述
 GCE上的节点发现通常认为很有挑战性。Google云，和其它大部分的虚拟环境一样，有如下的限制：
 
  - 组播被禁用
@@ -167,7 +167,7 @@ Ignition.start(cfg);
 ```
 
 ## 2.3.JCloud发现
-### 2.3.1.摘要
+### 2.3.1.概述
 云平台上的节点发现通常认为很有挑战性。因为JCloud，和其它大部分的虚拟环境一样，有如下的限制：
 
  - 组播被禁用

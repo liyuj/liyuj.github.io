@@ -1,6 +1,6 @@
 # 2.Ignite Web控制台的功能
 ## 2.1.集群配置
-### 2.1.1.摘要
+### 2.1.1.概述
 在Web控制台的`配置`选项卡中，可以为自己的Ignite项目高效地创建配置文件和代码片段，也可以配置Ignite集群、缓存，从任意RDBMS中导入领域模型，它还支持JDBC驱动，并且可以生成OR映射配置和POJO类。
 ### 2.1.2.集群
 在控制台中，可以对集群进行各种常规或者高级的配置，方便起见，Web控制台以Spring的XML格式以及Java源文件的形式创建这些配置，然后可以将其下载，或者拷贝进自己的工程。
@@ -129,7 +129,7 @@ Ignite可以无限制地支持SQL查询，SQL语法兼容于ANSI-99标准，这�
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   	...
     <!--
- 				Explicitly configure TCP discovery SPI to provide list of 
+ 				Explicitly configure TCP discovery SPI to provide list of
 				initial nodes from the first cluster.
  	  -->
     <property name="discoverySpi">
@@ -205,7 +205,7 @@ Ignite可以无限制地支持SQL查询，SQL语法兼容于ANSI-99标准，这�
     </property>
 
     <!--
-        Explicitly configure TCP communication SPI changing local port number 
+        Explicitly configure TCP communication SPI changing local port number
         for the nodes from the second cluster.
     -->
     <property name="communicationSpi">

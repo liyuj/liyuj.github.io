@@ -1,5 +1,5 @@
 # 1.介绍
-## 1.1.摘要
+## 1.1.概述
 Apache Ignite是一个兼容ANSI-99、水平可扩展以及容错的分布式SQL数据库，这个分布式是以数据在集群范围的复制或者分区的形式提供的，具体的形式取决于使用场景。
 
 作为一个SQL数据库，Ignite支持所有的DML指令，包括SELECT、UPDATE、INSERT和DELETE，它还实现了一个与分布式系统有关的DDL指令的子集。
@@ -11,7 +11,7 @@ Ignite的一个突出特性是完全支持分布式的SQL关联，Ignite支持�
 
 可以像其它的SQL存储一样，根据需要与Ignite进行交互，比如通过外部的工具或者应用使用JDBC或者ODBC驱动进行连接。在这之上，Java、.NET和C++开发者也可以使用Ignite的原生SQL API。
 ## 1.2.入门
-### 1.2.1.摘要
+### 1.2.1.概述
 Ignite支持数据定义语言(DDL)语句，可以在运行时创建和删除表和索引，还可以支持数据操作语言(DML)来执行查询，这些不管是Ignite的原生SQL API还是ODBC和JDBC驱动，都是支持的。
 
 在下面的示例中，会使用一个包含两个表的模式，这些表会用于保存城市以及居住在那里的人的信息，假定一个城市有很多的人，并且人只会居住于一个城市，这是一个一对多（1：m）的关系。
@@ -92,7 +92,7 @@ CREATE TABLE Person (
 try (Statement stmt = conn.createStatement()) {
 
     // Create table based on REPLICATED template
-    stmt.executeUpdate("CREATE TABLE City (" + 
+    stmt.executeUpdate("CREATE TABLE City (" +
     " id LONG PRIMARY KEY, name VARCHAR) " +
     " WITH \"template=replicated\"");
 
@@ -413,7 +413,7 @@ SQLAllocHandle(SQL_HANDLE_STMT, dbc, &stmt);
 
 // Update City
 SQLCHAR query[] = "UPDATE City SET name = 'Foster City' WHERE id = 2"
-  
+
 SQLSMALLINT queryLen = static_cast<SQLSMALLINT>(sizeof(query));
 
 SQLRETURN ret = SQLExecDirect(stmt, query, queryLen);
@@ -451,7 +451,7 @@ SQLAllocHandle(SQL_HANDLE_STMT, dbc, &stmt);
 
 // Delete from Person
 SQLCHAR query[] = "DELETE FROM Person WHERE name = 'John Doe'"
-  
+
 SQLSMALLINT queryLen = static_cast<SQLSMALLINT>(sizeof(query));
 
 SQLRETURN ret = SQLExecDirect(stmt, query, queryLen);

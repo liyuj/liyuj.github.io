@@ -72,7 +72,7 @@ cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
 ### 7.1.3.示例
 Ignite的发布版包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
 ## 7.2.模式和索引
-### 7.2.1.摘要
+### 7.2.1.概述
 不管是通过[注解](#_7-2-2-基于注解的配置)或者通过[QueryEntity](#_7-2-3-基于queryentity的配置)的方式，表和索引建立之后，它们所属的模式名为`CacheConfiguration`对象中配置的缓存名，也可以使用`CacheConfiguration.setSqlSchema`方法进行修改。
 
 但是，如果表和索引是通过DDL语句的形式定义的，那么模式名就会完全不同，这时，表和索引所属的模式名默认为`PUBLIC`。
@@ -120,16 +120,16 @@ public class Person implements Serializable {
   /** Indexed field. Will be visible for SQL engine. */
   @QuerySqlField (index = true)
   private long id;
-  
+
   /** Queryable field. Will be visible for SQL engine. */
   @QuerySqlField
   private String name;
-  
+
   /** Will NOT be visible for SQL engine. */
   private int age;
-  
+
   /**
-   * Indexed field sorted in descending order. 
+   * Indexed field sorted in descending order.
    * Will be visible for SQL engine.
    */
   @QuerySqlField(index = true, descending = true)
@@ -144,12 +144,12 @@ case class Person (
 
   /** Queryable field. Will be visible for SQL engine. */
   @(QuerySqlField @field) name: String,
-  
+
   /** Will NOT be visisble for SQL engine. */
   age: Int
-  
+
   /**
-   * Indexed field sorted in descending order. 
+   * Indexed field sorted in descending order.
    * Will be visible for SQL engine.
    */
   @(QuerySqlField @field)(index = true, descending = true) salary: Float
@@ -186,10 +186,10 @@ public class Person {
   /** Queryable field. Will be visible for SQL engine. */
   @QuerySqlField
   private String name;
-  
+
   /** Will NOT be visible for SQL engine. */
   private int age;
-  
+
   /** Indexed field. Will be visible for SQL engine. */
   @QuerySqlField(index = true)
   private Address address;
@@ -279,10 +279,10 @@ public class Person implements Serializable {
             <bean class="org.apache.ignite.cache.QueryEntity">
                 <!-- Setting indexed type's key class -->
                 <property name="keyType" value="java.lang.Long"/>
-              
+
                 <!-- Key field name to be used in INSERT and SELECT queries -->
                 <property name="keyFieldName" value="id"/>
-              
+
                 <!-- Setting indexed type's value class -->
                 <property name="valueType"
                           value="org.apache.ignite.examples.Person"/>
@@ -303,7 +303,7 @@ public class Person implements Serializable {
                         <bean class="org.apache.ignite.cache.QueryIndex">
                             <constructor-arg value="name"/>
                         </bean>
-                      
+
                         <!-- Group index. -->
                         <bean class="org.apache.ignite.cache.QueryIndex">
                             <constructor-arg>
@@ -354,7 +354,7 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 // Preparing cache configuration.
 CacheConfiguration cacheCfg = new CacheConfiguration<>("personCache");
 
-// Creating the query entity. 
+// Creating the query entity.
 QueryEntity entity = new QueryEntity("CustomKey", "Person");
 
 // Listing all the queryable fields.
@@ -394,12 +394,12 @@ ignite.createCache(cacheCfg);
             <bean class="org.apache.ignite.cache.QueryEntity">
                 <!-- Registering key's class. -->
                 <property name="keyType" value="CustomKey"/>
-              
+
                 <!-- Registering value's class. -->
                 <property name="valueType"
                           value="org.apache.ignite.examples.Person"/>
 
-                <!-- 
+                <!--
                     Defining all the fields that will be accessible from DML.
                 -->
                 <property name="fields">
@@ -410,7 +410,7 @@ ignite.createCache(cacheCfg);
                       	<entry key="strKeyField" value="java.lang.String"/>
                     </map>
                 </property>
-              
+
                 <!-- Defining the subset of key's fields -->
                 <property name="keyFields">
                     <set>
@@ -549,10 +549,10 @@ SqlQuery qry = new SqlQuery<AffinityKey<Long>, Person>(Person.class, joinSql);
 
 // Getting query cursor.
 QueryCursor<List> cursor = cache.query(qry);
-        
+
 // Executing query.
 ....
-        
+
 // Halting the query that might be still in progress.
 cursor.close();
 ```

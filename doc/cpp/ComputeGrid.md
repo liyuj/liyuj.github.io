@@ -15,7 +15,7 @@ Ignite ignite = Ignition.Get();
 Compute compute = ignite.GetCompute();
 ```
 ## 5.2.容错
-### 5.2.1.摘要
+### 5.2.1.概述
 如果节点故障，Ignite支持自动作业故障转移，作业将自动转移到其它的可用节点重新执行。不过在Ignite中，也可以将任何作业结果视为失败，即工作节点仍然处于在线状态，但它可能在CPU、I/O、磁盘空间等方面资源不足。同时有许多情况可以导致应用中的故障，这也可以触发故障转移。此外，因为不同的应用或同一应用中的不同计算可能会有所不同，还可以选择作业应该故障转移到的节点。
 
 对于执行失败的作业，`FailoverSpi`负责选择新的节点。`FailoverSpi`负责检查失败的作业以及可以重试作业执行的所有可用节点的列表。它确保作业不会重新映射到故障的同一节点。Ignite内置了许多定制化的故障转移SPI实现。
@@ -40,7 +40,7 @@ Compute compute = ignite.GetCompute();
 </bean>
 ```
 ## 5.3.负载平衡
-### 5.3.1.摘要
+### 5.3.1.概述
 负载平衡组件将作业在集群节点之间平衡分配。Ignite中负载平衡是通过`LoadBalancingSpi`实现的，它控制所有节点的负载以及确保集群中的每个节点负载水平均衡。对于同质化环境中的同质化任务，负载平衡采用的是随机或者轮询的策略。不过在很多其它场景中，特别是在一些不均匀的负载下，就需要更复杂的自适应负载平衡策略。
 
 `LoadBalancingSpi`采用前负载技术，即在将其发送到集群之前就对作业在某个节点的执行进行了调度。
@@ -90,12 +90,12 @@ Compute compute = ignite.GetCompute();
 下面是配置`JobStealingCollisionSpi`的示例：
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration" singleton="true">
-  
+
   <!-- Enabling the required Failover SPI. -->
   <property name="failoverSpi">
      <bean class="org.apache.ignite.spi.failover.jobstealing.JobStealingFailoverSpi"/>
  	</property>
-  
+
   <!-- Enabling the JobStealingCollisionSpi for late load balancing. -->
   <property name="collisionSpi">
     <bean class="org.apache.ignite.spi.collision.jobstealing.JobStealingCollisionSpi">
@@ -118,7 +118,7 @@ Compute compute = ignite.GetCompute();
 注意`org.apache.ignite.spi.failover.jobstealing.JobStealingFailoverSpi`和`IgniteConfiguration.getMetricsUpdateFrequency()`都要开启，这样这个SPI才能正常工作，`JobStealingCollisionSpi`的其它配置参数都是可选的。
 :::
 ## 5.4.作业调度
-### 5.4.1.摘要
+### 5.4.1.概述
 Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行阶段被映射到集群节点上的。不过一旦作业到达被分配的节点，就需要有序地执行。作业默认是被提交到一个线程池然后随机地执行，如果要对作业执行顺序进行细粒度控制，需要启用`CollisionSpi`。
 ### 5.4.2.FIFO排序
 `FifoQueueCollisionSpi`可以使一定数量的作业无中断地以先入先出的顺序执行，所有其它的作业都会被放入一个等待列表，直到轮到它。
@@ -141,7 +141,7 @@ Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行�
 </bean>
 ```
 ## 5.5.分布式闭包
-### 5.5.1.摘要
+### 5.5.1.概述
 Ignite计算网格可以对集群或者集群组内的任何闭包进行广播和负载平衡，包括`runnables`和`callables`。
 ### 5.5.2.计算作业
 计算作业是从`igniet::copmute::ComputeFunc<R>`类模板继承的类，其中`R`是作业的返回类型（`void`为没有返回的作业）。它们应该是允许创建默认的构造函数、复制构造函数以及复制运算符，并且要实现`Call`方法，下面是一个示例：
@@ -153,7 +153,7 @@ public:
   HelloWorldJob() = default;
   HelloWorldJob(const HelloWorldJob&) = default;
   HelloWorldJob& operator=(const HelloWorldJob&) = default;
-  
+
   virtual void Call()
   {
     std::cout << "Hello World!" << std::endl;
@@ -206,7 +206,7 @@ public:
 
     return wordsCount;
   }
-  
+
 private:
   std::string text;
 };
@@ -234,7 +234,7 @@ void SomeUserFunction()
   //...
   Ignite node = Ignition::Get("SomeNode");
   IgniteBinding binding = node.GetBingding();
-  
+
   binding.RegisterComputeFunc<HelloWorldJob>();
   binding.RegisterComputeFunc<PrintWords>();
   binding.RegisterComputeFunc<CountWords>();
@@ -298,7 +298,7 @@ texts.push_back("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
 texts.push_back("Ut enim ad minim veniam, quis nostrud exercitation ullamco.");
 texts.push_back("Just some words.");
 
-// Iterate through all texts and process 
+// Iterate through all texts and process
 // each text on a different cluster node.
 for (auto& text : texts) {
   compute.Run(PrintWords(text));
@@ -321,7 +321,7 @@ std::cout << "Waiting for result... " << std::endl;
 futureWords.Wait();
 
 // Printing result.
-std::cout << "Text consists of " << 
+std::cout << "Text consists of " <<
   futureWords.GetValue() << " words" << std::endl;
 ```
 RunAsync：
@@ -339,7 +339,7 @@ texts.push_back("Just some words.");
 //Resulting futures will go here.
 std::vector< Future<void> > futs;
 
-// Iterate through all texts and process 
+// Iterate through all texts and process
 // each text on a different cluster node.
 for (auto& text : texts) {
   futs.push_back(compute.RunAsync(PrintWords(text)));

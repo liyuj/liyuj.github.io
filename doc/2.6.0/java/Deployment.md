@@ -17,16 +17,16 @@ sudo docker pull apacheignite/ignite:{ignite-version}
 可以使用`docker run`来运行Ignite docker容器：
 ```bash
 # Run latest version.
-sudo docker run -it --net=host 
--e "CONFIG_URI=$CONFIG_URI" 
+sudo docker run -it --net=host
+-e "CONFIG_URI=$CONFIG_URI"
 [-e "OPTION_LIBS=$OPTION_LIBS"]
 [-e "JVM_OPTS=$JVM_OPTS"]
 ...
-apacheignite/ignite 
+apacheignite/ignite
 
 # Run ignite version {ignite-version}
-sudo docker run -it --net=host 
--e "CONFIG_URI=$CONFIG_URI" 
+sudo docker run -it --net=host
+-e "CONFIG_URI=$CONFIG_URI"
 [-e "OPTION_LIBS=$OPTION_LIBS"]
 [-e "JVM_OPTS=$JVM_OPTS"]
 ...
@@ -170,7 +170,7 @@ sudo docker logs -f CONTAINER_ID
 sudo docker exec -it container_id /bin/bash
 ```
 ## 14.5.Mesos部署
-### 14.5.1.摘要
+### 14.5.1.概述
 Apache Ignite支持在Mesos集群上调度和运行Ignite节点。
 Apache Mesos是一个集群管理器，它提供了一个通用运行环境以及所有的必要资源来部署、运行和管理分布式应用。它对资源的管理和隔离有助于充分利用服务器资源。
 要了解Apache Mesos的更多信息，请参照：[http://mesos.apache.org/](http://mesos.apache.org/)
@@ -222,7 +222,7 @@ Apache Mesos是一个集群管理器，它提供了一个通用运行环境以�
   4.包含斜杠、退格键以及空白符等。
 
 如果集群没有额外的约束，框架会试图占用Mesos集群的所有资源。
-  
+
  - 通过curl等工具发送应用定义的POST请求给Marathon：
 ```bash
 curl -X POST -H "Content-type: application/json" --data-binary @marathon.json http://<marathon-ip>:8080/v2/apps/
@@ -291,7 +291,7 @@ IGNITE_VERSION=1.7.0
 |`IGNITE_HTTP_SERVER_IDLE_TIMEOUT`|设置一个HTTP连接的最大空闲时间（毫秒），jetty服务器会使用，服务器提供了ignite的mesos框架所需的资源，比如ignite压缩包，用户的库文件，配置等。|30000|30000|
 
 ## 14.6.Yarn部署
-### 14.6.1.摘要
+### 14.6.1.概述
 与Yarn的集成可以支持在Yarn集群上调度和运行Apache Ignite节点。
 Yarn是一个资源管理器，它提供了一个包括所有必要资源的通用的运行环境来进行分布式应用的部署，运行和管理，它对资源的管理和隔离有助于充分利用服务器资源。
 要了解Yarn的信息，请参照[http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html)。
@@ -312,13 +312,13 @@ Yarn是一个资源管理器，它提供了一个包括所有必要资源的通�
 ```
 # The number of nodes in the cluster.
 IGNITE_NODE_COUNT=2
- 
+
 # The number of CPU Cores for each Apache Ignite node.
 IGNITE_RUN_CPU_PER_NODE=1
- 
+
 # The number of Megabytes of RAM for each Apache Ignite node.
 IGNITE_MEMORY_PER_NODE=2048
- 
+
 # The version of Ignite which will be run on nodes.
 IGNITE_VERSION=2.3.0
 ```

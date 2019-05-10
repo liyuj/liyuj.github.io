@@ -1,5 +1,5 @@
 # 2.SQL参考
-## 2.1.摘要
+## 2.1.概述
 本文档描述了Apache Ignite支持的SQL语法，其中包括：
 
  - 数据定义语言（DDL）
@@ -16,12 +16,12 @@
 修改已有表的结构：
 ```sql
 ALTER TABLE [IF EXISTS] tableName {alter_specification}
-  
+
 alter_specification:
     ADD [COLUMN] {[IF NOT EXISTS] tableColumn | (tableColumn [,...])}
   | DROP [COLUMN] {[IF EXISTS] columnName | (columnName [,...])}
   | {LOGGING | NOLOGGING}
-  
+
 tableColumn := columnName columnType
 ```
 ::: tip ALTER TABLE的范围
@@ -99,7 +99,7 @@ ALTER TABLE Person NOLOGGING
 ```sql
 CREATE [SPATIAL] INDEX [[IF NOT EXISTS] indexName] ON tableName
     (columnName [ASC|DESC] [,...]) [(index_option [...])]
-    
+
 index_option := {INLINE_SIZE size | PARALLEL parallelism_level}
 ```
 **参数**
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS Person (
   id int,
   city_id int,
   name varchar,
-  age int, 
+  age int,
   company varchar,
   PRIMARY KEY (id, city_id)
 ) WITH "template=partitioned,backups=1,affinity_key=city_id, key_type=PersonKey, value_type=MyPerson";
@@ -251,7 +251,7 @@ CREATE TABLE Person (
   id int PRIMARY KEY,
   city_id int,
   name varchar,
-  age int, 
+  age int,
   company varchar
 ) WITH "atomicity=transactional,cachegroup=somegroup";
 ```
@@ -390,10 +390,10 @@ SELECT
     [TOP term] [DISTINCT | ALL] selectExpression [,...]
     FROM tableExpression [,...] [WHERE expression]
     [GROUP BY expression [,...]] [HAVING expression]
-    [{UNION [ALL] | MINUS | EXCEPT | INTERSECT} select] 
+    [{UNION [ALL] | MINUS | EXCEPT | INTERSECT} select]
     [ORDER BY order [,...]]
-    [{ LIMIT expression [OFFSET expression] 
-    [SAMPLE_SIZE rowCountInt]} | {[OFFSET expression {ROW | ROWS}] 
+    [{ LIMIT expression [OFFSET expression]
+    [SAMPLE_SIZE rowCountInt]} | {[OFFSET expression {ROW | ROWS}]
     [{FETCH {FIRST | NEXT} expression {ROW | ROWS} ONLY}]}]
 ```
 **参数**
@@ -408,8 +408,8 @@ SELECT
  - `tableExpression`：表联接。联接表达式目前不支持交叉联接和自然联接，自然联接是一个内联接，其条件会自动加在同名的列上；
 
 ```sql
-tableExpression = [[LEFT | RIGHT]{OUTER}] | INNER | CROSS | NATURAL] 
-JOIN tableExpression 
+tableExpression = [[LEFT | RIGHT]{OUTER}] | INNER | CROSS | NATURAL]
+JOIN tableExpression
 [ON expression]
 ```
 
@@ -470,9 +470,9 @@ SELECT p.name, c.name
 ### 2.3.2.INSERT
 往表中插入数据。
 ```sql
-INSERT INTO tableName 
+INSERT INTO tableName
   {[( columnName [,...])]
-  {VALUES {({DEFAULT | expression} [,...])} [,...] | [DIRECT] [SORTED] select}} 
+  {VALUES {({DEFAULT | expression} [,...])} [,...] | [DIRECT] [SORTED] select}}
   | {SET {columnName = {DEFAULT | expression}} [,...]}
 ```
 **参数**
@@ -499,7 +499,7 @@ INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
 将`Account`表的数据注入`Person`表：
 ```sql
 INSERT INTO Person(id, name, city_id)
-   (SELECT a.id + 1000, concat(a.firstName, a.secondName), a.city_id 
+   (SELECT a.id + 1000, concat(a.firstName, a.secondName), a.city_id
    FROM Account a WHERE a.id > 100 AND a.id < 1000);
 ```
 ### 2.3.3.UPDATE
@@ -574,15 +574,15 @@ MERGE INTO Person(id, name, city_id) VALUES
 从`Account`表获得数据，然后注入`Person`表：
 ```sql
 MERGE INTO Person(id, name, city_id)
-   (SELECT a.id + 1000, concat(a.firstName, a.secondName), a.city_id 
+   (SELECT a.id + 1000, concat(a.firstName, a.secondName), a.city_id
    FROM Account a WHERE a.id > 100 AND a.id < 1000);
 ```
 ### 2.3.5.DELETE
 从表中删除数据。
 ```sql
 DELETE
-  [TOP term] FROM tableName 
-  [WHERE expression] 
+  [TOP term] FROM tableName
+  [WHERE expression]
   [LIMIT term]
 ```
 **参数**
@@ -934,7 +934,7 @@ SELECT VAR_SAMP(age) FROM Players;
 ### 2.5.15.GROUP_CONCAT
 ```sql
 GROUP_CONCAT([DISTINCT] expression || [expression || [expression ...]]
-  [ORDER BY expression [ASC|DESC], [[ORDER BY expression [ASC|DESC]]] 
+  [ORDER BY expression [ASC|DESC], [[ORDER BY expression [ASC|DESC]]]
   [SEPARATOR expression])
 ```
 这里的`expression`可以是列和字符串的串联（使用`||`操作符），比如，`column1 || "=" || column2`。
@@ -977,7 +977,7 @@ ABS (expression)
 
 计算绝对值：
 ```sql
-SELECT transfer_id, ABS (price) from Transfers; 
+SELECT transfer_id, ABS (price) from Transfers;
 ```
 ### 2.6.2.ACOS
 ```sql
@@ -1824,7 +1824,7 @@ SELECT RAWTOHEX(DATA) FROM Players;
 INSTR(string, searchString, [, startInt])
 ```
 **参数**
- 
+
  - `string`：任意字符串
  - `searchString`：要搜索的字符串
  - `startInt`：搜索的起始位置
@@ -1934,7 +1934,7 @@ SELECT RIGHT(NAME, 3) FROM Players;
 LOCATE(searchString, string [, startInt])
 ```
 **参数**
- 
+
  - `string`：任意字符串
  - `searchString`：要搜索的字符串
  - `startInt`：搜索的起始位置
@@ -2866,7 +2866,7 @@ BEGIN [TRANSACTION]
 
 COMMIT [TRANSACTION]
 
-ROLLBACK [TRANSACTION]   
+ROLLBACK [TRANSACTION]
 ```
 
  - `BEGIN`语句开启一个新的事务；

@@ -40,20 +40,20 @@ ignite.bat
 ```
 这个脚本会启动一个Ignite节点，使用同样的脚本可以启动很多的节点，节点启动之后会看到大致如下的输出：
 ```
-[12:46:46]    __________  ________________ 
-[12:46:46]   /  _/ ___/ |/ /  _/_  __/ __/ 
-[12:46:46]  _/ // (7 7    // /  / / / _/   
-[12:46:46] /___/\___/_/|_/___/ /_/ /___/  
-[12:46:46] 
+[12:46:46]    __________  ________________
+[12:46:46]   /  _/ ___/ |/ /  _/_  __/ __/
+[12:46:46]  _/ // (7 7    // /  / / / _/
+[12:46:46] /___/\___/_/|_/___/ /_/ /___/
+[12:46:46]
 [12:46:46] ver. 2.1.0#20170720-sha1:a6ca5c8a
 [12:46:46] 2017 Copyright(C) Apache Software Foundation
-[12:46:46] 
+[12:46:46]
 [12:46:46] Ignite documentation: http://ignite.apache.org
-[12:46:46] 
+[12:46:46]
 [12:46:46] Quiet mode.
 [12:46:46]   ^-- Logging to file '/Users/dmagda/Downloads/apache-ignite-fabric-2.1.0-bin/work/log/ignite-20d0a1be.0.log'
 [12:46:46]   ^-- To see **FULL** console log here add -DIGNITE_QUIET=false or "-v" to ignite.{sh|bat}
-[12:46:46] 
+[12:46:46]
 [12:46:46] OS: Mac OS X 10.12.6 x86_64
 [12:46:51] VM information: Java(TM) SE Runtime Environment 1.8.0_77-b03 Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.77-b03
 [12:46:51] Configured plugins:
@@ -215,7 +215,7 @@ sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;pa
 **创建模式**：
 ```
 0: jdbc:ignite:thin://127.0.0.1/> CREATE TABLE City (id LONG PRIMARY KEY, name VARCHAR) WITH "template=replicated";
-No rows affected (0.301 seconds) 
+No rows affected (0.301 seconds)
 
 0: jdbc:ignite:thin://127.0.0.1/> CREATE TABLE Person (id LONG, name VARCHAR, city_id LONG, PRIMARY KEY (id, city_id))WITH "backups=1, affinityKey=city_id";
 No rows affected (0.078 seconds)
@@ -246,7 +246,7 @@ No rows affected (0.013 seconds)
 ```
 
 ## 6.3.Tableau
-### 6.3.1.摘要
+### 6.3.1.概述
 [Tableau](http://www.tableau.com/)是一个聚焦于商务智能领域的交互式数据可视化工具。它使用ODBC API接入各种数据库和数据平台，然后分析里面的数据。
 
 Ignite有自己的ODBC实现，这样就使从Tableau端接入Ignite成为可能，并且可以分析存储于分布式Ignite集群中的数据。
@@ -277,7 +277,7 @@ Ignite有自己的ODBC实现，这样就使从Tableau端接入Ignite成为可能
 ![](https://files.readme.io/a25ceea-visualizing_data.png)
 
 ## 6.4.Pentaho
-### 6.4.1.摘要
+### 6.4.1.概述
 [Pentaho](http://www.pentaho.com/)是一个全面的平台，它可以非常容易地对数据进行抽取、转换、可视化和分析。Pentaho数据集成采用Java数据库连接（JDBC）API接入数据库。
 
 Ignite有自己的JDBC驱动，这样就使得通过Pentaho平台接入Ignite成为可能，然后就可以分析分布式Ignite集群中的数据了。
@@ -316,7 +316,7 @@ Ignite和Pentaho之间建立连接之后，就可以通过Pentaho支持的各种
 ![](https://files.readme.io/f78083c-running-and-inspecting-data.png)
 
 ## 6.5.Apache Zeppelin
-### 6.5.1.摘要
+### 6.5.1.概述
 [Apache Zeppelin](http://zeppelin.incubator.apache.org/),是一个支持交互式数据分析的基于Web的笔记本，它可以用SQL，Scala以及其它的工具来生成漂亮的数据驱动的，交互式以及可协同的文档。
 
 Zeppelin通过Ignite的SQL解释器可以从缓存中获得分布式的数据，此外，当SQL无法满足需求时Ignite解释器可以执行任何的Scala代码。比如，可以将数据注入缓存或者执行分布式计算。

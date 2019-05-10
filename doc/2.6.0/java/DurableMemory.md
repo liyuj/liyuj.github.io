@@ -18,7 +18,7 @@ Ignite*固化内存*的操作方式类似于操作系统的*虚拟内存*，比�
 **Ignite原生持久化**
 
 Ignite的数据持久化方面，原生持久化是最灵活、扩展性最强、最方便的方式，如果需要分布式的内存数据库，这个功能是要广泛使用的，它具有如下优势：
- 
+
  - **数据弹性**：原生持久化层存储了完整的数据集，因此不会受到集群故障或者重启的影响，数据不会丢失并且保证事务强一致性；
  - **内存只缓存热数据**：在磁盘上存储数据的超集然后在内存中存储数据的子集。如果开启了Ignite的原生持久化，就不需要在内存中保存所有的数据，固化内存会在内存中保留热数据，如果空间不足，会自动地将冷数据移出内存；
  - **在整个数据集中执行SQL**：多数内存系统只会在预加载到内存的数据中进行查询，因此数据的大小受到了内存大小的限制。而Ignite SQL会跨越整个分布式的持久化数据集，通过内存缓存来优化性能；
@@ -120,7 +120,7 @@ XML：
     <property name="defaultMemoryPolicySize" value="#{4L * 1024 * 1024 * 1024}"/>
   </bean>
 </property>
-  
+
 <!-- The rest of the parameters -->
 </bean>
 ```
@@ -166,7 +166,7 @@ XML：
       <property name="pageSize" value="8192"/>
     </bean>
   </property>
-  
+
   <!--- Additional settings ---->
 </bean>
 ```
@@ -201,7 +201,7 @@ XML：
       <property name="dataRegionConfigurations">
         <list>
           <!--
-              Defining a data region that will consume up to 500 MB of RAM and 
+              Defining a data region that will consume up to 500 MB of RAM and
               will have eviction and persistence enabled.
           -->
           <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
@@ -221,7 +221,7 @@ XML：
       </property>
     </bean>
   </property>
-  
+
   <!-- Other configurations. -->
 </bean>
 ```
@@ -244,13 +244,13 @@ regionCfg.setInitialSize(100L * 1024 * 1024);
 
 // Setting maximum RAM size.
 regionCfg.setMaxSize(500L * 1024 * 1024);
-        
+
 // Enable persistence for the region.
 regionCfg.setPersistenceEnabled(true);
-        
+
 // Setting the data region configuration.
 storageCfg.setDataRegionConfigurations(regionCfg);
-        
+
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
@@ -261,7 +261,7 @@ XML：
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     <!-- Durable Memory and other configuration parameters. -->
     <!-- ....... -->
-  
+
     <property name="cacheConfiguration">
        <list>
            <!-- Cache that is mapped to a specific data region. -->
@@ -270,15 +270,15 @@ XML：
                    Assigning the cache to the `500MB_Region` defined earlier.
                -->
                <property name="dataRegionName" value="500MB_Region"/>
-               
+
              	 <!-- Cache name. -->
                <property name="name" value="SampleCache"/>
-             
+
                <!-- Additional cache configuration parameters -->
            </bean>
        </list>
     </property>
-    
+
     <!-- The rest of the configuration. -->
     <!-- ....... -->
 </bean>
@@ -296,7 +296,7 @@ CacheConfiguration cacheCfg = new CacheConfiguration();
 
 // Binding the cache to the earlier defined region.
 cacheCfg.setDataRegionName("500MB_Region");
-        
+
 // Setting the cache name.
 cacheCfg.setName("SampleCache");
 
@@ -319,7 +319,7 @@ cfg.setCacheConfiguration(cacheCfg);
 要管理堆内缓存的大小，避免其不断增长，一定要配置一个可用的`基于缓存条目的退出策略`。
 
 ## 10.4.退出策略
-### 10.4.1.摘要
+### 10.4.1.概述
 Ignite支持两种数据退出策略：
 
  - **基于页面的退出**：针对堆外内存数据集。
@@ -363,7 +363,7 @@ XML：
       </property>
     </bean>
   </property>
-  
+
   <!-- The rest of the configuration. -->
 </bean>
 ```
@@ -433,7 +433,7 @@ XML：
       </property>
     </bean>
   </property>
-  
+
   <!-- The rest of the configuration. -->
 </bean>
 ```
@@ -496,10 +496,10 @@ XML：
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
   <property name="name" value="myCache"/>
-  
+
   <!-- Enabling on-heap caching for this distributed cache. -->
   <property name="onheapCacheEnabled" value="true"/>
-  
+
   <property name="evictionPolicy">
   	<!-- LRU eviction policy. -->
     <bean class="org.apache.ignite.cache.eviction.lru.LruEvictionPolicy">
@@ -507,7 +507,7 @@ XML：
       <property name="maxSize" value="1000000"/>
     </bean>
   </property>
-  
+
     ...
 </bean>
 ```
@@ -539,10 +539,10 @@ XML:
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
   <property name="name" value="myCache"/>
-  
+
   <!-- Enabling on-heap caching for this distributed cache. -->
   <property name="onheapCacheEnabled" value="true"/>
-  
+
   <property name="evictionPolicy">
   	<!-- FIFO eviction policy. -->
     <bean class="org.apache.ignite.cache.eviction.fifo.FifoEvictionPolicy">
@@ -550,7 +550,7 @@ XML:
       <property name="maxSize" value="1000000"/>
     </bean>
   </property>
-  
+
     ...
 </bean>
 ```
@@ -584,10 +584,10 @@ XML：
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
   <property name="name" value="myCache"/>
-  
+
   <!-- Enabling on-heap caching for this distributed cache. -->
   <property name="onheapCacheEnabled" value="true"/>
-  
+
   <property name="evictionPolicy">
   	<!-- Sorted eviction policy. -->
     <bean class="org.apache.ignite.cache.eviction.sorted.SortedEvictionPolicy">
@@ -598,7 +598,7 @@ XML：
       <property name="maxSize" value="1000000"/>
     </bean>
   </property>
-  
+
   ...
 </bean>
 ```
@@ -630,17 +630,17 @@ XML：
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
   <property name="name" value="myCache"/>
-  
+
   <!-- Enabling on-heap caching for this distributed cache. -->
   <property name="onheapCacheEnabled" value="true"/>
-  
+
   <property name="evictionPolicy">
   	<!-- Random eviction policy. -->
     <bean class="org.apache.ignite.cache.eviction.random.RandomEvictionPolicy">       	<!-- Set the maximum cache size to 1 million (default is 100,000). -->
       <property name="maxSize" value="1000000"/>
     </bean>
   </property>
-  
+
     ...
 </bean>
 ```

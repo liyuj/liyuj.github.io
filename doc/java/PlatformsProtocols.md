@@ -1,5 +1,5 @@
 # 12.平台和协议
-## 12.1.摘要
+## 12.1.概述
 Ignite为主要的语言和技术，以原生库的形式提供了一套API，包括Java，.NET和C++，还支持包括REST、Memcached以及Redis在内的多种协议。
 ## 12.2.REST API
 Ignite提供了一个HTTP REST客户端，可以以REST的方式通过HTTP或者HTTPS协议与集群进行通信。REST API可以用于执行不同的操作，比如对缓存进行读/写，执行任务，获取各种指标等等。

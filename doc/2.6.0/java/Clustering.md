@@ -85,7 +85,7 @@ IgniteCluster cluster = ignite.cluster();
 // over remote nodes, i.e. not this node.
 IgniteCompute compute = ignite.compute(cluster.forRemotes());
 
-// Broadcast to all remote nodes and print the ID of the node 
+// Broadcast to all remote nodes and print the ID of the node
 // on which this closure is executing.
 compute.broadcast(() -> System.out.println("Hello Node: " + ignite.cluster().localNode().id());
 ```
@@ -283,7 +283,7 @@ int numberOfCores = metrics.getTotalCpus();
 int activeJobs = metrics.getCurrentActiveJobs();
 ```
 ## 2.4.领导者选举
-### 2.4.1.摘要
+### 2.4.1.概述
 当工作在分布式环境中时，有时需要确保有这么一个节点，不管拓扑是否发生变化，这个节点通常被叫做`leader（领导者）`。
 很多系统选举领导者通常要处理数据一致性，然后通常是通过收集集群成员的选票处理的。而在Ignite中，数据一致性是通过数据网格的类似功能处理的（Rendezvous Hashing或者HRW哈希），选择领导者在传统意义上的数据一致性，在数据网格以外就不是真的需要了。
 
@@ -325,7 +325,7 @@ Ignite的发现机制，根据不同的使用场景，有两种实现：
  - ZooKeeper发现：允许将Ignite集群节点数扩展至百级甚至千级，仍然保证扩展性和性能。
 
 ### 2.5.1.TCP/IP发现
-#### 2.5.1.1.摘要
+#### 2.5.1.1.概述
 Ignite中，通过`DiscoverySpi`节点可以彼此发现对方，Ignite提供了`TcpDiscoverySpi`作为`DiscoverySpi`的默认实现，它使用TCP/IP来作为节点发现的实现，可以配置成基于组播的或者基于静态IP的。
 
 #### 2.5.1.2.组播IP探测器
@@ -351,18 +351,18 @@ XML：
 Java：
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
- 
+
 TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder();
- 
+
 ipFinder.setMulticastGroup("228.10.10.157");
- 
+
 spi.setIpFinder(ipFinder);
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default discovery SPI.
 cfg.setDiscoverySpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -385,13 +385,13 @@ XML：
         <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
           <property name="addresses">
             <list>
-              <!-- 
+              <!--
               Explicitly specifying address of a local node to let it start and                 operate normally even if there is no more nodes in the cluster.
               You can also optionally specify an individual port or port range.
               -->
               <value>1.2.3.4</value>
-              
-              <!-- 
+
+              <!--
               IP Address and optional port range of a remote node.
               You can also optionally specify an individual port and don't set                 the port range at all.
               -->
@@ -407,20 +407,20 @@ XML：
 Java：
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
- 
+
 TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
- 
+
 // Set initial IP addresses.
 // Note that you can optionally specify a port or a port range.
 ipFinder.setAddresses(Arrays.asList("1.2.3.4", "1.2.3.5:47500..47509"));
- 
+
 spi.setIpFinder(ipFinder);
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default discovery SPI.
 cfg.setDiscoverySpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -439,13 +439,13 @@ XML：
       <property name="ipFinder">
         <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
           <property name="multicastGroup" value="228.10.10.157"/>
-           
+
           <!-- list of static IP addresses-->
           <property name="addresses">
             <list>
               <value>1.2.3.4</value>
-              
-              <!-- 
+
+              <!--
                   IP Address and optional port range.
                   You can also optionally specify an individual port.
               -->
@@ -463,21 +463,21 @@ Java：
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
 
 TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder();
- 
+
 // Set Multicast group.
 ipFinder.setMulticastGroup("228.10.10.157");
 
 // Set initial IP addresses.
 // Note that you can optionally specify a port or a port range.
 ipFinder.setAddresses(Arrays.asList("1.2.3.4", "1.2.3.5:47500..47509"));
- 
+
 spi.setIpFinder(ipFinder);
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default discovery SPI.
 cfg.setDiscoverySpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -491,7 +491,7 @@ XML：
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     ...
     <!--
-    Explicitly configure TCP discovery SPI to provide list of 
+    Explicitly configure TCP discovery SPI to provide list of
     initial nodes from the first cluster.
     -->
     <property name="discoverySpi">
@@ -508,9 +508,9 @@ XML：
                     <property name="addresses">
                         <list>
                             <!--
-                            Addresses and port range of nodes from 
+                            Addresses and port range of nodes from
                             the first cluster.
-                            127.0.0.1 can be replaced with actual IP addresses 
+                            127.0.0.1 can be replaced with actual IP addresses
                             or host names. Port range is optional.
                             -->
                             <value>127.0.0.1:48500..48520</value>
@@ -606,7 +606,7 @@ XML：
     </property>
 
     <!--
-    Explicitly configure TCP communication SPI changing local port number 
+    Explicitly configure TCP communication SPI changing local port number
     for the nodes from the second cluster.
     -->
     <property name="communicationSpi">
@@ -699,10 +699,10 @@ ipFinder.setDataSource(someDs);
 spi.setIpFinder(ipFinder);
 
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default discovery SPI.
 cfg.setDiscoverySpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -737,10 +737,10 @@ ipFinder.setPath("/var/ignite/addresses");
 spi.setIpFinder(ipFinder);
 
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default discovery SPI.
 cfg.setDiscoverySpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -774,10 +774,10 @@ ipFinder.setZkConnectionString("127.0.0.1:2181");
 spi.setIpFinder(ipFinder);
 
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default discovery SPI.
 cfg.setDiscoverySpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -809,7 +809,7 @@ Ignition.start(cfg);
 |`setStatisticsPrintFrequency(int)`|统计输出的频率（毫秒），0意味着不需要输出。如果值大于0那么日志就会激活，然后每隔一段时间就会以INFO级别输出一个状态，这对于跟踪拓扑的问题非常有用。|0|
 
 ### 2.5.2.ZooKeeper发现
-#### 2.5.2.1.摘要
+#### 2.5.2.1.概述
 Ignite使用TCP/IP发现机制，将集群节点组织成环状拓扑结构有其优点，也有缺点。比如在一个有上百个节点的拓扑中，系统消息遍历所有的节点需要花很多秒，就结果来说，基本的事件处理，比如新节点加入或者故障节点检测，就会影响整个集群的响应能力和性能。
 
 ZooKeeper发现机制就是为大规模的Ignite集群而设计的，它会在保持扩展的便利性以及性能的线性增长前提下，将集群扩至百级甚至千级节点，代价就是引入了另一个分布式系统，配置和管理需要将两者结合起来。因此，如果集群节点数成百上千，可以考虑这个发现机制，否则还是使用默认的TCP/IP发现机制较好。
@@ -856,7 +856,7 @@ cfg.setDiscoverySpi(zkDiscoSpi);
 Ignition.start(cfg);
 ```
 配置中有两个重要的参数：
- 
+
  - `zkConnectionString`：ZooKeeper服务器地址；
  - `sessionTimeout`：如果无法通过发现SPI进行事件消息的交换，多久之后节点会被视为断开连接。
 
@@ -879,7 +879,7 @@ ZooKeeper发现机制使用如下的方式来处理拓扑分区（或者叫脑�
 # The number of milliseconds of each tick
 tickTime=2000
 
-# The number of ticks that can pass between 
+# The number of ticks that can pass between
 # sending a request and getting an acknowledgement
 syncLimit=5
 ```
@@ -889,7 +889,7 @@ syncLimit=5
 
 要避免这种情况发生，`sessionTimeout`要比`tickTime * syncLimit`大。
 ## 2.6.零部署
-### 2.6.1.摘要
+### 2.6.1.概述
 计算所需的闭包和任务可能是任意自定义的类，也包括匿名类。Ignite中，远程节点会自动感知这些类，不需要显式地将任何jar文件部署或者移动到任何远程节点上。
 ### 2.6.2.对等类加载
 这个行为是通过对等类加载（P2P类加载）实现的，它是Ignite中的一个特别的**分布式类加载器**，实现了节点间的字节码交换。当对等类加载启用时，不需要在网格内的每个节点上手工地部署Java或者Scala代码，也不需要每次在发生变化时重新部署。
@@ -908,7 +908,7 @@ compute.broadcast(() -> System.out.println("Hello node: " + cluster.localNode().
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ...   
+    ...
     <!-- Explicitly enable peer class loading. -->
     <property name="peerClassLoadingEnabled" value="true"/>
     ...
@@ -934,7 +934,7 @@ Ignite ignite = Ignition.start(cfg);
 ### 2.6.3.显式部署
 要在Ignite中显式地部署jar文件，可以将它们拷贝进每个集群节点的`libs`文件夹，Ignite会在启动时自动加载所有的`libs`文件夹中的jar文件。
 ## 2.7.部署模式
-### 2.7.1.摘要
+### 2.7.1.概述
 对等类加载行为的特性是由不同的部署模式控制的。特别地，当发起节点或者主节点离开网格时的卸载行为也会依赖于部署模式。另一方面，部署模式控制的，还有用户资源管理和类版本管理。在下面的章节中会更详细地描述每个部署模式。
 **PRIVATE和ISOLATED**
 在主节点，同一个类加载器部署的类，还会在worker节点远程共享同一个类加载器。不过从不同主节点部署的任务不会在worker节点共享同一个类加载器，这对于开发很有用，这时不同的开发者可以工作于同一个类的不同版本上。
@@ -984,13 +984,13 @@ XML：
         to disable the feature.
     -->
     <property name="peerClassLoadingEnabled" value="true"/>
-     
+
     <!-- Set deployment mode. -->
     <property name="deploymentMode" value="CONTINUOUS"/>
- 
+
     <!-- Disable missed resources caching. -->
     <property name="peerClassLoadingMissedResourcesCacheSize" value="0"/>
- 
+
     <!--
         Exclude force peer class loading of a class,
         even if exists locally.
@@ -1015,7 +1015,7 @@ cfg.setDeploymentMode(DeploymentMode.CONTINUOUS);
 // Disable missed resource caching.
 cfg.setPeerClassLoadingMissedResourcesCacheSize(0);
 
-// Exclude force peer class loading of a class, 
+// Exclude force peer class loading of a class,
 // even if it exists locally.
 cfg.setPeerClassLoadingLocalClassPathExclude("com.mcompany.MyChangingClass");
 

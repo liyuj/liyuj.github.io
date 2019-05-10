@@ -21,14 +21,14 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
       </property>
     </bean>
   </property>
-  
+
   <!-- Additional setting. -->
- 
+
 </bean>
 ```
 启用持久化后，所有数据和索引都将存储在对应节点的内存和磁盘上。
 ## 7.2.第三方持久化
-### 7.2.1.摘要
+### 7.2.1.概述
 除了[Ignite原生持久化](#_7-1-ignite持久化)之外，Ignite C++还可以使用第三方存储来实现持久化。可以使用关系数据库这样的底层存储，然后将缓存配置为**通写**、**后写**或者**通读**模式。通过这些配置，Ignite C++可以自动地将所有更新发送给持久化层，也可以对数据进行按需预加载。
 
 ![](https://files.readme.io/9a17490-in_memory_data.png)
@@ -65,7 +65,7 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
 CacheJdbcBlobStoreFactory：
 ```xml
 <bean id= "simpleDataSource" class="org.h2.jdbcx.JdbcDataSource"/>
-  
+
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
    <property name="cacheConfiguration">
@@ -87,7 +87,7 @@ CacheJdbcBlobStoreFactory：
 CacheJdbcPojoStore：
 ```xml
 <bean id= "simpleDataSource" class="org.h2.jdbcx.JdbcDataSource"/>
-  
+
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
     <property name="cacheConfiguration">
@@ -122,7 +122,7 @@ CacheHibernateBlobStore：
          </bean>
        </list>
     </property>
-  ...    
+  ...
 </bean>
 ```
 ::: warning Ignite C++缓存存储

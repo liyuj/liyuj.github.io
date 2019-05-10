@@ -1,6 +1,6 @@
 # 3.架构
 ## 3.1.IgniteSQL的工作方式
-### 3.1.1.摘要
+### 3.1.1.概述
 Ignite的SQL引擎是与[H2数据库](http://www.h2database.com/)紧紧绑定在一起的，简而言之，H2是一个Java写的，遵循一组开源许可证，基于内存和磁盘的速度很快的数据库。
 
 当`ignite-indexing`模块加入节点的类路径之后，一个嵌入式的H2数据库实例就会作为Ignite节点进程的一部分被启动。如果节点是在终端中通过`ignite.sh{bat}`脚本启动的，那么该模块会自动地加入类路径，因为它已经被放入了`{apache_ignite}\libs\`目录中。
@@ -90,7 +90,7 @@ SELECT _key, _val FROM Person WHERE id IN
 
 一个方法就是执行`UPDATE`或`DELETE`语句自动生成的`SELECT`语句或者DML语句使用的`INSERT`或`MERGE`语句的执行计划，这样会提供一个要执行的DML操作所使用的索引情况。
 ## 3.2.分布式关联
-### 3.2.1.摘要
+### 3.2.1.概述
 Ignite支持并置和非并置的分布式SQL关联，此外，如果数据位于不同的缓存，Ignite还可以进行跨缓存的关联。
 ```sql
 SELECT from Person as p, Organization as org
@@ -145,7 +145,7 @@ Ignite设计和支持的**非并置**分布式关联就是针对的这样的场�
 
 如果仍然希望在`分区`缓存上执行本地查询，那么需要考虑使用[这里](/doc/java/ComputeGrid.md#_7-6-2-基于类同的call方法和run方法)描述的类同计算技术。
 ## 3.4.空间支持
-### 3.4.1.摘要
+### 3.4.1.概述
 Ignite除了支持标准ANSI-99标准的SQL查询，支持基本数据类型或者特定/自定义对象类型之外，还可以查询和索引几何数据类型，比如点、线以及包括这些几何形状空间关系的多边形。
 
 空间信息的查询功能，以及对应的可用的函数和操作符，是在[SQL的简单特性规范](http://www.opengeospatial.org/docs/is/)中定义的，目前，Ignite通过[JTS Topology Suite](http://tsusiatsoftware.net/jts/main.html)的使用，支持规范的交叉操作。
@@ -185,8 +185,8 @@ EXPLAIN SELECT name FROM Person WHERE age = 26;
 ### 3.5.3.SQL性能和可用性考量
 如果查询使用了操作符**OR**那么可能不是以期望的方式使用索引。比如对于查询：`select name from Person where sex='M' and (age = 20 or age = 30)`,会使用`sex`字段上的索引而不是`age`上的索引，虽然后者选择性更强。要解决这个问题需要用UNION ALL重写这个查询（注意没有ALL的UNION会返回去重的行，这会改变查询的语义而且引入了额外的性能开销），比如：
 ```sql
-select name from Person where sex='M' and age = 20 
-UNION ALL 
+select name from Person where sex='M' and age = 20
+UNION ALL
 select name from Person where sex='M' and age = 30
 ```
 ### 3.5.4.结果集延迟加载
@@ -269,7 +269,7 @@ SELECT * FROM Person USE INDEX(index_age)
 CREATE TABLE employee (id BIGINT PRIMARY KEY, department_id INT, name VARCHAR)
 
 /* This query is sent to the node where the requested key is stored */
-SELECT * FROM employee WHERE id=10; 
+SELECT * FROM employee WHERE id=10;
 
 /* This query is sent to all nodes */
 SELECT * FROM employee WHERE department_id=10;
@@ -381,7 +381,7 @@ CREATE TABLE City (
 SQL_<SchemaName>_<TableName>
 ```
 ## 3.7.SQL事务
-### 3.7.1.摘要
+### 3.7.1.概述
 如果使用`TRANSACTIONAL_SNAPSHOT`模式，SQL的事务也是支持的。`TRANSACTIONAL_SNAPSHOT`模式是Ignite缓存的多版本并发控制（MVCC）的实现。
 
 关于Ignite支持的事务语法以及示例代码，可以看[事务](/doc/sql/SQLReference.md#_2-12-事务)章节。
@@ -398,11 +398,11 @@ XML：
     ...
     <property name="cacheConfiguration">
         <bean class="org.apache.ignite.configuration.CacheConfiguration">
-          
+
             <property name="name" value="myCache"/>
-          
+
             <property name="atomicityMode" value="TRANSACTIONAL_SNAPSHOT"/>
-            ... 
+            ...
         </bean>
     </property>
 </bean>

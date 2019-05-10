@@ -1,6 +1,6 @@
 # 8.PHP开发向导
 ## 8.1.PHP PDO
-### 8.1.1.摘要
+### 8.1.1.概述
 PHP提供了一个轻量级、一致的接口来访问数据库，叫做PHP数据对象-PDO，这个扩展依赖于若干特定数据库的PDO驱动，其中之一是[PDO_ODBC](http://php.net/manual/en/ref.pdo-odbc.php)，它可以接入任何实现了自己的ODBC驱动的数据库。
 
 通过使用Ignite的ODBC驱动，从PHP应用中就可以接入Ignite集群，然后访问和修改数据，本文就会介绍如何达到该目的。
@@ -108,7 +108,7 @@ try {
     $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Preparing query.
-    $dbs = $dbh->prepare('INSERT INTO Person (_key, firstName, lastName, resume, salary) 
+    $dbs = $dbh->prepare('INSERT INTO Person (_key, firstName, lastName, resume, salary)
         VALUES (?, ?, ?, ?, ?)');
 
     // Declaring parameters.

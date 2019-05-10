@@ -37,7 +37,7 @@ IgniteCompute compute = ignite.compute(remoteGroup);
 ```
 
 ## 7.2.分布式闭包
-### 7.2.1.摘要
+### 7.2.1.概述
 Ignite计算网格可以对集群或者集群组内的任何闭包进行广播和负载平衡，包括纯Java的`runnables`和`callables`。
 ### 7.2.2.broadcast方法
 所有的`broadcast(...)`方法会将一个给定的作业广播到所有的集群节点或者集群组。
@@ -56,7 +56,7 @@ Java8异步广播：
 ```java
 final Ignite ignite = Ignition.ignite();
 
-// Limit broadcast to remote nodes only and 
+// Limit broadcast to remote nodes only and
 // enable asynchronous mode.
 IgniteCompute compute = ignite.compute(ignite.cluster().forRemotes()).withAsync();
 
@@ -88,7 +88,7 @@ Java7异步广播：
 ```java
 final Ignite ignite = Ignition.ignite();
 
-// Limit broadcast to remote nodes only and 
+// Limit broadcast to remote nodes only and
 // enable asynchronous mode.
 IgniteCompute compute = ignite.compute(ignite.cluster.forRemotes()).withAsync();
 
@@ -116,7 +116,7 @@ fut.listen(new IgniteInClosure<? super ComputeTaskFuture<?>>() {
 Java8：call：
 ```java
 Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
- 
+
 // Iterate through all words in the sentence and create callable jobs.
 for (String word : "How many characters".split(" "))
     calls.add(word::length);
@@ -125,13 +125,13 @@ for (String word : "How many characters".split(" "))
 Collection<Integer> res = ignite.compute().call(calls);
 
 // Add all the word lengths received from cluster nodes.
-int total = res.stream().mapToInt(Integer::intValue).sum(); 
+int total = res.stream().mapToInt(Integer::intValue).sum();
 ```
 Java8:run:
 ```java
 IgniteCompute compute = ignite.compute();
 
-// Iterate through all words and print 
+// Iterate through all words and print
 // each word on a different cluster node.
 for (String word : "Print words on different cluster nodes".split(" "))
     // Run on some cluster node.
@@ -140,7 +140,7 @@ for (String word : "Print words on different cluster nodes".split(" "))
 Java8:异步call：
 ```java
 Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
- 
+
 // Iterate through all words in the sentence and create callable jobs.
 for (String word : "Count characters using callable".split(" "))
     calls.add(word::length);
@@ -153,8 +153,8 @@ asyncCompute.call(calls);
 
 asyncCompute.future().listen(fut -> {
     // Total number of characters.
-    int total = fut.get().stream().mapToInt(Integer::intValue).sum(); 
-  
+    int total = fut.get().stream().mapToInt(Integer::intValue).sum();
+
     System.out.println("Total number of characters: " + total);
 });
 ```
@@ -164,7 +164,7 @@ IgniteCompute asyncCompute = ignite.compute().withAsync();
 
 Collection<ComputeTaskFuture<?>> futs = new ArrayList<>();
 
-// Iterate through all words and print 
+// Iterate through all words and print
 // each word on a different cluster node.
 for (String word : "Print words on different cluster nodes".split(" ")) {
     // Asynchronously run on some cluster node.
@@ -179,7 +179,7 @@ futs.stream().forEach(ComputeTaskFuture::get);
 Java7:call:
 ```java
 Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
- 
+
 // Iterate through all words in the sentence and create callable jobs.
 for (final String word : "Count characters using callable".split(" ")) {
     calls.add(new IgniteCallable<Integer>() {
@@ -188,7 +188,7 @@ for (final String word : "Count characters using callable".split(" ")) {
         }
     });
 }
- 
+
 // Execute collection of callables on the cluster.
 Collection<Integer> res = ignite.compute().call(calls);
 
@@ -234,9 +234,9 @@ Collection<Integer> res = compute.apply(
     String::length,
     Arrays.asList("How many characters".split(" "))
 );
-     
+
 // Add all the word lengths received from cluster nodes.
-int total = res.stream().mapToInt(Integer::intValue).sum(); 
+int total = res.stream().mapToInt(Integer::intValue).sum();
 ```
 Java8:异步apply：
 ```java
@@ -244,18 +244,18 @@ Java8:异步apply：
 IgniteCompute asyncCompute = ignite.compute().withAsync();
 
 // Execute closure on all cluster nodes.
-// If the number of closures is less than the number of 
-// parameters, then Ignite will create as many closures 
+// If the number of closures is less than the number of
+// parameters, then Ignite will create as many closures
 // as there are parameters.
 Collection<Integer> res = asyncCompute.apply(
     String::length,
     Arrays.asList("How many characters".split(" "))
 );
-     
+
 asyncCompute.future().listen(fut -> {
     // Total number of characters.
-    int total = fut.get().stream().mapToInt(Integer::intValue).sum(); 
-  
+    int total = fut.get().stream().mapToInt(Integer::intValue).sum();
+
     System.out.println("Total number of characters: " + total);
 });
 ```
@@ -271,9 +271,9 @@ Collection<Integer> res = ignite.compute().apply(
     },
     Arrays.asList("Count characters using closure".split(" "))
 );
-     
+
 int sum = 0;
- 
+
 // Add up individual word lengths received from remote nodes
 for (int len : res)
     sum += len;
@@ -284,7 +284,7 @@ IgniteCompute提供了一个方便的API以在集群内执行计算。虽然也�
 ```java
 // Get cluster-enabled executor service.
 ExecutorService exec = ignite.executorService();
- 
+
 // Iterate through all words in the sentence and create jobs.
 for (final String word : "Print words using runnable".split(" ")) {
   // Execute runnable on some node.
@@ -304,7 +304,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 ```
 
 ## 7.4.MapReduce和ForkJoin
-### 7.4.1.摘要
+### 7.4.1.概述
 `ComputeTask`是Ignite对于简化内存内MapReduce的抽象，这个也非常接近于ForkJoin范式，纯粹的MapReduce从来不是为了性能而设计，只适用于处理离线的批量业务处理(比如Hadoop MapReduce)。不过当对内存内的数据进行计算时，实时性低延迟和高吞吐量通常具有更高的优先级。同样，简化API也变得非常重要。考虑到这一点，Ignite推出了`ComputeTask` API，它是一个轻量级的MapReduce(或ForkJoin)实现。
 
 ::: tip 注意
@@ -364,17 +364,17 @@ IgniteCompute compute = ignite.compute();
 
 // Execute task on the clustr and wait for its completion.
 int cnt = compute.execute(CharacterCountTask.class, "Hello Grid Enabled World!");
- 
+
 System.out.println(">>> Total number of characters in the phrase is '" + cnt + "'.");
- 
+
 /**
  * Task to count non-white-space characters in a phrase.
  */
 private static class CharacterCountTask extends ComputeTaskSplitAdapter<String, Integer> {
   // 1. Splits the received string into to words
   // 2. Creates a child job for each word
-  // 3. Sends created jobs to other nodes for processing. 
-  @Override 
+  // 3. Sends created jobs to other nodes for processing.
+  @Override
   public List<ClusterNode> split(int gridSize, String arg) {
     String[] words = arg.split(" ");
 
@@ -394,7 +394,7 @@ private static class CharacterCountTask extends ComputeTaskSplitAdapter<String, 
     return jobs;
   }
 
-  @Override 
+  @Override
   public Integer reduce(List<ComputeJobResult> results) {
     int sum = 0;
 
@@ -411,51 +411,51 @@ IgniteCompute compute = ignite.compute();
 
 // Execute task on the clustr and wait for its completion.
 int cnt = grid.compute().execute(CharacterCountTask.class, "Hello Grid Enabled World!");
- 
+
 System.out.println(">>> Total number of characters in the phrase is '" + cnt + "'.");
- 
+
 /**
  * Task to count non-white-space characters in a phrase.
  */
 private static class CharacterCountTask extends ComputeTaskAdapter<String, Integer> {
     // 1. Splits the received string into to words
     // 2. Creates a child job for each word
-    // 3. Sends created jobs to other nodes for processing. 
-    @Override 
+    // 3. Sends created jobs to other nodes for processing.
+    @Override
     public Map<? extends ComputeJob, ClusterNode> map(List<ClusterNode> subgrid, String arg) {
         String[] words = arg.split(" ");
-      
+
         Map<ComputeJob, ClusterNode> map = new HashMap<>(words.length);
-        
+
         Iterator<ClusterNode> it = subgrid.iterator();
-         
+
         for (final String word : arg.split(" ")) {
             // If we used all nodes, restart the iterator.
             if (!it.hasNext())
                 it = subgrid.iterator();
-             
+
             ClusterNode node = it.next();
-                
+
             map.put(new ComputeJobAdapter() {
                 @Override public Object execute() {
                     System.out.println(">>> Printing '" + word + "' on this node from grid job.");
-                  
+
                     // Return number of letters in the word.
                     return word.length();
                 }
              }, node);
         }
-      
+
         return map;
     }
- 
-    @Override 
+
+    @Override
     public Integer reduce(List<ComputeJobResult> results) {
         int sum = 0;
-      
+
         for (ComputeJobResult res : results)
             sum += res.<Integer>getData();
-      
+
         return sum;
     }
 }
@@ -483,7 +483,7 @@ compute.execute(new TaskSessionAttributesTask(), null);
  */
 @ComputeTaskSessionFullSupport
 private static class TaskSessionAttributesTask extends ComputeTaskSplitAdapter<Object, Object>() {
-  @Override 
+  @Override
   protected Collection<? extends GridJob> split(int gridSize, Object arg)  {
     Collection<ComputeJob> jobs = new LinkedList<>();
 
@@ -493,31 +493,31 @@ private static class TaskSessionAttributesTask extends ComputeTaskSplitAdapter<O
         // Auto-injected task session.
         @TaskSessionResource
         private ComputeTaskSession ses;
-        
+
         // Auto-injected job context.
         @JobContextResource
         private ComputeJobContext jobCtx;
 
-        @Override 
+        @Override
         public Object execute() {
           // Perform STEP1.
           ...
-          
+
           // Tell other jobs that STEP1 is complete.
           ses.setAttribute(jobCtx.getJobId(), "STEP1");
-          
+
           // Wait for other jobs to complete STEP1.
           for (ComputeJobSibling sibling : ses.getJobSiblings())
             ses.waitForAttribute(sibling.getJobId(), "STEP1", 0);
-          
+
           // Move on to STEP2.
           ...
         }
       }
     }
   }
-               
-  @Override 
+
+  @Override
   public Object reduce(List<ComputeJobResult> results) {
     // No-op.
     return null;
@@ -525,7 +525,7 @@ private static class TaskSessionAttributesTask extends ComputeTaskSplitAdapter<O
 }
 ```
 ## 7.5.节点局部状态共享
-### 7.5.1.摘要
+### 7.5.1.概述
 通常来说在不同的计算作业或者不同的部署服务之间共享状态是很有用的，为此Ignite在每个节点上提供了一个共享并发**node-local-map**。
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -539,9 +539,9 @@ ConcurrentMap<String, Integer> nodeLocalMap = cluster.nodeLocalMap():
 private IgniteCallable<Long> job = new IgniteCallable<Long>() {
   @IgniteInstanceResource
   private Ignite ignite;
-  
-  @Override 
-  public Long call() {                  
+
+  @Override
+  public Long call() {
     // Get a reference to node local.
     ConcurrentMap<String, AtomicLong> nodeLocalMap = ignite.cluster().nodeLocalMap();
 
@@ -549,11 +549,11 @@ private IgniteCallable<Long> job = new IgniteCallable<Long>() {
 
     if (cntr == null) {
       AtomicLong old = nodeLocalMap.putIfAbsent("counter", cntr = new AtomicLong());
-      
+
       if (old != null)
         cntr = old;
     }
-    
+
     return cntr.incrementAndGet();
   }
 }
@@ -575,7 +575,7 @@ res = compute.call(job);
 assert res == 2;
 ```
 ## 7.6.计算和数据的并置
-### 7.6.1.摘要
+### 7.6.1.概述
 计算和数据的并置可以最小化网络中的数据序列化，以及可以显著地提升应用的性能和可扩展性。只要可能，都应该尽力地将计算和存储待处理数据的集群节点并置在一起。
 ### 7.6.2.基于类同的call方法和run方法
 `affinityCall(...)`和`affinityRun(...)`方法使作业和缓存着数据的节点位于一处，换句话说，给定缓存名字和类同键，这些方法会试图在指定的缓存中定位键所在的节点，然后在那里执行作业。
@@ -594,7 +594,7 @@ IgniteCompute compute = ignite.compute();
 for (int key = 0; key < KEY_CNT; key++) {
     // This closure will execute on the remote node where
     // data with the 'key' is located.
-    compute.affinityRun(CACHE_NAME, key, () -> { 
+    compute.affinityRun(CACHE_NAME, key, () -> {
         // Peek is a local memory lookup.
         System.out.println("Co-located [key= " + key + ", value= " + cache.localPeek(key) +']');
     });
@@ -611,11 +611,11 @@ List<IgniteFuture<?>> futs = new ArrayList<>();
 for (int key = 0; key < KEY_CNT; key++) {
     // This closure will execute on the remote node where
     // data with the 'key' is located.
-    asyncCompute.affinityRun(CACHE_NAME, key, () -> { 
+    asyncCompute.affinityRun(CACHE_NAME, key, () -> {
         // Peek is a local memory lookup.
         System.out.println("Co-located [key= " + key + ", value= " + cache.peek(key) +']');
     });
-  
+
     futs.add(asyncCompute.future());
 }
 
@@ -630,7 +630,7 @@ IgniteCompute compute = ignite.compute();
 
 for (int i = 0; i < KEY_CNT; i++) {
     final int key = i;
- 
+
     // This closure will execute on the remote node where
     // data with the 'key' is located.
     compute.affinityRun(CACHE_NAME, key, new IgniteRunnable() {
@@ -647,7 +647,7 @@ for (int i = 0; i < KEY_CNT; i++) {
 :::
 
 ## 7.7.容错
-### 7.7.1.摘要
+### 7.7.1.概述
 Ignite支持作业的自动故障转移，当一个节点崩溃时，作业会被转移到其它可用节点再次执行。不过在Ignite中也可以将任何作业的结果认为是失败的。工作的节点可以仍然是在线的，但是它运行在一个很低的CPU，I/O，磁盘空间等资源上，在很多情况下会导致应用的故障然后触发一个故障的转移。此外，也有选择一个作业故障转移到那个节点的功能，因为同一个应用内部不同的程序或者不同的计算也会是不同的。
 
 `FailoverSpi`负责选择一个新的节点来执行失败作业。`FailoverSpi`检查发生故障的作业以及该作业可以尝试执行的所有可用的网格节点的列表。它会确保该作业不会再次映射到出现故障的同一个节点。故障转移是在`ComputeTask.result(...)`方法返回`ComputeJobResultPolicy.FAILOVER`策略时触发的。Ignite内置了一些可定制的故障转移SPI实现。
@@ -658,18 +658,18 @@ Ignite默认会自动对停止或者故障的节点上的所有作业进行故�
 ```java
 public class MyComputeTask extends ComputeTaskSplitAdapter<String, String> {
     ...
-      
-    @Override 
+
+    @Override
     public ComputeJobResultPolicy result(ComputeJobResult res, List<ComputeJobResult> rcvd) {
         IgniteException err = res.getException();
-     
+
         if (err != null)
             return ComputeJobResultPolicy.FAILOVER;
-    
+
         // If there is no exception, wait for all job results.
         return ComputeJobResultPolicy.WAIT;
     }
-  
+
     ...
 }
 ```
@@ -705,20 +705,20 @@ XML：
 Java:
 ```java
 AlwaysFailoverSpi failSpi = new AlwaysFailoverSpi();
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override maximum failover attempts.
 failSpi.setMaximumFailoverAttempts(5);
- 
+
 // Override the default failover SPI.
 cfg.setFailoverSpi(failSpi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
 ## 7.8.负载平衡
-### 7.8.1.摘要
+### 7.8.1.概述
 负载平衡组件将作业在集群节点之间平衡分配。Ignite中负载平衡是通过`LoadBalancingSpi`实现的，它控制所有节点的负载以及确保集群中的每个节点负载水平均衡。对于同质化环境中的同质化任务，负载平衡采用的是随机或者轮询的策略。不过在很多其它场景中，特别是在一些不均匀的负载下，就需要更复杂的自适应负载平衡策略。
 
 `LoadBalancingSpi`采用前负载技术，即在将其发送到集群之前就对作业在某个节点的执行进行了调度。
@@ -754,15 +754,15 @@ XML:
 Java:
 ```java
 RoundRobinLoadBalancingSpi spi = new RoundRobinLoadBalancingSpi();
- 
+
 // Configure SPI to use per-task mode (this is default behavior).
 spi.setPerTask(true);
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default load balancing SPI.
 cfg.setLoadBalancingSpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -785,18 +785,18 @@ XML：
 Java：
 ```java
 WeightedRandomLoadBalancingSpi spi= new WeightedRandomLoadBalancingSpi();
- 
+
 // Configure SPI to used weighted random load balancing.
 spi.setUseWeights(true);
- 
+
 // Set weight for the local node.
 spi.setWeight(10);
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default load balancing SPI.
 cfg.setLoadBalancingSpi(spi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -812,12 +812,12 @@ Ignition.start(cfg);
 XML：
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration" singleton="true">
-  
+
   <!-- Enabling the required Failover SPI. -->
   <property name="failoverSpi">
      <bean class="org.apache.ignite.spi.failover.jobstealing.JobStealingFailoverSpi"/>
  	</property>
-  
+
   <!-- Enabling the JobStealingCollisionSpi for late load balancing. -->
   <property name="collisionSpi">
     <bean class="org.apache.ignite.spi.collision.jobstealing.JobStealingCollisionSpi">
@@ -860,7 +860,7 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 
  // Set stealing attribute to steal from/to nodes that have it.
  spi.setStealingAttributes(Collections.singletonMap("node.segment", "foobar"));
- 
+
  // Enable `JobStealingFailoverSpi`
  JobStealingFailoverSpi failoverSpi = new JobStealingFailoverSpi();
 
@@ -868,7 +868,7 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 
  // Override default Collision SPI.
  cfg.setCollisionSpi(spi);
- 
+
  cfg.setFailoverSpi(failoverSpi);
 ```
 ::: warning 必要的配置
@@ -876,7 +876,7 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 :::
 
 ## 7.9.检查点
-### 7.9.1.摘要
+### 7.9.1.概述
 检查点提供了保存一个作业中间状态的能力，它有助于一个长期运行的作业保存一些中间状态以防节点故障。重启一个故障节点后，一个作业会从保存的检查点载入然后从故障处继续执行。对于作业检查点状态，唯一必要的就是实现`java.io.Serializable`接口。
 
 检查点功能可以通过`GridTaskSession`接口的如下方法启用：
@@ -901,7 +901,7 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 IgniteCompute compute = ignite.compute();
 
 compute.run(new CheckpointsRunnable());
-  
+
 /**
  * Note that this class is annotated with @ComputeTaskSessionFullSupport
  * annotation to enable checkpointing.
@@ -912,7 +912,7 @@ private static class CheckpointsRunnable implements IgniteCallable<Object> {
   @TaskSessionResource
   private ComputeTaskSession ses;
 
-  @Override 
+  @Override
   public Object call() throws GridException {
     // Try to retrieve step1 result.
     Object res1 = ses.loadCheckpoint("STEP1");
@@ -977,21 +977,21 @@ XML:
 Java:
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 SharedFsCheckpointSpi checkpointSpi = new SharedFsCheckpointSpi();
- 
+
 // List of checkpoint directories where all files are stored.
 Collection<String> dirPaths = new ArrayList<String>();
- 
+
 dirPaths.add("/my/directory/path");
 dirPaths.add("/other/directory/path");
- 
+
 // Override default directory path.
 checkpointSpi.setDirectoryPaths(dirPaths);
- 
+
 // Override default checkpoint SPI.
 cfg.setCheckpointSpi(checkpointSpi);
- 
+
 // Starts Ignite node.
 Ignition.start(cfg);
 ```
@@ -1046,19 +1046,19 @@ XML:
 Java:
 ```java
 JdbcCheckpointSpi checkpointSpi = new JdbcCheckpointSpi();
- 
+
 javax.sql.DataSource ds = ... // Set datasource.
- 
+
 // Set database checkpoint SPI parameters.
 checkpointSpi.setDataSource(ds);
 checkpointSpi.setUser("test");
 checkpointSpi.setPwd("test");
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default checkpoint SPI.
 cfg.setCheckpointSpi(checkpointSpi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -1093,15 +1093,15 @@ XML:
 Java:
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 S3CheckpointSpi spi = new S3CheckpointSpi();
- 
+
 AWSCredentials cred = new BasicAWSCredentials(YOUR_ACCESS_KEY_ID, YOUR_SECRET_ACCESS_KEY);
- 
+
 spi.setAwsCredentials(cred);
- 
+
 spi.setBucketNameSuffix("checkpoints");
- 
+
 // Override default checkpoint SPI.
 cfg.setCheckpointSpi(cpSpi);
 
@@ -1109,7 +1109,7 @@ cfg.setCheckpointSpi(cpSpi);
 Ignition.start(cfg);
 ```
 ## 7.10.作业调度
-### 7.10.1.摘要
+### 7.10.1.概述
 Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行阶段被映射到集群节点上的。不过一旦作业到达被分配的节点，就需要有序地执行。作业默认是被提交到一个线程池然后随机地执行，如果要对作业执行顺序进行细粒度控制，需要启用`CollisionSpi`。
 ### 7.10.2.FIFO排序
 `FifoQueueCollisionSpi`可以使一定数量的作业无中断地以先入先出的顺序执行，所有其它的作业都会被放入一个等待列表，直到轮到它。
@@ -1136,16 +1136,16 @@ XML:
 Java:
 ```java
 FifoQueueCollisionSpi colSpi = new FifoQueueCollisionSpi();
- 
-// Execute jobs sequentially, one at a time, 
+
+// Execute jobs sequentially, one at a time,
 // by setting parallel job number to 1.
 colSpi.setParallelJobsNumber(1);
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default collision SPI.
 cfg.setCollisionSpi(colSpi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -1162,22 +1162,22 @@ public class MyUrgentTask extends ComputeTaskSplitAdapter<Object, Object> {
   // Auto-injected task session.
   @TaskSessionResource
   private GridTaskSession taskSes = null;
- 
+
   @Override
   protected Collection<ComputeJob> split(int gridSize, Object arg) {
     ...
     // Set high task priority.
     taskSes.setAttribute("grid.task.priority", 10);
- 
+
     List<ComputeJob> jobs = new ArrayList<>(gridSize);
-    
+
     for (int i = 1; i <= gridSize; i++) {
       jobs.add(new GridJobAdapter() {
         ...
       });
     }
     ...
-      
+
     // These jobs will be executed with higher priority.
     return jobs;
   }
@@ -1193,7 +1193,7 @@ XML:
   ...
   <property name="collisionSpi">
     <bean class="org.apache.ignite.spi.collision.priorityqueue.PriorityQueueCollisionSpi">
-      <!-- 
+      <!--
         Change the parallel job number if needed.
         Default is number of cores times 2.
       -->
@@ -1210,12 +1210,12 @@ PriorityQueueCollisionSpi colSpi = new PriorityQueueCollisionSpi();
 // Change the parallel job number if needed.
 // Default is number of cores times 2.
 colSpi.setParallelJobsNumber(5);
- 
+
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // Override default collision SPI.
 cfg.setCollisionSpi(colSpi);
- 
+
 // Start Ignite node.
 Ignition.start(cfg);
 ```
@@ -1282,7 +1282,7 @@ xyz.class
 File协议：
 ```java
 // The example expects that you have a GAR file in
-// `home/username/ignite/work/my_deployment/file` folder 
+// `home/username/ignite/work/my_deployment/file` folder
 // which contains `myproject.HelloWorldTask` class.
 
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -1393,7 +1393,7 @@ http://username:password;freq=10000@www.mysite.com:110/ignite/deployment
 显式地配置`LocalDeploymentSpi`是没有意义的，因为它是默认的以及没有配置参数。
 
 ## 7.12.基于Cron的调度
-### 7.12.1.摘要
+### 7.12.1.概述
 `Runnable`和`Callable`的实例在本地节点可以使用`IgniteScheduler.scheduleLocal()`方法和`Cron`语法进行调度用于周期性的执行。下面的一个示例会在所有的有效节点上触发周期性的发送缓存指标报告。
 ```java
 ignite.compute().broadcast(new IgniteCallable<Object>() {
@@ -1438,7 +1438,7 @@ Ignite引入了一个Cron语法的扩展，它可以指定一个初始化的延�
 ```
 
 ## 7.13.持续映射
-### 7.13.1.摘要
+### 7.13.1.概述
 传统的MapReduce范式中，有一个明确且有限的作业集，它在Map阶段是已知的并且在整个计算运行期间都不会改变。但是如果有一个作业流会怎么样呢？这时仍然可以使用Ignite的持续映射能力执行MapReduce。通过持续映射，当计算仍然在运行时作业可以动态地生成，新生成的作业同样会被worker节点处理，并且Reducer和通常的MapReduce一样会收到结果。
 ### 7.13.2.运行持续的映射任务
 如果在任务中要使用持续映射，需要在一个任务实例中注入`TaskContinuousMapperResource`资源：
@@ -1451,7 +1451,7 @@ private TaskContinuousMapper mapper;
 mapper.send(new ComputeJobAdapter() {
     @Override public Object execute() {
         System.out.println("I'm a continuously-mapped job!");
- 
+
         return null;
     }
 });
@@ -1472,21 +1472,21 @@ mapper.send(new ComputeJobAdapter() {
 interface Crawler {
     ...
     public Image findNext();
- 
+
     public void findNextAsync(CrawlerListener listener);
- 
+
     ...
 }
- 
+
 interface CrawlerListener {
     public void onImage(Crawler c, Image img) throws Exception;
 }
- 
+
 interface Image {
     ...
- 
+
     public byte[] getBytes();
- 
+
     ...
 }
 ```
@@ -1494,13 +1494,13 @@ interface Image {
 ```java
 class ImageAnalysisJob implements ComputeJob, Externalizable {
     ...
- 
+
     public ImageAnalysisJob(byte[] imgBytes) {
         ...
     }
- 
+
     @Nullable @Override public Object execute() throws IgniteException {
-        // Image analysis logic (returns some information 
+        // Image analysis logic (returns some information
         // about the image content: category, etc.).
         ...
     }
@@ -1511,30 +1511,30 @@ class ImageAnalysisJob implements ComputeJob, Externalizable {
 enum SiteCategory {
     ...
 }
- 
+
 // Instantiate a Web search engine for a particular site.
 Crawler crawler = CrawlerFactory.newCrawler(siteUrl);
- 
+
 // Execute a continuously-mapped task.
 SiteCategory result = ignite.compute().execute(new ComputeTaskAdapter<Crawler, SiteCategory>() {
     // Interface for continuous mapping (injected on task instantiation).
     @TaskContinuousMapperResource
     private TaskContinuousMapper mapper;
- 
+
     // Map step.
     @Nullable @Override
     public Map<? extends ComputeJob, ClusterNode> map(List<ClusterNode> nodes, @Nullable Crawler c) throws IgniteException {
         assert c != null;
- 
+
         // Find a first image synchronously to submit an initial job.
         Image img = c.findNext();
- 
+
         if (img == null)
             throw new IgniteException("No images found on the site.");
- 
+
         // Submit an initial job.
         mapper.send(new ImageAnalysisJob(img.getBytes()));
- 
+
         // Now start asynchronous background Web search and
         // submit new jobs as search results come. This call
         // will return immediately.
@@ -1543,21 +1543,21 @@ SiteCategory result = ignite.compute().execute(new ComputeTaskAdapter<Crawler, S
                 if (img != null) {
                     // Submit a new job to analyse image file.
                     mapper.send(new ImageAnalysisJob(img.getBytes()));
- 
+
                     // Move on with search.
                     c.findNextAsync(this);
                 }
             }
         });
- 
-        // Initial job was submitted, so we can return 
+
+        // Initial job was submitted, so we can return
         // empty mapping.
         return null;
     }
- 
+
     // Reduce step.
     @Nullable @Override public SiteCategory reduce(List<ComputeJobResult> results) throws IgniteException {
-        // At this point Web search is finished and all image 
+        // At this point Web search is finished and all image
         // files are analysed. Here we execute some logic for
         // determining site category based on image content
         // information.
@@ -1626,10 +1626,10 @@ class GridifyBroadcastMethodTask extends GridifyTaskAdapter<Void> {
         return null; // No-op.
     }
 }
- 
+
 public class GridifyHelloWorldTaskExample {
   ...
-  // Gridified method. 
+  // Gridified method.
   @Gridify(taskClass = GridifyBroadcastMethodTask.class)
   public static void sayHello(String arg) {
       System.out.println("Hello, " + arg + '!');
