@@ -833,9 +833,9 @@ ignite.cluster().setBaselineTopology(2);
 
 可以使用`16.5.3.集群激活工具`中介绍的工具来配置基线拓扑。
 
-*获取节点一致性ID*
+*获取节点唯一性ID*
 
-这个定义和调整基线拓扑的命令，需要提供一个节点一致性ID，这是节点在第一次启动以及重启时复用后被赋予的一个唯一ID。要获取目前正在运行节点的一致性ID，可以在`$IGNITE_HOME/bin`目录下执行`./control.sh --baseline`命令，然后获得有关集群基线拓扑的各种信息，比如：
+这个定义和调整基线拓扑的命令，需要提供一个节点的唯一性ID，这是节点在第一次启动以及重启时复用后被赋予的一个唯一ID。要获取目前正在运行节点的唯一性ID，可以在`$IGNITE_HOME/bin`目录下执行`./control.sh --baseline`命令，然后获得有关集群基线拓扑的各种信息，比如：
 
 Unix：
 ```bash
@@ -860,11 +860,11 @@ Number of baseline nodes: 3
 Other nodes:
     ConsistentID=5d782f5e-0d47-4f42-aed9-3b7edeb527c0
 ```
-上面的基线信息显示，集群的状态、拓扑版本、属于和不属于基线拓扑的节点及其一致性ID都显示出来了。
+上面的基线信息显示，集群的状态、拓扑版本、属于和不属于基线拓扑的节点及其唯一性ID都显示出来了。
 
 *配置拓扑*
 
-要将一组节点组成基线拓扑，需要使用`./control.sh --baseline set`命令，再加上节点的一致性ID列表：
+要将一组节点组成基线拓扑，需要使用`./control.sh --baseline set`命令，再加上节点的唯一性ID列表：
 
 Unix：
 ```bash
@@ -888,7 +888,7 @@ Windows：
 
 *往拓扑中添加节点*
 
-要往已有的基线拓扑中添加节点，需要使用`./control.sh --baseline add`命令，它会接受一个逗号分隔节点一致性ID的列表：
+要往已有的基线拓扑中添加节点，需要使用`./control.sh --baseline add`命令，它会接受一个逗号分隔的节点唯一性ID的列表：
 
 Unix：
 ```bash
@@ -898,7 +898,7 @@ Windows：
 ```bash
 ./control.bat --baseline add {consistentId1[,consistentId2,....,consistentIdN]}
 ```
-比如下面的命令，会将一致性ID为`5d782f5e-0d47-4f42-aed9-3b7edeb527c0`的节点加入基线拓扑：
+比如下面的命令，会将唯一性ID为`5d782f5e-0d47-4f42-aed9-3b7edeb527c0`的节点加入基线拓扑：
 Unix：
 ```bash
 ./control.sh --baseline add 5d782f5e-0d47-4f42-aed9-3b7edeb527c0
@@ -919,7 +919,7 @@ Windows：
 ```bash
 ./control.bat --baseline remove {consistentId1[,consistentId2,....,consistentIdN]}
 ```
-注意要被删除的节点首先应该停止，否则会抛出一个类似`Failed to remove nodes from baseline`这样的异常。下面的示例会显示如何删除一致性ID为`fdf68f13-8f1c-4524-9102-ac2f5937c62c`的节点（假定该节点已停止）：
+注意要被删除的节点首先应该停止，否则会抛出一个类似`Failed to remove nodes from baseline`这样的异常。下面的示例会显示如何删除唯一性ID为`fdf68f13-8f1c-4524-9102-ac2f5937c62c`的节点（假定该节点已停止）：
 
 Unix：
 ```bash

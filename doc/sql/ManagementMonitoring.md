@@ -13,7 +13,7 @@ NODES视图中包括了集群节点的各种信息。
 |列名|数据类型|描述|
 |---|---|---|
 |`ID`|UUID|节点ID|
-|`CONSISTENT_ID`|VARCHAR|节点的一致性ID|
+|`CONSISTENT_ID`|VARCHAR|节点的唯一性ID|
 |`VERSION`|VARCHAR|节点的版本|
 |`IS_CLIENT`|BOOLEAN|节点是否为客户端节点|
 |`IS_DAEMON`|BOOLEAN|节点是否为守护节点|
@@ -39,7 +39,7 @@ BASELINE_NODES视图包括了当前基线拓扑中的节点信息。
 
 |列名|数据类型|描述|
 |---|---|---|
-|`CONSISTENT_ID`|VARCHAR|节点一致性ID|
+|`CONSISTENT_ID`|VARCHAR|节点唯一性ID|
 |`ONLINE`|BOOLEAN|节点的运行状态|
 
 ### 9.1.4.NODE_METRICS视图
@@ -126,7 +126,7 @@ ClientConfiguration cfg = new ClientConfiguration().setAddresses("127.0.0.1:1080
 try (IgniteClient igniteClient = Ignition.startClient(cfg)) {
     System.out.println();
 
-    // getting the id of the first node 
+    // getting the id of the first node
     UUID nodeId = (UUID) igniteClient.query(new SqlFieldsQuery("SELECT * from NODES").setSchema("IGNITE"))
     .getAll().iterator().next().get(0);
 
@@ -134,7 +134,7 @@ try (IgniteClient igniteClient = Ignition.startClient(cfg)) {
     .query(new SqlFieldsQuery("select CUR_CPU_LOAD * 100 from NODE_METRICS where NODE_ID = ? ")
     .setSchema("IGNITE").setArgs(nodeId.toString()))
     .getAll().iterator().next().get(0);
-  
+
     System.out.println("node's cpu load = " + cpu_load);
 
 } catch (ClientException e) {

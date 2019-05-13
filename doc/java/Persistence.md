@@ -1219,9 +1219,9 @@ ignite.cluster().setBaselineTopology(2);
 
 同样可以使用命令行工具在命令行中对集群进行激活/冻结以及对基线拓扑进行配置。
 
-*获取节点的一致性ID*
+*获取节点的唯一性ID*
 
-定义和调整基线拓扑的命令需要提供一个节点的唯一一致性ID，这个ID是在节点第一次启动时赋予节点的，并且在重启之后还会复用。要获取当前运行节点的一致性ID，可以在`$IGNITE_HOME/bin`文件夹中执行`./control.sh --baseline`命令来获取与集群基线拓扑有关的信息，比如：
+定义和调整基线拓扑的命令需要提供一个节点的唯一性ID，这个ID是在节点第一次启动时赋予节点的，并且在重启之后还会复用。要获取当前运行节点的唯一性ID，可以在`$IGNITE_HOME/bin`文件夹中执行`./control.sh --baseline`命令来获取与集群基线拓扑有关的信息，比如：
 
 Linux：
 ```bash
@@ -1246,11 +1246,11 @@ Number of baseline nodes: 3
 Other nodes:
     ConsistentID=5d782f5e-0d47-4f42-aed9-3b7edeb527c0
 ```
-上面的信息显示了：集群的状态、拓扑的版本、属于和不属于基线拓扑一部分的节点及其一致性ID。
+上面的信息显示了：集群的状态、拓扑的版本、属于和不属于基线拓扑一部分的节点及其唯一性ID。
 
 *配置基线拓扑*
 
-要将一组节点组成基线拓扑，可以使用`./control.sh --baseline set`命令再加上节点一致性ID的列表：
+要将一组节点组成基线拓扑，可以使用`./control.sh --baseline set`命令再加上节点唯一性ID的列表：
 
 Linux:
 ```bash
@@ -1274,7 +1274,7 @@ bin\control.bat --baseline version {topologyVersion}
 
 *往拓扑中添加节点*
 
-要将节点加进已有的基线拓扑，可以使用`./control.sh --baseline add`命令，它会接受逗号分隔的、待加入拓扑的节点的一致性ID列表。
+要将节点加进已有的基线拓扑，可以使用`./control.sh --baseline add`命令，它会接受逗号分隔的、待加入拓扑的节点的唯一性ID列表。
 
 Linux：
 ```bash
@@ -1284,7 +1284,7 @@ Windows：
 ```batch
 bin\control.bat --baseline add {consistentId1[,consistentId2,....,consistentIdN]}
 ```
-比如，下面的命令会将一致性ID为`5d782f5e-0d47-4f42-aed9-3b7edeb527c0`的节点加入基线拓扑：
+比如，下面的命令会将唯一性ID为`5d782f5e-0d47-4f42-aed9-3b7edeb527c0`的节点加入基线拓扑：
 
 Linux：
 ```bash
@@ -1307,7 +1307,7 @@ Windows：
 ```batch
 bin\control.bat --baseline remove {consistentId1[,consistentId2,....,consistentIdN]}
 ```
-注意，计划要从拓扑中删除的节点首先要停止，否则会抛出一个信息类似`Failed to remove nodes from baseline`的异常，下面的示例显示如何删除一致性ID为`fdf68f13-8f1c-4524-9102-ac2f5937c62c`的节点（假定该节点已经停止）：
+注意，计划要从拓扑中删除的节点首先要停止，否则会抛出一个信息类似`Failed to remove nodes from baseline`的异常，下面的示例显示如何删除唯一性ID为`fdf68f13-8f1c-4524-9102-ac2f5937c62c`的节点（假定该节点已经停止）：
 
 Linux：
 ```bash
@@ -1408,7 +1408,7 @@ Ignite提供了`control.sh|bat`脚本，位于`$IGNITE_HOME/bin`文件夹，它�
   - 新节点无法在持久化中存储缓存/表的数据；
   - 新节点可用于计算。
 
-2. 如果希望该节点可以再持久化中存储数据，那么需要通过`control.sh --baseline add <节点的一致性ID>`或者其它方式将其加入基线拓扑，然后：
+2. 如果希望该节点可以在持久化中存储数据，那么需要通过`control.sh --baseline add <节点的唯一性ID>`或者其它方式将其加入基线拓扑，然后：
 
   - 基线拓扑会调整，包含新的节点；
   - 在新的基线拓扑中进行数据再平衡。

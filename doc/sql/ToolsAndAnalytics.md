@@ -171,8 +171,9 @@ sqlline.bat --verbose=true -u jdbc:ignite:thin://127.0.0.1/
 ```bash
 sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;password=ignite"
 ```
->**通过bash接入时JDBC URL要加引号**
+::: tip 通过bash接入时JDBC URL要加引号
 当在bash环境中接入时连接的URL一定要加`" "`，比如：`"jdbc:ignite:thin://[address]:[port];user=[username];password=[password]"`。
+:::
 
 ### 6.2.2.命令
 下面是Ignite支持的SQLLine命令列表：
