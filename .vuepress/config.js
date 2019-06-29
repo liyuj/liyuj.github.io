@@ -11,7 +11,7 @@ module.exports = {
             href: `https://ignite.apache.org/favicon.ico`
         }],
         ['script', {
-            src: 'https://hm.baidu.com/hm.js?0ac821229cf1f2e3f580c7eb6b5cd3a5'
+            src: 'https://hm.baidu.com/hm.js?03f40be28ff9a31fd798fd6b9dac0946'
         }]
     ],
     markdown: {
