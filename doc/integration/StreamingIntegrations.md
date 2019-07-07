@@ -430,7 +430,7 @@ Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处
 storm jar ignite-storm-streaming-jar-with-dependencies.jar my.company.ignite.MyStormTopology
 ```
 ## 7.7.Flink流处理器
-Apache Ignite Flink Sink模块是一个流处理连接器，它可以将Flink数据注入Ignite缓存，该Sink会将输入的数据注入Ignite缓存。每当创建一个Sink，都需要提供一个Ignite缓存名和Ignite网格配置文件。
+Apache Ignite Flink接收器模块是一个流处理连接器，它可以将Flink数据注入Ignite缓存，该接收器会将输入的数据注入Ignite缓存。每当创建一个接收器，都需要提供一个Ignite缓存名和Ignite网格配置文件。
 
 通过如下步骤，可以开启到Ignite缓存的数据注入：
 
@@ -454,7 +454,7 @@ Apache Ignite Flink Sink模块是一个流处理连接器，它可以将Flink数
 </project>
 ```
  - 创建一个Ignite配置文件，并且确保它可以被Sink访问；
- - 确保输入Sink的数据被指定然后启动Sink；
+ - 确保输入接收器的数据被指定然后启动接收器；
 
 ```java
 IgniteSink igniteSink = new IgniteSink("myCache", "ignite.xml");

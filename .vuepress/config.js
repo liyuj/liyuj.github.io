@@ -68,10 +68,6 @@ module.exports = {
                     link: '/doc/tools/'
                 },
                 {
-                    text: '商业版',
-                    link: '/doc/gridgain/'
-                },
-                {
                     text: '博客',
                     link: 'https://my.oschina.net/liyuj'
                 },
