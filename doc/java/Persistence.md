@@ -162,6 +162,10 @@ WAL是Ignite持久化的一个基本组件，会在集群故障时保证持久�
 分别通过`IgniteCluster.enableWal(cacheName)`和`IgniteCluster.disableWal(cachename)`方法可以打开和关闭WAL。如果要检查某个缓存是否开启了WAL，可以使用`IgniteCluster.isWalEnabled(cacheName)`。
 
 如果使用SQL，可以使用[ALTER TABLE](/doc/sql/SQLReference.md#_2-2-1-alter-table)命令打开/关闭WAL。
+
+::: danger 注意
+如果禁用了WAL并重新启动节点，则将从该节点上的持久化存储中删除所有数据，这是因为如果没有WAL，在节点故障或重新启动时无法保证数据的一致性。
+:::
 ### 16.2.4.WAL存档
 WAL存档用于保存故障后恢复节点所需的WAL段。存档中保存的段的数量应确保所有段的总大小不超过WAL存档的既定大小。
 
@@ -203,7 +207,7 @@ dsCfg.setDefaultDataRegionConfiguration(regCfg);
 dsCfg.setWalCompactionEnabled(true);
 ```
 #### 16.2.5.2.禁用WAL存档
-有时可能想要禁用WAL存档，比如减少与将WAL段复制到归档文件有关的开销，当Ignite将数据写入WAL段的速度快于将段复制到归档文件的速度时，这样做就有用，因为这样会导致I/O瓶颈，从而冻结节点的操作，如果遇到了这样的问题，就可以尝试关闭WAL存档。
+有时可能想要禁用WAL存档，比如减少与将WAL段复制到存档文件有关的开销，当Ignite将数据写入WAL段的速度快于将段复制到存档文件的速度时，这样做就有用，因为这样会导致I/O瓶颈，从而冻结节点的操作，如果遇到了这样的问题，就可以尝试关闭WAL存档。
 
 要关闭存档，可以将WAL路径和WAL存档路径配置为同一个值，这时Ignite就不会将段复制到存档文件，而是按顺序循环地覆盖激活段。
 

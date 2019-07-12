@@ -59,8 +59,9 @@ cfg.setAtomicityMode(TRANSACTIONAL);
 IgniteCache<Integer, String> cache = ignite.getOrCreateCache(cfg);
 ```
 
-> **XML配置**
+::: tip XML配置
 在任意的缓存节点上定义的基于Spring的XML配置的所有缓存同时会自动地在所有的集群节点上创建和部署（不需要在每个集群节点上指定同样的配置）。
+:::
 
 ### 3.2.3.基本操作
 下面是一些JCache基本原子操作的例子：
