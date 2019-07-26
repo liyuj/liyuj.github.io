@@ -9,5 +9,7 @@ features:
   details: 全功能的分布式架构解决方案，适用于数据密集的HTAP以及批量数据处理场景
 - title: 更低的成本
   details: 学习门槛低、部署灵活、运维简单，可轻易融入既有架构，助力既有业务低成本完成分布式架构改造
-footer: 联系人：李玉珏 联系方式（手机/微信）：18624049226
 ---
+<div class="footer">
+GridGain中国大陆地区官方合作伙伴 联系方式：<img src="/qrcode.jpg"/>
+</div>

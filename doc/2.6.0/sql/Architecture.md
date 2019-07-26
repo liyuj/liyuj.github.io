@@ -183,7 +183,7 @@ query.setLazy(true);
 ```
 **JDBC连接串**
 ```
-jdbc:ignite:thin://192.168.0.15/lazy=true
+jdbc:ignite:thin://192.168.0.15?lazy=true
 ```
 ### 3.5.5.查询并行化
 SQL查询在每个涉及的节点上，默认是以单线程模式执行的，这种方式对于使用索引返回一个小的结果集的查询是一种优化，比如：

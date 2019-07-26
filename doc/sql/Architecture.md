@@ -204,7 +204,7 @@ query.setLazy(true);
 ```
 **JDBC连接串**
 ```
-jdbc:ignite:thin://192.168.0.15/lazy=true
+jdbc:ignite:thin://192.168.0.15?lazy=true
 ```
 ### 3.5.5.查询并置化的数据
 当Ignite执行分布式查询时，它将子查询发送给单个集群成员，并将结果分组到汇总节点上。如果预先知道查询的数据是按`GROUP BY`条件并置处理的，可以使用`SqlFieldsQuery.collocated = true`来减少节点之间的网络流量和查询执行时间。当此标志设置为`true`时，首先对单个节点执行查询，并将结果发送到汇总节点进行最终计算。考虑下面的示例，假设数据由`department_id`进行并置：
@@ -264,7 +264,7 @@ SELECT * FROM Person USE INDEX(index_age)
 ### 3.5.9.分区修剪
 分区修剪是一种在WHERE条件中使用类同键来对查询进行优化的技术。当执行这样的查询时，Ignite将只扫描存储请求数据的那些分区。这将减少查询时间，因为查询将只发送到存储所请求分区的节点。要了解有关分区分布的更多信息，请参阅[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-3-1-分区和复制)。
 
-在下面的示例中，Employee对象通过`id`字段并置处理（如果未指定关联键，则Ignite将使用主键来并置数据）：
+在下面的示例中，Employee对象通过`id`字段并置处理（如果未指定类同键，则Ignite将使用主键来并置数据）：
 ```sql
 CREATE TABLE employee (id BIGINT PRIMARY KEY, department_id INT, name VARCHAR)
 

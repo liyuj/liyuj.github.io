@@ -57,7 +57,7 @@ cfg.setAtomicityMode(TRANSACTIONAL);
 
 // Create cache with given name, if it does not exist.
 IgniteCache<Integer, String> cache = ignite.getOrCreateCache(cfg);
-```
+```yu
 
 ::: tip XML配置
 在任意的缓存节点上定义的基于Spring的XML配置的所有缓存同时会自动地在所有的集群节点上创建和部署（不需要在每个集群节点上指定同样的配置）。
@@ -1711,8 +1711,9 @@ finally {
 }
 ```
 
-> **原子化模式**
+::: warning 原子化模式
 Ignite中，只有在`TRANSACTIONAL`原子化模式中才支持锁，它可以通过`CacheConfiguration`的`atomicityMode`属性进行配置。
+:::
 
 **锁和事务**
 

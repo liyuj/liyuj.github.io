@@ -1,6 +1,6 @@
 module.exports = {
     title: 'Apache Ignite中文站',
-    description: 'Ignite内存计算平台的中文文档及相关资料',
+    description: '轻量级分布式内存HTAP数据库及计算平台',
     dest: "dist",
     head: [
         ['meta', { "http-equiv": 'cache-control', "content": 'no-store,no-cache,must-revalidate' }],
