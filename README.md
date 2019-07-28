@@ -10,6 +10,6 @@ features:
 - title: 更低的成本
   details: 学习门槛低、部署灵活、运维简单，可轻易融入既有架构，助力既有业务低成本完成分布式架构改造
 ---
-<div class="footer">
-GridGain中国大陆地区官方合作伙伴 联系方式：<img src="/qrcode.jpg"/>
+<div class="footer" style="padding:0;">
+<div style="width:50%;display:inline-block;line-height:80px;height:80px;margin: 0 auto;">GridGain中国大陆地区官方合作伙伴 洽谈合作：</div><img src="/qrcode.png" style="height:80px;width:80px;padding:0"/>
 </div>
