@@ -153,7 +153,8 @@ module.exports = {
                         '',
                         'OracleGoldenGateIntegration',
                         'KafkaConnector',
-                        'SecurityAndAudit'
+                        'SecurityAndAudit',
+                        'DataCenterReplication'
                     ],
                     '/confluent/': [
                         '',

@@ -229,13 +229,13 @@ IgniteCache<Integer, String> cache = ignite.getOrCreateCache(cfg);
 
 |Setter方法|描述|默认值|
 |---|---|---|
-|`setBatchSendSize(int)`|批次发送大小。一旦批次中的条目数量大于此值或批次太旧，它将被发送到发送方中转站。|2048|
-|`setBatchSendFrequency(long)`|批次发送频率。一旦当前时间和批次创建时间之间的差值大于该频率或批次太大，它将被发送到发送方中转站。如果设置为零或负值，则只有在它太大的情况下才会发送批次。|2000|
-|`setMaxBatches(int)`|发送方中转站待确认的最大批次量。如果批次数等于此值，则在有新的批次空间释放之前都会暂停所有进一步的缓存更新。|32|
-|`setEntryFilter(GridDrSenderCacheEntryFilter)`|条目过滤器，定义后会应用于所有的缓存更新，如果缓存的更新无法通过过滤器，将不会被复制。||
-|`setLoadBalancingMode( DrSenderLoadBalancingMode)`|发送方中转站负载平衡策略，决定下一个复制批次发给哪个发送方中转站。|DR_RANDOM|
-|`setStateTransferThreadsCount(int)`|参与给定缓存全量迁移的后台线程数。如果有太多这样的线程，它们可能会产生过高的负载，从而消耗系统资源并减慢常规缓存更新。|2|
-|`setStateTransferThrottle(long)`|全量迁移限流延迟时间，以毫秒为单位。定义全量迁移线程在提交复制批次和开始填充新批次之间的延迟时间。限流时间越长，全量迁移产生的压力越小。|0|
+|`setBatchSendSize()`|批次发送大小。一旦批次中的条目数量大于此值或批次太旧，它将被发送到发送方中转站。|2048|
+|`setBatchSendFrequency()`|批次发送频率。一旦当前时间和批次创建时间之间的差值大于该频率或批次太大，它将被发送到发送方中转站。如果设置为零或负值，则只有在它太大的情况下才会发送批次。|2000|
+|`setMaxBatches()`|发送方中转站待确认的最大批次量。如果批次数等于此值，则在有新的批次空间释放之前都会暂停所有进一步的缓存更新。|32|
+|`setEntryFilter()`|条目过滤器，定义后会应用于所有的缓存更新，如果缓存的更新无法通过过滤器，将不会被复制。||
+|`setLoadBalancingMode()`|发送方中转站负载平衡策略，决定下一个复制批次发给哪个发送方中转站。|DR_RANDOM|
+|`setStateTransferThreadsCount()`|参与给定缓存全量迁移的后台线程数。如果有太多这样的线程，它们可能会产生过高的负载，从而消耗系统资源并减慢常规缓存更新。|2|
+|`setStateTransferThrottle()`|全量迁移限流延迟时间，以毫秒为单位。定义全量迁移线程在提交复制批次和开始填充新批次之间的延迟时间。限流时间越长，全量迁移产生的压力越小。|0|
 
 ## 5.3.发送方中转站
 发送方中转站是从发送方缓存接收批次并将其发送到远程数据中心的节点。发送方中转站会处理在配置中预定义的一组缓存。
@@ -351,28 +351,28 @@ drSenderCfg.setStore(new DrSenderFsStore());
 
 |Setter方法|描述|默认值|
 |---|---|---|
-|`setCacheNames(String...)`|发送方中转站要处理的缓存名，只有提到的缓存才会将复制批次发送到该发送方中转站||
-|`setConnectionConfiguration(DrSenderConnectionConfiguration...)`|远程数据中心的配置||
-|`setStore(DrSenderStore)`|在收到所有的目标远程数据中心的确认前，复制批次的存储方式。|`GridDrSenderHubInMemoryStore`|
-|`setMaxFailedConnectAttempts(int)`|建立与接收方中转站连接的最大连续失败尝试次数。在超出之前，发送方中转站将尝试在发生故障后立即重建连接。超出后发送方中转站将继续尝试根据重连失败超时时间重新建立连接。|5|
-|`setMaxErrors(int)`|从单个接收方中转站接收的最大连续确认错误数。超出后连接将被视为故障，发送方中转站将关闭它。下一次尝试重建连接将根据重连失败超时时间执行。|10|
-|`setHealthCheckFrequency(long)`|健康检查频率，以毫秒为单位。定义发送方中转站尝试连接到断开的接收方中转站的频率以及检查在线接收方中转站是否有必要发送心跳请求的频率。|2000|
-|`setSystemRequestTimeout(long)`|系统请求超时（以毫秒为单位）。定义接收方中转站必须响应握手或心跳请求的时间窗口。如果没有及时响应，则认为与此接收方中转站的连接已断开。|5000|
-|`setReadTimeout(long)`|读取超时（以毫秒为单位）。如果当前时间与从接收方中转站接收到最后数据的时间之间的差值大于该超时时间，则发送方中转站将向该接收方中转站发起心跳请求。|5000|
-|`setMaxQueueSize(int)`|发送方中转站并行向远程数据中心发送复制批次。此参数定义可以同时发送到特定数据中心的最大批次数。用于防止过多的内存消耗。|100|
-|`setReconnectOnFailureTimeout(long)`|重连失败超时（以毫秒为单位）。定义发送方中转站应尝试重建与故障接收方中转站的连接的频率。如果连接失败尝试建立连接太多或接收到太多连续的确认错误，则认为接收方中转站故障。|5000|
+|`setCacheNames()`|发送方中转站要处理的缓存名，只有提到的缓存才会将复制批次发送到该发送方中转站||
+|`setConnectionConfiguration()`|远程数据中心的配置||
+|`setStore()`|在收到所有的目标远程数据中心的确认前，复制批次的存储方式。|`GridDrSenderHubInMemoryStore`|
+|`setMaxFailedConnectAttempts()`|建立与接收方中转站连接的最大连续失败尝试次数。在超出之前，发送方中转站将尝试在发生故障后立即重建连接。超出后发送方中转站将继续尝试根据重连失败超时时间重新建立连接。|5|
+|`setMaxErrors()`|从单个接收方中转站接收的最大连续确认错误数。超出后连接将被视为故障，发送方中转站将关闭它。下一次尝试重建连接将根据重连失败超时时间执行。|10|
+|`setHealthCheckFrequency()`|健康检查频率，以毫秒为单位。定义发送方中转站尝试连接到断开的接收方中转站的频率以及检查在线接收方中转站是否有必要发送心跳请求的频率。|2000|
+|`setSystemRequestTimeout()`|系统请求超时（以毫秒为单位）。定义接收方中转站必须响应握手或心跳请求的时间窗口。如果没有及时响应，则认为与此接收方中转站的连接已断开。|5000|
+|`setReadTimeout()`|读取超时（以毫秒为单位）。如果当前时间与从接收方中转站接收到最后数据的时间之间的差值大于该超时时间，则发送方中转站将向该接收方中转站发起心跳请求。|5000|
+|`setMaxQueueSize()`|发送方中转站并行向远程数据中心发送复制批次。此参数定义可以同时发送到特定数据中心的最大批次数。用于防止过多的内存消耗。|100|
+|`setReconnectOnFailureTimeout()`|重连失败超时（以毫秒为单位）。定义发送方中转站应尝试重建与故障接收方中转站的连接的频率。如果连接失败尝试建立连接太多或接收到太多连续的确认错误，则认为接收方中转站故障。|5000|
 
 ### 5.3.2.连接配置参数
 `DrSenderConnectionConfiguration`有如下的参数：
 
 |Setter方法|描述|默认值|
 |---|---|---|
-|`setDataCenterId(byte)`|远程数据中心的ID。||
-|`setLocalOutboundHost(String)`|应绑定远程接收方中转站连接的本地主机。|`GridConfiguration.getLocalHost()`|
-|`setReceiverHubAddresses(String...)`|以{host}：{port}的形式收集远程数据中心中接收方中转站的地址。||
-|`setLoadBalancingMode( DrReceiverLoadBalancingMode)`|接收方中转站负载均衡模式。定义发送方中转站选择将下一个复制批次发送给哪个接收接收方中转站。|DR_RANDOM|
-|`setIgnoredDataCenterIds(byte...)`|被忽略的数据中心ID数组。每个复制批次都具有最初创建此批次的数据中心的ID。如果此ID位于忽略列表中，则不会将其复制到此远程数据中心。||
-|`setAwaitAcknowledge(boolean)`|是否等待接收方中转站的确认。如果设置为`false`，发送方中转站将不会等待接收方中转站的确认，并且将其发送到所有目标数据中心后，就会认为批次已完全处理。|true|
+|`setDataCenterId()`|远程数据中心的ID。||
+|`setLocalOutboundHost()`|应绑定远程接收方中转站连接的本地主机。|`GridConfiguration.getLocalHost()`|
+|`setReceiverHubAddresses()`|以{host}：{port}的形式收集远程数据中心中接收方中转站的地址。||
+|`setLoadBalancingMode()`|接收方中转站负载均衡模式。定义发送方中转站选择将下一个复制批次发送给哪个接收接收方中转站。|DR_RANDOM|
+|`setIgnoredDataCenterIds()`|被忽略的数据中心ID数组。每个复制批次都具有最初创建此批次的数据中心的ID。如果此ID位于忽略列表中，则不会将其复制到此远程数据中心。||
+|`setAwaitAcknowledge()`|是否等待接收方中转站的确认。如果设置为`false`，发送方中转站将不会等待接收方中转站的确认，并且将其发送到所有目标数据中心后，就会认为批次已完全处理。|true|
 
 ## 5.4.接收方缓存
 接收方缓存是接收方拓扑中的缓存，其存储复制后的数据。
@@ -480,15 +480,15 @@ gg.configuration().setDrReceiverConfiguration(drReceiverCfg);
 
 |Setter方法|描述|默认值|
 |---|---|---|
-|`setLocalInboundHost(String)`|接收方中转站的连接监听器绑定的本地主机|`GridConfiguration.getLocalHost()`|
-|`setLocalInboundPort(int)`|接收方中转站的连接监听器绑定的本地主机端口|49000|
-|`setSelectorCount(int)`|TCP服务器中的选择器线程数|min(4,CPU核心数)|
-|`setWorkerThreads(int)`|负责处理发送方中转站发送的批次的线程数|4 * CPU核心数|
-|`setMessageQueueLimit(int)`|TCP服务器中传入和传出消息的消息队列限值|1024|
-|`setTcpNodelay(boolean)`|TCP服务器中的TCP_NODELAY标志|true|
-|`setDirectBuffer(boolean)`|TCP服务器中的直接缓冲标志|true|
-|`setIdleTimeout(long)`|TCP服务器连接的空闲超时（以毫秒为单位）|60000|
-|`setWriteTimeout(long)`|写入TCP服务器连接的超时（以毫秒为单位）|6000|
-|`setFlushFrequency(long)`|数据刷新频率，以毫秒为单位。定义接收方中转站将从发送方中转站接收的批次刷新到接收方缓存的频率|2000|
-|`setPerNodeBufferSize(int)`|每个节点的数据缓冲区大小。当排队等待特定接收方缓存数据节点的缓存条目数超过此限制时，挂起的数据将刷新到该数据节点|1024|
-|`setPerNodeParallelLoadOperations(int)`|每节点并行加载操作数。定义可以在单个接收方缓存数据节点上同时执行多少数据刷新操作。|16|
+|`setLocalInboundHost()`|接收方中转站的连接监听器绑定的本地主机|`GridConfiguration.getLocalHost()`|
+|`setLocalInboundPort()`|接收方中转站的连接监听器绑定的本地主机端口|49000|
+|`setSelectorCount()`|TCP服务器中的选择器线程数|min(4,CPU核心数)|
+|`setWorkerThreads()`|负责处理发送方中转站发送的批次的线程数|4 * CPU核心数|
+|`setMessageQueueLimit()`|TCP服务器中传入和传出消息的消息队列限值|1024|
+|`setTcpNodelay()`|TCP服务器中的TCP_NODELAY标志|true|
+|`setDirectBuffer()`|TCP服务器中的直接缓冲标志|true|
+|`setIdleTimeout()`|TCP服务器连接的空闲超时（以毫秒为单位）|60000|
+|`setWriteTimeout()`|写入TCP服务器连接的超时（以毫秒为单位）|6000|
+|`setFlushFrequency()`|数据刷新频率，以毫秒为单位。定义接收方中转站将从发送方中转站接收的批次刷新到接收方缓存的频率|2000|
+|`setPerNodeBufferSize()`|每个节点的数据缓冲区大小。当排队等待特定接收方缓存数据节点的缓存条目数超过此限制时，挂起的数据将刷新到该数据节点|1024|
+|`setPerNodeParallelLoadOperations()`|每节点并行加载操作数。定义可以在单个接收方缓存数据节点上同时执行多少数据刷新操作。|16|
