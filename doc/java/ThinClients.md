@@ -4218,7 +4218,7 @@ const cfg = new IgniteClientConfiguration(ENDPOINT).
  - `keystore.jks`，`truststore.jks` - 用于服务端；
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
-3.设置Ignite服务端以支持[SSL\TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
+3.设置Ignite服务端以支持[SSL和TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
 
 4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置；
 
@@ -5940,7 +5940,7 @@ $config = (new ClientConfiguration(AuthTlsExample::ENDPOINT))->
  - `keystore.jks`，`truststore.jks` - 用于服务端；
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
-3.设置Ignite服务端以支持[SSL\TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
+3.设置Ignite服务端以支持[SSL和TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
 
 4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置；
 

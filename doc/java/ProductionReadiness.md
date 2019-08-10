@@ -457,7 +457,7 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 -XX:+ScavengeBeforeFullGC
 -XX:+DisableExplicitGC
 ```
-::: tip 注意
+::: danger 警告
 如果要使用G1垃圾收集器，建议使用最新版本的Oracle JDK8或者OpenJDK8,因为经过了不断地改进。
 :::
 
@@ -482,7 +482,7 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 ### 11.5.2.Linux对GC的侵袭
 在Linux环境下，因为I/O或者内存饥饿或者其它特定内核的设定的原因，可能发生一个应用面临长时间的GC暂停的情况。本章节会给出一些指导，关于如何修改内核设定来避免因为Linux内核导致的长时间GC暂停。
 
-::: warning 注意
+::: danger 注意
 下面给出的所有的Shell脚本命令都在RedHat7上做了测试，这些可能和实际的Linux发行版不同。<br>
 在应用任何基于内核的设定之前，还要确保检查系统统计数据、日志，使其对于实际场景的一个问题确实有效。<br>
 最后，在生产环境中针对Linux内核级做出改变，与IT部门商议也是明智的。
@@ -527,7 +527,7 @@ sysctl -w vm.extra_free_kbytes=1240000
 ### 11.5.3.调试内存使用问题和GC暂停
 当需要调试和解决与内存使用或者长时间GC暂停有关的问题时，本章节包括了一些可能有助于解决这些问题的信息。
 
-**内存溢出时获得堆现场**
+**内存溢出时获得堆Dump**
 
 当JVM抛出`OutOfMemoryException`并且JVM进程应该重启时，需要给JVM配置增加如下的属性：
 ```bash
@@ -563,7 +563,7 @@ sysctl -w vm.extra_free_kbytes=1240000
 -XX:+UnlockDiagnosticVMOptions
 -XX:+DebugNonSafepoints
 ```
-要开始记录衣蛾特定的Java进程，可以使用下面的命令作为一个示例：
+要开始记录一个特定的Java进程，可以使用下面的命令作为一个示例：
 ```bash
 jcmd <PID> JFR.start name=<recordcing_name> duration=60s filename=/var/recording/recording.jfr settings=profile
 ```
