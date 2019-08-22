@@ -21,7 +21,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
  2. 打开`config/benchmark-remote-sample.properties`文件，然后将下列位置的`localhost`替换为实际的所有远程主机IP列表：`SERVERS=localhost,localhost`和`DRIVERS=localhost,localhost`，DRIVER是实际执行测试逻辑的主机（通常是Ignite客户端节点），SERVERS是被测试的节点，如果要进行所有测试，则需要替换`config/benchmark-remote.properties`文件中的相同内容；
  3. 将Yardstick测试上传到`DRIVERS`主机之一的工作目录；
  4. 登录该主机，然后执行如下命令：
- 
+
 ```bash
 ./bin/benchmark-run-all.sh config/benchmark-remote-sample.properties
 ```
@@ -41,7 +41,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
  6. `SqlQueryBenchmark`：测试在缓存数据上执行分布式SQL查询；
  7. `SqlQueryJoinBenchmark`：测试在缓存数据上执行带关联的分布式SQL查询；
  8. `SqlQueryPutBenchmark`：测试在执行分布式SQL查询的时候同时进行缓存的更新；
- 9. `AffinityCallBenchmark`：测试类同调用操作；
+ 9. `AffinityCallBenchmark`：测试关联调用操作；
  10. `ApplyBenchmark`：测试`apply`操作；
  11. `BroadcastBenchmark`：测试`broadcast`操作；
  12. `ExecuteBenchmark`：测试`execute`操作；
@@ -87,7 +87,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
 SERVER_HOSTS=localhost,localhost
 ...
 
-# Note that -dn and -sn, which stand for data node and server node, 
+# Note that -dn and -sn, which stand for data node and server node,
 # are native Yardstick parameters and are documented in
 # Yardstick framework.
 CONFIGS="-b 1 -sm PRIMARY_SYNC -dn PutBenchmark`IgniteNode"

@@ -50,7 +50,7 @@ Ignite是一个弹性的、可水平扩展的分布式系统，它支持按需�
 
 **Ignite是不是分布式数据库？**
 
-**是**，在整个集群的多个节点中，Ignite中的数据要么是*分区模式*的，要么是*复制模式*的，这给系统带来了伸缩性，增加了系统的弹性。Ignite可以自动控制数据如何分区，同时，开发者也可以插入自定义的分布（类同）函数，以及为了提高效率将部分数据并置在一起。
+**是**，在整个集群的多个节点中，Ignite中的数据要么是*分区模式*的，要么是*复制模式*的，这给系统带来了伸缩性，增加了系统的弹性。Ignite可以自动控制数据如何分区，同时，开发者也可以插入自定义的分布（关联）函数，以及为了提高效率将部分数据并置在一起。
 
 **Ignite是不是关系型SQL数据库？**
 
@@ -392,7 +392,7 @@ namespace ignite
       {
         return obj.GetZip() == 0 && !obj.GetStreet().empty();
       }
-    
+
       static void Write(BinaryWriter& writer, const Address& obj)
       {
         writer.WriteString("street", obj.GetStreet());
@@ -653,7 +653,7 @@ Ignite C++在这一点上非常灵活。它使用`ignite::Reference`类来解决
 void Foo(ignite::Reference<SomeType> val);
 
 //...
-  
+
 // Defining an object.
 SomeType obj1;
 
@@ -727,15 +727,15 @@ using namespace ignite::thin;
 void TestClient()
 {
   IgniteClientConfiguration cfg;
-  
+
   //Endpoints list format is "<host>[port[..range]][,...]"
   cfg.SetEndPoints("127.0.0.1:11110,example.com:1234..1240");
-  
+
   IgniteClient client = IgniteClient::Start(cfg);
-  
+
   cache::CacheClient<int32_t, std::string> cacheClient =
     client.GetOrCreateCache<int32_t, std::string>("TestCache");
-  
+
   cacheClient.Put(42, "Hello Ignite Thin Client!");
 }
 ```
@@ -754,16 +754,16 @@ void TestClientWithAuth()
 {
   IgniteClientConfiguration cfg;
   cfg.SetEndPoints("127.0.0.1:10800");
-  
+
   // Use your own credentials here.
   cfg.SetUser("ignite");
   cfg.SetPassword("ignite");
-  
+
   IgniteClient client = IgniteClient::Start(cfg);
-  
+
   cache::CacheClient<int32_t, std::string> cacheClient =
     client.GetOrCreateCache<int32_t, std::string>("TestCache");
-  
+
   cacheClient.Put(42, "Hello Ignite Thin Client with auth!");
 }
 ```
@@ -776,7 +776,7 @@ void TestClientWithAuth()
     <property name="persistentStoreConfiguration">
         <bean class="org.apache.ignite.configuration.PersistentStoreConfiguration"/>
     </property>
-  
+
     <property name="clientConnectorConfiguration">
         <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
             <property name="host" value="127.0.0.1"/>
@@ -784,7 +784,7 @@ void TestClientWithAuth()
             <property name="portRange" value="10"/>
         </bean>
     </property>
-  
+
 </bean>
 ```
 ### 1.7.6.性能考量
@@ -811,16 +811,16 @@ void TestClientWithAuth()
 {
   IgniteClientConfiguration cfg;
   cfg.SetEndPoints("127.0.0.1:10800");
-    
+
   IgniteClient client = IgniteClient::Start(cfg);
-  
+
   cache::CacheClient<int32_t, std::string> cacheClient =
     client.GetOrCreateCache<int32_t, std::string>("TestCache");
-  
+
   cacheClient.Put(42, "Hello Ignite Thin Client with auth!");
-  
+
   cache.RefreshAffinityMapping();
-  
+
   // Getting
   std::string val = cacheClient.Gett(42);
 }
@@ -835,7 +835,7 @@ Ignite有丰富的事件系统来向用户通知各种各样的事件，包括�
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ... 
+    ...
     <!-- Enable only some events and leave other ones disabled. -->
     <property name="includeEventTypes">
         <list>
@@ -898,13 +898,13 @@ XML：
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     ...
     <property name="cacheConfiguration">
-        <bean class="org.apache.ignite.configuration.CacheConfiguration">             
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
             <!-- Set rebalance batch size to 1 MB. -->
             <property name="rebalanceBatchSize" value="#{1024 * 1024}"/>
- 
+
             <!-- Explicitly disable rebalance throttling. -->
             <property name="rebalanceThrottle" value="0"/>
- 
+
             <!-- Set 4 threads for rebalancing. -->
             <property name="rebalanceThreadPoolSize" value="4"/>
             ...
@@ -918,10 +918,10 @@ Ignite默认将其主线程池大小设置为可用CPU核数的2倍。在大多�
 XML:
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ... 
+    ...
     <!-- Configure internal thread pool. -->
     <property name="publicThreadPoolSize" value="64"/>
-    
+
     <!-- Configure system thread pool. -->
     <property name="systemThreadPoolSize" value="32"/>
     ...

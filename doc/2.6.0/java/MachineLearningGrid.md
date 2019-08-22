@@ -396,7 +396,7 @@ KMeansModel knnMdl = trainer.fit(
 ### 15.6.1.概述
 Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过模拟生物进化过程来解决优化问题的一种方法。 遗传算法非常适合于以最优的方式检索大量复杂的数据集，在现实世界中，遗传算法的应用包括：汽车设计、计算机游戏、机器人、投资、交通和运输等等。
 
-所有的遗传操作，比如适应度计算、交叉和变异，都会被建模为分布式的ComputeTask。此外，这些ComputeTask会通过Ignite的类同并置，将ComputeJob分发到染色体实际存储的节点。
+所有的遗传操作，比如适应度计算、交叉和变异，都会被建模为分布式的ComputeTask。此外，这些ComputeTask会通过Ignite的关联并置，将ComputeJob分发到染色体实际存储的节点。
 
 下图是遗传算法的架构：
 ![](https://files.readme.io/07790ee-GAGrid_Overview.png)

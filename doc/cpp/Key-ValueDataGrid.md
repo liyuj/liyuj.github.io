@@ -1,6 +1,6 @@
 # 3.键-值数据网格
 ## 3.1.数据网格
-Ignite C++内存数据网格是从头开始构建的，具有水平扩展的概念和实时按需添加节点的能力。它可以线性扩展至几百个节点，通过数据位置的强语义以及类同数据路由来降低冗余数据噪声。
+Ignite C++内存数据网格是从头开始构建的，具有水平扩展的概念和实时按需添加节点的能力。它可以线性扩展至几百个节点，通过数据位置的强语义以及关联数据路由来降低冗余数据噪声。
 
 Ignite数据网格是一个分布式内存键-值存储，可以视为一个分布式分区化的哈希映射。每个集群节点持有整个数据的一部分。这样添加的集群节点越多，就可以存储更多的数据。
 
@@ -40,7 +40,7 @@ Ignite grid = Ignition::Start(cfg);
 // Obtain instance of cache named "myCache".
 // Note that generic arguments are only for your convenience.
 // You can work with any cache in terms of any generic arguments.
-// However, attempt to retrieve an entry of incompatible type 
+// However, attempt to retrieve an entry of incompatible type
 // will result in exception.
 Cache<int, std::string> cache = grid.GetCache<int, std::string>("myCache");
 ```
@@ -348,8 +348,8 @@ while (true) {
 
   		// Modify cache entires as part of this transacation.
   		....
-        
-  		// Commit transaction.  
+
+  		// Commit transaction.
   		tx.Commit();
 
       // Transaction succeeded. Leave the while loop.
@@ -401,10 +401,10 @@ Ignite支持两种原子化模式：
 
            <!-- Set atomicity mode, can be ATOMIC or TRANSACTIONAL. -->
     			 <property name="atomicityMode" value="TRANSACTIONAL"/>
-            ... 
+            ...
         </bean>
     </property>
-          
+
     <!-- Optional transaction configuration. -->
     <property name="transactionConfiguration">
         <bean class="org.apache.ignite.configuration.TransactionConfiguration">
@@ -499,7 +499,7 @@ public:
     virtual void OnEvent(const CacheEntryEvent<K, V>* evts, uint32_t num)
     {
         for (uint32_t i = 0; i < num; ++i)
-            std::cout << "key=" << evts[i].GetKey() 
+            std::cout << "key=" << evts[i].GetKey()
                       << ", val=" << evts[i].GetValue()
                       << std::endl;
     }
@@ -535,7 +535,7 @@ while (cursor.HasNext())
 {
   CacheEntry<int32_t, std::string> e = cursor.GetNext();
 
-  std::cout << "key=" << e.GetKey() 
+  std::cout << "key=" << e.GetKey()
     << ", val=" << e.GetValue()
     << std::endl;
 }

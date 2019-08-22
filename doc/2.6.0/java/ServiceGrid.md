@@ -14,7 +14,7 @@ Ignite可以控制每个集群节点应该部署多少个服务的实例，可�
 
  - 无论拓扑发生变化或者节点故障都会使部署的服务**持续有效**
  - 在集群中自动地部署任意数量的分布式服务实例
- - 自动地部署单例，包括集群单例、节点单例或者类同键单例
+ - 自动地部署单例，包括集群单例、节点单例或者关联键单例
  - 通过在配置中指定在节点启动时自动部署分布式服务
  - 取消任何已部署的服务
  - 在集群中获得有关服务部署拓扑结构的信息
@@ -99,9 +99,9 @@ IgniteServices services = ignite.services(ignite.cluster().forServers());
 // Deploying the service.
 services.deploy(serviceCfg);
 ```
-**基于类同键的部署**
+**基于关联键的部署**
 
-最后一个可以影响服务部署的方式是基于类同键的定义，服务的配置需要包含类同键的值及其所属的缓存名，服务启动时，服务网格会将服务部署在该类同键所在的主节点上。在整个周期中，如果主节点发生变化，那么服务也会自动进行再部署。
+最后一个可以影响服务部署的方式是基于关联键的定义，服务的配置需要包含关联键的值及其所属的缓存名，服务启动时，服务网格会将服务部署在该关联键所在的主节点上。在整个周期中，如果主节点发生变化，那么服务也会自动进行再部署。
 ```java
 // Initiating cache configuration.
 ServiceConfiguration cfg = new ServiceConfiguration();
@@ -299,8 +299,8 @@ svcs.deployNodeSingleton("myNodeSingleton", new MyService());
 ```java
 svcs.deployMultiple("myNodeSingleton", new MyService(), 0, 1);
 ```
-### 8.3.4.缓存键类同单例
-可以将一个服务的单例通过一个给定的类同键部署在一个主节点上。当拓扑或者主键节点发生变化时，Ignite会一直确保服务在之前的主节点上卸载然后部署在一个新的主节点上。
+### 8.3.4.缓存键关联单例
+可以将一个服务的单例通过一个给定的关联键部署在一个主节点上。当拓扑或者主键节点发生变化时，Ignite会一直确保服务在之前的主节点上卸载然后部署在一个新的主节点上。
 ```java
 IgniteServices svcs = ignite.services();
 

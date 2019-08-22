@@ -45,7 +45,7 @@ val igniteContext = new IgniteContext(sparkContext,
 ### 4.2.2.IgniteRDD
 `IgniteRDD`是一个SparkRDD抽象的实现，它表示Ignite的缓存的活动视图。`IgniteRDD`不是一成不变的，Ignite缓存的所有改变（不论是它被另一个RDD或者缓存的外部改变触发）对于RDD用户都会立即可见。
 
-`IgniteRDD`利用Ignite缓存的分区性质然后向Spark执行器提供分区信息。`IgniteRDD`中分区的数量会等于底层Ignite缓存的分区数量，`IgniteRDD`还通过`getPrefferredLocations`方法向Spark提供了类同信息使RDD计算可以使用本地的数据。
+`IgniteRDD`利用Ignite缓存的分区性质然后向Spark执行器提供分区信息。`IgniteRDD`中分区的数量会等于底层Ignite缓存的分区数量，`IgniteRDD`还通过`getPrefferredLocations`方法向Spark提供了关联信息使RDD计算可以使用本地的数据。
 
 **从Ignite中读取数据**
 
@@ -60,7 +60,7 @@ val result = cache.filter(_._2.contains("Ignite")).collect()
 
 因为Ignite缓存操作于键-值对，因此向Ignite缓存保存数据的最明确的方法是使用Spark数组RDD以及`savePairs`方法，如果可能，这个方法会利用RDD分区的优势然后以并行的方式将数据存入缓存。
 
-也可能使用`saveValues`方法将只有值的RDD存入Ignite缓存，这时，`IgniteRDD`会为每个要存入缓存的值生成一个唯一的本地类同键。
+也可能使用`saveValues`方法将只有值的RDD存入Ignite缓存，这时，`IgniteRDD`会为每个要存入缓存的值生成一个唯一的本地关联键。
 
 比如，下面的代码会使用10个并行存储操作保存从1到10000的整型值对到一个名为`partitioned`的缓存中：
 ```scala

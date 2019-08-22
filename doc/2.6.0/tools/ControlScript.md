@@ -4,7 +4,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 ### 4.1.1.激活、冻结和拓扑管理
 首先，`./control.sh`用于集群基线拓扑的激活/冻结以及节点的管理，具体可以看相关的章节。
 ### 4.1.2.缓存状态监控
-`./control.sh`提供了若干以`--cache list`开头的命令用于缓存的监控，这些命令可以看到部署的带有类同参数的缓存的列表，及其在缓存组内的分布，还有一个命令可以看已有的原子化的序列。
+`./control.sh`提供了若干以`--cache list`开头的命令用于缓存的监控，这些命令可以看到部署的带有关联参数的缓存的列表，及其在缓存组内的分布，还有一个命令可以看已有的原子化的序列。
 ```bash
 # Displays list of all caches with affinity parameters.
 ./control.sh --cache list .*
@@ -45,7 +45,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
     TxEntry [cacheId=1544803905, key=KeyCacheObjectImpl [part=0, val=0, hasValBytes=false], queue=10, op=READ, val=null, tx=GridNearTxLocal[xid=6a754629361-00000000-0843-9f61-0000-000000000001, xidVersion=GridCacheVersion [topVer=138649441, order=1527169439654, nodeOrder=1], concurrency=PESSIMISTIC, isolation=REPEATABLE_READ, state=ACTIVE, invalidate=false, rollbackOnly=false, nodeId=03379796-df31-4dbd-80e5-09cef5000000, timeout=0, duration=1175], other=[]]
     TxEntry [cacheId=1544803905, key=KeyCacheObjectImpl [part=0, val=0, hasValBytes=false], queue=10, op=READ, val=null, tx=GridNearTxLocal[xid=7a754629361-00000000-0843-9f61-0000-000000000001, xidVersion=GridCacheVersion [topVer=138649441, order=1527169439655, nodeOrder=1], concurrency=PESSIMISTIC, isolation=REPEATABLE_READ, state=ACTIVE, invalidate=false, rollbackOnly=false, nodeId=03379796-df31-4dbd-80e5-09cef5000000, timeout=0, duration=1175], other=[]]
     TxEntry [cacheId=1544803905, key=KeyCacheObjectImpl [part=0, val=0, hasValBytes=false], queue=10, op=READ, val=null, tx=GridNearTxLocal[xid=4a754629361-00000000-0843-9f61-0000-000000000001, xidVersion=GridCacheVersion [topVer=138649441, order=1527169439652, nodeOrder=1], concurrency=PESSIMISTIC, isolation=REPEATABLE_READ, state=ACTIVE, invalidate=false, rollbackOnly=false, nodeId=03379796-df31-4dbd-80e5-09cef5000000, timeout=0, duration=1175], other=[]]
-    
+
 // Node 03379796-df31-4dbd-80e5-09cef5000000 is place for contention on key KeyCacheObjectImpl [part=0, val=0, hasValBytes=false].
 ```
 ### 4.1.4.一致性检查命令
