@@ -58,7 +58,7 @@ rmtMsg.remoteListen("MyOrderedTopic", (nodeId, msg) -> {
 
 // Send ordered messages to remote nodes.
 for (int i = 0; i < 10; i++)
-    rmtMsg.sendOrdered("MyOrderedTopic", Integer.toString(i));
+    rmtMsg.sendOrdered("MyOrderedTopic", Integer.toString(i),0);
 ```
 Java8：无序消息：
 ```java
@@ -152,7 +152,7 @@ for (int i = 0; i < 20; i++)
 Ignite ignite = Ignition.ignite();
 
 // Get an instance of named cache.
-final IgniteCache<Integer, String> cache = ignite.jcache("cacheName");
+final IgniteCache<Integer, String> cache = ignite.cache("cacheName");
 
 // Sample remote filter which only accepts events for keys
 // that are greater than or equal to 10.
@@ -227,7 +227,7 @@ Ignite中，事件通知可以被分组然后分批地或者定时地发送，�
 Ignite ignite = Ignition.ignite();
 
 // Get an instance of named cache.
-final IgniteCache<Integer, String> cache = ignite.jcache("cacheName");
+final IgniteCache<Integer, String> cache = ignite.cache("cacheName");
 
 // Sample remote filter which only accepts events for keys
 // that are greater than or equal to 10.
