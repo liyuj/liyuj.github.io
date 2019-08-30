@@ -1241,7 +1241,7 @@ cacheCfg.setAffinity(affFunc);
 cfg.setCacheConfiguration(cacheCfg);
 ```
 
-> **关联的故障安全**
+> **映射的故障安全**
 主备副本不位于同一台物理机上，以这样的方式调整集群内的分区是很有用的，要确保这个属性，可以在`RendezvousAffinityFunction`上设置`excludeNeighbors`标志。
 
 有时将一个分区的主备副本放在不同的机架上也是很有用的。这时，可以为每个节点赋予一个特别的属性然后在`RendezvousAffinityFunction`上使用`AffinityBackupFilter`属性来排除同一个机架中分配用于备份副本的若干节点。

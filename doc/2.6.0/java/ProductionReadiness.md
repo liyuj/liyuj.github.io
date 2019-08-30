@@ -585,7 +585,7 @@ Ignite支持如下的故障处理器：
 |`StopNodeFailureHandler`|出现严重错误时，使用`Ignition.stop(true)`或者`Ignition.stop(nodeName, true)`调用停止节点。||
 |`StopNodeOrHaltFailureHandler`|默认处理器，它会试图停止节点，如果无法停止，那么它会试图终止JVM进程。|`boolean tryStop`：如果为`true`，会试图优雅地停止节点，默认为`false`，`long timeout`：超时时间，默认为0|
 
-### 11.7.一致性检查
+## 11.7.一致性检查
 Ignite为快速地进行调试、解决以及监控和一致性有关的问题，提供了若干工具。
 比如，如果怀疑一个SQL查询返回了不完整或者错误的结果集，该命令会验证是否真的发生了数据不一致。
 另外，一致性检查的命令还可以用于集群健康检查的一部分。

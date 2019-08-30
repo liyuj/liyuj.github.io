@@ -159,7 +159,8 @@ module.exports = {
                     '/confluent/': [
                         '',
                         'Kafka-ConvertersSerialization',
-                        'Kafka-ErrorHandlingDeadLetterQueues'
+                        'Kafka-ErrorHandlingDeadLetterQueues',
+                        'Kafka-ConnectImprovementsIn-2-3'
                     ],
                     '/': [
                         ''

@@ -799,7 +799,9 @@ Ignite使用了专有的SDK API，默认不再可用。为了运行Ignite，需�
 ### 1.4.1.概述
 如果项目里用Maven管理依赖，可以单独地导入各个Ignite模块。
 
-> 注意，在下面的例子中，要将`${ignite.version}`替换为实际的版本。
+::: tip 注意
+在下面的例子中，要将`${ignite.version}`替换为实际的版本。
+:::
 
 ### 1.4.2.常规依赖
 Ignite强依赖于`ignite-core.jar`。
@@ -884,7 +886,9 @@ GridGain提供自己的[Maven仓库](http://www.gridgainsystems.com/nexus/conten
 ### 1.5.1.概述
 Ignite是基于JVM的，一个JVM可以运行一个或者多个逻辑Ignite节点（大多数情况下，一个JVM运行一个Ignite节点）。在整个Ignite文档中，会交替地使用术语Ignite运行时以及Ignite节点，比如说可以该主机运行5个节点，技术上通常意味着主机上启动5个JVM，每个JVM运行一个节点，Ignite也支持一个JVM运行多个节点，事实上，通常作为Ignite内部测试用。
 
-> Ignite运行时 == JVM进程 == Ignite节点（多数情况下）
+::: tip 提示
+Ignite运行时 == JVM进程 == Ignite节点（多数情况下）
+:::
 
 ### 1.5.2.Ignition类
 `Ignition`类在网络中启动各个Ignite节点，注意一台物理服务器（网络中的一台计算机）可以运行多个Ignite节点。
@@ -1020,7 +1024,9 @@ Ignite ignite = Ignition.start();
 ### 1.7.3.创建分布式缓存
 当在Ignite中创建缓存时，不管是通过XML方式，还是通过` Ignite.createCache(...)`或者`Ignite.getOrCreateCache(...)`方法，Ignite会自动地在所有的服务端节点中部署分布式缓存。
 
-> 当分布式缓存创建之后，它会自动地部署在所有的已有或者未来的**服务端**节点上。
+::: tip 提示
+当分布式缓存创建之后，它会自动地部署在所有的已有或者未来的**服务端**节点上。
+:::
 
 ```java
 // Enable client mode locally.
@@ -1312,8 +1318,9 @@ public class OuterRunnable implements IgniteRunnable {
 ```java
 ignite.compute().run(new OuterRunnable());
 ```
->**未定义线程池**
+::: warning 未定义线程池
 如果应用请求在自定义线程池执行计算任务，而该线程池在Ignite节点中未定义，那么一个特定的警告消息就会在节点的日志中输出，然后任务就会被公共线程池接管执行。
+:::
 ## 1.10.二进制编组器
 ### 1.10.1.基本概念
 从1.6版本开始，Ignite引入了一个在缓存中存储数据的新概念，名为`二进制对象`，这个新的序列化格式提供了若干个优势：

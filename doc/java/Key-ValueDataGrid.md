@@ -1185,9 +1185,9 @@ cfg.setCacheConfiguration(cacheCfg);
  - `partition(...)`：给定一个键，这个方法确定一个键属于哪个分区，这个映射在时间上不会改变。
  - `assignPartitions(...)`：这个方法在拓扑发生变化时每次都会被调用，这个方法对于给定的拓扑返回一个分区到节点的映射。
 
-**关联的故障安全**
+**映射的故障安全**
 
-分区的安排要遵循主备副本不在于同一台物理机上，要确保不发生这样的情况，可以在`RendezvousAffinityFunction`上设置`excludeNeighbors`标志。
+集群中分区的安排要遵循主备副本不在于同一台物理机上，要确保不发生这样的情况，可以调整`RendezvousAffinityFunction`的`excludeNeighbors`参数。
 
 有时将一个分区的主备副本放在不同的机架上也是很有用的。这时，可以为每个节点赋予一个特别的属性然后在`RendezvousAffinityFunction`上使用`AffinityBackupFilter`属性来排除同一个机架中被分配用于备份副本的若干节点。
 
