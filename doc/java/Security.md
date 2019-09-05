@@ -155,7 +155,7 @@ cfg.setAuthenticationEnabled(true);
 ```
 **提供用户凭据**
 
-打开认证之后，Ignite会在集群第一次启动时创建名为`ignite`的超级用户，密码为`ignite`。目前，无法对超级用户改名，也无法将它的权限授予其它用户，但是，可以使用Ignite支持的DDL语句，对用户进行创建、修改和删除，注意，只有超级用户才能创建新的用户。
+打开认证之后，Ignite会在集群第一次启动时创建名为`ignite`的超级用户，密码为`ignite`。目前，无法对超级用户改名，也无法将它的权限授予其它用户，但是，可以使用Ignite支持的[DDL语句](/doc/sql/SQLReference.md#_2-2-数据定义语言（ddl）)，对用户进行[创建](/doc/sql/SQLReference.md#_2-2-6-create-user)、[修改](/doc/sql/SQLReference.md#_2-2-7-alter-user)和[删除](/doc/sql/SQLReference.md#_2-2-8-drop-user)，注意，只有超级用户才能创建新的用户。
 ### 4.2.2.授权
 Ignite还无法方便地提供授权功能，但是对于这样的高级安全特性，可以通过自定义插件的形式，实现`GridSecurityProcessor`接口，或者也可以使用一个第三方的[实现](https://docs.gridgain.com/docs/security-and-audit)。
 ## 4.3.数据反序列化安全性

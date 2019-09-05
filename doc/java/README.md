@@ -81,12 +81,28 @@ Ignite是一个分布式系统，因此，有能力将数据和数据以及数�
 ### 1.3.1.要求
 Apache Ignite官方在如下环境中进行了测试：
 
- - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9或之后的版本，具体可以看下面的[在JDK9及以后版本中运行Ignite](#_1-3-12-在jdk9-10-11中运行ignite)章节；
+ - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9或之后的版本，具体可以看下面的[在JDK9及以后版本中运行Ignite](#_1-3-2-在jdk9-10-11中运行ignite)章节；
  - OS：Linux（任何版本），Mac OS X（10.6及以上），Windows(XP及以上)，Windows Server（2008及以上），Oracle Solaris；
  - 网络：没有限制（建议10G）；
  - 架构：x86，x64，SPARC，PowerPC
 
-### 1.3.2.启动第一个Ignite集群
+### 1.3.2.在JDK9/10/11中运行Ignite
+要在Java 9/10/11环境下运行Ignite，需要按照如下步骤操作：
+
+ 1. 配置`JAVA_HOME`环境变量或者Windows的`PATH`，指向Java的安装目录；
+ 2. Ignite使用了专有的SDK API，默认不可用，需要给JVM传递特定的标志，以使这些API可用。如果使用了启动脚本`ignite.sh`（或者Windows中的`ignite.bat`），那么什么都不需要做，因为脚本中已经配置好了，否则需要在应用的JVM中提供下面的参数；
+ 3. Java 11中已经可以使用TLSv1.3，目前还不支持，如果节点间使用了SSL，可以考虑添加`-Djdk.tls.client.protocols=TLSv1.2`；
+ 4. 给应用的JVM添加如下的参数，如果使用的是Java瘦客户端或者Ignite JDBC，是不需要这些的：
+```properties
+--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED
+--add-exports=java.base/sun.nio.ch=ALL-UNNAMED
+--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED
+--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED
+--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED
+--illegal-access=permit
+```
+
+### 1.3.3.启动第一个Ignite集群
 
 **二进制发行版**
 
@@ -140,7 +156,7 @@ $ bin\ignite.bat examples\config\example-ignite.xml
 :::
 
 好，这样就成功了！
-### 1.3.3.使用Maven
+### 1.3.4.使用Maven
 下一步是将Ignite嵌入自己的应用，Java中的最简单的入门方式是使用Maven依赖系统。
 
 Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于Spring的xml配置，还需要`ignite-spring`模块，要使用SQL查询，还需要`ignite-indexing`模块。
@@ -170,7 +186,7 @@ Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于S
 
 每个发布版中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
 
-### 1.3.4.第一个SQL应用
+### 1.3.5.第一个SQL应用
 下面会创建两张表及其索引，分别为`City`表和`Person`表，分别表示居住在城市中的人，并且城市中会有很多的人，通过WITH子句然后指定`affinityKey=city_id`，可以将人对象和其居住的城市对象并置在一起。
 
 通过命令行或者嵌入式模式启动Ignite集群节点后，可以通过下面的语句创建SQL模式：
@@ -472,7 +488,7 @@ Jane Roe, Denver
 Richard Miles, Denver
 John Doe, St. Petersburg
 ```
-### 1.3.5.第一个计算应用
+### 1.3.6.第一个计算应用
 作为第一个计算应用，它会计算一句话中非空白字符的字符数量。作为一个示例，首先将一句话分割为多个单词，然后通过计算作业来计算每一个独立单词中的字符数量。最后，我们将从每个作业获得的结果简单相加来获得整个的数量。
 
 Java8：
@@ -568,7 +584,7 @@ ignite.compute().affinityRun("SQL_PUBLIC_CITY", cityId, new IgniteRunnable() {
 }
 ```
 在上例中使用了`affinityRun()`方法，并且指定了`SQL_PUBLIC_CITY`缓存，`cityId`以及一个新创建的`IgniteRunnable()`，这样确保了计算被发送到丹佛及其居民所在的节点，使得可以直接在数据所在的地方执行业务逻辑，避免了昂贵的序列化可网络开销。
-### 1.3.6.第一个数据网格应用
+### 1.3.7.第一个数据网格应用
 我们再来一个小例子，它从/往分布式缓存中获取/添加数据，并且执行基本的事务。
 
 因为在应用中使用了缓存，要确保它是经过配置的，我们可以用Ignite自带的示例配置，它已经做了一些缓存的配置。
@@ -636,7 +652,7 @@ finally {
     lock.unlock();
 }
 ```
-### 1.3.7.第一个服务网格应用
+### 1.3.8.第一个服务网格应用
 Ignite的服务网格对于在集群中部署微服务非常有用，Ignite会处理和部署的服务有关的任务的生命周期，并且提供了在应用中调用服务的简单方式。
 
 作为一个示例，下面会开发一个服务，它会返回一个特定城市当前的天气预报。首先，它会创建一个只有一个方法的服务接口，这个接口扩展自`org.apache.ignite.services.Service`。
@@ -757,14 +773,14 @@ public class ServiceGridExample {
 零部署是不支持服务网格的，如果希望将上面的服务部署在通过`ignite.sh`或者`ignite.bat`文件启动的节点上，那么就需要将服务的实现打成jar包然后放在`{apache_ignite_version}/libs`文件夹中。
 :::
 
-### 1.3.8.集群管理和监控
+### 1.3.9.集群管理和监控
 查看数据网格的数据、以及执行其它的管理和监控操作的最简单方式是使用[Ignite Web控制台](/doc/tools/#_1-1-ignite-web控制台)，还有就是使用Ignite的[Visor命令行](/doc/tools/VisorManagementConsole.md#_3-1-命令行接口)工具。
 
-### 1.3.9.Docker和云镜像安装
+### 1.3.10.Docker和云镜像安装
 最新的Ignite Docker镜像以及AWS和Google计算引擎的云镜像，可以通过Ignite的[下载页面](https://ignite.apache.org/download.cgi#docker)获得。
-### 1.3.10.RPM|DEB包安装
+### 1.3.11.RPM|DEB包安装
 Ignite可以通过官方的[RPM和DEB仓库](#_1-12-rpm和deb包安装)进行安装。
-### 1.3.11.通过源代码构建
+### 1.3.12.通过源代码构建
 如果下载了源代码，可以使用下面的命令构建二进制包：
 ```bash
 # Unpack the source package
@@ -781,20 +797,7 @@ $ mvn clean package -DskipTests -Prelease,lgpl
 # (optionally specify version of hadoop to use)
 $ mvn clean package -DskipTests -Dignite.edition=hadoop [-Dhadoop.version=X.X.X]
 ```
-源码包中的DEVNOTES.txt文件，有更多的细节。
-### 1.3.12.在JDK9/10/11中运行Ignite
-Ignite使用了专有的SDK API，默认不再可用。为了运行Ignite，需要给JVM传递特定的标志，以使这些API可用。
-
-给应用的JVM添加如下的参数：
-```
---add-exports=java.base/jdk.internal.misc=ALL-UNNAMED
---add-exports=java.base/sun.nio.ch=ALL-UNNAMED
---add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED
---add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED
---add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED
---illegal-access=permit
-```
-如果使用的是启动脚本（`ignite.sh|bat`），那么什么都不需要做，因为这些参数脚本里面已经有了。
+具体细节请参见源码包中的DEVNOTES.txt文件。
 ## 1.4.Maven配置
 ### 1.4.1.概述
 如果项目里用Maven管理依赖，可以单独地导入各个Ignite模块。
