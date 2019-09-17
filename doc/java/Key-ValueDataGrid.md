@@ -43,6 +43,9 @@ Ignite ignite = Ignition.ignite();
 // Note that different caches may have different generics.
 IgniteCache<Integer, String> cache = ignite.cache("myCache");
 ```
+::: danger 缓存名限制
+因为这个[已知的问题](https://issues.apache.org/jira/browse/IGNITE-7264)，缓存名不能包含文件名中禁止的字符（例如Linux上的`/`或Windows上的`\`）。
+:::
 
 **动态缓存**
 
@@ -99,8 +102,9 @@ success = cache.replace("World", 2, 22);
 // Remove-if-matches operation.
 success = cache.remove("Hello", 1);
 ```
->**死锁**
+::: warning 死锁
 如果批量（比如`IgniteCache#putAll`, `IgniteCache#invokeAll`等）操作以并行方式执行，那么键应该是有序的，以避免死锁，建议使用`TreeMap`而不是`HashMap`以保证一致性、有序性，注意这个对于`原子化`和`事务化`缓存都是一样的。
+:::
 
 ### 2.4.EntryProcessor
 当在缓存中执行`puts`和`updates`操作时，通常需要在网络中发送完整的状态数据，而`EntryProcessor`可以直接在主节点上处理数据，只需要传输增量数据而不是全量数据。
