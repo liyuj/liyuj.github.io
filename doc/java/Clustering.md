@@ -861,7 +861,7 @@ XML：
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
   <property name="discoverySpi">
-    <bean class="org.apache.ignite.spi.discovery.zk.ZooKeeperDiscoverySpi">
+    <bean class="org.apache.ignite.spi.discovery.zk.ZookeeperDiscoverySpi">
       <property name="zkConnectionString" value="127.0.0.1:34076,127.0.0.1:43310,127.0.0.1:36745"/>
       <property name="sessionTimeout" value="30000"/>
       <property name="zkRootPath" value="/apacheIgnite"/>
@@ -872,7 +872,7 @@ XML：
 ```
 Java：
 ```java
-ZooKeeperDiscoverySpi zkDiscoSpi = new ZooKeeperDiscoverySpi();
+ZookeeperDiscoverySpi zkDiscoSpi = new ZookeeperDiscoverySpi();
 
 zkDiscoSpi.setZkConnectionString(
   "127.0.0.1:34076,127.0.0.1:43310,127.0.0.1:36745");
