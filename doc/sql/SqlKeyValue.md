@@ -1,5 +1,5 @@
-# 10.SQL和键-值API的使用
-## 10.1.SQL和键-值API的使用
+# SQL和键-值API的使用
+## 1.SQL和键-值API的使用
 在Ignite中，即使表/缓存是通过SQL创建和预加载的，也可以同时使用SQL和键-值API访问缓存的数据，这就给用户带来了可以根据业务需要灵活使用两种方式的自由。
 
 本文中，会使用GitHub上的一个[样例工程](https://github.com/dmagda/ignite_world_demo)，演示如何同时使用SQL和键-值API查询集群中的数据。
@@ -10,7 +10,7 @@
  - 使用键-值操作访问加载的数据；
  - 处理远程的数据。
 
-### 10.1.1.创建模式并且加载数据
+### 1.1.创建模式并且加载数据
 要创建SQL模式以及加载数据，可以看[README.md](https://github.com/dmagda/ignite_world_demo)文件中的说明，通常来说，可以使用`CREATE TABLE`语句来建表。
 
 `CREATE TABLE`语句支持一些额外的参数，可以对底层缓存的属性进行配置，比如，创建`City`表的语句如下：
@@ -27,7 +27,7 @@ CREATE TABLE City (
 注意，在语句的后面，通过`KEY_TYPE`和`VALUE_TYPE`分别指定了键类和值类。如果没指定这些参数，Ignite会使用默认的名字创建这些类。
 
 如果想进一步了解与缓存的名字及对应的键是如何生成的更多信息，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)的文档。
-### 10.1.2.使用键-值API
+### 1.2.使用键-值API
 `IgniteCache`接口提供了一组方法，可用于通过键-值API访问缓存。比如，`IgniteCache.get(key)`可以获得指定键对应的值，在下面的示例中，获取了`Amsterdam`记录并更新了`POPULATION`字段，该代码在客户端执行（数据从服务端获得）。
 ```java
 try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
@@ -69,7 +69,7 @@ try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
     cityCache.put(amKey, amsterdam);
 }
 ```
-### 10.1.3.执行SQL查询
+### 1.3.执行SQL查询
 下面的示例中，使用`SqlFieldsQuery`对象执行SQL查询并且对结果集进行迭代：
 ```java
 try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
@@ -93,7 +93,7 @@ try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
 }
 ```
 如何进行SQL查询的更多细节，可以看[SQL API](/doc/sql/JavaDeveloperGuide.md#_1-sql-api)的文档。
-### 10.1.4.执行计算任务
+### 1.4.执行计算任务
 在上例中，更新Amsterdam记录的地方，数据是从服务端节点获取的，如果使用[关联并置](/doc/java/Key-ValueDataGrid.md#_7-关联并置)，可以在指定键所在的节点执行自定义业务逻辑，这样就不需要将数据传输到客户端。
 
 ::: tip 对等类加载

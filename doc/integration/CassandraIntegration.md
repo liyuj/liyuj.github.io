@@ -1,6 +1,6 @@
-# 6.Cassandra集成
-## 6.1.Ignite和Apache Cassandra
-### 6.1.1.概述
+# Cassandra集成
+## 1.Ignite和Apache Cassandra
+### 1.1.概述
 对于过期的缓存记录，通过使用[Cassandra](http://cassandra.apache.org/)作为持久化存储，Ignite的Cassandra模块为缓存实现了一个CacheStore。
 
 它在功能上和`CacheJdbcBlobStore`以及`CacheJdbcPojoStore`的方式几乎是相同的，但是又提供了如下的好处；
@@ -19,7 +19,7 @@
  8. 通过持久化配置，或者通过使用`@QuerySqlField(descending = true)`注解自动进行配置的检测，支持Cassandra集群键字段的排序；
  9. 对于POJO的键类，如果它的属性之一加注了`@AffinityKeyMapped`注解，也会支持关联并置，这时，Ignite缓存中存储在某个节点上的键值对，也会存储（并置）于Cassandra中的同一个节点上。
 
-## 6.2.基本概念
+## 2.基本概念
 要将Cassandra设置为一个持久化存储，需要将Ignite缓存的`CacheStoreFactory`设置为`org.apache.ignite.cache.store.cassandra.CassandraCacheStoreFactory`。
 可以像下面这样通过Spring进行配置：
 ```xml
@@ -55,7 +55,7 @@
  - `persistenceSettingsBean`:`org.apache.ignite.cache.store.cassandra.utils.persistence.KeyValuePersistenceSettings`类的实例，负责对象如何持久化到Cassandra的所有方面（键空间及其选项、表及其选项、分区和集群键选项、POJO对象字段映射、第二索引、BLOB对象序列化器等）。
 
 下面的章节中这两个Bean及其配置会详细地描述。
-### 6.2.1.DataSourceBean
+### 2.1.DataSourceBean
 这个bean存储了Cassandra数据库与连接和CRUD操作有关的所有必要信息，下面的表格中显示了所有的属性：
 
 |属性|默认值|描述|
@@ -85,7 +85,7 @@
 |socketOptions||指定保持到Cassandra主机的连接的底层Socket选项|
 |nettyOptions||允许客户端定制Cassandra驱动底层Netty层的钩子|
 
-### 6.2.2.PersistenceSettingsBean
+### 2.2.PersistenceSettingsBean
 这个bean存储了对象（键和值）如何持久化到Cassandra数据库的所有细节信息（键空间、表、分区选项、POJO字段映射等）。
 `org.apache.ignite.cache.store.cassandra.utils.persistence.KeyValuePersistenceSettings`的构造器可以通过如下方式创建这个Bean，从一个包含特定结构的XML配置文档的字符串（看下面的代码），或者指向XML文档的资源。
 
@@ -391,7 +391,7 @@ Ignite缓存值的持久化配置。
 |indexClass|否|如果要使用自定义索引，自定义索引的Java类名|
 |indexOptions|否|自定义索引选项|
 
-## 6.3.示例
+## 3.示例
 就像上一章描述的那样，要将Cassandra配置为缓存存储，需要将Ignite缓存的**CacheStoreFactory**设置为`org.apache.ignite.cache.store.cassandra.CassandraCacheStoreFactory`。
 
 下面是一个Ignite将Cassandra配置为缓存存储的典型配置示例，即使它看上去很复杂也不用担心，我们会一步一步深入每一个配置项，这个示例来自于Cassandra模块源代码的单元测试资源文件`test/resources/org/apache/ignite/tests/persistence/blob/ignite-config.xml`。
@@ -572,7 +572,7 @@ XML:
 在这个配置中，我们可以看到Cassandra的`test1.blob_test1`表会用于**cache1**缓存的键/值存储，缓存的键对象会以**integer**的形式存储于`key`列中，缓存的值对象会以**blob**的形式存储于`value`列中。
 
 下一章会为不同类型的持久化策略提供持久化设置的示例。
-### 6.3.1.示例1
+### 3.1.示例1
 Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，`String`类型的值在Cassandra中会以`text`的形式存储。
 
 XML:
@@ -583,7 +583,7 @@ XML:
 </persistence>
 ```
 键会存储于`my_key`列，值会存储于`value`列（如果`column`属性不指定会使用默认值）。
-### 6.3.2.示例2
+### 3.2.示例2
 Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，`any`类型的值（`BLOB`持久化策略中无需指定类型）在Cassandra中会以`BLOB`的形式存储，这个场景的唯一解决方案就是在Cassandra中将值存储为`BLOB`。
 
 XML：
@@ -594,7 +594,7 @@ XML：
 </persistence>
 ```
 键会存储于`key`列（如果`column`属性不指定会使用默认值），值会存储于`value`列。
-### 6.3.3.示例3
+### 3.3.示例3
 Ignite缓存的持久化配置中，`Integer`类型的键和`any`类型的值在Cassandra中都以`BLOB`的形式存储。
 ```xml
 <persistence keyspace="test1" table="my_table">
@@ -609,7 +609,7 @@ Ignite缓存的持久化配置中，`Integer`类型的键和`any`类型的值在
 </persistence>
 ```
 键会存储于`BLOB`类型的`key`列，使用[Java标准序列化](https://docs.oracle.com/javase/tutorial/jndi/objects/serial.html)，值会存储于`BLOB`类型的`value`列，使用[Kryo序列化](https://github.com/EsotericSoftware/kryo)。
-### 6.3.4.示例4
+### 3.4.示例4
 Ignite缓存的持久化配置中，`Integer`类型的键在Cassandra中会以`int`的形式存储，自定义POJO`org.apache.ignite.tests.pojos.Person`类型的值在动态分析后会被持久化到一组表列中，这样每个POJO字段都会被映射到相对应的表列，关于更多动态POJO字段发现的信息，可以查看上一章的介绍。
 
 XML：
@@ -714,7 +714,7 @@ public class Person {
 
 > 这个示例显示了，使用非常简单的配置，依托动态对象字段映射，就可以轻易地为POJO对象配置持久化。
 
-### 6.3.5.示例5
+### 3.5.示例5
 Ignite缓存的持久化配置中，键是自定义的POJO`org.apache.ignite.tests.pojos.PersonId`类型，值是自定义POJO`org.apache.ignite.tests.pojos.Person`类型，基于手工指定的映射规则，都会被持久化到一组表列。
 
 XML：
@@ -885,7 +885,7 @@ XML：
 
 和示例4相比，我们可以看到，使用Kryo序列化器，`phones`字段会被序列化到`blob`类型的`phones`列。另外，Cassandra会为`married`列创建第二索引。
 
-## 6.4.DDL生成器
+## 4.DDL生成器
 Ignite Cassandra模块的一个好处是，无需关注Cassandra的表创建DDL语法以及Java到Cassandra的类型映射细节。
 
 只需要创建指定了Ignite缓存的键和值如何序列化/反序列化到/从Cassandra的XML配置文档即可，基于这个设置，剩余的Cassandra键空间和表都会被自动创建，要让这一切运转起来，只需要：
@@ -945,7 +945,7 @@ with comment = 'A most excellent and useful table' AND read_repair_chance = 0.2 
  1. 在CLASSPATH中包含Ignite Cassandra模块的jar文件（`ignite-cassandra-<version-number>.jar`）；
  2. 如果打算为部分自定义Java类使用`POJO`持久化策略，需要同时在CLASSPATH中包含带有这些类的jar文件。
 
-## 6.5.负载测试
+## 5.负载测试
 Ignite的Cassandra模块提供了一组负载测试，它可以模拟Ignite和Cassandra在自定义键/值类和持久化设定时的生产负载，因此使用这些负载测试就可以度量特定配置下的性能指标。
 
  - 一组自定义的键/值类；
@@ -954,7 +954,7 @@ Ignite的Cassandra模块提供了一组负载测试，它可以模拟Ignite和Ca
 
 这种类型的度量有助于更好地理解系统的可度量性。
 
-### 6.5.1.构建负载测试
+### 5.1.构建负载测试
 Cassandra模块的负载测试是作为模块测试源代码的一部分提供的，因此首先需要从源代码构建Ignite发行版。
 
 从源代码构建Ignite发行版之后，会发现在Cassandra模块目录下有`target/tests-package`目录以及`target/ignite-cassandra-tests-<version>.zip`，它是这个目录的zip压缩包。测试包包含了马上就可以用的Ignite Cassandra模块的负载测试应用，它的结构如下：
@@ -977,7 +977,7 @@ Cassandra模块的负载测试是作为模块测试源代码的一部分提供�
  - **Ignite负载测试**：在Ignite上使用合适的IgniteCache执行所有的键/值持久化操作；
 
 下面看一下负载测试场景和配置细节。
-### 6.5.2.负载测试场景
+### 5.2.负载测试场景
 `Cassandra`和`Ignite`负载测试都使用相同的一组测试：
 
  1. 单个**写**操作负载测试：当调用缓存的`IgniteCache.put`方法时就会执行这样的操作；
@@ -986,7 +986,7 @@ Cassandra模块的负载测试是作为模块测试源代码的一部分提供�
  4. **批量读**操作负载测试：当调用缓存的`IgniteCache.getAll`方法时就会执行这样的操作。
 
 所有指定的负载测试都会按照给定的顺序一个一个按顺序执行。
-### 6.5.3.负载测试配置
+### 5.3.负载测试配置
 负载测试的配置是通过`settings`文件夹中的如下属性文件指定的：
 
  1. **log4j.properties**：指定负载测试的logger设置；
@@ -1025,7 +1025,7 @@ Cassandra模块的负载测试是作为模块测试源代码的一部分提供�
 |load.tests.key.generator|Ignite缓存的键对象生成器|
 |load.tests.value.generator|Ignite缓存的值对象生成器|
 
-### 6.5.4.运行负载测试
+### 5.4.运行负载测试
 运行负载测试前，要确保：
 
  1. Ignite缓存的所有节点都要配置为使用相同的Cassandra缓存存储配置。可以从测试源代码包的一个资源文件中找到一个远程Ignite节点配置的示例：`settings/org/apache/ignite/tests/persistence/primitive/ignite-remote-server-config.xml`，如果只打算使用Cassandra进行负载测试，可以忽略这一步；
@@ -1037,7 +1037,7 @@ Cassandra模块的负载测试是作为模块测试源代码的一部分提供�
  - **cassandra-load-tests.sh / cassandra-load-tests.bat**：直接在Cassandra集群上执行持久化负载测试的shell脚本。这个测试可以绕过Ignite集群，直接在Cassandra集群上度量键/值持久化操作的性能。这非常有用，基于这个测试的结果，可以确定作为Ignite缓存的持久化层的Cassandra集群的合理容量；
  - **ignite-load-tests.sh / ignite-load-tests.bat**：在Ignite集群上执行持久化负载测试的shell脚本，这个测试可以度量使用Cassandra集群作为持久化层的Ignite集群的键/值操作的持久化性能。基于这个测试的结果，可以确定Ignite集群的合理容量。
 
-### 6.5.5.使用自定义的键/值类
+### 5.5.使用自定义的键/值类
 如果使用自定义的键/值类用于负载测试，那么需要：
 
  1. 在`tests.properties`的`load.tests.key.generator`属性中指定自定义键类的生成器。**生成器**的想法非常简单，它负责生成特定类的实例，并且实现`org.apache.ignite.tests.load.Generator`接口的`public Object generate(long i)`方法，也可以找到如下的示例实现：
@@ -1051,7 +1051,7 @@ Cassandra模块的负载测试是作为模块测试源代码的一部分提供�
  5. 创建包含自定义键/值类和对应**生成器**类的**jar**文件，然后将它们（还包括可能的第三方依赖）放在`lib`目录中。
 
 这就是使用自定义类运行负载测试的所有步骤。
-### 6.5.6.分析测试执行结果
+### 5.6.分析测试执行结果
 负载测试的执行结果以`log4j`日志文件的形式提供，默认（如果没有修改`log4j.properties`文件）会有两个文件会显示测试执行的结果概要：
 
  1. **cassandra-load-tests.log**：包含了Cassandra负载测试执行结果的概要统计（如果执行的`cassandra-load-tests.sh`或者`cassandra-load-tests.bat`shell脚本）；
@@ -1212,7 +1212,7 @@ BULK_READ speed: 12790 msg/sec
 
 > 建议运行负载测试之前执行**recreate-cassandra-artifacts.sh/recreate-cassandra-artifacts.bat**脚本。这个脚本会清理之前的负载测试执行中产生的所有Cassandra键空间/表，否则统计可能不是很精确，如果使用AWS，这个会自动做。
 
-## 6.6.单元测试
+## 6.单元测试
 Ignite的Cassandra模块提供了一组单元测试用例，它可以用来测试下面的功能是否正常：
 
  1. 绕过Ignite，通过直接序列化/反序列化Java基本类型（int，float，long等）到Cassandra测试`PRIMITIVE`持久化策略；

@@ -1,7 +1,7 @@
-# 1.入门
-## 1.1.入门
+# 入门
+## 1.入门
 ![](https://files.readme.io/58b7901-gg_platform.png)
-### 1.1.1.要求
+### 1.1.要求
 GridGain官方在如下环境中进行了测试：
 
  - JDK：Oracle JDK8，Open JDK8，IBM JDK8；
@@ -9,14 +9,14 @@ GridGain官方在如下环境中进行了测试：
  - 网络：没有限制（建议10G）；
  - 架构：x86，x64，SPARC，PowerPC。
 
-### 1.1.2.安装
+### 1.2.安装
 以下是安装GridGain企业版的简述：
 
  - 从[这里](http://www.gridgain.com/download/editions/)下载GridGain的企业版压缩包；
  - 解压压缩包到系统的安装文件夹；
  - 配置`IGNITE_HOME`环境变量指向前面解压的安装文件夹，确保路径不要以`/`结尾（此步骤为可选）。
 
-### 1.1.3.配置
+### 1.3.配置
 GridGain基于Apache Ignite项目，以插件的方式提供了企业级功能，Ignite的所有功能在GridGain中仍然可用，API层面没有任何变化，具体的细节可以看[Ignite文档](/doc/java/)。
 
 ::: tip 注意
@@ -28,7 +28,7 @@ GridGain插件自动使用默认的配置启用。如果需要修改（添加安
 ```java
 // Ignite configuration.
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
- 
+
 // GridGain plugin configuration.
 GridGainConfiguration gridCfg = new GridGainConfiguration();
 
@@ -41,7 +41,7 @@ SecurityCredentialsBasicProvider provider = new SecurityCredentialsBasicProvider
 // Specify security provider in GridGain Configuration.
 gridCfg.setSecurityCredentialsProvider(provider);
 ```
-### 1.1.4.从命令行启动
+### 1.4.从命令行启动
 可以使用默认配置或通过传递配置文件从命令行启动GridGain节点。可以启动任意多个节点，它们之间都会自动发现。
 
 **使用默认的配置**
@@ -84,7 +84,7 @@ GridGain只需要一个`gridgain-core`作为强制依赖项。通常，还需要
         <url>http://www.gridgainsystems.com/nexus/content/repositories/external</url>
     </repository>
 </repositories>
- 
+
 <dependency>
     <groupId>org.gridgain</groupId>
     <artifactId>gridgain-core</artifactId>
@@ -101,32 +101,32 @@ GridGain只需要一个`gridgain-core`作为强制依赖项。通常，还需要
     <version>${ignite.version}</version>
 </dependency>
 ```
-### 1.1.5.第一个GridGain计算应用
+### 1.5.第一个GridGain计算应用
 下面会编写第一个网格应用程序，它将计算一个句子中的非空白字符数。作为一个示例，会将一个句子分成多个单词，并让每个计算作业计算每个单词中的字符数。最后，简单地从各个作业中得到的结果相加，就会得到总数：
 
 Java8：
 ```java
 try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
   Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
- 
+
   // Iterate through all the words in the sentence and create Callable jobs.
   for (final String word : "Count characters using callable".split(" "))
     calls.add(word::length);
- 
+
   // Execute collection of Callables on the grid.
   Collection<Integer> res = ignite.compute().call(calls);
- 
+
   // Add up all the results.
   int sum = res.stream().mapToInt(Integer::intValue).sum();
-  
+
   System.out.println("Total number of characters is '" + sum + "'.");
-} 
+}
 ```
 Java7：
 ```java
 try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
     Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
-  
+
     // Iterate through all the words in the sentence and create Callable jobs.
     for (final String word : "Count characters using callable".split(" ")) {
         calls.add(new IgniteCallable<Integer>() {
@@ -135,23 +135,23 @@ try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
             }
         });
     }
-  
+
     // Execute collection of Callables on the grid.
     Collection<Integer> res = ignite.compute().call(calls);
-  
+
     int sum = 0;
-  
+
     // Add up individual word lengths received from remote nodes.
     for (int len : res)
         sum += len;
-  
+
     System.out.println(">>> Total number of characters in the phrase is '" + sum + "'.");
-} 
+}
 ```
 ::: tip 零部署
 因为有零部署特性，当从IDE中运行上述应用时，远程节点会自动接收到作业而不需要进行显式地部署。
 :::
-### 1.1.6.第一个GridGain数据应用
+### 1.6.第一个GridGain数据应用
 下面是几个简单的示例，进行分布式缓存的读写，以及执行基本的事务等。
 
 因为示例中用到了缓存，因此要确保它们已经配置好，下面会使用Ignite已经附带的示例配置，它已经配置好了若干个缓存：
@@ -162,11 +162,11 @@ $ bin/ignite.sh examples/config/example-cache.xml
 ```java
 try (Ignite ignite = Ignition.start("examples/config/example-cache.xml")) {
     IgniteCache<Integer, String> cache = ignite.getOrCreateCache("myCacheName");
-  
+
     // Store keys in cache (values will end up on different cache nodes).
     for (int i = 0; i < 10; i++)
         cache.put(i, Integer.toString(i));
-  
+
     for (int i = 0; i < 10; i++)
         System.out.println("Got [key=" + i + ", val=" + cache.get(i) + ']');
 }
@@ -175,42 +175,42 @@ try (Ignite ignite = Ignition.start("examples/config/example-cache.xml")) {
 ```java
 // Put-if-absent which returns previous value.
 Integer oldVal = cache.getAndPutIfAbsent("Hello", 11);
-   
+
 // Put-if-absent which returns boolean success flag.
 boolean success = cache.putIfAbsent("World", 22);
-   
+
 // Replace-if-exists operation (opposite of getAndPutIfAbsent), returns previous value.
 oldVal = cache.getAndReplace("Hello", 11);
-  
+
 // Replace-if-exists operation (opposite of putIfAbsent), returns boolean success flag.
 success = cache.replace("World", 22);
-   
+
 // Replace-if-matches operation.
 success = cache.replace("World", 2, 22);
-   
+
 // Remove-if-matches operation.
-success = cache.remove("Hello", 1); 
+success = cache.remove("Hello", 1);
 ```
 事务：
 ```java
 try (Transaction tx = ignite.transactions().txStart()) {
     Integer hello = cache.get("Hello");
-   
+
     if (hello == 1)
         cache.put("Hello", 11);
-   
+
     cache.put("World", 22);
-   
+
     tx.commit();
-} 
+}
 ```
 分布式锁：
 ```java
 // Lock cache key "Hello".
 Lock lock = cache.lock("Hello");
-  
+
 lock.lock();
-  
+
 try {
     cache.put("Hello", 11);
     cache.put("World", 22);
@@ -219,29 +219,29 @@ finally {
     lock.unlock();
 }
 ```
-### 1.1.7.GridGain Visor管理控制台
+### 1.7.GridGain Visor管理控制台
 检查数据网格的内容以及执行其它众多管理和监视操作的最简单方法是使用GridGain的Visor GUI实用程序。
 
 要启动Visor，只需运行：
 ```bash
 $ bin/ggvisorui.sh
 ```
-## 1.2.配置
+## 2.配置
 GridGain是作为Ignite的插件存在的，只可以配置企业级的特性（安全、数据中心复制等），开源版的特性都是在Ignite中进行配置的，具体可以看Ignite的[文档](/doc/java/)。
-### 1.2.1.GridGainConfiguration
+### 2.1.GridGainConfiguration
 GridGain的主配置类是`GridGainConfiguration`，从代码上来说，它是Ignite的一个插件。
 
 Java：
 ```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
- 
+
 // GridGain plugin configuration.
 GridGainConfiguration ggCfg = new GridGainConfiguration();
- 
+
 // For example, this is how rolling updates are enabled.
 ggCfg.setRollingUpdatesEnabled(true);
- 
+
 // Set GridGain plugin configuration to Ignite configuration.
 cfg.setPluginConfigurations(ggCfg);
 ```
@@ -275,7 +275,7 @@ XML：
 |`setInteropConfiguration()`|设定与其它平台的互操作性||
 |`setRollingUpdatesEnabled()`|启用和禁用滚动升级|false|
 
-### 1.2.2.GridGainCacheConfiguration
+### 2.2.GridGainCacheConfiguration
 
 另外，Ignite的`CachePluginConfiguration`可以对缓存的配置进行扩展，然后GridGain通过`GridGainCacheConfiguration`类实现了这个接口。
 
@@ -285,15 +285,15 @@ Java：
 ```java
 // Ignite cache configuration.
 CacheConfiguration cacheCfg = new CacheConfiguration("myCache");
-  
+
 // GridGain plugin cache configuration.
 GridGainCacheConfiguration ggCacheCfg = new GridGainCacheConfiguration();
- 
+
 // For example, this is how to set conflict resolution mode (AUTO is the default value).
 ggCacheCfg.setConflictResolverMode(CacheConflictMode.AUTO);
-  
+
 // Set GridGain plugin cache configuration to Ignite cache configuration.
-cacheCfg.setPluginConfigurations(ggCacheCfg); 
+cacheCfg.setPluginConfigurations(ggCacheCfg);
 ```
 XML：
 ```xml
@@ -309,7 +309,7 @@ XML：
             </bean>
         </list>
     </property>
-</bean> 
+</bean>
 ```
 下面是可用的配置属性的完整列表：
 

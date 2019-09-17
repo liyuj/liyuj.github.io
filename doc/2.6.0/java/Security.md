@@ -1,6 +1,6 @@
-# 4.安全
-## 4.1.SSL和TLS
-### 4.1.1.保护节点间的连接
+# 安全
+## 1.SSL和TLS
+### 1.1.保护节点间的连接
 Ignite允许在所有节点之间使用SSL Socket进行通信。要使用SSL，需要设置`Factory<SSLContext>`以及配置Ignite配置文件的`SSL`段落，Ignite提供了一个默认的SSL上下文工厂，`org.apache.ignite.ssl.SslContextFactory`，它用一个配置好的keystore来初始化SSL上下文。
 
 XML：
@@ -61,7 +61,7 @@ igniteCfg.setSslContextFactory(factory);
 ```
 INFO: Security status [authentication=off, communication encrypted=on]
 ```
-### 4.1.2.SSL和TLS
+### 1.2.SSL和TLS
 Ignite允许使用不同的加密类型，支持的加密算法可以参照：[http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext](http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext),可以通过`setProtocol()`方法进行设置，默认值是`TLS`。
 
 XML：
@@ -88,7 +88,7 @@ factory.setProtocol("TLS");
 
 igniteCfg.setSslContextFactory(factory);
 ```
-### 4.1.3.配置
+### 1.3.配置
 下面的配置参数可以通过`SslContextFactory`进行配置：
 
 |setter方法|描述|默认值|
@@ -103,8 +103,8 @@ igniteCfg.setSslContextFactory(factory);
 |setTrustStoreType|用于上下文初始化的truststore类型|JKS|
 |setTrustManagers|设置配置好的信任管理器|无|
 
-## 4.2.高级安全
-### 4.2.1.认证
+## 2.高级安全
+### 2.1.认证
 通过在服务端开启认证和提供用户凭据来保护集群。目前，只有**打开持久化**才会支持认证，这个限制未来可能放宽。
 
 **开启认证**
@@ -127,10 +127,10 @@ XML：
 
     <!-- Enabling authentication. -->
     <property name="authenticationEnabled" value="true"/>
-   
+
   <!-- Other Ignite configurations. -->
   ...
-    
+
 </bean>
 ```
 Java：
@@ -156,13 +156,13 @@ cfg.setAuthenticationEnabled(true);
 **提供用户凭据**
 
 打开认证之后，Ignite会在集群第一次启动时创建名为`ignite`的超级用户，密码为`ignite`。目前，无法对超级用户改名，也无法将它的权限授予其它用户，但是，可以使用Ignite支持的DDL语句，对用户进行创建、修改和删除，注意，只有超级用户才能创建新的用户。
-### 4.2.2.授权
+### 2.2.授权
 Ignite还无法方便地提供授权功能，但是对于这样的高级安全特性，可以通过自定义插件的形式，实现`GridSecurityProcessor`接口，或者也可以使用一个第三方的[实现](https://docs.gridgain.com/docs/security-and-audit)。
-## 4.3.数据反序列化安全性
+## 3.数据反序列化安全性
 如果攻击者找到办法可以将恶意代码植入集群节点的类路径中，那么数据的序列化是会受到影响的，解决这个问题的常规做法是保护对集群的访问，并且将访问权限授予有限的人群。
 
 但是如果攻击者突破了防护，Ignite还提供了`IGNITE_MARSHALLER_WHITELIST`和`IGNITE_MARSHALLER_BLACKLIST`这两个系统属性，这两个属性可以定义用于安全反序列化的白名单/黑名单。
-### 4.3.1.IGNITE_MARSHALLER_WHITELIST
+### 3.1.IGNITE_MARSHALLER_WHITELIST
 要使用`IGNITE_MARSHALLER_WHITELIST`，可以创建一个包含允许反序列化的文件清单的文件，比如有一个名为whitelist.txt的文件，内容如下：
 ```
 ignite.myexamples.model.Address
@@ -185,7 +185,7 @@ System.setProperty(IGNITE_MARSHALLER_WHITELIST, "Path/to/whitelist.txt");
 ```
 Exception in thread "main" javax.cache.CacheException: class org.apache.ignite.IgniteCheckedException: Deserialization of class ignite.myexamples.model.Organization is disallowed.
 ```
-### 4.3.2.IGNITE_MARSHALLER_BLACKLIST
+### 3.2.IGNITE_MARSHALLER_BLACKLIST
 要使用`IGNITE_MARSHALLER_BLACKLIST`，可以创建一个包含不允许反序列化的文件清单的文件，比如有一个名为blacklist.txt的文件，内容如下：
 ```
 ignite.myexamples.model.SomeFile

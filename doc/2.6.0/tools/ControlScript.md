@@ -1,9 +1,9 @@
-# 4.控制脚本
-## 4.1.控制脚本
+# 控制脚本
+## 1.控制脚本
 Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集群的状态，它位于Ignite主目录的`/bin`文件夹中。
-### 4.1.1.激活、冻结和拓扑管理
+### 1.1.激活、冻结和拓扑管理
 首先，`./control.sh`用于集群基线拓扑的激活/冻结以及节点的管理，具体可以看相关的章节。
-### 4.1.2.缓存状态监控
+### 1.2.缓存状态监控
 `./control.sh`提供了若干以`--cache list`开头的命令用于缓存的监控，这些命令可以看到部署的带有关联参数的缓存的列表，及其在缓存组内的分布，还有一个命令可以看已有的原子化的序列。
 ```bash
 # Displays list of all caches with affinity parameters.
@@ -24,7 +24,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 # Displays info about atomic sequnces which names start with "counter-".
 ./control.sh --cache list counter-.*
 ```
-### 4.1.3.事务争用检测
+### 1.3.事务争用检测
 `contention`命令可以观测到多个事务对于同一个键的锁竞争状态，如果遇到了长时间运行或者挂起的事务，该命令会很有用，比如：
 ```bash
 # Reports all keys that are point of contention for at least 5 transactions on all cluster nodes.
@@ -48,7 +48,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 
 // Node 03379796-df31-4dbd-80e5-09cef5000000 is place for contention on key KeyCacheObjectImpl [part=0, val=0, hasValBytes=false].
 ```
-### 4.1.4.一致性检查命令
+### 1.4.一致性检查命令
 该脚本还提供了一组命令，验证内部数据的一致性。
 首先，该命令可用于调试和排错的目的，尤其在活跃的开发节点。
 其次，如果怀疑一个查询，比如SQL返回了不完整或者错误的结果集，该命令可以验证是否真的存在数据不一致的情况。

@@ -1,12 +1,12 @@
-# 5.ODBC
-## 5.1.ODBC驱动
-### 5.1.1.概述
+# ODBC
+## 1.ODBC驱动
+### 1.1.概述
 Ignite包括一个ODBC驱动，可以通过标准SQL查询和原生ODBC API查询和修改存储于分布式缓存中的数据。
 
 要了解ODBC的细节，可以参照[ODBC开发者参考](https://msdn.microsoft.com/en-us/library/ms714177.aspx)。
 
 Ignite的ODBC驱动实现了ODBC API的3.0版。
-### 5.1.2.集群配置
+### 1.2.集群配置
 ODBC驱动在Windows中被视为一个动态库，在Linux中被视为一个共享对象，应用不会直接加载它。作为替代，必要时它会使用一个驱动加载器API来加载和卸载ODBC驱动。
 
 Ignite的ODBC驱动在内部使用TCP协议来接入Ignite集群，这个连接在Ignite中是通过一个叫做`ClientListenerProcessor`的组件来处理的。除了ODBC连接，它还处理JDBC连接以及瘦客户端连接。当节点启动时，`ClientListenerProcessor`默认是开启的，通过下面的代码可以对参数进行调整：
@@ -84,9 +84,9 @@ cfg.setClientConnectorConfiguration(clientConnectorCfg);
 ...
 ```
 通过`ClientListenerProcessor`从ODBC驱动端建立的到集群的连接也是可以配置的，关于如何从驱动端修改连接的配置，可以看[这里](#_5-2-连接串和dsn)。
-### 5.1.3.线程安全
+### 1.3.线程安全
 Ignite ODBC驱动的当前实现仅仅在连接层提供了线程的安全，这意味着如果没有额外的同步化，无法从多个线程访问同一个连接。不过可以为每个线程创建独立的连接，然后同时使用。
-### 5.1.4.要求
+### 1.4.要求
 Ignite的ODBC驱动官方在如下环境中进行了测试：
 
 |OS|Windows（XP及以上，32位和64位版本）<br>Windows Server（2008及以上，32位和64位版本）<br>Ubuntu（14.x和15.x，64位）|
@@ -94,7 +94,7 @@ Ignite的ODBC驱动官方在如下环境中进行了测试：
 |C++编译器|MS Visual C++ (10.0及以上), g++ (4.4.0及以上)|
 |Visual Studio|2010及以上|
 
-### 5.1.5.构建ODBC驱动
+### 1.5.构建ODBC驱动
 在Windows中，Ignite现在提供了预构建的32位和64位驱动的安装器，因此如果只是想在Windows中安装驱动，那么直接看下面的安装驱动章节就可以了。
 
 对于Linux环境，安装之前还是需要进行构建，因此如果使用的是Linux或者使用Windows但是仍然想自己构建驱动，那么往下看。
@@ -105,7 +105,7 @@ Ignite的ODBC驱动的源代码随着Ignite发行版一起发布，在使用之�
 
 这里假定使用的是二进制版本，如果使用的是源代码版本，那么需要将所有使用的`%IGNITE_HOME%\platforms\cpp`替换为`%IGNITE_HOME%\modules\platforms\cpp`。
 
-#### 5.1.5.1.在Windows上构建
+#### 1.5.1.在Windows上构建
 如果要在Windows上构建ODBC驱动，需要MS Visual Studio 2010及以后的版本，一旦打开了Ignite方案`%IGNITE_HOME%\platforms\cpp\project\vs\ignite.sln`(或者`ignite_86.sln`,32位平台)，在方案浏览器中左击Ignite项目，然后选择“Build”，Visual Studio会自动地检测并且构建所有必要的依赖。
 
 > 如果使用VS 2015及以后的版本（MSVC14.0及以后），需要将`legacy_stdio_definitions.lib`作为额外的库加入`odbc`项目的链接器配置以构建项目，要在IDE中将库文件加入链接器，可以打开项目节点的上下文菜单，选择`Properties`，然后在`Project Properties`对话框中，选择`Linker`，然后编辑`Linker Input`，这时就可以将`legacy_stdio_definitions.lib`加入分号分割的列表中。
@@ -130,7 +130,7 @@ light.exe -ext WixUIExtension ignite-odbc-x86.wixobj
 ```
 完成之后，目录中会出现`ignite-odbc-amd64.msi`和`ignite-odbc-x86.msi`文件，然后就可以使用它们进行安装了。
 
-#### 5.1.5.2.在Linux上构建
+#### 1.5.2.在Linux上构建
 在一个基于Linux的操作系统中，如果要构建及使用Ignite ODBC驱动，需要安装选择的ODBC驱动管理器，Ignite ODBC驱动已经使用[UnixODBC](http://www.unixodbc.org/)进行了测试。
 
 要构建驱动及其依赖，还需要额外的`GCC`,`G++`以及`Make`。
@@ -150,9 +150,9 @@ make install
 whereis libignite-odbc
 ```
 路径很可能是：`/usr/local/lib/libignite-odbc.so`。
-### 5.1.6.安装ODBC驱动
+### 1.6.安装ODBC驱动
 要使用ODBC驱动，首先要在系统中进行注册，因此ODBC驱动管理器必须能找到它。
-#### 5.1.6.1.在Windows上安装
+#### 1.6.1.在Windows上安装
 在32位的Windows上需要使用32位版本的驱动，而在64位的Windows上可以使用64位和32位版本的驱动，也可以在64位的Windows上同时安装32位和64位版本的驱动，这样32位和64位的应用都可以使用驱动。
 
 *使用安装器进行安装*
@@ -178,7 +178,7 @@ AMD64:
 ```bash
 install_amd64 <absolute_path_to_64_bit_driver> [<absolute_path_to_32_bit_driver>]
 ```
-#### 5.1.6.2.在Linux上安装
+#### 1.6.2.在Linux上安装
 要在Linux上构建和安装ODBC驱动，首先需要安装ODBC驱动管理器，Ignite ODBC驱动已经使用[UnixODBC](http://www.unixodbc.org/)进行了测试。
 
 如果已经构建完成并且执行了`make install`命令，`libignite-odbc.so`很可能会位于`/usr/local/lib`，要在ODBC驱动管理器中安装ODBC驱动并且可以使用，需要按照如下的步骤进行操作：
@@ -188,8 +188,8 @@ install_amd64 <absolute_path_to_64_bit_driver> [<absolute_path_to_32_bit_driver>
  - 要安装Ignite的ODBC驱动，可以使用如下的命令：`odbcinst -i -d -f $IGNITE_HOME/platforms/cpp/odbc/install/ignite-odbc-install.ini`，要执行这条命令，很可能需要root权限。
 
 到现在为止，Ignite的ODBC驱动已经安装好了并且可以用了，可以像其它ODBC驱动一样，连接、使用。
-## 5.2.连接串和DSN
-### 5.2.1.连接串格式
+## 2.连接串和DSN
+### 2.1.连接串格式
 Ignite的ODBC驱动支持标准的连接串格式，下面是正常的语法：
 ```
 connection-string ::= empty-string[;] | attribute[;] | attribute; connection-string
@@ -199,7 +199,7 @@ attribute-keyword ::= identifier
 attribute-value ::= character-string
 ```
 简单来说，连接串就是一个字符串，其中包含了用分号分割的参数。
-### 5.2.2.支持的参数
+### 2.2.支持的参数
 Ignite的ODBC驱动可以使用一些连接串/DSN参数，所有的参数都是大小写不敏感的，因此`ADDRESS`，`Address`，`address`都是有效的参数名，并且指向的是同一个参数。如果参数未指定，会使用默认值，其中的一个例外是`ADDRESS`属性，如果未指定，会使用`SERVER`和`PORT`属性代替：
 
 |属性关键字|描述|默认值|
@@ -224,7 +224,7 @@ Ignite的ODBC驱动可以使用一些连接串/DSN参数，所有的参数都是
 |`SSL_CERT_FILE`|指定包含SSL服务器证书的文件名。||
 |`SSL_CA_FILE`|指定包含SSL服务器证书颁发机构（CA）的文件名。||
 
-### 5.2.3.连接串示例
+### 2.3.连接串示例
 下面的串，可以用于`SQLDriverConnect`ODBC调用，来建立与Ignite节点的连接。
 
 **认证**
@@ -255,7 +255,7 @@ DSN=MyIgniteDSN
 ```
 DRIVER={Apache Ignite};ADDRESS=example.com:12901;CACHE=MyCache;PAGE_SIZE=4096
 ```
-### 5.2.4.配置DSN
+### 2.4.配置DSN
 如果要使用[DSN](https://en.wikipedia.org/wiki/Data_source_name)(数据源名)来进行连接，可以使用同样的参数。
 
 要在Windows上配置DSN，需要使用一个叫做`odbcad32`的系统工具，这是一个ODBC数据源管理器，要启动这个工具，打开`Control panel`->`Administrative Tools`->`数据源（ODBC）`，当ODBC数据源管理器启动后，选择`Add...`->`Apache Ignite`，然后以正确的方式配置DSN。
@@ -274,9 +274,9 @@ description=<Insert your description here>
 driver=Apache Ignite
 <Other arguments here...>
 ```
-## 5.3.查询和修改数据
+## 3.查询和修改数据
 像数据库一样访问Ignite。
-### 5.3.1.概述
+### 3.1.概述
 本章会详细描述如何接入Ignite集群，如何使用ODBC驱动执行各种SQL查询。
 
 在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](/doc/sql/JavaDeveloperGuide.md#_2-模式和索引)的字段。
@@ -287,7 +287,7 @@ driver=Apache Ignite
 这里是完整的[ODBC示例](https://github.com/apache/ignite/tree/master/modules/platforms/cpp/examples/odbc-example)。
 :::
 
-### 5.3.2.配置Ignite集群
+### 3.2.配置Ignite集群
 第一步，需要对集群节点进行配置，这个配置需要包含缓存的配置以及定义了`QueryEntities`的属性。如果应用（当前场景是ODBC驱动）要通过SQL语句进行数据的查询和修改，`QueryEntities`是必须的，或者，也可以使用DDL创建表。
 
 **DDL**：
@@ -423,7 +423,7 @@ SQLExecDirect(stmt, query3, SQL_NTS);
 确保在配置中显式地配置了`OdbcConfiguration`。
 :::
 
-### 5.3.3.接入集群
+### 3.3.接入集群
 配置好然后启动集群，就可以从ODBC驱动端接入了。如何做呢？准备一个有效的连接串然后连接时将其作为一个参数传递给ODBC驱动就可以了。
 
 另外，也可以像下面这样使用一个预定义的DSN来接入。
@@ -470,7 +470,7 @@ if (!SQL_SUCCEEDED(ret))
   return;
 }
 ```
-### 5.3.4.查询数据
+### 3.4.查询数据
 都准备好后，就可以使用ODBC API执行SQL查询了。
 ```cpp
 SQLHSTMT stmt;
@@ -542,7 +542,7 @@ SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 在上例中，所有的列都绑定到`SQL_C_CHAR`，这意味着获取时所有的值都会被转换成字符串，这样做是为了简化，获取时进行值转换是非常慢的，因此默认的做法应该是与存储采用同样的方式进行获取。
 :::
 
-### 5.3.5.插入数据
+### 3.5.插入数据
 要将新的数据插入集群，ODBC端可以使用`INSERT`语句。
 ```cpp
 SQLHSTMT stmt;
@@ -628,7 +628,7 @@ SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 ::: warning 错误检查
 为了简化，上面的代码没有进行错误检查，但是在生产环境中不要这样做。
 :::
-### 5.3.6.更新数据
+### 3.6.更新数据
 下面使用`UPDATE`语句更新存储在集群中的部分人员的工资信息：
 ```cpp
 void AdjustSalary(SQLHDBC dbc, int64_t key, double salary)
@@ -656,7 +656,7 @@ void AdjustSalary(SQLHDBC dbc, int64_t key, double salary)
 AdjustSalary(dbc, 3, 1200.0);
 AdjustSalary(dbc, 1, 2500.0);
 ```
-### 5.3.7.删除数据
+### 3.7.删除数据
 最后，使用`DELETE`语句删除部分记录：
 ```cpp
 void DeletePerson(SQLHDBC dbc, int64_t key)
@@ -681,7 +681,7 @@ void DeletePerson(SQLHDBC dbc, int64_t key)
 DeletePerson(dbc, 1);
 DeletePerson(dbc, 4);
 ```
-### 5.3.8.通过参数数组进行批处理
+### 3.8.通过参数数组进行批处理
 Ignite的ODBC驱动支持在DML语句中通过[参数数组](https://docs.microsoft.com/en-us/sql/odbc/reference/develop-app/using-arrays-of-parameters)进行批处理。
 
 还是使用上述插入数据的示例，但是只调用一次`SQLExecute`:
@@ -751,16 +751,16 @@ SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 ::: tip 注意
 注意这种类型的批处理目前只支持INSERT、UPDATE、 DELETE、和MERGE语句，还不支持SELECT，data-at-execution功能也不支持通过参数数组进行批处理。
 :::
-### 5.3.9.流处理
+### 3.9.流处理
 Ignite的ODBC驱动可以通过`SET STREAMING`命令对流化数据进行批量处理，具体可以看[SET STREAMING](/doc/sql/SQLReference.md#_4-2-set-streaming)的相关内容。
 ::: tip 注意
 流处理模式中，参数数组和data-at-execution参数是不支持的。
 :::
 
-## 5.4.规范
-### 5.4.1.概述
+## 4.规范
+### 4.1.概述
 ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接口一致性级别，在本章中可以知道Ignite的ODBC驱动支持了哪些特性。
-### 5.4.2.核心接口一致性
+### 4.2.核心接口一致性
 
 |特性|支持程度|备注|
 |---|---|---|
@@ -785,7 +785,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |调用`SQLCancel`取消数据执行对话框，以及多线程环境中，在另一个线程中取消ODBC函数的执行，核心级别的接口一致性不需要支持函数的异步执行，也不需要使用`SQLCancel`取消一个ODBC函数的异步执行。平台和ODBC驱动都不需要多线程地同时自主活动，不过在多线程环境中，ODBC驱动必须是线程安全的，从应用来的请求的序列化是实现这个规范的一致的方式，即使它导致了一系列的性能问题。|否|当前的ODBC驱动实现不支持异步执行|
 |通过调用`SQLSpecialColumns`获得表的行标识符`SQL_BEST_ROWID`。|部分|当前的实现总是返回空|
 
-### 5.4.3.Level1接口一致性
+### 4.3.Level1接口一致性
 
 |特性|支持程度|备注|
 |---|---|---|
@@ -799,7 +799,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |通过调用`SQLMoreResults`，访问由批处理和存储过程生成的多结果集的内容。|是||
 |划定跨越多个ODBC函数的事务边界，获得真正的原子性以及在`SQLEndTran`中指定`SQL_ROLLBACK`的能力。|否|Ignite SQL不支持事务|
 
-### 5.4.4.Level2接口一致性
+### 4.4.Level2接口一致性
 
 |特性|支持程度|备注|
 |---|---|---|
@@ -815,7 +815,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |登录请求以及SQL查询的超时功能(`SQL_ATTR_LOGIN_TIMEOUT`和`SQL_ATTR_QUERY_TIMEOUT`)。|部分|`SQL_ATTR_QUERY_TIMEOUT`支持已实现，`SQL_ATTR_LOGIN_TIMEOUT`还未实现。|
 |修改默认隔离级别的功能，在隔离级别为`序列化`时支持事务的功能。|否|Ignite SQL不支持事务。|
 
-### 5.4.5.函数支持
+### 4.5.函数支持
 
 |函数名|支持程度|一致性级别|
 |---|---|---|
@@ -880,7 +880,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |SQLTablePrivileges|否|Level2|
 |SQLTables|是|Core|
 
-### 5.4.6.环境属性一致性
+### 4.6.环境属性一致性
 
 |特性|支持程度|一致性级别|
 |---|---|---|
@@ -889,7 +889,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_ATTR_ODBC_VER`|是|Core|
 |`SQL_ATTR_OUTPUT_NTS`|是|可选|
 
-### 5.4.7.连接属性一致性
+### 4.7.连接属性一致性
 
 |特性|支持程度|一致性级别|
 |---|---|---|
@@ -910,7 +910,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_ATTR_TRANSLATE_OPTION`|否|Core|
 |`SQL_ATTR_TXN_ISOLATION`|否|Level1/Level2|
 
-### 5.4.8.语句属性一致性
+### 4.8.语句属性一致性
 
 |特性|支持程度|一致性级别|
 |---|---|---|
@@ -948,7 +948,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_ATTR_SIMULATE_CURSOR`|否|Level2|
 |`SQL_ATTR_USE_BOOKMARKS`|否|Level2|
 
-### 5.4.9.描述符头字段一致性
+### 4.9.描述符头字段一致性
 
 |特性|支持程度|一致性级别|
 |---|---|---|
@@ -960,7 +960,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_DESC_COUNT`|否|Core|
 |`SQL_DESC_ROWS_PROCESSED_PTR`|否|Core|
 
-### 5.4.10.描述符记录字段一致性
+### 4.10.描述符记录字段一致性
 
 |特性|支持程度|一致性级别|
 |---|---|---|
@@ -998,7 +998,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_DESC_UNSIGNED`|否|Core|
 |`SQL_DESC_UPDATABLE`|否|Core|
 
-### 5.4.11.SQL数据类型
+### 4.11.SQL数据类型
 下面是支持的SQL数据类型：
 
 |数据类型|是否支持|
@@ -1042,7 +1042,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_INTERVAL_MINUTE_TO_SECOND`|否|
 |`SQL_GUID`|是|
 
-### 5.4.12.C数据类型
+### 4.12.C数据类型
 下面是支持的C数据类型：
 
 |数据类型|是否支持|
@@ -1074,7 +1074,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_C_NUMERIC`|是|
 |`SQL_C_GUID`|是|
 
-## 5.5.数据类型
+## 5.数据类型
 下面列出了在规范中受支持的 - `SQL数据类型：
 
  - `SQL_CHAR`
@@ -1096,7 +1096,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
  - `SQL_TYPE_TIMESTAMP`
  - `SQL_TYPE_TIME`
 
-## 5.6.错误码
+## 6.错误码
 要获取错误码， 可以使用`SQLGetDiagRec()`函数，它会返回一个ANSI SQL标准定义的错误码字符串，比如：
 ```cpp
 SQLHENV env;

@@ -1,5 +1,5 @@
-# 1.Ignite Web控制台
-## 1.1.Ignite Web控制台
+# Ignite Web控制台
+## 1.Ignite Web控制台
 `Ignite Web控制台`是一个交互式的配置向导、管理和监控工具。它可以：
 
  - 创建和下载Ignite集群使用的各种配置：
@@ -10,8 +10,8 @@
 ![](https://files.readme.io/0383009-Screen_Shot_2017-02-02_at_12.47.09_PM.png)
 
 Ignite的**Web控制台**，是一个可以部署在系统环境中的Web应用。它可以配置所有的集群属性，从数据库中导入模式用于与持久化存储集成。它可以接入特定的数据库然后生成所有必要的OR映射配置（XML以及纯Java）以及Java领域模型POJOs。Web控制台还有集群监控的功能（使用GridGain单独的插件实现），它会显示各种缓存以及节点的指标数据，比如CPU和堆的使用情况等。
-## 1.2.入门
-### 1.2.1.安装
+## 2.入门
+### 2.1.安装
 Ignite的Web控制台是一个WEB应用，需要构建、打包然后部署在自己的环境上。另外，它需要安装NodeJS，MongoDB以及Ignite的Web代理。
 
 参照`构建和部署`章节的文档，然后按照步骤操作即可。
@@ -20,7 +20,7 @@ Ignite的Web控制台是一个WEB应用，需要构建、打包然后部署在�
 :::
 
 Ignite的Web控制台启动运行之后，需要按照下面章节的步骤配置并且启动Web代理，代理是Ignite的Web控制台和Ignite集群之间的媒介。
-### 1.2.2.Ignite Web代理
+### 2.2.Ignite Web代理
 Ignite的Web代理是一个独立的Java应用，它可以建立Ignite集群与Web控制台之间的连接。Web Agent与集群节点间采用REST接口进行通信，而与Web控制台之间采用WebSocket进行通信。
 
 ![](https://files.readme.io/924bc44-Apache-Ignite-Cluster.png)
@@ -140,8 +140,8 @@ CMD:
 set JVM_OPTS= -DsocksProxyHost=<proxy-hostname> -DsocksProxyPort=<proxy-port> -Djava.net.socks.username=<proxy-username> -Djava.net.socks.password=<proxy-password>
 ./ignite-web-agent.bat
 ```
-## 1.3.构建和部署
-### 1.3.1.要求
+## 3.构建和部署
+### 3.1.要求
 为了在本地部署Ignite的Web控制台，需要先安装：
 
  - MongoDB（3.2.0以上版本），具体可以参照[文档](http://docs.mongodb.org/manual/installation)；
@@ -159,13 +159,13 @@ npm install --no-optional
 cd $IGNITE_HOME/modules/web-console/frontend
 npm install --no-optional
 ```
-### 1.3.2.构建Ignite Web代理
+### 3.2.构建Ignite Web代理
 要从源代码构建Ignite的Web代理，需要在`$IGNITE_HOME`文件夹中执行如下的命令：
 ```bash
 mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests=true
 ```
 构建过程完成后，会在`$IGNITE_HOME/modules/web-console/web-agent/taget`中找到`ignite-web-agent-x.x.x.zip`。
-### 1.3.3.在开发模式中运行Ignite的Web控制台
+### 3.3.在开发模式中运行Ignite的Web控制台
 要在开发模式中运行Ignite的Web控制台，可以按照如下步骤操作：
 
  - 配置MongoDB以服务的模式运行，或者在终端中执行`mongod`命令来启动MongoDB；
@@ -175,7 +175,7 @@ mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests=true
  - 在浏览器中打开：`http://localhost:9000`；
  - 在`2.2.入门`章节中可以看到如何将部署的控制台接入一个远程集群，或者如何在远程主机上访问控制台。
 
-### 1.3.4.在生产模式中运行Ignite的Web控制台
+### 3.4.在生产模式中运行Ignite的Web控制台
 **前提条件**
 
  - 安装了Apache HTTP Server的2.2及更新的版本或者nginx；
@@ -353,10 +353,10 @@ server {
 **问题解决**
 
 如果在浏览器中出现了`Forbidden`这样的错误，那么需要检查操作系统中所有的安全策略都配置正确了。
-## 1.4.演示模式
-### 1.4.1.概述
+## 4.演示模式
+### 4.1.概述
 可以使用Web控制台的演示模式来研究和评估它有关配置和管理集群的各种功能，这个模式中，可以检查预定义的集群、缓存以及领域模型，它还启动了一个内置的H2数据库实例，可以执行各种SQL查询以及查看数据报表，还可以监控各种缓存和节点的指标，比如集群的CPU和堆使用量等。
-### 1.4.2.启动演示模式
+### 4.2.启动演示模式
 要开启演示模式，需要点击控制台顶部菜单的`Start demo`按钮。
 
  - 下载然后解压Ignite的Web代理；
@@ -406,9 +406,9 @@ SELECT p.name, count(*) AS cnt FROM "ParkingCache".Parking p`
 
 ![](https://files.readme.io/5b5cdc8-sql-queries.png)
 
-## 1.5.Docker部署
+## 5.Docker部署
 在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker镜像，如果基于Docker的方式不可行，那么可以参照`2.3.构建和部署`章节的内容。
-### 1.5.1.启动Web代理
+### 5.1.启动Web代理
 如`2.2.入门`章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的Web代理，下面是步骤：
 
  - 启动开启REST服务的Ignite节点，将`ignite-rest-http`目录从`IGNITE_HOME/libs/optional/`移动到`IGNITE_HOME/lib/`，或者如果从IDE启动节点，则需要将下面的依赖加入pom.xml文件：
@@ -433,7 +433,7 @@ serverURI=https://console.example.com:3001
 ```bash
 $ ./ignite-web-agent.sh
 ```
-### 1.5.2.部署Web控制台
+### 5.2.部署Web控制台
 下面是部署的完整步骤：
 
  - 拉取Ignite Web控制台的Docker镜像:`docker pull apacheignite/web-console-standalone`;
@@ -446,7 +446,7 @@ $ ./ignite-web-agent.sh
 
  - 在浏览器中打开Web控制台：`http://localhost`或者`http://host-ip-of-computer-with-docker-image`，如果默认端口有变，那么地址为：`http://localhost:<host_port>`。
 
-### 1.5.3.更新到新版
+### 5.3.更新到新版
 Docker更新容器的方式如下：
 
 `docker pull apacheignite/web-console-standalone`
@@ -457,7 +457,7 @@ Docker更新容器的方式如下：
 
 `docker run -d -p 80:80 -v <host_absolute_path>:/var/lib/mongodb --name web-console-standalone apacheignite/web-console-standalone`
 
-### 1.5.4.为Web控制台添加HTTPS支持
+### 5.4.为Web控制台添加HTTPS支持
 
  - 创建`web-console.conf`文件，内容如下：
 

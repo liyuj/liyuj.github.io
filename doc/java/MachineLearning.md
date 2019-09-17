@@ -1,6 +1,6 @@
-# 15.机器学习网格
-## 15.1.机器学习网格
-### 15.1.1.概述
+# 机器学习网格
+## 1.机器学习网格
+### 1.1.概述
 Ignite的机器学习（ML）是一组简单的、可扩展以及高效的工具，在不需要成本高昂的数据转换的前提下，就可以构建可预测的机器学习模型。
 
 将机器和深度学习加入Ignite的原理是很简单的，当前，如果要想让机器学习成为主流，数据科学家要解决两个主要的问题：
@@ -16,7 +16,7 @@ Ignite的机器学习依赖于Ignite基于内存的存储，这给机器学习�
 **容错和持续学习**
 
 Ignite的机器学习能够对节点的故障容错。这意味着如果在学习期间节点出现故障，所有的恢复过程对用户是透明的，学习过程不会被中断，就像所有节点都正常那样获得结果。
-### 15.1.2.算法和适用领域
+### 1.2.算法和适用领域
 
 **分类**
 
@@ -50,7 +50,7 @@ Ignite的机器学习能够对节点的故障容错。这意味着如果在学�
 
 *算法*：Ignite的机器学习支持使用分区化的数据集自定义预处理，同时也有默认的预处理器。
 
-### 15.1.3.入门
+### 1.3.入门
 机器学习入门的最快方式是构建和运行示例代码，学习它的输出和代码，机器学习的的示例代码位于Ignite发行版的`examples`文件夹中。
 
 下面是相关的步骤：
@@ -90,8 +90,8 @@ cd examples
 mvn clean package -DskipTests
 ```
 如果必要，可以参考项目根目录的`DEVNOTES.txt`文件以及`ignite-ml`模块的`README`文件，以了解更多的信息。
-## 15.2.预处理
-### 15.2.1.概述
+## 2.预处理
+### 2.1.概述
 预处理是将存储于Ignite中的原始数据转换为特征向量，以便于机器学习流水线的进一步使用。
 
 本节介绍用于处理特征的算法，大致分为以下几组：
@@ -102,7 +102,7 @@ mvn clean package -DskipTests
  - 修改特性
 
 注意：通常它从标签和特征提取开始，并且可以与其它预处理阶段兼容。
-### 15.2.2.归一化预处理器
+### 2.2.归一化预处理器
 通常的流程是从Ignite数据中提取特征，转换特征，然后对其进行归一化。训练器API允许以以下方式组成转换器：
 ```java
 // Define feature extractor.
@@ -148,9 +148,9 @@ LinearRegressionModel mdl = trainer.fit(
 // Make a prediction.
 double prediction = mdl.apply(preprocessor.apply(coordinates));
 ```
-### 15.2.3.示例
+### 2.3.示例
 要了解归一化预处理器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/NormalizationExample.java)，该示例也会随着每个Ignite发行版进行发布。
-### 15.2.4.二值化预处理器
+### 2.4.二值化预处理器
 二值化是将数值特征阈值化为二元（0/1）特征的过程。大于阈值的特征值被二值化为1.0，等于或小于阈值的值被二值化为0.0。
 
 它只包含一个重要参数，即阈值。
@@ -168,7 +168,7 @@ IgniteBiFunction<Integer, double[], double[]> preprocessor =
     );
 ```
 要了解二值化预处理器在实践中如何使用，可以尝试这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/BinarizationExample.java)。
-### 15.2.5.填补预处理器
+### 2.5.填补预处理器
 填补预处理器是使用缺失值所在的列的平均值或其它统计信息来填补数据集中的缺失值。缺失的值应该表示为Double类型的NaN，输入数据集列应该是Double。目前，填补预处理器不支持分类特性，并且可能为包含分类特性的列创建不正确的值。
 
 在训练阶段，填补训练器收集关于预处理数据集的统计数据，在预处理阶段，它根据收集的统计数据修改数据。
@@ -192,7 +192,7 @@ IgniteBiFunction<Integer, double[], double[]> preprocessor =
     );
 ```
 如果要了解填补预处理器在实践中是如何使用的，可以尝试这两个示例：[示例1](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/ImputingExample.java)和[示例2](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/ImputingWithMostFrequentValuesExample.java)。
-### 15.2.6.独热编码器预处理器
+### 2.6.独热编码器预处理器
 独热编码将分类特征，表示为标签索引（双精度值或字符串值）映射到二元向量，该二元向量最多只有一个值，该值表示来自所有特征值集合中的特定特征值的抽象。
 
 该预处理器可以转换多个列，其中在训练过程中处理索引。可以通过`.withEncodedFeature(featureIndex)`调用定义这些索引。
@@ -215,7 +215,7 @@ IgniteBiFunction<Integer, Object[], Vector> oneHotEncoderPreprocessor = new Enco
        featureExtractor
 );
 ```
-### 15.2.7.字符串编码器预处理器
+### 2.7.字符串编码器预处理器
 字符串编码器将字符串值（分类）编码为范围[0.0，amountOfCategories]中的Double类型值，其中最流行的值将显示为0.0，最不流行的值将显示为amountOfCategories-1值。
 
 该预处理器可以转换多个列，其中在训练过程中处理索引。可以通过`.withEncodedFeature(featureIndex)`调用定义这些索引。
@@ -260,7 +260,7 @@ IgniteBiFunction<Integer, Object[], Vector> strEncoderPreprocessor = new Encoder
 );
 ```
 如果要了解字符串编码预处理器在实践中如何使用，可以尝试这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tutorial/Step_3_Categorial.java)。
-### 15.2.8.最小最大值缩放预处理器
+### 2.8.最小最大值缩放预处理器
 最小最大值缩放转换给定的数据集，将每个特性重新缩放到特定的范围。
 
 从数学的角度来看，它是将如下函数应用于数据集中的每个元素：
@@ -272,7 +272,7 @@ IgniteBiFunction<Integer, Object[], Vector> strEncoderPreprocessor = new Encoder
 `MinMaxScalerTrainer`计算数据集上的汇总统计数据，并生成`MinMaxScalerPreprocessor`，然后该预处理器可以单独地转换每个特征，使得其在给定范围内。
 
 要了解这个预处理器在实践中是如何使用的，可以尝试这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/MinMaxScalerExample.java)。
-### 15.2.9.最大绝对值缩放预处理器
+### 2.9.最大绝对值缩放预处理器
 最大绝对值缩放预处理器转换给定的数据集，通过除以每个特征中的最大绝对值，将每个特征重新调整到范围[-1，1]。
 
 注意：它不会移动/居中数据，因此不会破坏任何稀疏性。
@@ -286,8 +286,8 @@ IgniteBiFunction<Integer, Object[], Vector> strEncoderPreprocessor = new Encoder
 `MaxAbsScalerTrainer`计算数据集上的汇总统计数据，并生成`MaxAbsScalerPreprocessor`。
 
 要了解这个预处理器在实践中是如何使用的，可以尝试这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/MaxAbsScalerExample.java)。
-## 15.3.分区化的数据集
-### 15.3.1.概述
+## 3.分区化的数据集
+### 3.1.概述
 分区化的数据集是在Ignite的计算和存储能力之上构建的抽象层，可以在遵循无ETL和容错的原则下，进行算法运算。
 
 分区化的数据集的主要原理是Ignite的[计算网格](/doc/java/ComputeGrid.md#_1-计算网格)实现的经典[MapReduce](https://en.wikipedia.org/wiki/MapReduce)范式。
@@ -307,7 +307,7 @@ MapReduce的主要优势在于，可以在分布于整个集群的数据上进�
 Ignite中的一个基本思想是，分区是原子化的，这意味着分区无法在多个节点上进行拆分（具体可以看`分区和复制`相关的章节）。在再平衡或者节点故障的情况下，分区在其它节点恢复时，数据和它在原来节点时保持一致。
 
 而在机器学习算法中，这很重要，因为大多数机器学习算法是迭代的，并且需要在迭代之间保持一定的上下文，该上下文无法被拆分或者合并，并且应该在整个学习期间保持一致的状态。
-### 15.3.2.使用
+### 3.2.使用
 要构造一个分区化的数据集，可以这么做：
 
  - 有一个上游的数据源，可以是Ignite的缓存或者仅仅是一个数据的Map；
@@ -347,10 +347,10 @@ int numerOfRows = dataset.compute(
 ```java
 dataset.close();
 ```
-### 15.3.3.示例
+### 3.3.示例
 要了解分区化的数据集在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/dataset/AlgorithmSpecificDatasetExample.java)，该实例也会随着每个Ignite发行版进行发布。
-## 15.4.线性回归
-### 15.4.1.概述
+## 4.线性回归
+### 4.1.概述
 Ignite支持普通最小二乘线性回归算法，这是最基本也是最强大的机器学习算法之一，本文会说明该算法的工作方式以及Ignite是如何实现的。
 
 线性回归算法的基本原理是，假定因变量y和自变量x有如下的关系：
@@ -358,14 +358,14 @@ Ignite支持普通最小二乘线性回归算法，这是最基本也是最强�
 注意，后续的文档中会使用向量x和b的点积，并且明确地避免使用常数项，当向量x由一个等于1的值补充时，在数学上是正确的。
 
 如果向量b已知，上面的假设可以基于特征向量x进行预测，它反映在Ignite中负责预测的`LinearRegressionModel`类中。
-### 15.4.2.模型
+### 4.2.模型
 线性回归的模型表示为`LinearRegressionModel`类，它能够对给定的特征向量进行预测，如下：
 ```java
 LinearRegressionModel model = ...;
 double prediction = model.predict(observation);
 ```
 模型是完全独立的对象，训练之后可以被保存、序列化以及恢复。
-### 15.4.3.训练器
+### 4.3.训练器
 线性回归是一种监督学习算法，这意味着为了找到参数（向量b），需要在训练数据集上进行训练，并且使损失函数最小化。
 
 ![](https://files.readme.io/b20f1ce-222.gif)
@@ -465,11 +465,11 @@ LinearRegressionModel mdl = trainer.fit(
 // Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
-### 15.4.4.示例
+### 4.4.示例
 要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/regression/linear)，该实例也会随着每个Ignite发行版进行发布。
-## 15.5.K-均值聚类
+## 5.K-均值聚类
 在Ignite的机器学习组件中，提供了一个K-均值聚类算法的实现。
-### 15.5.1.模型
+### 5.1.模型
 K-均值聚类的目标是，将n个待观测值分为k个簇，这里每个观测值和所属的簇都有最近的均值，这被称为簇的原型。
 
 该模型持有一个k中心向量以及距离指标，这些由比如欧几里得、海明或曼哈顿这样的机器学习框架提供。
@@ -480,7 +480,7 @@ MeansModel mdl = ...;
 
 double prediction = model.predict(observation);
 ```
-### 15.5.2.训练器
+### 5.2.训练器
 K均值是一种无监督学习算法，它解决了将对象分组的聚类问题，即在同一个组（叫做簇）中的对象（某种意义上）比其它簇中的对象更相似。
 
 K均值是一种参数化的迭代算法，在每个迭代中，计算每个簇中的新的均值，作为观测值的质心。
@@ -508,12 +508,12 @@ KMeansModel knnMdl = trainer.fit(
   labelExtractor
 );
 ```
-### 15.5.3.示例
+### 5.3.示例
 要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/clustering)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集是鸢尾花数据集的一个子集（具有标签1和标签2，它们是线性可分离的两类数据集），可以从[UCL机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
-## 15.6.遗传算法
-### 15.6.1.概述
+## 6.遗传算法
+### 6.1.概述
 Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过模拟生物进化过程来解决优化问题的一种方法。 遗传算法非常适合于以最优的方式检索大量复杂的数据集，在现实世界中，遗传算法的应用包括：汽车设计、计算机游戏、机器人、投资、交通和运输等等。
 
 所有的遗传操作，比如适应度计算、交叉和变异，都会被建模为分布式的ComputeTask。此外，这些ComputeTask会通过Ignite的关联并置，将ComputeJob分发到染色体实际存储的节点。
@@ -522,7 +522,7 @@ Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过
 ![](https://files.readme.io/07790ee-GAGrid_Overview.png)
 下图是遗传算法的执行步骤：
 ![](https://files.readme.io/352730c-GAProcessDiagram2.png)
-### 15.6.2.使用
+### 6.2.使用
 下面会使用`HelloWorldGAExample`进行演示，一步步讲解遗传算法如何使用，目标是得到“HELLO WORLD”这个短语。
 
 **创建一个GAConfiguration**
@@ -658,7 +658,7 @@ gaGrid = new GAGrid(gaConfig, ignite);
 // Evolve the population
 Chromosome fittestChromosome = gaGrid.evolve();
 ```
-### 15.6.3.启动
+### 6.3.启动
 如果要使用遗传算法，打开命令终端，转到`IGNITE_HOME`目录，然后执行下面的脚本：
 ```bash
 $ bin/ignite.sh examples/config/example-ignite.xml
@@ -684,7 +684,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 [19:04:17,311][INFO][main][]
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 53.883 sec
 ```
-### 15.6.4.Apache Zeppelin集成
+### 6.4.Apache Zeppelin集成
 Apache Zeppelin是一个基于Web的笔记本，可以进行交互式的数据分析。下面会介绍如何利用Zeppelin的可视化特性来显示由遗传算法生成的优化解。
 
 ::: tip 注意
@@ -769,7 +769,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 ```
 若干代之后，会发现解已经演变到最后的短语"HELLO WORLD"，对于HellowWorldGAExample这个示例，遗传算法会为每一代维护一个500个解的种群，另外，本示例的解会包含总共11个基因，适应度得分最高的，会被认为是“最适合”。
 ![](https://files.readme.io/52055cb-Zeppelin_HelloWorldGATest.png)
-### 15.6.5.词汇表
+### 6.5.词汇表
 **染色体**：是一系列基因，一个染色体代表一个潜在的解；
 
 **交叉**：是染色体内的基因结合以获得新染色体的过程；
@@ -786,19 +786,19 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 
 **选择**：是为下一代选择候选解（染色体）的过程。
 
-## 15.7.多层感知
-### 15.7.1.概述
+## 7.多层感知
+### 7.1.概述
 多层感知（MLP）是神经网络的基本形式，它由一个输入层和0或多个转换层组成，每个转换层都通过如下的方程依赖于前一个转换层：
 ![](https://files.readme.io/60458a8-333.gif)
 在上面的方程中，点运算符是两个向量的点积，由σ表示的函数称为激活函数，`w`表示的向量称为权重，`b`表示的向量成为偏差。每个转换层都和权重、激活以及可选的偏差有关，MLP中中所有权重和偏差的集合，就被称为MLP的参数集。
-### 15.7.2.模型
+### 7.2.模型
 神经网络的模型由`MultilayerPerceptron`类表示，它可以对给定的特征向量通过如下方式进行预测：
 ```java
 MultilayerPerceptron mlp = ...
 Matrix prediction = mlp.apply(coordinates);
 ```
 模型是完全独立的对象，	训练后可以保存、序列化和恢复。
-### 15.7.3.训练器
+### 7.3.训练器
 批量训练是监督模型训练的常用方法之一。在这种方法中，训练是迭代进行的，在每次迭代中，提取标记数据的`subpart(batch)`（由近似函数的输入和该函数的相应值组成的数据，通常称为“地面实况”），在这里使用这个子部分训练和更新模型参数，进行更新以使批处理中的损失函数最小化。
 
 Ignite的`MLPTrainer`就是用于分布式批量训练的，它运行于MapReduce模式，每个迭代（称为全局迭代）由若干个并行迭代组成，这些迭代又相应地由若干局部步骤组成，每个局部迭代由它自己的工作进程来执行，并执行指定数量的本地步骤（成为同步周期）来计算模型参数的更新，然后会在发起训练的节点上累计所有的更新，并将其转换为全局更新，全局更新会被反馈给所有的工作进程，在达到标准之前，这个过程会一直持续。
@@ -871,10 +871,10 @@ MultilayerPerceptron mlp = trainer.fit(
 // Make a prediction.
 Matrix prediction = mlp.apply(coordinates);
 ```
-### 15.7.4.示例
+### 7.4.示例
 要了解多层感知在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/nn/MLPTrainerExample.java)，该实例也会随着每个Ignite发行版进行发布。
-## 15.8.决策树
-### 15.8.1.概述
+## 8.决策树
+### 8.1.概述
 决策树是监督学习中一个简单而强大的模型。其主要思想是将特征空间分割成区域，每个区域中的值变化不大。一个区域中的值变化的度量被称为区域的纯度。
 
 Ignite对于行数据存储，提供了一种优化算法，具体可以看[15.3.分区化的数据集](#_15-3-分区化的数据集)。
@@ -888,14 +888,14 @@ Ignite对于行数据存储，提供了一种优化算法，具体可以看[15.3
 这里`X_0`是`x`的一个子集。
 
 该模型的工作方式为，当算法达到配置的最大深度时，拆分过程停止，或者任何区域的拆分没有导致明显的纯度损失。从`S`预测点`s`的值是将树向下遍历，直到节点对应的区域包含`s`，并返回与该叶子相关联的值。
-### 15.8.2.模型
+### 8.2.模型
 决策树分类的模型由`DecisionTreeNode`表示，对于给定的特征向量进行预测，如下所示：
 ```java
 DecisionTreeNode mdl = ...
 double prediction = mdl.apply(observation);
 ```
 模型是完全独立的对象，训练之后可以保存、序列化以及恢复。
-### 15.8.3.训练器
+### 8.3.训练器
 决策树算法可用于基于纯度度量和节点实例化方法的分类和回归。
 
 **分类**
@@ -982,13 +982,13 @@ DecisionTreeNode mdl = trainer.fit(
 // Make a prediction.
 double prediction = mdl.apply(x);
 ```
-### 15.8.4.示例
+### 8.4.示例
 要了解决策树在实践中是如何使用的，可以看这个[分类示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeClassificationTrainerExample.java)和[回归示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeRegressionTrainerExample.java)，这些实例也会随着每个Ignite发行版进行发布。
-## 15.9.k-NN分类
+## 9.k-NN分类
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
 本文会描述k-NN作为分类任务的解决方案。
-### 15.9.1.模型
+### 9.1.模型
 K-NN算法是一种非参数方法，其输入由特征空间中的K-最近训练样本组成。
 
 另外，k-NN分类的输出表示为类的成员。一个对象按其邻居的多数票进行分类。该对象会被分配为K近邻中最常见的一个特定类。`k`是正整数，通常很小，当`k`为1时是一个特殊的情况，该对象会简单地分配给该单近邻的类。
@@ -1018,15 +1018,15 @@ KNNClassificationModel knnMdl = trainer.fit(
 // Make a prediction.
 double prediction = knnMdl.apply(vectorizedData);
 ```
-### 15.9.2.示例
+### 9.2.示例
 要了解k-NN分类在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/classification)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
-## 15.10.k-NN回归
+## 10.k-NN回归
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
 本文会描述k-NN作为回归任务的解决方案。
-### 15.10.1.模型
+### 10.1.模型
 K-NN算法是一种非参数方法，其输入由特征空间中的K-最近训练样本组成。每个训练样本具有与给定的训练样本相关联的数值形式的属性值。
 
 K-NN算法使用所有训练集来预测给定测试样本的属性值，这个预测的属性值是其k近邻值的平均值。如果`k`是1，那么测试样本会被简单地分配给单个最近邻的属性值。
@@ -1054,17 +1054,17 @@ KNNRegressionModel knnMdl = (KNNRegressionModel) trainer.fit(
 // Make a prediction.
 double prediction = knnMdl.apply(vectorizedData);
 ```
-### 15.10.2.示例
+### 10.2.示例
 要了解k-NN回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/regression)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
-## 15.11.SVM二元分类
+## 11.SVM二元分类
 支持向量机（SVM）是相关数据分析学习算法中的监督学习模型，用于分类和回归分析。
 
 给定一组训练样本，每一个被标记为属于两个类别中的一个，SVM训练算法会建立一个模型，该模型将新的样本分配给其中一个类别，使其成为非概率二元线性分类器。
 
 Ignite机器学习模块只支持线性支持向量机。更多信息请参见维基百科中的[支持向量机](https://en.wikipedia.org/wiki/Support_vector_machine)。
-### 15.11.1.模型
+### 11.1.模型
 SVM的模型表示为`SVMLinearBinaryClassificationModel`，它通过如下的方式对给定的特征向量进行预测：
 ```java
 SVMLinearBinaryClassificationModel model = ...;
@@ -1084,7 +1084,7 @@ double prediction = model
   .withThreshold(5)
   .predict(observation);
 ```
-### 15.11.2.训练器
+### 11.2.训练器
 基于具有铰链损失函数的高效通信分布式双坐标上升算法（COCOA），提供软余量SVM线性分类训练器的基类。该训练器将输入作为具有-1和+1两个分类的标签化数据集，并进行二元分类。
 
 关于这个算法的论文可以在[这里](https://arxiv.org/abs/1409.1458)找到。
@@ -1109,24 +1109,24 @@ SVMLinearBinaryClassificationModel mdl = trainer.fit(
   labelExtractor
 );
 ```
-### 15.11.3.示例
+### 11.3.示例
 要了解SVM线性分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/binary/SVMBinaryClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载，其是鸢尾花数据集的子集（具有标签1和标签2的分类，它们是线性可分离的两类数据集）。
-## 15.12.SVM多类分类
+## 12.SVM多类分类
 多类SVM的目的是通过使用支持向量机将标签分配给样本，其中标签是从多个元素的有限集合中提取的。
 
 这个实现方法是通过一对所有的方法将单个多类问题总结成多个二元分类问题。
 
 一对所有的方法是建立二元分类器的过程，它将一个标签和其余的区分开。
-### 15.12.1.模型
+### 12.1.模型
 该模型持有`<ClassLabel, SVMLinearBinaryClassificationModel>`对，它通过如下的方式对给定的特征向量进行预测：
 ```java
 SVMLinearMultiClassClassificationModel model = ...;
 
 double prediction = model.predict(observation);
 ```
-### 15.12.2.训练器
+### 12.2.训练器
 目前，Ignite为`SVMLinearMultiClassClassificationTrainer`支持如下的参数：
 
  - `amountOfIterations`：外部SDCA算法的迭代量。（默认值：200）；
@@ -1148,20 +1148,20 @@ SVMLinearMultiClassClassificationModel mdl = trainer.fit(
   labelExtractor
 );
 ```
-### 15.12.3.示例
+### 12.3.示例
 要了解SVM线性多类分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/multiclass/SVMMultiClassClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
 
 预处理的分类数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
 
 共有三个带标签的分类：1 (building_windows_float_processed)，3 (vehicle_windows_float_processed)，7 (headlamps) 以及特征名：'Na-Sodium'，'Mg-Magnesium'，'Al-Aluminum'，'Ba-Barium'，'Fe-Iron'。
-## 15.13.模型交叉验证
-### 15.13.1.概述
+## 13.模型交叉验证
+### 13.1.概述
 学习预测函数的参数并在同一数据上进行验证不是一个好的做法，这导致过盈。为了避免这个问题，最有效的解决方案之一是将部分训练数据保存为验证集。通过对可用数据进行拆分并从训练集中排除一个或多个部分，可以显著减少可用于模型学习的样本数量，并且结果取决于对(训练、验证)集合的特定随机选择。
 
 解决这个问题的方法是一个称为交叉验证的过程。基本方法称为`k-fold CV`，训练集被分成k个较小的集合，然后执行以下过程：使用k-1个折叠（部分）作为训练数据来训练模型，所得模型在剩余的数据（用作测试集来计算指标，例如精度）上验证。
 
 Ignite提供了交叉验证的功能，可以参数化要验证的训练器，为每个步骤上训练的模型计算指标，以及应该拆分折叠训练数据的数量。
-### 15.13.2.使用
+### 13.2.使用
 Ignite中的交叉验证功能由`CrossValidation`类体现。这是一个由模型类型、标签类型和数据键值类型参数化的计算器。在实例化（构造函数不接受任何附加参数）之后，可以使用`score`方法执行交叉验证。
 
 假设有一个训练器和一个训练集，想用精度作为指标，使用4个折叠进行交叉验证，Ignite可以按照如下示例进行操作：
@@ -1179,11 +1179,11 @@ double[] scores = scoreCalculator.score(
 );
 ```
 在本例中，指定了训练器和指标作为参数，之后传递了常规的训练参数，比如Ignite实例的引用、缓存、特征和标签的提取器，最后指定了折叠的数量。此方法返回一个数组，该数组包含训练集的所有可能拆分的指标。
-### 15.13.3.示例
+### 13.3.示例
 如果要了解交叉验证在实践中如何使用，可以尝试每个Ignite发布版以及GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/selection/cv/CrossValidationExample.java)程序，以及机器学习教程的[第8个步骤](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/tutorial)。
 
-## 15.14.逻辑回归
-### 15.14.1.二元分类
+## 14.逻辑回归
+### 14.1.二元分类
 二元逻辑回归是一种特殊类型的回归，其中二元响应变量与一组解释变量相关，这些解释变量可以是离散的和/或连续的。这里要注意的重要一点是，在线性回归中，响应变量的预期值是基于预测器所取值的组合来建模的。在逻辑回归中，基于由预测器获得的值的组合，对采取特定值的响应的概率或几率进行建模。在Ignite的ML模块中，它通过`LogisticRegressionModel`实现，解决了二元分类问题。它是在由逻辑损失给出的公式中具有损失函数的线性方法：
 
 ![](https://files.readme.io/ec1d944-latex_7d503c8a18a240de7e8d66ba400e79c4.png)
@@ -1193,9 +1193,9 @@ double[] scores = scoreCalculator.score(
 ![](https://files.readme.io/d8b0f18-xD4sTj.png)
 
 默认情况下，如果`f(wTx)>0.5`或`mathrm{f}(wv^T x) > 0.5`(Tex公式)，则结果为正，否则为负。不过与线性SVM不同，逻辑回归模型`f(z)`的原始输出具有概率解释(即，其为正的概率)。
-### 15.14.2.多类别分类
+### 14.2.多类别分类
 多类别逻辑回归旨在使用二元逻辑回归将标签分配给实例，其中标签是从一组有限的几个元素中抽取的。实现方式是通过一对一的方式将单个多类问题减少为多个二元分类问题。一对一的方法是构建二元分类器的过程，该二元分类器会区分一个标签和其它标签。
-### 15.14.3.模型
+### 14.3.模型
 该模型持有`<ClassLabel, LogisticRegressionModel>`对，它能够按照以下方式对给定的特征向量进行预测：
 ```java
 LogRegressionMultiClassModel
@@ -1214,7 +1214,7 @@ mdl = …
 
 double prediction = mdl.withRawLabels(true).withThreshold(0.5).apply(observation)
 ```
-### 15.14.4.训练器
+### 14.4.训练器
 多类别逻辑回归模型的训练器在后台运行多个二元逻辑回归训练器。
 
 Ignite的`LogRegressionMultiClassTrainer`支持下面的参数：
@@ -1242,11 +1242,11 @@ LogisticRegressionModel mdl = trainer.fit(
 );
 ```
 所有属性将针对每对一对所有`LogRegressionMultiClassTrainer`进行传播。
-### 15.14.5.示例
+### 14.5.示例
 要了解`LogRegressionMultiClassModel`在实践中是如何使用的，请尝试这个GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/regression/logistic/multiclass/LogRegressionMultiClassClassificationExample.java)，它也会随着每个Ignite发行版一起发布。预处理的Glass数据集来自[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/Glass+Identification)。
 
-## 15.15.随机森林
-### 15.15.1.概述
+## 15.随机森林
+### 15.1.概述
 随机森林是解决任何分类和回归问题的集成学习方法。随机森林训练建立一种类型的模型组合（集成），并使用一些模型答案的聚合算法。每个模型在训练数据集的一部分上进行训练。该部分是根据装袋法和特征子空间法定义的。关于这些概念的更多信息可以在这里找到：[随机子空间法](https://en.wikipedia.org/wiki/Random_subspace_method)、[装袋法](https://en.wikipedia.org/wiki/Bootstrap_aggregating)和[随机森林](https://en.wikipedia.org/wiki/Random_forest)。
 
 在Ignite的机器学习中有几种聚合算法的实现：
@@ -1254,7 +1254,7 @@ LogisticRegressionModel mdl = trainer.fit(
  - `MeanValuePredictionsAggregator`：计算随机森林的回答作为给定组合中所有模型的预测的平均值。这通常用于回归任务；
  - `OnMajorityPredictionsAggegator`：从给定组合中的所有模型中获取预测模式。这对于分类任务很有用。注意：这个聚合器支持多分类任务。
 
-### 15.15.2.模型
+### 15.2.模型
 在Ignite的机器学习中，随机森林算法是作为具有针对不同问题的特定聚合器的模型组合的一个特例存在的（`MeanValuePredictionsAggregator`针对回归，`OnMajorityPredictionsAggegator`针对分类）。
 
 这里是模型使用的示例：
@@ -1262,7 +1262,7 @@ LogisticRegressionModel mdl = trainer.fit(
 ModelsComposition randomForest = ….
 double prediction = randomForest.apply(featuresVector);
 ```
-### 15.15.3.训练器
+### 15.3.训练器
 随机森林训练算法通过`RandomForestRegressionTrainer`和`RandomForestClassifierTrainer`实现，参数如下：
 
  - `meta`：特征元数据，特征类型列表，比如：
@@ -1294,14 +1294,14 @@ ModelsComposition rf = trainer.fit(
   labelExtractor
 );
 ```
-### 15.15.4.示例
+### 15.4.示例
 要了解如何在实践中使用随机森林分类器，可以尝试这个GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/randomforest/RandomForestClassificationExample.java)，它也会随着每个Ignite发行版一起发布。在这个例子中，使用了一个葡萄酒识别数据集，该数据集和数据的描述可从[UCI机器学习存储库](https://archive.ics.uci.edu/ml/datasets/wine)获得。
-## 15.16.梯度增强
-### 15.16.1.概述
+## 16.梯度增强
+### 16.1.概述
 梯度增强是一种产生弱预测模型[集合形式](https://en.wikipedia.org/wiki/Ensemble_learning)预测模型的机器学习算法。梯度增强算法试图解决函数空间中每个函数都是模型的学习样本的最小化误差问题。这个组合中的每个模型都试图预测特征空间中点的误差梯度，并且这些预测将用一些权重求和以建模答案。该算法可用于回归和分类问题。更多信息可以参阅[维基百科](https://en.wikipedia.org/wiki/Gradient_boosting)。
 
 在Ignite的机器学习中有一个通用`GDB`算法和`GDB-on-tree`算法的实现。通用`GDB`（`GDBRegressionTrainer`和`GDBBinaryClassifierTrainer`）允许任何训练器对每个模型进行组合训练。`GDB-on-trees`使用一些特定于树的优化，例如索引，以避免在决策树构建阶段进行排序。
-### 15.16.2.模型
+### 16.2.模型
 Ignite的机器学习的目的是使用`GDB`算法的所有实现来使用`GDBModel`，包装`ModelsComposition`来表示几个模型的组成。`ModelsComposition`实现了一个通用的模型接口，使用方式如下：
 ```java
 GDBModel model = ...;
@@ -1312,7 +1312,7 @@ double prediction = model.apply(featureVector);
  - `pi`：第i个模型的答案；
  - `wi`：合成中模型的权重。`GDB`使用标签的平均值作为聚合器中的偏差参数。
 
-### 15.16.3.训练器
+### 16.3.训练器
 `GDB`的训练分别由`GDBRegressionTrainer`、`GDBBinaryClassificationTrainer`和`GDBRegressionOnTreesTrainer`以及`GDBBinaryClassificationOnTreesTrainer`表示，分别用于通用`GDB`和`GDB-on-trees`，所有训练器都有以下参数：
 
  - `gradStepSize`：设置合成中每个模型的恒定权重；在Ignite机器学习的未来版本中，该参数可以动态计算；
@@ -1343,10 +1343,10 @@ GDBModel mdl = trainer.fit(
   labelExtractor
 );
 ```
-### 15.16.4.示例
+### 16.4.示例
 要了解在实践中如何使用`GDB`分类器，可以尝试GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/boosting/GDBOnTreesClassificationTrainerExample.java)，它也会随着每个Ignite发行版一起发布。
-## 15.17.模型更新
-### 15.17.1.概述
+## 17.模型更新
+### 17.1.概述
 Ignite机器学习中的模型更新接口使用之前训练过的模型的状态，支持在新数据上对已培训模型的重新学习。此接口表示为`DatasetTrainer`类，它以已学习过的模型作为第一个参数重复训练：
 
  - M update (`M mdl, DatasetBuilder<K, V> datasetBuilder, IgniteBiFunction<K, V, Vector> featureExtractor, IgniteBiFunction<K, V, L> lbExtractor`)；
@@ -1361,30 +1361,30 @@ Ignite机器学习中的模型更新接口使用之前训练过的模型的状�
 
 每个模型都有这个接口的特殊实现。下面会介绍每个算法的更新过程的更多内容。
 
-### 15.17.2.K均值
+### 17.2.K均值
 模型更新采用已学习的质心，并通过新行更新它们。建议对此模型使用在线批量学习。首先，数据集的大小至少应等于k值。第二，具有少量行的数据集可以将质心移动到无效位置。
-### 15.17.3.KNN
+### 17.3.KNN
 模型更新只是向旧数据集添加一个新的数据集。在这种情况下，模型更新不受限制。
-### 15.17.4.ANN
+### 17.4.ANN
 与KNN一样，新训练器应提供相同的距离测量值和K值。这些参数很重要，因为在内部，人工神经网络使用K均值和K均值提供的质心统计数据。在更新过程中，训练器从之前学习中获取有关质心的统计信息，并用新的观察结果更新。从这个角度来看，ANN允许`小批量`在线学习，其中批量大小等于k参数。
-### 15.17.5.神经网络（NN）
+### 17.5.神经网络（NN）
 神经网络更新只是获取当前的神经网络状态，并根据新数据集上的误差梯度进行更新。在这种情况下，神经网络只需要不同数据集之间的特征向量兼容性。
-### 15.17.6.逻辑回归
+### 17.6.逻辑回归
 逻辑回归继承了神经网络训练器的所有限制，因为它在内部使用感知器。
-### 15.17.7.线性回归
+### 17.7.线性回归
 `LinearRegressionSGD`训练器继承了神经网络训练器的所有限制。`LinearRegressionLSQRTrainer`从上一次学习中恢复状态，并将其用作新数据集学习的第一近似值。这样，`LinearRegressionLSQRTrainer`也只需要特征向量的兼容性。
-### 15.17.8.SVM
+### 17.8.SVM
 SVM训练器在训练过程中使用学习模型的状态作为第一近似值。从这个角度来看，该算法只需要特征向量的兼容性。
-### 15.17.9.决策树
+### 17.9.决策树
 没有正确的决策树更新实现。更新会在给定的数据集上学习新模型。
-### 15.17.10.GDB
+### 17.10.GDB
 GDB训练器更新已经从组合中学习了模型，并试图通过学习新模型预测梯度来最小化给定数据集上的误差梯度。它还使用收敛检查器，如果新数据集上没有大的误差，那么GDB会跳过更新阶段。因此GDB只需要特征向量兼容性。
 
 注意：每次更新都会增加模型组成大小。所有的模型都互相依赖。因此，基于小数据集的频繁更新可以产生一个需要大量内存的巨大模型。
-### 15.17.11.随机森林（RF）
+### 17.11.随机森林（RF）
 RF训练器只需在给定的数据集上学习新的决策树，并将它们添加到已经学习过的合成中。通过这种方式，RF需要特征向量兼容性，并且数据集的大小应该大于一个元素，因为决策树不能在如此小的数据集上进行训练。与经过训练的合成中的GDB模型不同，RF模型彼此不依赖，如果合成太大，用户可以手动删除一些模型。
-## 15.18.近似最近邻（ANN）
-### 15.18.1.概述
+## 18.近似最近邻（ANN）
+### 18.1.概述
 近似最近邻搜索算法允许返回点，其距离查询最多为查询到最近点距离的C倍。
 
 这种方法的吸引力在于，在许多情况下，近似最近邻几乎和精确的一样好。尤其是，如果距离度量准确地捕获了用户质量的概念，那么距离中的微小差异就不重要了。
@@ -1394,7 +1394,7 @@ ANN算法能够解决多类分类任务。Ignite的实现是一种启发式算�
 KNN与ANN的区别在于，在预测阶段，所有训练点都参与了KNN算法中K-最近邻的搜索，而在ANN中，该搜索仅从候选点的一小部分开始。
 
 注意：如果N设置为训练集的大小，则在训练阶段花费大量时间后，ANN将减少到KNN。因此，选择N比K（例如10 x k、100 x k等）。
-### 15.18.2.模型
+### 18.2.模型
 ANN分类输出表示为一个类成员。一个对象是由它的邻居的多数票来分类的。对象被分配给一个特定的类，该类在其K最近邻中最常见。`K`是一个正整数，通常很小。当`K`为1时，有一种特殊情况，对象被简单地分配给单个最近邻的类。
 
 目前，对于ANN分类算法，Ignite支持以下参数：
@@ -1410,7 +1410,7 @@ NNClassificationModel knnMdl = trainer.fit(
  .withDistanceMeasure(new EuclideanDistance())
  .withStrategy(NNStrategy.WEIGHTED);
 ```
-### 15.18.3.训练器
+### 18.3.训练器
 ANN模型的训练器是基于K均值来计算候选子集的，这就是为什么它具有与K均值算法相同的参数来调整其超参数的原因。它不仅构建了一组候选对象，还构建了它们的类标签分布，以便在预测阶段为类标签投票。
 
 目前，Ignite为`ANNClassificationTrainer`支持以下参数：
@@ -1440,5 +1440,5 @@ NNClassificationModel knnMdl = trainer.fit(
  .withDistanceMeasure(new EuclideanDistance())
  .withStrategy(NNStrategy.WEIGHTED);
 ```
-### 15.18.4.示例
+### 18.4.示例
 要了解`ANNClassificationModel`在实践中是如何使用的，可以尝试GitHub上的这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/ANNClassificationExample.java)，它也会随着每个Ignite发行版一起发布。训练数据集是鸢尾花数据集，可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)获取。

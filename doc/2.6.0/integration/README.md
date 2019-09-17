@@ -1,4 +1,4 @@
-# 1.介绍
+# 介绍
 ![](https://files.readme.io/f35ab94-0bad3a9-ignite_architecture.png)
 
 本系列集成文档包含了已有的所有有关Ignite和其它的技术和产品集成的信息。

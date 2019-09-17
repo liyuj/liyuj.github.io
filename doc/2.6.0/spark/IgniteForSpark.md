@@ -1,5 +1,5 @@
-# 4.Ignite与Spark
-## 4.1.Ignite与Spark
+# Ignite与Spark
+## 1.Ignite与Spark
 Ignite作为一个分布式的内存数据库和缓存平台，对于Spark用户可以实现如下的功能：
 
  - 获得真正的可扩展的内存级性能，避免数据源和Spark工作节点和应用之间的数据移动；
@@ -7,13 +7,13 @@ Ignite作为一个分布式的内存数据库和缓存平台，对于Spark用户
  - 在Spark作业之间更容易地共享状态和数据。
 
 ![](https://files.readme.io/1e7bf72-spark_integration.png)
-### 4.1.1.IgniteRDD
+### 1.1.IgniteRDD
 Ignite提供了一个Spark RDD抽象的实现，它可以容易地在内存中跨越多个Spark作业共享状态，在跨越不同Spark作业、工作节点或者应用时，IgniteRDD为内存中的相同数据提供了一个共享的、可变的视图，而原生的SparkRDD无法在Spark作业或者应用之间进行共享。
 
 IgniteRDD实现的方式是作为一个分布式的Ignite缓存（或者表）的视图，它可以作为一个节点部署在Spark执行进程内部，或者Spark工作节点上或者它自己的集群中。这意味着根据选择的不同的部署模型，共享状态可能只存在于一个Spark应用的生命周期内（嵌入式模式），或者可能存在于Spark应用外部（独立模式），这时状态可以在多个Spark应用之间共享。
 
 虽然SparkSQL支持丰富的SQL语法，但是它没有实现索引。从结果上来说，即使在普通的较小的数据集上，Spark查询也可能花费几分钟的时间，因为需要进行全表扫描。如果使用Ignite，Spark用户可以配置主索引和二级索引，这样可以带来上千倍的性能提升。
-### 4.1.2.Ignite DataFrames
+### 1.2.Ignite DataFrames
 Spark DataFrame API引入了描述数据的模式的概念，这样Ignite就可以管理模式并且将数据组织成表格的形式。简单来说，DataFrame就是一个将数据组织成命名列的分布式集合，它在概念上等价于关系数据库中的表，Spark会利用催化剂查询优化器的优势，生成一个比RDD更高效的查询执行计划，而RDD只是一个集群范围的、分区化的元素的集合。
 
 Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内存存储，还会改进数据访问的时间，好处包括：
@@ -21,8 +21,8 @@ Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内
  - 通过在Ignite中读写DataFrame，可以在Spark作业间共享数据和状态；
  - 使用Ignite的SQL引擎，包括高级索引以及避免Ignite和Spark之间的网络数据移动，可以优化Spark的查询执行计划，从而实现更快的SparkSQL查询。
 
-## 4.2.IgniteContext和IgniteRDD
-### 4.2.1.IgniteContext
+## 2.IgniteContext和IgniteRDD
+### 2.1.IgniteContext
 IgniteContext是Spark和Ignite集成的主要入口点。要创建一个Ignite上下文的实例，必须提供一个SparkContext的实例以及创建`IgniteConfiguration`的闭包（配置工厂）。Ignite上下文会确保Ignite服务端或者客户端节点存在于所有参与的作业实例中。或者，一个XML配置文件的路径也可以传入`IgniteContext`构造器，它会用于配置启动的节点。
 
 当创建一个`IgniteContext`实例时，一个可选的boolean`client`参数（默认为`true`）可以传入上下文构造器，这个通常用于一个共享部署安装，当`client`设为`false`时，上下文会操作于嵌入式模式然后在上下文创建期间在所有的工作节点上启动服务端节点。可以参照[安装与部署](#_4-4-安装和部署)章节了解有关部署配置的信息。
@@ -42,7 +42,7 @@ val igniteContext = new IgniteContext(sparkContext,
 val igniteContext = new IgniteContext(sparkContext,
     "examples/config/spark/example-shared-rdd.xml")
 ```
-### 4.2.2.IgniteRDD
+### 2.2.IgniteRDD
 `IgniteRDD`是一个SparkRDD抽象的实现，它表示Ignite的缓存的活动视图。`IgniteRDD`不是一成不变的，Ignite缓存的所有改变（不论是它被另一个RDD或者缓存的外部改变触发）对于RDD用户都会立即可见。
 
 `IgniteRDD`利用Ignite缓存的分区性质然后向Spark执行器提供分区信息。`IgniteRDD`中分区的数量会等于底层Ignite缓存的分区数量，`IgniteRDD`还通过`getPrefferredLocations`方法向Spark提供了关联信息使RDD计算可以使用本地的数据。
@@ -79,14 +79,14 @@ val cacheRdd = igniteContext.fromCache("partitioned")
 val result = cacheRdd.sql(
   "select _val from Integer where val > ? and val < ?", 10, 100)
 ```
-### 4.2.3.示例
+### 2.3.示例
 GitHub上有一些示例，演示了`IgniteRDD`如何使用：
 
  - [Scala示例](https://github.com/apache/ignite/blob/master/examples/src/main/scala/org/apache/ignite/scalar/examples/spark/ScalarSharedRDDExample.scala)
  - [Java示例](https://github.com/apache/ignite/blob/master/examples/src/main/spark/org/apache/ignite/examples/spark/SharedRDDExample.java)
 
-## 4.3.Ignite DataFrame
-### 4.3.1.概述
+## 3.Ignite DataFrame
+### 3.1.概述
 Spark DataFrame API引入了描述数据的模式的概念，这样Ignite就可以管理模式并且将数据组织成表格的形式。简单来说，DataFrame就是一个将数据组织成命名列的分布式集合，它在概念上等价于关系数据库中的表，Spark会利用催化剂查询优化器的优势，生成一个比RDD更高效的查询执行计划，而RDD只是一个集群范围的、分区化的元素的集合。
 
 Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内存存储，还会改进数据访问的时间，好处包括：
@@ -97,9 +97,9 @@ Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内
 >**SparkSQL在Ignite中的执行**
 目前，大多数的分组、联接或者排序操作都是在Spark端实现的，在未来的版本中，这些操作会在Ignite端进行优化和处理。
 
-### 4.3.2.集成
+### 3.2.集成
 `IgniteRelationProvider`是Spark`RelationProvider`和`CreatableRelationProvider`接口的一个实现，`IgniteRelationProvider`可以通过SparkSQL接口，直接访问Ignite表。数据通过`IgniteSQLRelation`进行加载和交换，其在Ignite端执行过滤操作。目前，分组、联接或者排序操作，是在Spark端进行的，在即将发布的版本中，这些操作会在Ignite端进行优化和处理。`IgniteSQLRelation`利用了Ignite架构的分区特性，并且为Spark提供了分区信息。
-### 4.3.3.Spark会话
+### 3.3.Spark会话
 如果要使用Spark DataFrame API，需要为Spark编程创建一个入口点，这是通过`SparkSession`对象实现的，大体如下：
 
 Java：
@@ -120,7 +120,7 @@ implicit val spark = SparkSession.builder()
   .config("spark.executor.instances", "2")
   .getOrCreate()
 ```
-### 4.3.4.读取DataFrame
+### 3.4.读取DataFrame
 要从Ignite中读取数据，需要指定格式以及Ignite配置文件的路径，假定如下名为`person`的Ignite表已经创建和部署：
 ```sql
 CREATE TABLE person (
@@ -164,7 +164,7 @@ df.createOrReplaceTempView("person")
 
 val igniteDF = spark.sql("SELECT * FROM person WHERE name = 'Mary Major'")
 ```
-### 4.3.5.保存DataFrames
+### 3.5.保存DataFrames
 >**实现细节**
 从内部来说，所有的插入操作都是通过`IgniteDataStreamer`实现的，内部的流处理器是可以通过参数进行控制的。
 
@@ -251,7 +251,7 @@ jsonDataFrame.write
   .option(OPTION_CREATE_TABLE_PARAMETERS, "template=replicated")
   .save()
 ```
-### 4.3.6.IgniteSparkSession和IgniteExternalCatalog
+### 3.6.IgniteSparkSession和IgniteExternalCatalog
 针对已知数据源（比如表和视图）的元信息的读取和存储，Spark引入了叫做`catalog`的实体，关于这个目录，Ignite提供了自己的实现，叫做`IgniteExternalCatalog`。
 
 `IgniteExternalCatalog`可以读取部署在Ignite集群中的所有SQL表的元数据信息，如果要构造`IgniteSparkSession`对象，`IgniteExternalCatalog`也是必要的。
@@ -342,7 +342,7 @@ CITY table description:
 |  ID|       null|  bigint|   false|       true|   false|
 +----+-----------+--------+--------+-----------+--------+
 ```
-### 4.3.7.Ignite DataFrame选项
+### 3.7.Ignite DataFrame选项
 
 |参数|描述|
 |---|---|
@@ -356,15 +356,15 @@ CITY table description:
 |`OPTION_STREAMER_PER_NODE_BUFFER_SIZE`|每节点的缓冲区大小。每个节点键值对缓冲区的大小。|
 |`OPTION_STREAMER_PER_NODE_PARALLEL_OPERATIONS`|每节点的缓冲区大小。每个节点进行并行流处理的最大数量。|
 
-### 4.3.8.示例
+### 3.8.示例
 GitHub上有一些用于演示如何在Ignite中使用Spark DataFrame的示例：
 
  - [DataFrame](This is the time after which the streamer will make an attempt to submit all data added so far to remote nodes See also)
  - [保存DataFrame](https://github.com/apache/ignite/blob/master/examples/src/main/spark/org/apache/ignite/examples/spark/IgniteDataFrameWriteExample.scala)
  - [Catalog](https://github.com/apache/ignite/blob/master/examples/src/main/spark/org/apache/ignite/examples/spark/IgniteCatalogExample.scala)
 
-## 4.4.安装和部署
-### 4.4.1.共享部署
+## 4.安装和部署
+### 4.1.共享部署
 共享部署意味着Ignite节点的运行独立于Spark应用然后即使Spark作业结束之后也仍然保存状态。类似于Spark，将Ignite部署入集群有两种方式：
 
 **独立部署**
@@ -406,12 +406,12 @@ import org.apache.ignite.configuration._
 **MESOS部署**
 
 Ignite可以部署在Mesos集群上，可以在`2.11.Mesos部署`章节参照Mesos部署说明。
-### 4.4.2.嵌入式部署
+### 4.2.嵌入式部署
 >**嵌入式模式已被弃用**
 嵌入式模式意味着需要在Spark执行器中启动Ignite服务端节点，这可能导致意外的再平衡甚至数据丢失，因此该模式目前已被弃用并且最终会被废弃。可以考虑启动一个单独的Ignite集群然后使用独立模式来避免数据的一致性和性能问题。
 
 嵌入式部署意味着Ignite节点是在Spark作业进程内部启动的，然后当作业结束时就停止了，这时不需要额外的部署步骤。Ignite代码会通过Spark的部署机制分布到workder机器然后作为`IgniteContext`初始化的一部分在所有的workder上启动节点。
-### 4.4.3.Maven
+### 4.3.Maven
 Ignite的Spark构件已经上传到[Maven中心库](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.ignite%22)，根据使用的Scala版本，引入下面的对应的依赖：
 
 **Scala 2.11**
@@ -430,7 +430,7 @@ Ignite的Spark构件已经上传到[Maven中心库](http://search.maven.org/#sea
   <version>${ignite.version}</version>
 </dependency>
 ```
-### 4.4.4.SBT
+### 4.4.SBT
 如果在Scala应用中使用SBT作为构建工具，那么可以使用下面的一行命令，将Ignite的Spark构件加入`build.sbt`：
 
 **Scala 2.11**
@@ -441,7 +441,7 @@ libraryDependencies += "org.apache.ignite" % "ignite-spark" % "ignite.version"
 ```
 libraryDependencies += "org.apache.ignite" % "ignite-spark_2.10" % "ignite.version"
 ```
-### 4.4.5.类路径配置
+### 4.5.类路径配置
 当使用IgniteRDD或者Ignite的DataFrame API时，要注意Spark的执行器以及驱动在它们的类路径中所有必需的Ignite的jar包都是可用的，Spark提供了若干种方式来修改驱动或者执行器进程的类路径。
 
 **参数配置**
@@ -475,8 +475,8 @@ spark.sparkContext.addJar(MAVEN_HOME + "/org/springframework/spring-expression/4
 spark.sparkContext.addJar(MAVEN_HOME + "/javax/cache/cache-api/1.0.0/cache-api-1.0.0.jar")
 spark.sparkContext.addJar(MAVEN_HOME + "/com/h2database/h2/1.4.195/h2-1.4.195.jar")
 ```
-## 4.5.用Spark-shell测试Ignite
-### 4.5.1.启动集群
+## 5.用Spark-shell测试Ignite
+### 5.1.启动集群
 这里会简要地介绍Spark和Ignite集群的启动过程，可以参照[Spark文档](https://spark.apache.org/docs/latest/)来了解详细信息。
 
 为了测试，需要一个Spark主节点以及至少一个Spark工作节点，通常Spark主节点和Spark工作节点是不同的机器，但是为了测试可以在启动主节点的同一台机器上启动工作节点。
@@ -500,7 +500,7 @@ bin/spark-class org.apache.spark.deploy.worker.Worker spark://master_host:master
 bin/ignite.sh
 ```
 这时可以看到通过默认的配置Ignite节点会彼此发现对方。如果网络不允许多播通信，那么需要修改默认的配置文件然后配置TCP发现。
-### 4.5.2.使用Spark-Shell
+### 5.2.使用Spark-Shell
 现在，在集群启动运行之后，可以运行`spark-shell`来验证这个集成：
 
 **1.启动spark-shell**
@@ -576,7 +576,7 @@ sharedRDD.filter(_._2 > 50000).count
 ```scala
 res0: Long = 50000
 ```
-## 4.6.发现并解决的问题
+## 6.发现并解决的问题
 
  - **在IgniteRDD上调用任何活动时Spark应用或者Spark shell没有响应**
 如果在客户端模式（默认模式）下创建`IgniteContext`然后又没有任何Ignite服务端节点启动时，就会发生这种情况，这时Ignite客户端会一直等待服务端节点启动或者超过集群连接超时时间后失败。当在客户端节点使用`IgniteContext`时应该启动至少一个服务端节点。

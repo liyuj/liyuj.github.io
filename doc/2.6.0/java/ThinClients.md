@@ -1,5 +1,5 @@
-# 19.瘦客户端
-## 19.1.瘦客户端
+# 瘦客户端
+## 1.瘦客户端
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
@@ -10,12 +10,12 @@
   - .NET瘦客户端
 
 NodeJS、Go、Python、PHP以及其它的客户端在未来的版本中会发布。
-## 19.2.二进制客户端协议
-### 19.2.1.概述
+## 2.二进制客户端协议
+### 2.1.概述
 Ignite的二进制客户端协议使得应用不用启动一个全功能的节点，就可以与已有的集群进行通信。应用使用原始的TCP套接字，就可以接入集群。连接建立之后，就可以使用定义好的格式执行缓存操作。
 
 与集群通信，客户端必须遵守下述的数据格式和通信细节。
-### 19.2.2.数据格式
+### 2.2.数据格式
 **字节序**
 
 Ignite的二进制客户端协议使用低字节序。
@@ -23,7 +23,7 @@ Ignite的二进制客户端协议使用低字节序。
 **数据对象**
 
 用户数据，比如缓存的键和值，是以Ignite的二进制对象表示的，一个数据对象可以是标准类型（预定义），也可以是复杂对象，具体可以看数据格式的相关章节。
-### 19.2.3.消息格式
+### 2.3.消息格式
 所有消息的请求和响应，包括握手，都以`int`类型消息长度开始（不包括开始的4个字节），后面是消息体。
 
 **握手**
@@ -101,7 +101,7 @@ private static void readResponseHeader(DataInputStream in) throws IOException {
   int statusCode = readIntLittleEndian(in);
 }
 ```
-### 19.2.4.接入
+### 2.4.接入
 **TCP套接字**
 
 客户端应用接入服务端节点需要通过TCP套接字，连接器默认使用`10800`端口。可以在集群的`IgniteConfiguration`中的`clientConnectorConfiguration`属性中，配置端口号及其它的服务端连接参数，如下所示：
@@ -225,7 +225,7 @@ private static byte readByteLittleEndian(DataInputStream in) throws IOException 
 
 // Other write and read methods
 ```
-### 19.2.5.客户端操作
+### 2.5.客户端操作
 握手成功之后，客户端就可以执行各种缓存操作了。
 
  - 键-值查询；
@@ -233,16 +233,16 @@ private static byte readByteLittleEndian(DataInputStream in) throws IOException 
  - 二进制类型操作；
  - 缓存配置操作。
 
-## 19.3.Java瘦客户端
+## 3.Java瘦客户端
 Java瘦客户端将二进制客户端协议暴露给Java开发者。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 
-### 19.3.1.快速入门
+### 3.1.快速入门
 按照下面的步骤操作，可以学习瘦客户端API和开发环境的基础知识。
-#### 19.3.1.1.Maven配置
+#### 3.1.1.Maven配置
 添加`ignite-core`这一个依赖就可以使用所有的瘦客户端API。
 
 Maven：
@@ -270,7 +270,7 @@ dependencies {
 >**Ignite版本**
 瘦客户端和Ignite服务端版本可以不同，只要二进制协议版本是兼容的即可。
 
-#### 19.3.1.2.简单应用
+#### 3.1.2.简单应用
 ```java
 public static void main(String[] args) {
     ClientConfiguration cfg = new ClientConfiguration().setAddresses("127.0.0.1:10800");
@@ -310,7 +310,7 @@ public static void main(String[] args) {
  - 使用`IgniteClient#getOrCreateCache(cacheName)`创建了一个指定名字的缓存；
  - 使用`ClientCache#put(key, val)}`和`ClientCache#get(key)`存储和获取数据。
 
-#### 19.3.1.3.启动集群
+#### 3.1.3.启动集群
 在本地主机上启动集群：
 
 Unix：
@@ -330,7 +330,7 @@ Windows：
 >**服务端启动等待**
 与Ignite客户端模式不同，它会等待服务端节点的启动，而瘦客户端在无法找到配置好的服务端时，会连接失败。
 
-#### 19.3.1.4.启动应用
+#### 3.1.4.启动应用
 在IDE中运行程序，然后会看到如下的输出：
 ```bash
 >>> Thin client put-get example started.
@@ -341,9 +341,9 @@ Windows：
 >**注意集群拓扑没有发生变化**
 瘦客户端没有成为集群的一个成员，这是一个轻量级的应用，它会使用二进制客户端协议，通过TCP套接字与集群通信。
 
-### 19.3.2.API
+### 3.2.API
 本章节讲述Ignite支持的Java瘦客户端API。
-#### 19.3.2.1.初始化
+#### 3.2.1.初始化
 `Ignition#startClient(ClientConfiguration)`方法会发起一个连接请求。
 
 `IgniteClient`是一个可以自动关闭的资源，因此可以使用**try-with-resources**语句初始化和释放`IgniteClient`。
@@ -353,7 +353,7 @@ try (IgniteClient client = Ignition.startClient(
 )) {
 }
 ```
-#### 19.3.2.2.缓存管理
+#### 3.2.2.缓存管理
 下面的方法可以用于获取表示缓存的`CacheClient`实例。
 
  - `IgniteClient#cache(String)`：假定指定名字的缓存已经存在，该方法不会与Ignite通信确认该缓存是否真的存在，后续的缓存操作如果缓存不存在会报错；
@@ -369,7 +369,7 @@ ClientCacheConfiguration cacheCfg = new ClientCacheConfiguration()
 
 ClientCache<Integer, String> cache = client.getOrCreateCache(cacheCfg);
 ```
-#### 19.3.2.3.瘦客户端和JCache
+#### 3.2.3.瘦客户端和JCache
 目前，瘦客户端只实现了JCache的一个子集，因此并没有实现`javax.cache.Cache`（`ClientCacheConfiguration`也没有实现`javax.cache.configuration`）。
 
 `ClientCache<K, V>`目前支持如下的JCache API：
@@ -417,7 +417,7 @@ assertEquals("101", cache.get(101));
 cache.removeAll();
 assertEquals(0, cache.size());
 ```
-#### 19.3.2.4.扫描查询
+#### 3.2.4.扫描查询
 使用`ScanQuery<K, V>`可以在服务端使用Java谓词对数据进行过滤，然后在客户端对过滤后的结果集进行迭代。
 
 过滤后的条目是按页传输到客户端的，这样每次只有一个页面的数据会被加载到客户单的内存，页面大小可以通过`ScanQuery#setPageSize(int)`进行配置。
@@ -429,7 +429,7 @@ for (Query<Cache.Entry<Integer, Person>> qry : queries) {
     for (Cache.Entry<Integer, Person> entry : cur) {
       // Handle the entry ...
 ```
-#### 19.3.2.5.SQL查询
+#### 3.2.5.SQL查询
 SQL查询共有2种：
 
  - **数据定义语言语句**：用来管理缓存和索引；
@@ -463,7 +463,7 @@ Object cachedName = client.query(
 
 assertEquals(val.getName(), cachedName);
 ```
-#### 19.3.2.6.Ignite二进制对象
+#### 3.2.6.Ignite二进制对象
 瘦客户端完全支持[二进制编组器](/doc/2.6.0/java/#_1-10-二进制编组器)章节中描述的Ignite二进制对象API，使用`CacheClient#withKeepBinary()`可以将缓存切换为二进制模式，然后就可以直接处理二进制对象，从而避免序列化/反序列化。
 
 使用`IgniteClient#binary()`可以获得`IgniteBinary`的实例，然后从头构建一个对象。
@@ -481,22 +481,22 @@ cache.put(1, val);
 
 BinaryObject cachedVal = cache.get(1);
 ```
-#### 19.3.2.7.多线程
+#### 3.2.7.多线程
 瘦客户端是单线程且线程安全的。唯一的共享资源是底层的通信管道，同时只有一个线程对管道进行读写，这时其它线程会等待。
 
 >**使用瘦客户端连接池的多线程来改进性能**
 目前瘦客户端无法通过多线程来改进吞吐量，但是可以在应用中使用瘦客户端连接池来创建多线程，以改进吞吐量。
 
-#### 19.3.2.8.异步API
+#### 3.2.8.异步API
 >**异步API暂不支持**
 虽然二进制客户端协议设计时是支持异步API的，但是Java瘦客户端目前还不支持，异步API的功能下个版本会添加。
 
-#### 19.3.2.9.客户端-服务端兼容性
+#### 3.2.9.客户端-服务端兼容性
 客户端`ignite-core`的版本号要小于等于服务端`ignite-core`的版本号。
 
 Ignite的服务端会维持二进制协议的向后兼容性，如果两者协议版本不兼容，会抛出`RuntimeException`。
-### 19.3.3.安全
-#### 19.3.3.1.加密
+### 3.3.安全
+#### 3.3.1.加密
 通过在通信管道上开启SSL/TLS，可以确保瘦客户端上的数据是加密的。
 ```java
 ClientConfiguration clientCfg = new ClientConfiguration()
@@ -517,7 +517,7 @@ clientCfg
 try (IgniteClient client = Ignition.startClient(clientCfg)) {
 	...
 ```
-#### 19.3.3.2.认证
+#### 3.3.2.认证
 如果服务端开启认证，那么用户必须提供凭据。
 
 如果认证失败，会抛出`ClientAuthenticationException`。
@@ -534,11 +534,11 @@ catch (ClientAuthenticationException e) {
     // Handle authentication failure
 }
 ```
-#### 19.3.3.3.授权
+#### 3.3.3.授权
 目前，Ignite本身还不支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这个](https://docs.gridgain.com/docs/security-and-audit)。
 
-### 19.3.4.高可用
-#### 19.3.4.1.故障转移
+### 3.4.高可用
+#### 3.4.1.故障转移
 Ignite不支持瘦客户端在服务端侧的故障转移，如果客户端接入的服务端下线，瘦客户端会通过重试，然后自动重连到另一个服务端节点来实现故障转移。
 
 配置多个服务端可以开启故障转移机制。
@@ -571,10 +571,10 @@ for (Query<Cache.Entry<Integer, Person>> qry : queries) {
  - 如果数据很小可以放入内存，那么可以获取所有的数据然后放入一个Map：`Map<Integer, Person> res = cur.getAll().stream().collect(Collectors.toMap(Cache.Entry::getKey, Cache.Entry::getValue))`，Map可以解决重复数据的问题；
  - 记住重复的条目，然后幂等地处理这些条目。
 
-### 19.3.5.监控
-#### 19.3.5.1.日志
+### 3.5.监控
+#### 3.5.1.日志
 瘦客户端不会记录任何信息，也无法配置记录日志，处理瘦客户端的异常以及决定后续如何处理是应用本身的职责。
-#### 19.3.5.2.异常
+#### 3.5.2.异常
 ![](https://files.readme.io/1d15d18-Java_Thin_Client.png)
 
 所有的客户端异常都是非检查异常：

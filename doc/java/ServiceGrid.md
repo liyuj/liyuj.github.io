@@ -1,6 +1,6 @@
-# 8.服务网格
-## 8.1.服务网格
-### 8.1.1.概述
+# 服务网格
+## 1.服务网格
+### 1.1.概述
 服务网格可以在集群上部署任意用户定义的服务，比如自定义计数器，ID生成器，分层映射等。
 
 比如，服务网格可以作为基于微服务架构的解决方案或者应用的技术基础，了解更多的信息可以参考下面的文章：
@@ -31,7 +31,7 @@ Ignite可以控制每个集群节点应该部署多少个服务的实例，可�
 注意，默认情况下，所有的集群节点的类路径中都包含服务类是必须的，服务网格是不支持对等类加载的，下面的服务部署章节会描述如何克服这个约束。
 :::
 
-### 8.1.2.IgniteServices
+### 1.2.IgniteServices
 所有的服务网格功能都是通过`IgniteServices`接口实现的。
 ```java
 Ignite ignite = Ignition.ignite();
@@ -48,11 +48,11 @@ ClusterGroup remoteGroup = ignite.cluster().forRemotes();
 // Limit service deployment only to remote nodes (exclude the local node).
 IgniteServices svcs = ignite.services(remoteGroup);
 ```
-### 8.1.3.负载平衡
+### 1.3.负载平衡
 在所有的情况下，除非单例服务部署，Ignite会自动地确保集群内的每个节点部署相同数量的服务。当拓扑发生变化时，为了更好地进行负载平衡，Ignite会对服务的部署进行重新评估然后可能将已经部署的服务重新部署到其它的节点。
-### 8.1.4.容错
+### 1.4.容错
 Ignite会一直保证服务的持续有效，以及不管拓扑发生变化或者节点故障都会按照指定的配置进行部署。
-### 8.1.5.部署管理
+### 1.5.部署管理
 默认情况下，就像上面负载平衡部分描述的那样，会根据集群的负载情况，Ignite服务会被部署到一个随机的节点（多个节点）。
 
 除了这个默认的方式，Ignite还提供了一个API以将服务部署到特定的节点集合上，下面会详细描述各个方式。
@@ -132,7 +132,7 @@ IgniteServices services = ignite.services();
 services.deploy(cfg);
 ```
 使用上述示例的配置部署服务后，Ignite会确保将服务部署到名为`orgCache`的缓存中犍为`123`所在的主节点上。
-### 8.1.6.服务卸载
+### 1.6.服务卸载
 Ignite在所有的节点上存储已部署服务的描述符，如前述，如果一个服务部署在节点的子集上，停止所有这些节点也不会卸载服务，只要满足节点过滤器的节点有一个有备份，服务都会以同样的配置重启。
 
 如果要对服务的配置进行修改，就需要显式地卸载它然后重新部署新的配置，使用`IgniteServices#cancel`或者`IgniteServices#cancelAll`方法可以进行卸载。
@@ -142,8 +142,8 @@ IgniteServices services = ignite.services();
 
 services.cancel("serviceName");
 ```
-## 8.2.服务示例
-### 8.2.1.定义服务接口
+## 2.服务示例
+### 2.1.定义服务接口
 作为一个示例，可以定义一个简单的计数器服务：`MyCounterService`接口，注意这是一个简单的Java接口，没有任何特别的注解或者方法。
 
 ```java
@@ -159,7 +159,7 @@ public interface MyCounterService {
     int get() throws CacheException;
 }
 ```
-### 8.2.2.服务实现
+### 2.2.服务实现
 一个分布式服务的实现必须实现`Service`和`MyCounterService`两个接口。
 
 这个计数器服务的实现将计数值存储在缓存中。这个计数值的键是服务的名字，这样可以使多个计数器服务实例复用同一个缓存。
@@ -232,7 +232,7 @@ public class MyCounterServiceImpl implements Service, MyCounterService {
   }
 }
 ```
-### 8.2.3.服务部署
+### 2.3.服务部署
 可以将上述的计数器服务作为节点级单例部署在建立了`myCounterCache`缓存的集群组中。
 ```java
 // Cluster group which includes all caching nodes.
@@ -245,7 +245,7 @@ IgniteServices svcs = ignite.services(cacheGrp);
 // will be deployed on every node within the cluster group.
 svcs.deployNodeSingleton("myCounterService", new MyCounterServiceImpl());
 ```
-### 8.2.4.服务代理
+### 2.4.服务代理
 可以从集群内的任意节点访问已部署的服务实例。如果一个服务部署在某个节点，那么本地部署的实例会被返回，否则，如果服务不是本地的，那么会创建服务的一个远程代理。
 
 **粘性和非粘性代理**
@@ -262,7 +262,7 @@ cntrSvc.increment();
 // Print latest counter value from our counter service.
 System.out.println("Incremented value : " + cntrSvc.get());
 ```
-### 8.2.5.从计算访问服务
+### 2.5.从计算访问服务
 为了方便，可以通过`@ServiceResource`注解在计算中注入一个服务代理的实例。
 ```java
 IgniteCompute compute = ignite.compute();
@@ -280,15 +280,15 @@ compute.run(new IgniteRunnable() {
   }
 });
 ```
-## 8.3.集群单例
-### 8.3.1.概述
+## 3.集群单例
+### 3.1.概述
 `IgniteServices`可以在任意的集群节点上部署任意数量的的服务，不过最常用的特性是在集群中部署一个服务的单例，Ignite会管理这个单例除非拓扑发生变化或者节点发生故障。
 
 ::: tip 注意
 注意如果拓扑发生了变化，因为网络的延迟，可能存在一个临时的情况，就是几个单例服务的实例在不止一个节点上都处于活跃状态（比如故障检测延迟）。
 :::
 
-### 8.3.2.集群单例
+### 3.2.集群单例
 可以部署一个集群范围的单例服务，Ignite会保证集群内会一直有一个该服务的实例。当部署该服务的节点故障或者停止时，Ignite会自动在另一个节点上重新部署该服务。不过如果部署该服务的节点仍然在拓扑中，那么服务会一直部署在该节点上，除非拓扑发生了变化。
 ```java
 IgniteServices svcs = ignite.services();
@@ -299,7 +299,7 @@ svcs.deployClusterSingleton("myClusterSingleton", new MyService());
 ```java
 svcs.deployMultiple("myClusterSingleton", new MyService(), 1, 1)
 ```
-### 8.3.3.节点单例
+### 3.3.节点单例
 也可以部署一个节点范围的单例服务，Ignite会保证每个节点都会有一个服务的实例在运行。当在集群组中启动了新的节点时，Ignite会自动地在每个新节点上部署一个新的服务实例。
 ```java
 IgniteServices svcs = ignite.services();
@@ -310,7 +310,7 @@ svcs.deployNodeSingleton("myNodeSingleton", new MyService());
 ```java
 svcs.deployMultiple("myNodeSingleton", new MyService(), 0, 1);
 ```
-### 8.3.4.缓存键关联单例
+### 3.4.缓存键关联单例
 可以将一个服务的单例通过一个给定的关联键部署在一个主节点上。当拓扑或者主键节点发生变化时，Ignite会一直确保服务在之前的主节点上卸载然后部署在一个新的主节点上。
 ```java
 IgniteServices svcs = ignite.services();
@@ -332,8 +332,8 @@ cfg.setMaxPerNodeCount(1);
 
 svcs.deploy(cfg);
 ```
-## 8.4.服务配置
-### 8.4.1.配置
+## 4.服务配置
+### 4.1.配置
 除了通过调用Ignite提供的`IgniteServices.deploy(...)`方法部署服务之外，还可以通过IgniteConfiguration的`serviceConfiguration`属性在**启动时自动地部署服务**。
 
 XML：
@@ -384,7 +384,7 @@ igniteCfg.setServiceConfiguration(svcCfg1, svcCfg2);
 // Start Ignite node.
 Ignition.start(gridCfg);
 ```
-### 8.4.2.启动后部署
+### 4.2.启动后部署
 可以通过配置然后在节点启动之后部署服务，除了可以部署各种集群单例的一些方便的方法外，还可以通过定制的配置来创建和部署服务。
 ```java
 ServiceConfiguration cfg = new ServiceConfiguration();

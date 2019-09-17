@@ -1,17 +1,17 @@
-# 4.安全和审计
-## 4.1.安全和审计
+# 安全和审计
+## 1.安全和审计
 GridGain提供了一套安全功能，可为远程客户端和其他集群节点开启访问控制。它们是通过配置可插拔的认证和授权机制、以及完整的审计功能来实现的，这些功能可以回放系统中的任何事件，以追溯需对该事件负责的用户。
-### 4.1.1.认证
+### 1.1.认证
 GridGain支持可插拔的`Authenticator`，用户可以将任何现有的认证机制插入GridGain。GridGain直接支持基于密码和基于JAAS的认证机制。通过基于JAAS的实现，GridGain能够自动支持JNDI、LDAP、活动目录以及其它任何符合JAAS的认证和授权机制。
 
 为了进行认证，客户端或集群节点需要提供有效的用户名和密码，如果认证成功，GridGain将为通过认证的主体生成可用权限列表。
-### 4.1.2.授权
+### 1.2.授权
 通过认证后，会为主体提供预配置的授权权限列表。GridGain允许为任何数据更改操作、闭包或任务执行、数据查询和查看以及管理和监视设置权限。`SecurityPermission`枚举定义了所有可用权限的完整列表，大多数权限都是缓存级的，因此同一个用户，例如，可能对一个缓存具有READ和WRITE权限，而对另一个缓存只具有QUERY权限。
 
 授权功能通过`Security`API暴露给用户的，以便在需要自定义逻辑时允许在业务代码中进行手动授权检查。
 
 还可以为Visor管理和监控工具设置所有可用的安全权限。
-### 4.1.3.审计能力
+### 1.3.审计能力
 如果发生了意外的事件，能够回放发生的事件并追溯应对该事件负责的通过认证的主体非常重要。GridGain具有多种审计机制，可确保系统中发生的每个事件都是可追溯的：
 
  1. 系统中的每个事件都绝对包含通过认证的主体的用户名，这确保每个事件都有责任方的信息；
@@ -24,13 +24,13 @@ GridGain支持可插拔的`Authenticator`，用户可以将任何现有的认证
 ::: tip 保护集群的两种方法
 可以通过两种方式配置安全性：使用GridGain的认证和授权机制或Ignite的[认证机制](/doc/java/Security.md#_2-高级安全)，不过GridGain的安全性和Ignite的安全性是互斥的，同时只能使用一个，建议使用GridGain的安全性，因为它提供了更广泛的功能。
 :::
-## 4.2.安全概念
-### 4.2.1.GridSecurity入口
+## 2.安全概念
+### 2.1.GridSecurity入口
 GridGain可以对试图加入集群的集群节点和远程节点进行认证和授权。`GridSecurity`API包含了和当前登录到集群的已认证主体及其持有的权限集有关的信息，可以使用以下代码，从`GridGain`的插件接口中获取`GridSecurity`实例：
 ```java
 GridSecurity security = grid.security();
 ```
-### 4.2.2.认证和授权
+### 2.2.认证和授权
 启用安全性后，必须在加入集群之前对集群节点进行认证。要启用集群安全性，需为`GridGainConfiguration`配置`安全凭据`和`认证器`，注意可以为缓存授予的权限包括执行`put`、`get`和`remove`操作，针对任务的是`execute`操作。
 
 **安全凭据**
@@ -97,7 +97,7 @@ GridGain支持由`Authenticator.isGlobalNodeAuthentication()`方法调节的两�
 |`false`|如果`isGlobalNodeAuthentication()`返回`false`，则只有集群中最老的服务端节点会为加入中的节点进行认证并为其分配安全权限。如果最老的服务端节点下线，则下一个最老的节点将接管并使用它的`Authenticator`实例为新节点进行认证和分配安全权限。<br>在使用集中式身份认证系统（如LDAP）时，此操作模式非常有用，因为它允许动态更改主体的安全权限，而无需重启整个集群，即只需重启安全权限已更改的单个集群节点即可。|
 |`true`|如果`isGlobalNodeAuthentication()`返回`true`，集群的所有现有节点都将对主体进行认证，并且必须就分配给主体的安全权限达成一致，以便认证成功。<br>这种操作模式用于`PasscodeAuthenticator`，因为权限是在每个节点上独立定义的，这样可以最小化错误配置的可能性。|
 
-## 4.3.JAAS认证
+## 3.JAAS认证
 `JaasAuthenticator`提供了基于JAAS标准的认证机制，接收到认证请求后，该SPI根据[JAAS参考指南](http://docs.oracle.com/javase/7/docs/technotes/guides/security/jaas/JAASRefGuide.html)，会将认证委托给配置好的外部JAAS登录模块。JAAS配置文件的路径是通过`-Djava.security.auth.login.config=/my/path/jass.config`系统属性指定的，下面是一个LDAP登录模块的JAAS配置文件示例：
 ```
 GridJaasLoginContext {
@@ -147,7 +147,7 @@ XML：
     ...
 </bean>
 ```
-## 4.4.密码认证
+## 4.密码认证
 `PasscodeAuthenticator`通过访问控制列表（ACL）提供认证和授权，ACL会将安全凭据映射到将分配给通过认证主体的一组权限，节点和客户端的权限应以JSON格式提供。
 
 以下是`PasscodeAuthenticator`配置的示例：
@@ -221,7 +221,7 @@ XML：
     ...
 </bean>
 ```
-## 4.5.授权和权限
+## 5.授权和权限
 主体（远程节点或客户端）通过认证之后就会进行授权。主体通过认证之后，它会被授予由`SecurityPermissionSet`对象表示的一组权限，GridGain提供了缓存、任务执行、服务和系统层面的权限：
 
 **缓存权限**
@@ -289,7 +289,7 @@ XML：
  - Visor管理控制台只有查看权限（SQL查询和数据加载都是不允许的）；
  - `defaultAllow`标志为`false`，会拒绝任何未显式指定的缓存或者任务操作（即不允许`org.mytasks`包之外的任务的执行）。
 
-## 4.6.多租户
+## 6.多租户
 在多租户应用中，需要将属于不同租户的数据子集彼此隔离，GridGain通过为不同的租户创建单独的缓存并分配适当的缓存级安全权限来支持此功能。
 
 由于可以根据需要动态创建和销毁缓存，因此无需为所有租户预先配置缓存。当需要将新租户添加到系统时，就应该为该租户创建新的缓存，然后修改租户用户的权限以允许访问这些缓存，并拒绝访问所有其它缓存。这样就可以保证其它租户永远不会读取或更新此新租户的数据。
@@ -322,8 +322,8 @@ ignite.createCache(new CacheConfiguration("dataCache_tenant2"));
     "defaultAllow":"false"
 }
 ```
-## 4.7.保护Visor
-### 4.7.1.Visor权限
+## 7.保护Visor
+### 7.1.Visor权限
 Visor（包括命令行和GUI）可以和其它集群客户端一样进行认证。因此要启用安全性，需要提供`Authenticator`，以为Visor用户分配正确的权限。GridGain提供了`JAAS`和`密码`认证机制，但是可以有自己的实现。
 
 Visor的授权基于以下管理权限：
@@ -370,7 +370,7 @@ Visor的授权基于以下管理权限：
 ::: tip 注意
 注意，使用此配置，visor-user仅允许使用Visor，因此将无法对集群执行任何其它操作（缓存读取/更新，任务执行等），当然也可以为此用户授予任何其它权限。
 :::
-### 4.7.2.验证图形化Visor
+### 7.2.验证图形化Visor
 **外部模式**
 
 当Visor以外部模式接入安全集群时（通过二进制REST协议），它将显示一个要求输入凭据的弹出窗口。只需在此窗口中输入正确的登录名和密码，然后单击`Connect`按钮：
@@ -416,10 +416,10 @@ public class MySecurityCredentialsProvider implements SecurityCredentialsProvide
 ::: tip 注意
 如果不在配置文件中提供凭据，Visor将显示一个弹出窗口并询问，就像在`外部模式`部分中所述。
 :::
-### 4.7.3.验证命令行Visor
+### 7.3.验证命令行Visor
 命令行Visor的工作方式类似于GUI Visor中的内部模式，因此需要提供具有正确凭据的配置以接入安全集群。有关此类配置的示例，请参见前述`内部模式`。
-## 4.8.保护JMX
-### 4.8.1.启用JMX安全性
+## 8.保护JMX
+### 8.1.启用JMX安全性
 使用`ignite.[sh|bat]`脚本启动GridGain节点时，它会自动启动JMX服务器并允许来自VisualVM等监控工具的远程连接。虽然这提供了很好的监控功能（例如，通过MX bean公开所有指标），但它并不安全。
 
 如果不想通过JMX连接到节点，那么可以使用`-nojmx`命令行参数简单地禁用它：
@@ -459,5 +459,5 @@ chmod 600 jmxremote.password
 ::: warning 注意
 注意可能需要具有root访问权限才能执行上述某些命令。
 :::
-### 4.8.2.高级认证技术
+### 8.2.高级认证技术
 上述基于文件的认证在大多数情况下不能提供足够的安全性，并且仅在开发过程中适用。在生产中运行时，应考虑使用SSL和安全认证协议（如LDAP），有关更详细的信息，请参见[Oracle文档](http://docs.oracle.com/javase/7/docs/technotes/guides/management/agent.html)。

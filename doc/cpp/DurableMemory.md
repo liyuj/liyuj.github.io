@@ -1,11 +1,11 @@
-# 6.固化内存
-## 6.1.固化内存
+# 固化内存
+## 1.固化内存
 Ignite分布式内存平台基于固化内存架构，在启用[Ignite持久化存储](/doc/cpp/Persistence.md#_1-ignite持久化)特性之后，可以同时在内存和磁盘上存储和处理数据，这个架构可以使用集群的所有可用资源，实现了带有磁盘存储能力的内存级性能。
 
 ![](https://files.readme.io/ac2ff0d-durable-memory.png)
 
 Java版本的[固化内存](/doc/java/DurableMemory.md)文档有更详细的描述。
-### 6.1.1.配置
+### 1.1.配置
 在C++代码中，固化内存可以使用如下的Spring XML配置文件进行配置：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">

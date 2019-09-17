@@ -1,12 +1,12 @@
-# 17.基准测试
-## 17.1.基准测试
-### 17.1.1.Yardstick Ignite基准测试
+# 基准测试
+## 1.基准测试
+### 1.1.Yardstick Ignite基准测试
 Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度量Ignite各种组件和模块的性能。
 
 下面的文档描述了如何配置和执行预编译的测试，如果需要添加新的基准测试或者构建已有的测试，那么请参照源代码目录中的DEVNOTES.txt文件中的介绍。
 
 访问[Yardstick库](https://github.com/gridgain/yardstick)可以了解更多的细节，比如生成的测试报告以及框架的工作原理。
-### 17.1.2.在本机运行Ignite的基准测试
+### 1.2.在本机运行Ignite的基准测试
 进行测试的最简单方式是使用`benchmarks/bin`目录中的可执行脚本。
 ```bash
 ./bin/benchmark-run-all.sh config/benchmark-sample.properties
@@ -14,7 +14,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
 上面的命令会测试一个分布式原子化缓存的`put`操作，测试结果会被添加到一个自动生成的`output/results-{DATE-TIME}`目录中。
 
 如果`./bin/benchmark-run-all.sh`命令执行时没有传递任何参数，并且也没有修改配置文件，那么所有的可用测试会在本地主机使用`config/benchmark.properties`配置文件执行，遇到问题，会在一个自动生成的目录`output/logs-{DATE-TIME}`中生成日志。
-### 17.1.3.在远程运行Ignite的基准测试
+### 1.3.在远程运行Ignite的基准测试
 如果要在若干远程主机上进行测试，需要按照如下步骤进行：
 
  1. 打开`config/ignite-remote-config.xml`文件，然后将`<value>127.0.0.1:47500..47509</value>`替换为实际的所有远程主机IP列表，如果要使用其它类型的IP探测器，可以参照相关的集群配置文档；
@@ -30,7 +30,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
 上面的命令会测试一个分布式原子化缓存的`put`操作，测试结果会被添加到一个自动生成的`output/results-{DATE-TIME}`目录中。
 
 如果要在远程节点执行所有的测试，那么需要在`DRIVER`端执行`/bin/benchmark-run-all.sh config/benchmark-remote.properties`。
-### 17.1.4.已有的测试点
+### 1.4.已有的测试点
 目前提供的测试点如下：
 
  1. `GetBenchmark`：测试分布式原子化缓存的`get`操作；
@@ -58,7 +58,7 @@ Ignite的基准测试是在Yardstick框架之上实现的，通过它可以度�
  23. `PutAllBenchmark`：测试在分布式原子化缓存中进行批量`put`操作；
  24. `PutAllTxBenchmark`：测试在分布式事务化缓存中进行批量`put`操作。
 
-### 17.1.5.属性文件和命令行参数
+### 1.5.属性文件和命令行参数
 本章节只会描述和Ignite测试有关的配置参数，并不是Yardstick框架的所有参数。如果要进行Ignite测试并且生成结果，需要使用`bin`文件夹中的Yardstick框架脚本执行测试用例。
 
 在[Yardstick文档](https://github.com/gridgain/yardstick/blob/master/README.md)中有Yardstick框架的配置参数和命令行参数的详细说明。
@@ -92,10 +92,10 @@ SERVER_HOSTS=localhost,localhost
 # Yardstick framework.
 CONFIGS="-b 1 -sm PRIMARY_SYNC -dn PutBenchmark`IgniteNode"
 ```
-### 17.1.6.从源代码构建
+### 1.6.从源代码构建
 在Ignite的根目录中执行:`mvn clean package -Pyardstick -pl modules/yardstick -am -DskipTests`。
 这个命令会对工程进行编译，还会从`yardstick-resources.zip`文件中解压脚本到`modules/yardstick/target/assembly/bin`目录。
 
 构件位于`modules/yardstick/target/assembly`目录。
-### 17.1.7.自定义Ignite测试
+### 1.7.自定义Ignite测试
 所有的测试用例都需要继承`AbstractBenchmark`类，并且实现`test`方法（这个方法实际执行性能测试）。

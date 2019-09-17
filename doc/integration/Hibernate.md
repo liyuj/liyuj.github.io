@@ -1,6 +1,6 @@
-# 8.Hibernate
-## 8.1.Hibernate二级缓存
-### 8.1.1.概述
+# Hibernate
+## 1.Hibernate二级缓存
+### 1.1.概述
 Ignite可以用做Hibernate的二级缓存，它可以显著地提升应用持久化层的性能。
 
 Hibernate是著名的、应用广泛的对象关系映射框架(ORM),在与SQL数据库紧密互动的同时，它通过对查询结果集的缓存来最小化昂贵的数据库请求。
@@ -23,7 +23,7 @@ Hibernate数据库映射对象的所有工作都是在一个会话中完成的�
 
 本章节的后面会详细介绍这些步骤的细节。
 
-### 8.1.2.二级缓存配置
+### 1.2.二级缓存配置
 要将Ignite配置为Hibernate的二级缓存，不需要修改已有的Hibernate代码，只需要：
 
  - 在工程中添加`ignite-hibernate_5.1`或者`ignite-hibernate_4.2`模块的依赖，或者，如果是从命令行启动节点，也可以从`{apache_ignite_relese}/libs/optional`中拷贝同名的jar文件到`{apache_ignite_relese}/libs`文件夹；
@@ -172,7 +172,7 @@ $IGNITE_HOME/bin/ignite.sh my-config-folder/my-ignite-configuration.xml
 节点也可以在其它主机上启动，以形成一个分布式的缓存集群，一定要确保在配置文件中指定正确的网络参数。
 :::
 
-### 8.1.3.查询缓存
+### 1.3.查询缓存
 除了二级缓存，Hibernate还提供了查询缓存，这个缓存存储了通过指定参数集进行查询的结果(或者是HQL或者是Criteria)，因此，当重复用同样的参数集进行查询时，它会命中缓存而不会去访问数据库。
 
 查询缓存对于反复用同样的参数集进行查询时是有用的。像二级缓存的场景一样，Hibernate依赖于一个第三方的缓存实现，Ignite也可以这样用。
@@ -181,7 +181,7 @@ $IGNITE_HOME/bin/ignite.sh my-config-folder/my-ignite-configuration.xml
 要考虑使用Ignite的SQL网格会比通过Hibernate性能更好。
 :::
 
-### 8.1.4.查询缓存配置
+### 1.4.查询缓存配置
 上面的配置信息完全适用于查询缓存，但是额外的配置和代码变更还是必要的。
 
 **Hibernate配置**
@@ -221,5 +221,5 @@ criteria.setCacheable(true);
 </property>
 ```
 注意为了更好的性能缓存配置为`原子化`的。
-### 8.1.5.示例
+### 1.5.示例
 GitHub上有完整的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java-lgpl/org/apache/ignite/examples/datagrid/hibernate/HibernateL2CacheExample.java)。

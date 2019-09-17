@@ -1,6 +1,6 @@
-# 4.OSGi支持
-## 4.1.在Apache Karaf中安装
-### 4.1.1.概述
+# OSGi支持
+## 1.在Apache Karaf中安装
+### 1.1.概述
 [Apache Karaf](https://karaf.apache.org/)是一个轻量级、功能强大的企业级OSGi容器，它支持Eclipse Equinox和Apache Felix运行时。
 
 > **支持Apache Karaf4.0.0版本系列**
@@ -8,7 +8,7 @@ Ignite在Karaf4.0.0版本系列上进行了测试，可能也可以工作于更�
 
 为了方便不同Ignite模块的部署（包括它们的依赖），Ignite提供了一套打包进特性库的[Karaf特性](https://karaf.apache.org/manual/latest/users-guide/provisioning.html)，这使得借助于Karaf Shell的一个命令就可以快速地将Ignite部署进OSGi环境。
 
-### 4.1.2.准备步骤
+### 1.2.准备步骤
 首先，Ignite使用了Oracle/Sun JRE的底层包`sun.nio.ch`(OpenJDK也有效)。
 
 因为这是一个专有的包（并不是Java标准规范的一部分），Apache Kafka默认并没有从[System Bundle](http://wiki.osgi.org/wiki/System_Bundle)（bundle 0）中导出它，因此必须通过[修改${KARAF_BASE}/etc/jre.properties文件](https://karaf.apache.org/manual/latest-2.2.x/users-guide/jre-tuning.html)通知Kafka导出它。
@@ -22,7 +22,7 @@ jre-1.8= \
  org.xml.sax.helpers, \
  sun.nio.ch
 ```
-### 4.1.3.安装Ignite特性库
+### 1.3.安装Ignite特性库
 使用Apache Karaf Shell中的如下命令来安装Ignite特性库，确保容器可以连接到互联网或者一个包含Ignite组件的备用Maven仓库。
 
 将Ignite特性库加入Karaf：
@@ -50,7 +50,7 @@ ignite-kafka                  | 1.5.0.SNAPSHOT   |          | Uninstalled | igni
 karaf@root()>
 ```
 
-### 4.1.4.安装合适的Ignite特性
+### 1.4.安装合适的Ignite特性
 下面的特性是有点特别的：
 
  - `ignite-core`：ignite-core模块，它是所有其它特性依赖的，因此不要忘了安装；
@@ -65,7 +65,7 @@ karaf@root()>
 ```
 一些模块是OSGi片段而不是组件，当安装它们时，可能会注意到，Karaf Shell以及/或者`ignite-core`，其中一个或者两者，重新启动。
 
-### 4.1.5.ignite-log4j和Pax Logging
+### 1.5.ignite-log4j和Pax Logging
 
 > **当Karaf版本<=4.0.3时如果使用Pax Logging请仔细阅读这个注释**
 安装`ignite-log4j`这个特性时，Karaf Shell可能显示下面的消息：
@@ -99,7 +99,7 @@ karaf@root()> la | grep ignite-osgi-paxlogging
 karaf@root()>
 ```
 
-## 4.2.支持的模块
+## 2.支持的模块
 以下的模块已OSGi化：
 
  - ignite-core
@@ -137,8 +137,8 @@ karaf@root()>
  - ignite-visor-console[-2.10]
  - ignite-yarn
 
-## 4.3.在OSGi容器中启动
-### 4.3.1.容器的配置
+## 3.在OSGi容器中启动
+### 3.1.容器的配置
 要在一个OSGi容器中启动Ignite，至少要安装如下的组件：
 
  - ignite-core
@@ -148,7 +148,7 @@ karaf@root()>
 当在Karaf中部署时，可以通过使用Ignite特性库来快速地安装`ignite-core`特性，可以参照[在Apache Karaf中安装](#_4-1-在apache-karaf中安装)章节来了解更多的信息。
 
 可以随意地安装额外的Ignite模块来扩展平台的功能，就像在一个标准环境中将模块加入类路径一样。
-### 4.3.2.实现Ignite组件Activator
+### 3.2.实现Ignite组件Activator
 要启动Ignite，通过继承抽象类`org.apache.ignite.osgi.IgniteAbstractOsgiContextActivator`来实现一个OSGi组件Activator：
 ```java
 package org.apache.ignite.osgi.examples;

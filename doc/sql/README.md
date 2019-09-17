@@ -1,5 +1,5 @@
-# 1.介绍
-## 1.1.概述
+# 介绍
+## 1.概述
 Apache Ignite是一个兼容ANSI-99、水平可扩展以及容错的分布式SQL数据库，这个分布式是以数据在集群范围的复制或者分区的形式提供的，具体的形式取决于使用场景。
 
 作为一个SQL数据库，Ignite支持所有的DML指令，包括SELECT、UPDATE、INSERT和DELETE，它还实现了一个与分布式系统有关的DDL指令的子集。
@@ -11,12 +11,12 @@ Ignite的一个突出特性是完全支持分布式的SQL关联，Ignite支持�
 和很多的分布式SQL数据库不同，对于数据和索引，Ignite将内存和磁盘都视为完整有效的存储层，但是磁盘是可选的，如果禁用，Ignite就变为纯内存数据库。
 
 可以像其它的SQL存储一样，根据需要与Ignite进行交互，比如通过外部的工具或者应用使用JDBC或者ODBC驱动进行连接。在这之上，Java、.NET和C++开发者也可以使用Ignite的原生SQL API。
-## 1.2.入门
-### 1.2.1.概述
+## 2.入门
+### 2.1.概述
 Ignite支持数据定义语言(DDL)语句，可以在运行时创建和删除表和索引，还可以支持数据操作语言(DML)来执行查询，这些不管是Ignite的原生SQL API还是ODBC和JDBC驱动，都是支持的。
 
 在下面的示例中，会使用一个包含两个表的模式，这些表会用于保存城市以及居住在那里的人的信息，假定一个城市有很多的人，并且人只会居住于一个城市，这是一个一对多（1：m）的关系。
-### 1.2.2.SQL接入
+### 2.2.SQL接入
 作为入门来说，可以使用一个SQL工具，在后面的[SQL工具](/doc/sql/ToolsAndAnalytics.md#_1-sql工具)章节中会有一个示例来演示如何配置SQL工具。还可以使用[SQLLine](/doc/sql/ToolsAndAnalytics.md#_2-sqlline)接入集群然后在命令行执行SQL语句。
 
 如果希望从源代码入手，下面的示例代码会演示如果通过JDBC以及ODBC驱动来获得一个连接：
@@ -76,7 +76,7 @@ modules\platforms\cpp\project\vs\x64\Release\ignite.exe
     <version>${ignite.version}</version>
 </dependency>
 ```
-### 1.2.3.创建表
+### 2.3.创建表
 当前，创建的每个表都会位于`PUBLIC`模式，在`模式和索引`章节会有更详细的信息。
 
 下面的示例代码会创建City和Person表：
@@ -145,7 +145,7 @@ SQLExecDirect(stmt, query, queryLen);
 很多时候将不同的条目并置在一起非常有用，通常业务逻辑需要访问不止一个数据条目，将它们并置在一起会确保具有相同`affinityKey`的所有条目会被缓存在同一个节点上，这样就不需要从远程获取数据以避免耗时的网络开销。
 
 在本示例中，有`City`和`Person`对象，并且希望并置`Person`对象及其居住的`City`对象，要做到这一点，就像上例所示，使用了`WITH`子句并且指定了`affinityKey=city_id`。
-### 1.2.4.创建索引
+### 2.4.创建索引
 定义索引可以加快查询的速度，下面是创建索引的示例：
 
 **SQL：**
@@ -187,7 +187,7 @@ SQLSMALLINT queryLen2 = static_cast<SQLSMALLINT>(sizeof(query2));
 
 ret = SQLExecDirect(stmt, query2, queryLen2);
 ```
-### 1.2.5.插入数据
+### 2.5.插入数据
 对数据进行查询之前，需要在两个表中加载部分数据，下面是如何往表中插入数据的示例：
 
 **SQL：**
@@ -322,7 +322,7 @@ personCache.query(query.setArgs(2, "Jane Roe", 2)).getAll();
 personCache.query(query.setArgs(3, "Mary Major", 1)).getAll();
 personCache.query(query.setArgs(4, "Richard Miles", 2)).getAll();
 ```
-### 1.2.6.查询数据
+### 2.6.查询数据
 数据加载之后，就可以执行查询了。下面就是如何查询数据的示例，其中包括两个表之间的关联：
 
 **SQL：**
@@ -395,7 +395,7 @@ while (iterator.hasNext()) {
     System.out.println(">>>    " + row.get(0) + ", " + row.get(1));
 }
 ```
-### 1.2.7.修改数据
+### 2.7.修改数据
 有时数据是需要修改的，这时就可以执行修改操作来修改已有的数据，下面是如何修改数据的示例：
 
 **SQL：**
@@ -435,7 +435,7 @@ SqlFieldsQuery query = new SqlFieldsQuery(
 
 cityCache.query(query).getAll();
 ```
-### 1.2.8.删除数据
+### 2.8.删除数据
 可能还需要从数据库中删除数据，下面是删除数据的示例：
 
 **SQL：**
@@ -474,5 +474,5 @@ SqlFieldsQuery query = new SqlFieldsQuery(
 
 personCache.query(query).getAll();
 ```
-### 1.2.9.示例
+### 2.9.示例
 GitHub上有和这个入门文档有关的完整[代码](https://github.com/VeryFatBoy/Ignite-SQL-Getting-Started)。

@@ -1,11 +1,11 @@
-# 9.管理和监控
-## 9.1.系统视图
+# 管理和监控
+## 1.系统视图
 Ignite提供了一组内置的视图，它们包含了与集群节点和节点指标有关的各种信息。这些视图位于`IGNITE`模式中，在[3.6.模式](/doc/sql/Architecture.md#_6-模式)中介绍了在Ignite中访问非默认的模式的方法。
 ::: tip 限制
 1)无法在IGNITE模式中创建对象；<br>
 2)IGNITE模式中的视图无法与用户级的表进行关联。
 :::
-### 9.1.1.NODES视图
+### 1.1.NODES视图
 NODES视图中包括了集群节点的各种信息。
 
 **列**
@@ -21,7 +21,7 @@ NODES视图中包括了集群节点的各种信息。
 |`ADDRESSES`|VARCHAR|节点的地址|
 |`HOSTNAMES`|VARCHAR|节点的主机名|
 
-### 9.1.2.NODE_ATTRIBUTES视图
+### 1.2.NODE_ATTRIBUTES视图
 NODE_ATTRIBUTES视图包括了集群节点的属性信息。
 
 **列**
@@ -32,7 +32,7 @@ NODE_ATTRIBUTES视图包括了集群节点的属性信息。
 |`NAME`|VARCHAR|属性名|
 |`VALUE`|VARCHAR|属性值|
 
-### 9.1.3.BASELINE_NODES视图
+### 1.3.BASELINE_NODES视图
 BASELINE_NODES视图包括了当前基线拓扑中的节点信息。
 
 **列**
@@ -42,7 +42,7 @@ BASELINE_NODES视图包括了当前基线拓扑中的节点信息。
 |`CONSISTENT_ID`|VARCHAR|节点唯一性ID|
 |`ONLINE`|BOOLEAN|节点的运行状态|
 
-### 9.1.4.NODE_METRICS视图
+### 1.4.NODE_METRICS视图
 NODE_METRICS视图提供了与节点状态、资源消耗等有关的各种信息。
 
 **列**
@@ -106,7 +106,7 @@ NODE_METRICS视图提供了与节点状态、资源消耗等有关的各种信�
 |`RECEIVED_BYTES_COUNT`|LONG|接收的字节量|
 |`OUTBOUND_MESSAGES_QUEUE`|INT|出站消息队列大小|
 
-### 9.1.5.示例
+### 1.5.示例
 可以使用SQLLine工具查询系统视图，先接入IGNITE模式，如下：
 ```bash
 $ ./sqlline.sh -u jdbc:ignite:thin://127.0.0.1/IGNITE
@@ -143,7 +143,7 @@ try (IgniteClient igniteClient = Ignition.startClient(cfg)) {
     System.err.format("Unexpected failure: %s\n", e);
 }
 ```
-## 9.2.JDBC/ODBC会话管理
+## 2.JDBC/ODBC会话管理
 接入集群的JDBC/ODBC/瘦客户端列表，可以通过一个JMX客户端使用`org.apache.ignite.mxbean.ClientProcessorMXBean`MBean获取。
 
 下图显示了如何使用JConsole进行访问：

@@ -1,8 +1,8 @@
-# 5.Informatica
-## 5.1.Informatica
-### 5.1.1.概述
+# Informatica
+## 1.Informatica
+### 1.1.概述
 Informatica是一个云数据管理和集成工具，可以通过ODBC连接将Informatica接入Ignite。
-### 5.1.2.从Informatica PowerCenter Designer接入
+### 1.2.从Informatica PowerCenter Designer接入
 在PowerCenter Designer中，必须安装32位的Ignite ODBC驱动才能接入Ignite，可以按照下面链接的内容安装ODBC驱动并且创建DSN：
 
  - [在Windows上安装](/doc/sql/ODBC.md#_1-6-1-在Windows上安装)
@@ -14,7 +14,7 @@ Informatica是一个云数据管理和集成工具，可以通过ODBC连接将In
  2. 通过选择`Apache Ignite DSN`作为ODBC数据源接入集群。
 
 ![](https://files.readme.io/decd6fe-ImportTables.png)
-### 5.1.3.在Informatica服务节点上安装Ignite ODBC
+### 1.3.在Informatica服务节点上安装Ignite ODBC
 在[在Linux上构建](/doc/sql/ODBC.md#_1-5-2-在Linux上构建)和[在Linux上安装](/doc/sql/ODBC.md#_1-6-2-在Linux上安装)文档中，描述了如何在Ignite服务端节点上安装Ignite ODBC。
 
 Informatica会使用`$ODBCINI`和`$ODBCISTINI`环境变量指定的配置文件（[为ODBC配置UNIX环境变量](https://kb.informatica.com/howto/6/Pages/19/499306.aspx)）。
@@ -48,12 +48,12 @@ LD_LIBRARY_PATH=<UNIXODBC_LIB>:<IGNITE_ODBC_LIB>
 
 <INFORMATICA_HOME>/tools/debugtools/ssgodbc/linux64/ssgodbc.linux64 -d ApacheIgnite -u ignite -p ignite -v
 ```
-### 5.1.4.配置相关的连接
+### 1.4.配置相关的连接
 选择`Connections`>`Relational...`可以显示`Relational Connection Browser`。
 
 选中ODBC类型然后创建一个新的连接。
 ![](https://files.readme.io/bc56583-RelationalConnection.png)
-### 5.1.5.在Suse 11.4中安装Ignite ODBC
+### 1.5.在Suse 11.4中安装Ignite ODBC
 下面是在Suse 11.4环境中构建Ignite和Ignite ODBC驱动的步骤。
 
 **1.安装必要的包**

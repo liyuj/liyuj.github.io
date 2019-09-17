@@ -1,5 +1,5 @@
-# 1.介绍
-## 1.1.概述
+# 介绍
+## 1.概述
 Ignite可以无缝地与Hadoop和Spark集成，其中Ignite与Hadoop的集成可以将IGFS（Ignite文件系统）作为存储于HDFS中的数据的主要缓存层，Ignite与Spark的集成可以使用一个Spark RDD和DataFrames的实现在内存中跨多个Spark作业共享状态。
 
 **Ignite与Spark**

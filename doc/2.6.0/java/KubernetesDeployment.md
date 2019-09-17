@@ -1,5 +1,5 @@
-# 20.Kubernetes部署
-## 20.1.Kubernetes部署
+# Kubernetes部署
+## 1.Kubernetes部署
 Ignite集群可以容易地在[Kubernetes](https://kubernetes.io/)环境中部署和维护，Kubernetes是一个开源的系统，可以自动化地部署、伸缩以及管理容器化的应用。
 
 本文档会引导用户将Ignite部署进Kubernetes环境，还会涉及一些与Ignite有关的特殊性内容。
@@ -13,17 +13,17 @@ Ignite集群可以容易地在[Kubernetes](https://kubernetes.io/)环境中部�
  - `Microsoft Azure部署`
  - `Google Cloud部署`
 
-## 20.2.常规配置
-### 20.2.1.无状态部署
+## 2.常规配置
+### 2.1.无状态部署
 如果使用纯内存方式或者作为第三方数据库（RDBMS, NoSQL）的缓存层，那么需要将其按照无状态的解决方案进行部署。
-#### 20.2.1.1.要求
+#### 2.1.1.要求
 确保如下事项已经完成
 
  - 环境中已经部署了Kubernetes集群；
  - 已经配置了RBAC授权；
  - 已经部署了Ignite服务；
 
-#### 20.2.1.2.Kubernetes IP探测器
+#### 2.1.2.Kubernetes IP探测器
 要开启Kubernetes环境下Ignite节点的自动发现，需要在`IgniteConfiguration`中启用`TcpDiscoveryKubernetesIpFinder`，下面会创建一个名为`example-kube-rbac.xml`的配置文件，然后像下面这样定义相关的配置：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -50,7 +50,7 @@ Ignite集群可以容易地在[Kubernetes](https://kubernetes.io/)环境中部�
 </beans>
 ```
 下面，就可以为Ignite配置组准备一套Kubernetes环境然后部署了。
-#### 20.2.1.3.Ignite配置组部署
+#### 2.1.3.Ignite配置组部署
 最后，需要为Ignite配置组定义一个yaml格式配置文件。
 
 ignite-deployment.yaml：
@@ -111,7 +111,7 @@ ignite-cluster-3454482164-w0xtx   1/1       Running   0          25m
 ```bash
 kubectl logs ignite-cluster-3454482164-d4m6g
 ```
-#### 20.2.1.4.调整Ignite集群大小
+#### 2.1.4.调整Ignite集群大小
 可以使用标准的Kubernetes API随时调整Ignite集群的大小。比如，如果想把集群从2个节点扩容到5个节点，那么可以使用下面的命令：
 ```bash
 kubectl scale --replicas=5 -f ignite-deployment.yaml
@@ -129,11 +129,11 @@ ignite-cluster-3454482164-r20f8   1/1       Running   0          58s
 ignite-cluster-3454482164-vf8kh   1/1       Running   0          58s
 ignite-cluster-3454482164-w0xtx   1/1       Running   0          34m
 ```
-#### 20.2.1.5.在Microsoft Azone环境中部署
+#### 2.1.5.在Microsoft Azone环境中部署
 参照[Microsoft Azone环境部署](https://dzone.com/articles/deploying-apache-ignite-in-kubernetes-on-microsoft)相关章节。
-#### 20.2.1.6.在Amazon AWS环境中部署
+#### 2.1.6.在Amazon AWS环境中部署
 参照[AWS环境部署](https://www.gridgain.com/resources/blog/kubernetes-and-apacher-ignitetm-deployment-aws)相关内容。
-#### 20.2.1.7.在OpenShift环境中部署
+#### 2.1.7.在OpenShift环境中部署
 对于使用Docker容器的Kubernetes，[OpenShift](https://www.openshift.com/)也是支持的，但是它有自己的RBAC（基于角色的访问控制）特性，这与Kubernetes直接提供的机制不完全兼容，这也是为什么部分命令会导致`拒绝访问`错误的原因，这时就需要一些额外的配置，如下：
 
 1.使用OpenShift的CLI创建一个具有`view`角色的服务账户；
@@ -174,16 +174,16 @@ spec:
       serviceAccountName: ignite
     ...
 ```
-### 20.2.2.有状态部署
+### 2.2.有状态部署
 如果Ignite部署为内存数据库，并且打开了原生持久化，那么就需要按照有状态的解决方案进行部署。
-#### 20.2.2.1.要求
+#### 2.2.1.要求
 确保如下事项已经完成
 
  - 环境中已经部署了Kubernetes集群；
  - 已经配置了RBAC授权；
  - 已经部署了Ignite服务；
 
-#### 20.2.2.2.Kubernetes IP探测器
+#### 2.2.2.Kubernetes IP探测器
 要开启Kubernetes环境下Ignite节点的自动发现，需要在`IgniteConfiguration`中启用`TcpDiscoveryKubernetesIpFinder`，下面会创建一个名为`example-kube-persistence.xml`的配置文件，然后像下面这样定义相关的配置：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -227,7 +227,7 @@ spec:
 该配置开启了Ignite的原生持久化，确保数据能够保存在磁盘上。
 
 下面，就可以为Ignite配置组准备一套Kubernetes环境然后部署了。
-#### 20.2.2.3.有状态集部署
+#### 2.2.3.有状态集部署
 最后，需要为Ignite有状态集定义一个YAML格式配置文件：
 ```yaml
 apiVersion: apps/v1beta2
@@ -303,7 +303,7 @@ ignite-1   1/1       Running   0          4m
 ```bash
 kubectl logs ignite-0 --namespace=ignite
 ```
-#### 20.2.2.4.调整Ignite集群大小
+#### 2.2.4.调整Ignite集群大小
 属于标准的Kubernetes API，可以随时调整Ignite集群的大小。比如希望将集群从2个节点扩容到4个节点，可以使用下面的命令：
 ```bash
 kubectl scale sts ignite --replicas=4 --namespace=ignite
@@ -320,7 +320,7 @@ ignite-1   1/1       Running   0          18m
 ignite-2   1/1       Running   0          12m
 ignite-3   1/1       Running   0          9m
 ```
-#### 20.2.2.5.Ignite集群激活
+#### 2.2.5.Ignite集群激活
 因为部署使用了Ignite的原生持久化，因此启动之后集群需要激活，怎么做呢，接入一个配置组：
 ```bash
 kubectl exec -it ignite-0 --namespace=ignite -- /bin/bash
@@ -333,15 +333,15 @@ cd /opt/ignite/apache-ignite-fabric/bin/
 ```bash
 ./control.sh --activate
 ```
-### 20.2.3.RBAC授权
-#### 20.2.3.1.概述
+### 2.3.RBAC授权
+#### 2.3.1.概述
 [基于角色的访问控制（RBAC）](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)是一种企业内基于单个用户的角色来调节对计算机或网络资源访问的常规方法。
 
 RBAC使用`rbac.authorization.k8s.io`API组来驱动授权决策，允许管理员通过Kubernetes API动态地配置策略。
 建议为Ignite部署配置RBAC，以对部署进行细粒度的控制，避免与安全有关的问题。
-#### 20.2.3.2.要求
+#### 2.3.2.要求
 假定已经部署好了一套Kubernetes集群环境。
-#### 20.2.3.3.创建命名空间
+#### 2.3.3.创建命名空间
 需要为Ignite部署创建一个唯一的命名空间，在本案例中命名空间名字为`ignite`：
 
 ignite-namespace.yaml：
@@ -355,7 +355,7 @@ metadata:
 ```bash
 kubectl create -f ignite-namespace.yaml
 ```
-#### 20.2.3.4.创建服务账户
+#### 2.3.4.创建服务账户
 通过下面的方式配置Ignite服务账户：
 
 ignite-service-account.yaml：
@@ -370,7 +370,7 @@ metadata:
 ```bash
 kubectl create -f ignite-service-account.yaml
 ```
-#### 20.2.3.5.创建角色
+#### 2.3.5.创建角色
 通过下面的方式创建Ignite服务使用的角色，该服务用于节点的自动发现，并且用作远程应用的负载平衡器。
 
 ignite-account-role.yaml：
@@ -422,11 +422,11 @@ kubectl create -f ignite-role-binding.yaml
 ```bash
 kubectl config set-context $(kubectl config current-context) --namespace=ignite
 ```
-### 20.2.4.Ignite服务
+### 2.4.Ignite服务
 Ignite服务用于Ignite节点的自动发现，还有做为要接入集群的外部应用的负载平衡器。
 
 本文描述如何配置和部署Ignite服务。
-#### 20.2.4.1.Ignite服务部署
+#### 2.4.1.Ignite服务部署
 Ignite的`KubernetesIPFinder`需要用户配置和部署一个特定的Kubernetes服务，它会维护一个所有有效的Ignite配置组的IP地址列表。
 
 每次启动一个新的Ignite配置组，IP探测器会通过Kubernetes API接入服务来获取已有的Ignite配置组地址列表。通过这些地址，新的节点就可以发现集群中的其它节点从而最终加入Ignite集群。
@@ -469,14 +469,14 @@ kubectl create -f ignite-service.yaml
 ```bash
  kubectl get svc ignite --namespace=ignite
 ```
-### 20.2.5.Kubernetes IP探测器
-#### 20.2.5.1.概述
+### 2.5.Kubernetes IP探测器
+#### 2.5.1.概述
 将Ignite节点以Kubernetes配置组的形式进行部署，对Ignite节点的发现机制有一定的要求。因为防火墙通常会阻止组播通信的原因，很可能无法直接使用基于组播的IP探测器。但是，只要Kubernetes动态地分配了地址，就可以列出所有节点的IP地址，然后使用静态IP探测器。
 
 也可以考虑Amazon AWS IP探测器、Google Compute Engine IP探测器或者JClouds IP探测器，但是Kubernetes必须部署在这些云环境中。另外，也可以使用共享文件系统或者关系型数据库用于节点的自动发现，但是必须单独维护数据库或者共享文件系统。
 
 本文会描述有关针对使用Kubernetes技术容器化的Ignite节点，专门开发的IP探测器，该IP探测器会自动搜索所有在线的Ignite配置组的IP地址，它是通过与一个持有所有最新端点的Kubernetes服务进行通信实现的。
-#### 20.2.5.2.基于Kubernetes服务的发现
+#### 2.5.2.基于Kubernetes服务的发现
 如果要开启Kubernetes环境的节点自动发现，需要在下面的配置中使用`TcpDiscoveryKubernetesIpFinder`：
 
 XML：
@@ -548,7 +548,7 @@ spec:
 1. 需要在Ignite配置组的yaml文件中配置`hostNetwork=true`，这样就可以从外部与容器化的Ignite配置组建立TCP/IP连接；
 2. 在Kubernetes环境外部，使用同样的`TcpDiscoveryKubernetesIpFinder`。
 
-#### 20.2.5.3.配置参数
+#### 2.5.3.配置参数
 通常，`TcpDiscoveryKubernetesIpFinder`的设计是直接可用，但是通过下面的参数也可以进行细粒度的控制：
 
 |属性|描述|默认值|
@@ -558,8 +558,8 @@ spec:
 |`setMasterUrl(String)`|配置Kubernetes API服务器的主机名。|`https://kubernetes.default.svc.cluster.local:443`|
 |`setAccountToken(String)`|配置服务令牌文件的路径。|`/var/run/secrets/kubernetes.io/serviceaccount/token`|
 
-## 20.3.Microsoft Azone部署
-### 20.3.1.Azone Kubernetes服务部署
+## 3.Microsoft Azone部署
+### 3.1.Azone Kubernetes服务部署
 第一步是配置Azone Kubernetes服务（AKS）集群，具体可以看下面的资料：
 
  - [通过Azone门户部署AKS集群](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
@@ -626,7 +626,7 @@ az aks browse --resource-group IgniteCluster --name IgniteCluster
 打开仪表盘之后，转到`Cluster`->`Nodes`，确认是否可以看到正在运行的AKS集群的所有节点。
 
 ![](https://files.readme.io/c08ab74-Screen_Shot_2018-06-28_at_3.19.27_PM.png)
-### 20.3.2.Ignite集群部署
+### 3.2.Ignite集群部署
 要在Azone Kubernetes服务中部署Ignite集群，需要至少3步：
 
  - 配置RBAC授权；
@@ -682,7 +682,7 @@ cd /opt/ignite/apache-ignite-fabric/bin/
 ```bash
 ./control.sh --activate
 ```
-### 20.3.3.从外部应用接入
+### 3.3.从外部应用接入
 下面会从外部应用（未部署在Kubernetes中）接入集群，本示例会使用SQL接口通过JDBC驱动接入Ignite。
 
 首先，找到Ignite服务的外部地址，比如，转到`Discovery and Load Balancing`->`Services`，然后通过端口号10800选择一个外部端点（这是IgniteSQL驱动的默认端口）。
@@ -702,8 +702,8 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
     WHERE country.code IN ('USA','RUS','CHN')
     GROUP BY country.name, city.name ORDER BY max_pop DESC LIMIT 3;
 ```
-## 20.4.Google Cloud部署
-### 20.4.1.Google Kubernetes引擎部署
+## 4.Google Cloud部署
+### 4.1.Google Kubernetes引擎部署
 第一步是按照Google的说明配置Google Kubernetes引擎（GKE）集群：
 
  - [创建集群](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-cluster)
@@ -767,7 +767,7 @@ gke-ignitecluster-default-pool-4b1a4860-v719   Ready     <none>    1m       v1.1
 gke-ignitecluster-default-pool-4b1a4860-xltc   Ready     <none>    1m       v1.10.4-gke.2
 gke-ignitecluster-default-pool-4b1a4860-z9vs   Ready     <none>    1m       v1.10.4-gke.2
 ```
-### 20.4.2.Ignite集群部署
+### 4.2.Ignite集群部署
 要在Google Kubernetes引擎中部署Ignite集群，需要至少三步操作：
 
  - 配置RBAC授权；
@@ -831,7 +831,7 @@ cd /opt/ignite/apache-ignite-fabric/bin/
 ```bash
 ./control.sh --activate
 ```
-### 20.4.3.从外部应用接入
+### 4.3.从外部应用接入
 下面会从外部应用（未部署在Kubernetes中）接入集群，本示例会使用SQL接口通过JDBC驱动接入Ignite。
 
 首先，找到Ignite服务的外部地址，比如，转到`Kubernetes Engine` > `Services`，然后通过端口号10800选择一个外部端点（这是IgniteSQL驱动的默认端口）。

@@ -1,6 +1,6 @@
-# 3.架构
-## 3.1.IgniteSQL的工作方式
-### 3.1.1.概述
+# 架构
+## 1.IgniteSQL的工作方式
+### 1.1.概述
 Ignite的SQL引擎是与[H2数据库](http://www.h2database.com/)紧紧绑定在一起的，简而言之，H2是一个Java写的，遵循一组开源许可证，基于内存和磁盘的速度很快的数据库。
 
 当`ignite-indexing`模块加入节点的类路径之后，一个嵌入式的H2数据库实例就会作为Ignite节点进程的一部分被启动。如果节点是在终端中通过`ignite.sh{bat}`脚本启动的，那么该模块会自动地加入类路径，因为它已经被放入了`{apache_ignite}\libs\`目录中。
@@ -30,7 +30,7 @@ Ignite SQL网格执行查询有两种方式：
 关联查询的执行流程与上面描述的`分区`缓存查询执行流程没什么不同。
 :::
 
-### 3.1.2.并发修改
+### 1.2.并发修改
 `UPDATE`和`DELETE`语句在内部会生成`SELECT`查询，目的是获得要更新的条目的集合。这个集合中的键是不会被锁定的，因此有一种可能就是在并发的情况下，属于某个键的值会被其它的查询修改。SQL引擎已经实现了一种技术，即首先避免锁定键，然后保证在DML语句执行更新时值是最新的。
 
 总体而言，引擎会并发地检测要更新的缓存条目的子集，然后重新执行`SELECT`语句来限制要修改的键的范围。
@@ -65,7 +65,7 @@ SELECT _key, _value, 'Mike' from Person WHERE secondName = 'Smith'
 DML引擎不会为并发删除的条目重复执行`SELECT`语句，重复执行的查询只针对还在缓存中的条目。
 :::
 
-### 3.1.3.已知的限制
+### 1.3.已知的限制
 **WHERE条件中的子查询**
 
 `INSERT`和`MERGE`语句中的子查询和`UPDATE`和`DELETE`操作自动生成的`SELECT`查询一样，如有必要都会被分布化然后执行，要么是并置，要么是非并置的模式。
@@ -89,8 +89,8 @@ SELECT _key, _val FROM Person WHERE id IN
 目前DML操作不支持`EXPLAIN`。
 
 一个方法就是执行`UPDATE`或`DELETE`语句自动生成的`SELECT`语句或者DML语句使用的`INSERT`或`MERGE`语句的执行计划，这样会提供一个要执行的DML操作所使用的索引情况。
-## 3.2.分布式关联
-### 3.2.1.概述
+## 2.分布式关联
+### 2.1.概述
 Ignite支持并置和非并置的分布式SQL关联，此外，如果数据位于不同的缓存，Ignite还可以进行跨缓存的关联。
 ```sql
 SELECT from Person as p, Organization as org
@@ -99,14 +99,14 @@ SELECT from Person as p, Organization as org
 `分区`和`复制`模式缓存之间的关联也可以无限制地进行。
 
 不过如果在`分区`模式的数据集之间进行关联，那么一定要确保要么关联的键是`并置`的，要么为查询开启了非并置关联参数，两种类型的分布式关联模式下面会详述。
-### 3.2.2.并置关联
+### 2.2.并置关联
 默认情况下，如果一个SQL关联需要跨越多个Ignite缓存，那么所有的缓存都需要是并置的，否则，查询完成后会得到一个不完整的结果集，这是因为在关联阶段一个节点只能使用本地节点的可用数据。
 
 如**图1**所示，首先，一个SQL查询会被发送到待关联数据所在的节点（Q），然后查询在每个节点的本地数据上立即执行（E（Q）），最后，所有的执行结果都会在客户端进行聚合（R）。
 
 ![](https://files.readme.io/2af89cf-Collocated_sql_queries.png)
 
-### 3.2.3.非并置关联
+### 2.3.非并置关联
 虽然关联并置是一个强大的概念，即一旦配置了应用的业务实体（缓存），就可以以最优的方式执行跨缓存的关联，并且返回一个完整且一致的结果集。但还有一种可能就是，无法并置所有的数据，这时，就可能无法执行满足需求的所有SQL查询了。
 
 Ignite设计和支持的**非并置**分布式关联就是针对的这样的场景，既无法或者很难并置所有的数据，但是仍然需要执行SQL查询。
@@ -144,12 +144,12 @@ Ignite设计和支持的**非并置**分布式关联就是针对的这样的场�
 不过在应用显式开启本地模式的第三个场景中需要注意，原因是如果希望在部分节点的`分区`缓存上执行本地查询时拓扑还发生了变化，那么可能得到结果集的一部分，因为这时会触发一个自动的数据再平衡过程，SQL引擎无法处理这个特殊情况。
 
 如果仍然希望在`分区`缓存上执行本地查询，那么需要考虑使用[这里](/doc/java/ComputeGrid.md#_6-2-基于关联的call方法和run方法)描述的关联计算技术。
-## 3.4.空间支持
-### 3.4.1.概述
+## 4.空间支持
+### 4.1.概述
 Ignite除了支持标准ANSI-99标准的SQL查询，支持基本数据类型或者特定/自定义对象类型之外，还可以查询和索引几何数据类型，比如点、线以及包括这些几何形状空间关系的多边形。
 
 空间信息的查询功能，以及对应的可用的函数和操作符，是在[SQL的简单特性规范](http://www.opengeospatial.org/docs/is/)中定义的，目前，Ignite通过[JTS Topology Suite](http://tsusiatsoftware.net/jts/main.html)的使用，支持规范的交叉操作。
-### 3.4.2.引入Ignite空间库
+### 4.2.引入Ignite空间库
 Ignite的空间库(`ignite-geospatial`)依赖于[JTS](http://tsusiatsoftware.net/jts/main.html)，它是LGPL许可证，不同于Apache的许可证，因此`ignite-geospatial`并没有包含在Ignite的发布版中。
 
 因为这个原因，`ignite-geospatial`的二进制库版本位于如下的Maven仓库中：
@@ -170,26 +170,26 @@ Ignite的空间库(`ignite-geospatial`)依赖于[JTS](http://tsusiatsoftware.net
 </dependency>
 ```
 另外，也可以下载Ignite的源代码自己构建这个库。
-## 3.5.性能和调试
-### 3.5.1.使用EXPLAIN语句
+## 5.性能和调试
+### 5.1.使用EXPLAIN语句
 为了读取执行计划以及提高查询性能的目的，Ignite支持`EXPLAIN ...`语法，注意一个计划游标会包含多行：最后一行是汇总节点的查询，其它是映射节点的。
 ```sql
 EXPLAIN SELECT name FROM Person WHERE age = 26;
 ```
 执行计划本身是由H2生成的，[这里](http://www.h2database.com/html/performance.html#explain_plan)有详细描述。
-### 3.5.2.使用H2调试控制台
+### 5.2.使用H2调试控制台
 当用Ignite进行开发时，有时对于检查表和索引是否正确或者运行在嵌入节点内部的H2数据库中的本地查询是非常有用的，为此Ignite提供了启动H2控制台的功能。要启用该功能，在启动节点时要将`IGNITE_H2_DEBUG_CONSOLE`系统属性或者环境变量设置为`true`。然后就可以在浏览器中打开控制台，可能需要点击控制台中的`刷新`按钮，因为有可能控制台在数据库对象初始化之前打开。
 
 ![](https://files.readme.io/OsddL8lfTOSLKqZWaTlI_Screen%20Shot%202015-08-24%20at%207.06.36%20PM.png)
 
-### 3.5.3.SQL性能和可用性考量
+### 5.3.SQL性能和可用性考量
 如果查询使用了操作符**OR**那么可能不是以期望的方式使用索引。比如对于查询：`select name from Person where sex='M' and (age = 20 or age = 30)`,会使用`sex`字段上的索引而不是`age`上的索引，虽然后者选择性更强。要解决这个问题需要用UNION ALL重写这个查询（注意没有ALL的UNION会返回去重的行，这会改变查询的语义而且引入了额外的性能开销），比如：
 ```sql
 select name from Person where sex='M' and age = 20
 UNION ALL
 select name from Person where sex='M' and age = 30
 ```
-### 3.5.4.结果集延迟加载
+### 5.4.结果集延迟加载
 Ignite默认会试图将所有结果集加载到内存然后将其发送给查询发起方(通常为应用客户端），这个方式在查询结果集不太大时提供了比较好的性能。
 
 不过如果相对于可用内存来说结果集过大，就是导致长期的GC暂停甚至内存溢出。
@@ -206,7 +206,7 @@ query.setLazy(true);
 ```
 jdbc:ignite:thin://192.168.0.15?lazy=true
 ```
-### 3.5.5.查询并置化的数据
+### 5.5.查询并置化的数据
 当Ignite执行分布式查询时，它将子查询发送给单个集群成员，并将结果分组到汇总节点上。如果预先知道查询的数据是按`GROUP BY`条件并置处理的，可以使用`SqlFieldsQuery.collocated = true`来减少节点之间的网络流量和查询执行时间。当此标志设置为`true`时，首先对单个节点执行查询，并将结果发送到汇总节点进行最终计算。考虑下面的示例，假设数据由`department_id`进行并置：
 
 **示例1**
@@ -222,7 +222,7 @@ SELECT SUM(salary) FROM Employee GROUP BY depatment_id
 SELECT AVG(salary) FROM Employee GROUP BY depatment_id
 ```
 在本例中，Ignite必须将所有`(salary, department_id)`对提取到汇总节点，并在那里计算结果。但是，如果员工按`department_id`字段进行并置，即同一部门的员工数据存储在同一个节点上，那么设置`SqlFieldsQuery.collocated = true`将减少查询执行时间，因为ignite将计算各个节点上每个部门的平均值，并将结果发送到汇总节点进行最终计算。
-### 3.5.6.增加索引内联大小
+### 5.6.增加索引内联大小
 Ignite在索引本身中部分包含索引值，以优化查询和数据更新。固定大小的数据类型（bool、byte、short、int等）全部包含在内，对于可变大小的数据（string，byte[]），只包括固定长度的部分。包含部分的长度称为*内联大小*，默认情况下等于值的前10个字节。
 
 如果索引中没有完全包含值，比较这些值可能需要读取相应的数据页，这可能会对性能产生负面影响。在索引可变长度数据时，建议估计字段的长度，并将内联大小设置为包含大多数或所有值的值。
@@ -236,7 +236,7 @@ Ignite在索引本身中部分包含索引值，以优化查询和数据更新�
 ::: warning 注意
 每个长度固定的列（如long）有1个字节的常量开销，每个`VARCHAR`列有2个字节的常量开销，在指定内联大小时应该考虑这些开销。还要注意的是，由于ignite将字符串编码为`UTF-8`，所以有些字符使用的字节数超过了1。
 :::
-### 3.5.7.查询并行化
+### 5.7.查询并行化
 SQL查询在每个涉及的节点上，默认是以单线程模式执行的，这种方式对于使用索引返回一个小的结果集的查询是一种优化，比如：
 ```sql
 select * from Person where p.id = ?
@@ -253,7 +253,7 @@ select SUM(salary) from Person
 当前，这个属性影响特定缓存上的所有查询，可以加速很重的OLAP查询，但是会减慢其它的简单查询，这个行为在未来的版本中会改进。
 :::
 
-### 3.5.8.索引提示
+### 5.8.索引提示
 当明确知道对于查询来说一个索引比另一个更合适时，索引提示就会非常有用，它会指导查询优化器来选择一个更高效的执行计划。在Ignite中要进行这个优化，可以使用`USE INDEX(indexA,...,indexN)`语句，它会告诉Ignite对于查询的执行只会使用给定名字的索引之一。
 
 下面是一个示例：
@@ -261,7 +261,7 @@ select SUM(salary) from Person
 SELECT * FROM Person USE INDEX(index_age)
   WHERE salary > 150000 AND age < 35;
 ```
-### 3.5.9.分区修剪
+### 5.9.分区修剪
 分区修剪是一种在WHERE条件中使用关联键来对查询进行优化的技术。当执行这样的查询时，Ignite将只扫描存储请求数据的那些分区。这将减少查询时间，因为查询将只发送到存储所请求分区的节点。要了解有关分区分布的更多信息，请参阅[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
 
 在下面的示例中，Employee对象通过`id`字段并置处理（如果未指定关联键，则Ignite将使用主键来并置数据）：
@@ -284,7 +284,7 @@ SELECT * FROM employee WHERE id=10;
 /* This query is sent to the node where the requested key is stored */
 SELECT * FROM employee WHERE department_id=10;
 ```
-### 3.5.10.更新时忽略汇总
+### 5.10.更新时忽略汇总
 当Ignite执行DML操作时，首先，它会获取所有受影响的中间行用于查询发起方的分析（也被称为汇总），然后会准备更新值的批处理,最后发送给远程节点。
 
 如果一个DML操作需要移动大量数据，这个方式可能导致性能问题以及网络的堵塞。
@@ -294,7 +294,7 @@ SELECT * FROM employee WHERE department_id=10;
 ```
 jdbc:ignite:thin://192.168.0.15/skipReducerOnUpdate=true
 ```
-### 3.5.11.SQL堆内行缓存
+### 5.11.SQL堆内行缓存
 Ignite的固化内存在Java堆外存储数据和索引，这意味着每次数据访问，就会有一部分数据从堆外数据区复制到堆内，只要应用或者服务端节点引用它，就有可能被反序列化并且一直保持在堆内。
 
 SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象），使反序列化和数据复制的资源消耗最小化，每个缓存的行都会指向堆外数据区的一个数据条目，并且在如下情况下会失效：
@@ -317,9 +317,9 @@ SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象�
 1.如果开启了堆内行缓存，需要配置JVM的最大堆大小为存储缓存的所有数据区的总大小；<br>
 2.调整JVM的垃圾回收。
 :::
-### 3.5.12.用TIMESTAMP替代DATE
+### 5.12.用TIMESTAMP替代DATE
 尽可能地使用[TIMESTAMP](/doc/sql/SQLReference.md#_10-11-timestamp)替代[DATE](/doc/sql/SQLReference.md#_10-10-date)，DATE类型的序列化/反序列化效率较低，导致性能下降。
-## 3.6.模式
+## 6.模式
 Ignite有一组默认的模式，为了更好地对表进行管理，也允许用户创建自定义的模式。
 
 默认有两个可用的模式：
@@ -332,7 +332,7 @@ Ignite有一组默认的模式，为了更好地对表进行管理，也允许�
  - Ignite根据配置创建模式，具体可以看下面的`自定义模式`章节；
  - 通过编程接口或者XML配置，Ignite会为每个缓存创建一个模式。
 
-### 3.6.1.自定义模式
+### 6.1.自定义模式
 自定义模式可以通过`IgniteConfiguration`的`sqlSchemas`属性进行配置，在启动集群之前可以在配置中指定一个模式的列表，然后运行时在这些模式中创建对象。
 
 下面的配置示例会创建两个模式：
@@ -358,9 +358,9 @@ cfg.setSqlSchemas("MY_SCHEMA", "MY_SECOND_SCHEMA");
 ```
 jdbc:ignite:thin://127.0.0.1/MY_SCHEMA
 ```
-### 3.6.2.PUBLIC模式
+### 6.2.PUBLIC模式
 `PUBLIC`模式用于当需要模式而又未指定时的默认值，比如，当通过JDBC接入集群而又未显式指定模式，就会接入`PUBLIC`模式。
-### 3.6.3.缓存和模式名
+### 6.3.缓存和模式名
 当创建缓存时（通过配置或者可用的编程接口），可以通过SQL API来对缓存的数据进行维护，在SQL层面，每个缓存对应一个独立的模式，模式的名字等同于缓存的名字。
 
 简单来说，当通过SQL API创建了一个表，可以通过编程接口将其当做键-值缓存进行访问，而对应的缓存名，可以通过`CREATE TABLE`语句的`WITH`子句中的`CACHE_NAME`参数进行指定。
@@ -380,12 +380,12 @@ CREATE TABLE City (
 ```
 SQL_<SchemaName>_<TableName>
 ```
-## 3.7.SQL事务
-### 3.7.1.概述
+## 7.SQL事务
+### 7.1.概述
 如果使用`TRANSACTIONAL_SNAPSHOT`模式，SQL的事务也是支持的。`TRANSACTIONAL_SNAPSHOT`模式是Ignite缓存的多版本并发控制（MVCC）的实现。
 
 关于Ignite支持的事务语法以及示例代码，可以看[事务](/doc/sql/SQLReference.md#_12-事务)章节。
-### 3.7.2.开启MVCC
+### 7.2.开启MVCC
 要开启缓存的MVCC支持，需要在缓存的配置中使用`TRANSACTIONAL_SNAPSHOT`原子化模式。如果是使用的`CREATE TABLE`语句建的表，可以使用命令的`WITH`子句传递指定的原子化模式参数。
 
 SQL：
@@ -407,7 +407,7 @@ XML：
     </property>
 </bean>
 ```
-### 3.7.3.限制
+### 7.3.限制
 
 **跨缓存事务**
 

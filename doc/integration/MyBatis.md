@@ -1,5 +1,5 @@
-# 9.MyBatis
-## 9.1.MyBatis二级缓存
+# MyBatis
+## 1.MyBatis二级缓存
 从1.5版本开始，Ignite可以作为MyBatis的二级缓存使用，可以提高MyBatis的性能。
 
 如果是一个Maven用户，可以简单地在pom.xml中添加如下的依赖：

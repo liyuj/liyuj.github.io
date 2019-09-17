@@ -1,7 +1,7 @@
-# 6.工具和分析
-## 6.1.SQL工具
+# 工具和分析
+## 1.SQL工具
 Ignite的JDBC和ODBC驱动使得从SQL工具接入集群然后处理存储在其中的数据成为可能，需要做的仅仅是为SQL工具配置JDBC或者ODBC驱动。在本文中会以DBeaver为例，一步步演示如何进行这些基本的配置。
-### 6.1.1.安装和配置
+### 1.1.安装和配置
 [DBeaver](https://dbeaver.jkiss.org/)作为一个示例，是一个针对开发者和数据库管理员的免费开源的统一数据库工具，它支持包括Ignite在内的所有常见数据库。
 
 Ignite有自己的JDBC驱动实现，DBeaver可以用其处理存储于分布式集群中的数据。
@@ -25,7 +25,7 @@ DBeaver安装完成之后，打开它然后选择`Database`->`Driver Manager`菜
 点击`OK`按钮后完成配置，然后关闭`Driver Manager`对话框，然后就可以在驱动列表中看到`Apache Ignite`：
 
 ![](https://files.readme.io/4b0901b-Screen_Shot_2017-08-16_at_12.58.15_PM.png)
-### 6.1.2.接入集群
+### 1.2.接入集群
 下一步就是启动Ignite集群然后通过DBeaver接入。
 
 打开命令行工具然后定位到`{apache-ignite-version}/bin`，执行`ignite.sh`或者`ignite.bat`脚本：
@@ -86,7 +86,7 @@ ignite.bat
 >**不支持数据库元数据的错误**
 如果Ignite的版本是2.0或者2.1，在展开`Tables`、`Views`或者其它菜单项时，会得到`SQL Error: Database metadata not supported by driver`这样的错误。Ignite的下一个版本就会支持元数据，但是缺少这个特性并不影响下面会看到的所有使用场景。
 
-### 6.1.3.数据查询和分析
+### 1.3.数据查询和分析
 下一步会定义一个SQL模式，通过DBeaver插入以及查询部分数据，再挑选一些支持的DDL和DML语句。
 
 再一次确保工具已经接入集群，点击右键菜单然后打开`SQL Editor`：
@@ -144,9 +144,9 @@ WHERE p.city_id = c.id
 ```
 ![](https://files.readme.io/20a5727-Screen_Shot_2017-08-16_at_1.26.55_PM.png)
 
-## 6.2.SQL命令行
+## 2.SQL命令行
 Ignite提供了一个[SQLLine](http://sqlline.sourceforge.net/)工具，它是一个接入关系数据库然后执行SQL命令的基于命令行的工具，它是Ignite中用于SQL连接的默认命令行工具。本文会描述如何用SQLLine接入Ignite集群，以及Ignite支持的各种SQLLine命令。
-### 6.2.1.接入集群
+### 2.1.接入集群
 在`IGNITE_HOME/bin`目录中，执行`sqlline.sh -u jdbc:ignite:thin:[host]`命令就可以使用SQLLine接入集群，注意要将`[host]`替换为实际的值，比如：
 
 .sh：
@@ -174,7 +174,7 @@ sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;pa
 >**通过bash接入时JDBC URL要加引号**
 当在bash环境中接入时连接的URL一定要加`" "`，比如：`"jdbc:ignite:thin://[address]:[port];user=[username];password=[password]"`。
 
-### 6.2.2.命令
+### 2.2.命令
 下面是Ignite支持的SQLLine命令列表：
 
 |命令|描述|
@@ -209,7 +209,7 @@ sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;pa
 
 上面的列表可能不完整，还可能有其它Ignite支持的SQLLine命令。想看完整的SQLLine命令列表，看[这里](http://sqlline.sourceforge.net/#commands)。
 
-### 6.2.3.示例
+### 2.3.示例
 接入集群后，就可以执行SQL语句和SQLLine命令，比如：
 
 **创建模式**：
@@ -245,12 +245,12 @@ No rows affected (0.013 seconds)
 +-----------+--------------+--------------+-------------+-----------------+
 ```
 
-## 6.3.Tableau
-### 6.3.1.概述
+## 3.Tableau
+### 3.1.概述
 [Tableau](http://www.tableau.com/)是一个聚焦于商务智能领域的交互式数据可视化工具。它使用ODBC API接入各种数据库和数据平台，然后分析里面的数据。
 
 Ignite有自己的ODBC实现，这样就使从Tableau端接入Ignite成为可能，并且可以分析存储于分布式Ignite集群中的数据。
-### 6.3.2.安装和配置
+### 3.2.安装和配置
 要从Tableau接入Ignite，需要进行如下操作：
 
  - 下载并且安转Tableau桌面版，可以在其[产品主页](http://www.tableau.com/)查看官方文档；
@@ -259,7 +259,7 @@ Ignite有自己的ODBC实现，这样就使从Tableau端接入Ignite成为可能
  - ODBC驱动通过一个叫做`ODBC processor`的协议与Ignite集群通信，一定要确保这个组件在集群端已经启用。
 
 上述步骤完成后，就可以接入集群然后分析数据了。
-### 6.3.3.接入集群
+### 3.3.接入集群
 
  1. 启动Tableau应用，然后在`Connect` -> `To a Server` -> `More...`窗口中找到`Other Databases (ODBC)`配置；
 ![](https://files.readme.io/c1c6321-choosing_driver_01.png)
@@ -270,24 +270,24 @@ Ignite有自己的ODBC实现，这样就使从Tableau端接入Ignite成为可能
  4. Tableau会试图验证这个连接，如果验证通过，`Sign In`按钮以及其它的与连接有关的字段就会变为可用状态，点击`Sign In`就会完成连接过程；
 ![](https://files.readme.io/6ff4404-choose_dsn_02.png)
 
-### 6.3.4.数据查询和分析
+### 3.4.数据查询和分析
 成功建立Ignite和Tableau之间的连接之后，就可以通过Tableau支持的各种方式对数据进行查询和分析，通过[官方文档](http://www.tableau.com/learn/training)可以了解更多的细节。
 
 ![](https://files.readme.io/5c889aa-creating_dataset.png)
 ![](https://files.readme.io/a25ceea-visualizing_data.png)
 
-## 6.4.Pentaho
-### 6.4.1.概述
+## 4.Pentaho
+### 4.1.概述
 [Pentaho](http://www.pentaho.com/)是一个全面的平台，它可以非常容易地对数据进行抽取、转换、可视化和分析。Pentaho数据集成采用Java数据库连接（JDBC）API接入数据库。
 
 Ignite有自己的JDBC驱动，这样就使得通过Pentaho平台接入Ignite成为可能，然后就可以分析分布式Ignite集群中的数据了。
-### 6.4.2.安装和配置
+### 4.2.安装和配置
 
  - 下载并安装Pentaho平台，具体可以参考官方的[Pentaho文档](https://help.pentaho.com/Documentation/7.1/Installation);
  - 安装完成之后，需要使用相关的工具安装Ignite的JDBC驱动，怎么做呢，下载Ignite然后找到`{apache-ignite}/libs/ignite-core-{version}.jar`，然后将其复制到`{pentaho}/jdbc-distribution`目录；
  - 打开一个命令行工具，切换到`{pentaho}/jdbc-distribution`目录然后执行脚本：`./distribute-files.sh ignite-core-{version}.jar`。
 
-### 6.4.3.JDBC驱动配置
+### 4.3.JDBC驱动配置
 下一步是配置JDBC驱动然后接入集群，下面做的都是必要的，[JDBC Thin模式驱动](/doc/2.6.0/sql/JDBC.md#_1-1-jdbc-thin模式驱动)有更多的细节信息。
 
  - 打开命令行工具，切换到`{pentaho}/design-tools/data-integration`目录，然后使用`./spoon.sh`脚本启动Pentaho；
@@ -310,18 +310,18 @@ Ignite有自己的JDBC驱动，这样就使得通过Pentaho平台接入Ignite成
 
 ![](https://files.readme.io/aaecec3-ignite-connection.png)
 
-### 6.4.4.数据的查询和分析
+### 4.4.数据的查询和分析
 Ignite和Pentaho之间建立连接之后，就可以通过Pentaho支持的各种方式对数据进行查询、转换和分析了，更多的细节，可以查看Pentaho的官方文档。
 
 ![](https://files.readme.io/f78083c-running-and-inspecting-data.png)
 
-## 6.5.Apache Zeppelin
-### 6.5.1.概述
+## 5.Apache Zeppelin
+### 5.1.概述
 [Apache Zeppelin](http://zeppelin.incubator.apache.org/),是一个支持交互式数据分析的基于Web的笔记本，它可以用SQL，Scala以及其它的工具来生成漂亮的数据驱动的，交互式以及可协同的文档。
 
 Zeppelin通过Ignite的SQL解释器可以从缓存中获得分布式的数据，此外，当SQL无法满足需求时Ignite解释器可以执行任何的Scala代码。比如，可以将数据注入缓存或者执行分布式计算。
 
-### 6.5.2.Zeppelin安装和配置
+### 5.2.Zeppelin安装和配置
 为了通过Ignite解释器启动，需要用2个简单的步骤来安装Zeppelin：
 
  - 克隆Zeppelin的Git仓库：
@@ -353,7 +353,7 @@ Zeppelin安装配置好了之后，可以用如下的命令来启动：
 
 也可以参照[Zeppelin安装文档](http://zeppelin.incubator.apache.org/docs/install/install.html).
 
-### 6.5.3.配置Ignite解释器
+### 5.3.配置Ignite解释器
 点击`Interpreter`菜单项，这个页面包含了所有的已配置的解释器组的设置信息。向下滚动到`Ignite`章节然后点击`Edit`按钮可以修改属性的值，点击`Save`按钮可以保存配置的变更，不要忘了配置变更后重启解释器。
 
 ![Apache Ignite interpreters settings](https://files.readme.io/bsnliQ2Rgir1zYrqUIeb_Selection_002.png)
@@ -374,7 +374,7 @@ jdbc:ignite://localhost:11211/words
 
 对于更复杂的场景，可以通过指向Ignite配置文件的`ignite.config.url`属性来自定义Ignite配置，注意如果定义了`ignite.config.url`属性，那么上述的属性都会被忽略。
 
-### 6.5.4.使用Ignite解释器
+### 5.4.使用Ignite解释器
 **启动Ignite集群**
 
 在使用Zeppelin之前需要启动Ignite集群，下载[Ignite发行版](http://ignite.apache.org/download.cgi#binaries)然后解压压缩包：

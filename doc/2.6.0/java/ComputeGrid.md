@@ -1,5 +1,5 @@
-# 7.计算网格
-## 7.1.计算网格
+# 计算网格
+## 1.计算网格
 Ignite的计算网格可以将比如一个计算这样的逻辑片段，可选地拆分为多个部分，然后在不同的节点并行地执行，这样就可以并行地利用所有节点的资源，来减少计算任务的整体执行时间。并行执行的最常见设计模式就是MapReduce。但是，即使不需要对计算进行拆分或者并行执行，计算网格也会非常有用，因为它可以通过将计算负载放在多个可用节点上，提高整个系统的扩展性和容错能力。
 
 计算网格的API非常简单，可以将计算和数据处理发布到集群的多个节点上，还可以配置失败策略来控制特定作业失败时的行为。
@@ -16,7 +16,7 @@ Ignite的计算网格可以将比如一个计算这样的逻辑片段，可选�
 
 
 
-### 7.1.1.IgniteCompute
+### 1.1.IgniteCompute
 `IgniteCompute`接口提供了在集群节点或者一个集群组中运行很多种类型计算的方法，这些方法可以以一个分布式的形式执行任务或者闭包。
 
 只要至少有一个节点有效，所有的作业和闭包就会保证得到执行，如果一个作业的执行由于资源不足被踢出，它会提供一个故障转移的机制。如果发生故障，负载平衡器会选择下一个有效的节点来执行该作业，下面的代码显示了如何获得`IgniteCompute`实例:
@@ -36,10 +36,10 @@ ClusterGroup remoteGroup = ignite.cluster().forRemotes();
 IgniteCompute compute = ignite.compute(remoteGroup);
 ```
 
-## 7.2.分布式闭包
-### 7.2.1.概述
+## 2.分布式闭包
+### 2.1.概述
 Ignite计算网格可以对集群或者集群组内的任何闭包进行广播和负载平衡，包括纯Java的`runnables`和`callables`。
-### 7.2.2.broadcast方法
+### 2.2.broadcast方法
 所有的`broadcast(...)`方法会将一个给定的作业广播到所有的集群节点或者集群组。
 Java8广播：
 ```java
@@ -109,7 +109,7 @@ fut.listen(new IgniteInClosure<? super ComputeTaskFuture<?>>() {
     }
 });
 ```
-### 7.2.3.call和run方法
+### 2.3.call和run方法
 所有的`call(...)`和`run(...)`方法都可以在集群或者集群组内既可以执行单独的作业也可以执行作业的集合。
 Java8：call：
 ```java
@@ -220,7 +220,7 @@ for (String word : "Print words on different cluster nodes".split(" ")) {
 for (ComputeTaskFuture<?> f : futs)
   f.get();
 ```
-### 7.2.4.apply方法
+### 2.4.apply方法
 闭包是一个代码块，它是把代码体和任何外部变量包装起来然后以一个函数对象的形式在内部使用它们，然后可以在任何传入一个变量的地方传递这样一个函数对象，然后执行。所有的apply方法都可以在集群内执行闭包。
 
 Java8：apply：
@@ -277,7 +277,7 @@ for (int len : res)
     sum += len;
 ```
 
-## 7.3.Executor Service
+## 3.Executor Service
 IgniteCompute提供了一个方便的API以在集群内执行计算。虽然也可以直接使用JDK提供的标准`ExecutorService`接口，但是Ignite还提供了一个`ExecutorService`接口的分布式实现然后可以在集群内自动以负载平衡的模式执行所有计算。该计算具有容错性以及保证只要有一个节点处于活动状态就能保证计算得到执行，可以将其视为一个分布式的集群化线程池。
 ```java
 // Get cluster-enabled executor service.
@@ -301,13 +301,13 @@ ClusterGroup workerGrp = ignite.cluster().forAttribute("ROLE", "worker");
 ExecutorService exec = ignite.executorService(workerGrp);
 ```
 
-## 7.4.MapReduce和ForkJoin
-### 7.4.1.概述
+## 4.MapReduce和ForkJoin
+### 4.1.概述
 `ComputeTask`是Ignite对于简化内存内MapReduce的抽象，这个也非常接近于ForkJoin范式，纯粹的MapReduce从来不是为了性能而设计，只适用于处理离线的批量业务处理(比如Hadoop MapReduce)。不过当对内存内的数据进行计算时，实时性低延迟和高吞吐量通常具有更高的优先级。同样，简化API也变得非常重要。考虑到这一点，Ignite推出了`ComputeTask` API，它是一个轻量级的MapReduce(或ForkJoin)实现。
 
 > 只有当需要对作业到节点的映射做细粒度控制或者对故障转移进行定制的时候，才使用`ComputeTask`。对于所有其它的场景，都需要使用[分布式闭包](#_7-2-分布式闭包)中介绍的集群内闭包执行来实现。
 
-### 7.4.2.ComputeTask
+### 4.2.ComputeTask
 `ComputeTask`定义了要在集群内执行的作业以及这些作业到节点的映射，它还定义了如何处理作业的返回值(Reduce)。所有的`IgniteCompute.execute(...)`方法都会在集群上执行给定的任务，应用只需要实现`ComputeTask`接口的`map(...)`和`reduce(...)`方法即可。
 
 任务是通过实现`ComputeTask`接口的2或者3个方法定义的。
@@ -329,7 +329,7 @@ ExecutorService exec = ignite.executorService(workerGrp);
 **reduce方法**
 
 当所有作业完成后（或者从`result(...)`方法返回REDUCE结果策略），`reduce(...)`方法在Reduce阶段被调用。该方法接收到所有计算结果的一个列表然后返回一个最终的计算结果。
-### 7.4.3.计算任务适配器
+### 4.3.计算任务适配器
 定义计算时每次都实现`ComputeTask`的所有三个方法并不是必须的，有一些帮助类使得只需要描述一个特定的逻辑片段即可，剩下的交给Ignite自动处理。
 
 **ComputeTaskAdapter**
@@ -342,14 +342,14 @@ ExecutorService exec = ignite.executorService(workerGrp);
 
 这个适配器对于所有节点都适于执行作业的同质化环境是非常有用的，这样映射阶段就可以隐式地完成。
 
-### 7.4.4.ComputeJob
+### 4.4.ComputeJob
 任务触发的所有作业都实现了`ComputeJob`接口，这个接口的`execute()`方法定义了作业的逻辑然后应该返回一个作业的结果。`cancel()`方法定义了当一个作业被丢弃时的逻辑（比如，当任务决定立即进入Reduce阶段或者被取消）。
 
 **ComputeJobAdapter**
 
 这是一个提供了无操作的`cancel()`方法的方便的适配器类。
 
-### 7.4.5.示例
+### 4.5.示例
 下面是一个`ComputeTask`和`ComputeJob`的示例：
 
 ComputeTaskSplitAdapter：
@@ -454,7 +454,7 @@ private static class CharacterCountTask extends ComputeTaskAdapter<String, Integ
     }
 }
 ```
-### 7.4.6.分布式任务会话
+### 4.6.分布式任务会话
 每个任务执行时都会创建分布式任务会话，它是由`ComputeTaskSession`接口定义的。任务会话对于任务和其产生的所有作业都是可见的，因此一个作业或者一个任务设置的属性也可以被其它的作业访问。任务会话也可以在属性设置或者等待属性设置时接收通知。
 
 在任务及其相关的所有作业之间会话属性设置的顺序是一致的，不会出现一个作业发现属性A在属性B之前，而另一个作业发现属性B在属性A之前的情况。
@@ -517,8 +517,8 @@ private static class TaskSessionAttributesTask extends ComputeTaskSplitAdapter<O
   }
 }
 ```
-## 7.5.节点局部状态共享
-### 7.5.1.概述
+## 5.节点局部状态共享
+### 5.1.概述
 通常来说在不同的计算作业或者不同的部署服务之间共享状态是很有用的，为此Ignite在每个节点上提供了一个共享并发**node-local-map**。
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -526,7 +526,7 @@ IgniteCluster cluster = ignite.cluster();
 ConcurrentMap<String, Integer> nodeLocalMap = cluster.nodeLocalMap():
 ```
 节点局部变量类似于线程局部变量，只不过它不是分布式的，它只会保持在本地节点上。节点局部变量可以用于计算任务在不同的执行中共享状态，也可以用于部署的服务。
-### 7.5.2.示例
+### 5.2.示例
 作为一个例子，创建一个作业，每次当它在某个节点上执行时都会使节点局部的计数器增加，这样，每个节点的节点局部计数器都会告诉我们一个作业在那个节点上执行了多少次。
 ```java
 private IgniteCallable<Long> job = new IgniteCallable<Long>() {
@@ -567,10 +567,10 @@ res = compute.call(job);
 
 assert res == 2;
 ```
-## 7.6.计算和数据的并置
-### 7.6.1.概述
+## 6.计算和数据的并置
+### 6.1.概述
 计算和数据的并置可以最小化拓扑中的数据序列化，以及可以显著地提升应用的性能和可扩展性。只要可能，都应该尽力地将计算和存储待处理数据的集群节点并置在一起。
-### 7.6.2.基于关联的call方法和run方法
+### 6.2.基于关联的call方法和run方法
 `affinityCall(...)`和`affinityRun(...)`方法使作业和缓存着数据的节点位于一处，换句话说，给定缓存名字和关联键，这些方法会试图在指定的缓存中定位键所在的节点，然后在那里执行作业。
 
 > **一致性保证**
@@ -636,12 +636,12 @@ for (int i = 0; i < KEY_CNT; i++) {
 
 > `affinityCall(...)`或者`affinityRun(...)`方法都有重载的版本，可以锁定分区，避免作业跨多个缓存执行时，分区的退出，要做的仅仅是将缓存的名字传递给上述方法。
 
-## 7.7.容错
-### 7.7.1.概述
+## 7.容错
+### 7.1.概述
 Ignite支持作业的自动故障转移，当一个节点崩溃时，作业会被转移到其它可用节点再次执行。不过在Ignite中也可以将任何作业的结果认为是失败的。工作的节点可以仍然是在线的，但是它运行在一个很低的CPU，I/O，磁盘空间等资源上，在很多情况下会导致应用的故障然后触发一个故障的转移。此外，也有选择一个作业故障转移到那个节点的功能，因为同一个应用内部不同的程序或者不同的计算也会是不同的。
 
 `FailoverSpi`负责选择一个新的节点来执行失败作业。`FailoverSpi`检查发生故障的作业以及该作业可以尝试执行的所有可用的网格节点的列表。它会确保该作业不会再次映射到出现故障的同一个节点。故障转移是在`ComputeTask.result(...)`方法返回`ComputeJobResultPolicy.FAILOVER`策略时触发的。Ignite内置了一些可定制的故障转移SPI实现。
-### 7.7.2.至少一次保证
+### 7.2.至少一次保证
 只要有一个节点是有效的，作业就不会丢失。
 
 Ignite默认会自动对停止或者故障的节点上的所有作业进行故障转移，如果要定制故障转移的行为，需要实现`ComputeTask.result()`方法。下面的例子显示了当一个作业抛出任何的`IgniteException`(或者它的子类)时会触发故障转移。
@@ -663,7 +663,7 @@ public class MyComputeTask extends ComputeTaskSplitAdapter<String, String> {
     ...
 }
 ```
-### 7.7.3.闭包故障转移
+### 7.3.闭包故障转移
 闭包的故障转移是被`ComputeTaskAdapter`管理的，它在一个远程节点或者故障或者拒绝执行闭包时被触发。这个默认的行为可以被`IgniteCompute.withNoFailover()`方法覆盖，它会创建一个设置了无故障转移标志的`IgniteCompute`实例，下面是一个例子：
 ```java
 IgniteCompute compute = ignite.compute().withNoFailover();
@@ -673,7 +673,7 @@ compute.apply(() -> {
     ...
 }, "Some argument");
 ```
-### 7.7.4.AlwaysFailOverSpi
+### 7.4.AlwaysFailOverSpi
 Ignite将任务拆分成作业然后为了加快处理的速度将它们分配给多个节点执行，如果一个节点故障了，`AlwaysFailoverSpi`会将一个故障的作业路由到另一个节点，首先会尝试将故障的作业路由到该任务还没有被执行过的节点上，如果没有可用的节点，然后会试图将故障的作业路由到可能运行同一个任务中其它的作业的节点上，如果上述的尝试都失败了，那么该作业就不会被故障转移然后会返回一个null。
 
 下面的配置参数可以用于配置`AlwaysFailoverSpi`:
@@ -707,8 +707,8 @@ cfg.setFailoverSpi(failSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-## 7.8.负载平衡
-### 7.8.1.概述
+## 8.负载平衡
+### 8.1.概述
 负载平衡组件将作业在集群节点之间平衡分配。Ignite中负载平衡是通过`LoadBalancingSpi`实现的，它控制所有节点的负载以及确保集群中的每个节点负载水平均衡。对于同质化环境中的同质化任务，负载平衡采用的是随机或者轮询的策略。不过在很多其它场景中，特别是在一些不均匀的负载下，就需要更复杂的自适应负载平衡策略。
 
 `LoadBalancingSpi`采用前负载技术，即在将其发送到集群之前就对作业在某个节点的执行进行了调度。
@@ -716,7 +716,7 @@ Ignition.start(cfg);
 > **数据并置**
 注意，当作业还没有与数据并置或者还没有在哪个节点上执行的倾向时，负载平衡就已经触发了。如果使用了数据和计算的并置，那么数据的并置优先于负载平衡。
 
-### 7.8.2.轮询式负载平衡
+### 8.2.轮询式负载平衡
 `RoundRobinLoadBalancingSpi`以轮询的方式在节点间迭代，然后选择下一个连续的节点。轮询式负载平衡支持两种操作模式：每任务以及全局，全局模式为默认模式。
 
 **每任务模式**
@@ -755,7 +755,7 @@ cfg.setLoadBalancingSpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-### 7.8.3.随机和加权负载平衡
+### 8.3.随机和加权负载平衡
 `WeightedRandomLoadBalancingSpi`会为作业的执行随机选择一个节点。也可以选择为节点赋予权值，这样有更高权重的节点最终会使将作业分配给它的机会更多。所有节点的权重默认值都是10。
 
 XML：
@@ -789,7 +789,7 @@ cfg.setLoadBalancingSpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-### 7.8.4.磨洋工
+### 8.4.磨洋工
 通常集群由很多计算机组成，这就可能存在配置不均衡的情况，这时开启`JobStealingCollisionSpi`就会有助于避免作业聚集在过载的节点，或者远离低利用率的节点。
 `JobStealingCollisionSpi`支持作业从高负载节点到低负载节点的移动，当部分作业完成得很快，而其它的作业还在高负载节点中排队时，这个SPI就会非常有用。这种情况下，等待作业就会被移动到低负载的节点。
 
@@ -862,8 +862,8 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 >**必要的配置**
 注意`org.apache.ignite.spi.failover.jobstealing.JobStealingFailoverSpi`和`IgniteConfiguration.getMetricsUpdateFrequency()`都要开启，这样这个SPI才能正常工作，`JobStealingCollisionSpi`的其它配置参数都是可选的。
 
-## 7.9.检查点
-### 7.9.1.概述
+## 9.检查点
+### 9.1.概述
 检查点提供了保存一个作业中间状态的能力，它有助于一个长期运行的作业保存一些中间状态以防节点故障。重启一个故障节点后，一个作业会从保存的检查点载入然后从故障处继续执行。对于作业检查点状态，唯一必要的就是实现`java.io.Serializable`接口。
 
 检查点功能可以通过`GridTaskSession`接口的如下方法启用：
@@ -875,11 +875,11 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 > **@ComputeTaskSessionFullSupport注解**
 注意检查点因为性能的原因默认是禁用的，要启用它需要在任务或者闭包类上加注`@ComputeTaskSessionFullSupport`注解。
 
-### 7.9.2.主节点故障保护
+### 9.2.主节点故障保护
 检查点的一个重要使用场景是避免“主”节点（启动了原来的执行的节点）的故障。当主节点故障时，Ignite不知道将作业的执行结果发送给谁，这样结果就会被丢弃。
 
 这种情况下要恢复，可以先将作业的最终执行结果保存为一个检查点然后在”主”节点故障时有一个逻辑来重新运行整个任务。这时任务的重新运行会非常快因为所有的作业都可以从已保存的检查点启动。
-### 7.9.3.设置检查点
+### 9.3.设置检查点
 每个计算任务都可以通过调用`ComputeTaskSession.saveCheckpoint(...)`方法定期地保存检查点。
 
 如果作业确实保存了检查点，那么当它开始执行的时候，应该检查检查点是否可用然后从最后保存的检查点处开始执行。
@@ -924,7 +924,7 @@ private static class CheckpointsRunnable implements IgniteCallable<Object> {
   }
 }
 ```
-### 7.9.4.CheckpointSpi
+### 9.4.CheckpointSpi
 Ignite中，检查点功能是通过`CheckpointSpi`提供的，它直接支持如下的实现：
 
 |类|描述|
@@ -935,7 +935,7 @@ Ignite中，检查点功能是通过`CheckpointSpi`提供的，它直接支持�
 |`S3CheckpointSpi`|这个实现通过Amazon S3来保存检查点|
 
 `CheckpointSpi`是在`IgniteConfiguration`中提供的，然后在启动时传递给Ignition类，默认使用一个没有任何操作的检查点SPI。
-### 7.9.5.文件系统检查点配置
+### 9.5.文件系统检查点配置
 下面的配置参数可用于配置`SharedFsCheckpointSpi`:
 
 |settter方法|描述|默认值|
@@ -981,7 +981,7 @@ cfg.setCheckpointSpi(checkpointSpi);
 // Starts Ignite node.
 Ignition.start(cfg);
 ```
-### 7.9.6.缓存检查点配置
+### 9.6.缓存检查点配置
 `CacheCheckpointSpi`对于检查点SPI来说是一个基于缓存的实现，检查点数据会存储于Ignite数据网格中的一个预定义缓存中。
 
 下面的配置参数可用于配置`CacheCheckpointSpi`:
@@ -990,7 +990,7 @@ Ignition.start(cfg);
 |---|---|---|
 |`setCacheName(String)`|设置用于保存检查点的缓存的名字|`checkpoints`|
 
-### 7.9.7.数据库检查点配置
+### 9.7.数据库检查点配置
 `JdbcCheckpointSpi`通过数据库来保存检查点。所有的检查点都会保存在数据库表中然后对于集群中的所有节点都是可用的。注意每个节点必须访问数据库。一个作业状态可以在一个节点保存然后在另一个节点载入（例如一个作业在节点故障后被另一个节点取代）。
 
 下面的配置参数可用于配置`JdbcCheckpointSpi`，（所有的都是可选的）
@@ -1049,7 +1049,7 @@ cfg.setCheckpointSpi(checkpointSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-### 7.9.8.Amazon S3 检查点配置
+### 9.8.Amazon S3 检查点配置
 `S3CheckpointSpi`使用S3存储来保存检查点。要了解有关Amazon S3的信息可以参考[http://aws.amazon.com/](http://aws.amazon.com/)。
 下面的参数可用于配置`S3CheckpointSpi`:
 
@@ -1094,10 +1094,10 @@ cfg.setCheckpointSpi(cpSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-## 7.10.作业调度
-### 7.10.1.概述
+## 10.作业调度
+### 10.1.概述
 Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行阶段被映射到集群节点上的。不过一旦作业到达被分配的节点，就需要有序地执行。默认情况下，作业被提交到一个线程池然后随机地执行，如果要对作业执行顺序进行细粒度控制，需要启用`CollisionSpi`。
-### 7.10.2.FIFO排序
+### 10.2.FIFO排序
 `FifoQueueCollisionSpi`可以使一定数量的作业无中断地以先入先出的顺序执行，所有其它的作业都会被放入一个等待列表，直到轮到它。
 
 并行作业的数量是由`parallelJobsNumber`配置参数控制的，默认值为2。
@@ -1135,7 +1135,7 @@ cfg.setCollisionSpi(colSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-### 7.10.3.优先级排序
+### 10.3.优先级排序
 `PriorityQueueCollisionSpi`可以为每个作业设置一个优先级，因此高优先级的作业会比低优先级的作业先执行。
 
 **任务优先级**
@@ -1205,9 +1205,9 @@ cfg.setCollisionSpi(colSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-## 7.11.任务部署
+## 11.任务部署
 除了对等类加载之外，Ignite还有一个部署机制，它负责在运行时从不同的源中部署任务和类。
-### 7.11.1.DeploymentSpi
+### 11.1.DeploymentSpi
 部署的功能是通过`DeploymentSpi`接口提供的。
 
 类加载器负责加载任务类（或者其它的类），它可以通过调用`register(ClassLoader, Class)`方法或者SPI自己来直接部署。比如通过异步地扫描一些文件夹来加载新的任务。当系统调用了`findResource(String)`方法时，SPI必须返回一个与给定的类相对应的类加载器。每次一个类加载器获得（再次）部署或者释放，SPI必须调用`DeploymentListener.onUnregistered(ClassLoader)`回调。
@@ -1221,7 +1221,7 @@ Ignite直接支持如下的`DeploymentSpi`实现：
 
 > SPI的方法不要直接使用。SPI提供了子系统的内部视图以及由Ignite内部使用。在很少的情况下可能需要访问这个SPI的特定实现，可以通过`Ignite.configuration()`方法来获得这个SPI的一个实例，来检查它的配置属性或者调用其它的非SPI方法。再次注意从获得的实例中调用接口的方法可能导致未定义的行为而且明确不会得到支持。
 
-### 7.11.2.UriDeploymentSpi
+### 11.2.UriDeploymentSpi
 这是`DeploymentSpi`的一个实现，它可以从不同的资源部署任务，比如文件系统文件夹、email和FTP。在集群中有不同的方式来部署任务以及每个部署方法都会依赖于所选的源协议。这个SPI可以配置与一系列的URI一起工作，每个URI都包括有关协议/传输加上配置参数比如凭证、扫描频率以及其它的所有数据。
 
 当SPI建立一个与URI的连接时，为了防止扫描过程中的任何变化它会下载待部署的单元到一个临时目录，通过方法`setTemporaryDirectoryPath(String)`可以为下载的部署单元设置自定义的临时文件夹。SPI会在该路径下创建一个和本地节点ID名字完全一样的文件夹。
@@ -1372,13 +1372,13 @@ URI部署扫描器会试图读取指向的HTML文件的DOM然后解析出所有�
 ```
 http://username:password;freq=10000@www.mysite.com:110/ignite/deployment
 ```
-### 7.11.3.LocalDeploymentSpi
+### 11.3.LocalDeploymentSpi
 本地部署SPI只是通过`register(ClassLoader, Class)`方法实现了在本地节点中的虚拟机进行部署，这个SPI不需要配置。
 
 显式地配置`LocalDeploymentSpi`是没有意义的，因为它是默认的以及没有配置参数。
 
-## 7.12.基于Cron的调度
-### 7.12.1.概述
+## 12.基于Cron的调度
+### 12.1.概述
 `Runnable`和`Callable`的实例在本地节点可以使用`IgniteScheduler.scheduleLocal()`方法和`Cron`语法进行调度用于周期性的执行。下面的一个示例会在所有的有效节点上触发周期性的发送缓存指标报告。
 ```java
 ignite.compute().broadcast(new IgniteCallable<Object>() {
@@ -1400,7 +1400,7 @@ ignite.compute().broadcast(new IgniteCallable<Object>() {
 > **Cron简称**
 在当前的实现中，Cron简称(@hourly, @daily, @weekly...)还不支持，并且最小的调度时间单元是一分钟，
 
-### 7.12.2.SchedulerFuture
+### 12.2.SchedulerFuture
 `IgniteScheduler.scheduleLocal()`方法返回`SchedulerFuture`，它有一组有用的方法来监控调度的执行以及获得结果。要取消周期性的执行，也可以使用这个future。
 ```java
 SchedulerFuture<?> fut = ignite.scheduler().scheduleLocal(new Runnable() {
@@ -1415,16 +1415,16 @@ fut.get(); // Wait for next execution to finish.
 
 fut.cancel(); // Cancel periodic execution.
 ```
-### 7.12.3.语法扩展
+### 12.3.语法扩展
 Ignite引入了一个Cron语法的扩展，它可以指定一个初始化的延迟（秒）和运行的次数。这两个可选的数值用大括号括起来，用逗号分割，放在Cron规范之前。下面的示例中指定了每分钟执行五次，并且有一个初始2秒钟的延迟。
 ```
 {2, 5} * * * * *
 ```
 
-## 7.13.持续映射
-### 7.13.1.概述
+## 13.持续映射
+### 13.1.概述
 传统的MapReduce范式中，有一个明确且有限的作业集，它在Map阶段是已知的并且在整个计算运行期间都不会改变。但是如果有一个作业流会怎么样呢？这时仍然可以使用Ignite的持续映射能力执行MapReduce。通过持续映射，当计算仍然在运行时作业可以动态地生成，新生成的作业同样会被worker节点处理，并且Reducer和通常的MapReduce一样会收到结果。
-### 7.13.2.运行持续的映射任务
+### 13.2.运行持续的映射任务
 如果在任务中要使用持续映射，需要在一个任务实例中注入`TaskContinuousMapperResource`资源：
 ```java
 @TaskContinuousMapperResource
@@ -1448,7 +1448,7 @@ mapper.send(new ComputeJobAdapter() {
 
 在其它方面，计算逻辑和正常的MapReduce一样，详情可以参照14.2章节。
 
-### 7.13.3.示例
+### 13.3.示例
 下面的示例是基于网站包含的图片对其进行分析。Web搜索引擎会扫描站点上的所有图片，然后Ignite实现的MapReduce引擎会基于一些图片分析算法确定每个图片的种类（“含义”）。然后图片分析的结果会归约确定站点的种类，这个示例会很好地演示**持续映射**，因为Web搜索是一个持续的过程，其中MapReduce可以并行地执行，并且分析到来的新的Web搜索结果（新的图片文件）。这会节省大量的时间，而传统的MapReduce，首先需要等待所有的Web搜索结果（一个完整的图片集），然后将它们映射到节点，分析，归约结果。
 
 假定有一个来自一些扫描站点图片的库的`Crawler`接口，`CrawlerListener`接口用于获得异步的后台扫描结果，然后一个`Image`接口表示一个单个图片文件（类名故意缩短以简化阅读）：
@@ -1552,7 +1552,7 @@ SiteCategory result = ignite.compute().execute(new ComputeTaskAdapter<Crawler, S
 在上面这个示例中，为了简化，假定图片分析作业会比在站点上搜索下一张图片花费更长的时间。换句话说，新的Web搜索结果的到来会快于分析完图片文件。在现实生活中，这不一定是真的，并且可以轻易地获得一个情况，就是过早地完成了分析，因为当前所有的作业都已经完成而新的搜索结果还没有到达（由于网络延迟或者其它的原因）。这时，Ignite会切换至归约阶段，因此持续映射就不再可能了。
 
 要避免这样的情况，需要考虑提交一个特别的作业，它只是完成接收一些消息，或者使用可用的分布式同步化基本类型之一，比如`CountDownLatch`,这个做法可以确保在Web搜索结束之前归约阶段不会启动。
-## 7.14.启用基于AOP的网格
+## 14.启用基于AOP的网格
 通过[面向方面编程](https://en.wikipedia.org/wiki/Aspect-oriented_programming)，可以隐式地修改任何方法的行为（比如，记录日志或者开启一个方法级的事务等）。在Ignite中，可以将方法加入运行在网格中的一个闭包，这和在一个方法上加注`@Gridify`注解一样简单。
 ```java
 @Gridify
@@ -1561,7 +1561,7 @@ public void sayHello() {
 }
 ```
 可以使用任何的AOP库：**AspectJ**、**JBoss**或者**Spring AOP**，只需要在主节点（发起执行的节点）上正确配置这些框架中的任何一个。仅仅上述方法的一个调用就会产生集群范围的一次任务执行，它会在拓扑内的所有工作节点上输出"Hello!"。
-### 7.14.1.Gridify注解
+### 14.1.Gridify注解
 `@Gridify`注解可以用于任何方法，它可以有如下的参数，所有参数都是可选的：
 
 |属性名称|类型|描述|默认值|
@@ -1621,7 +1621,7 @@ public class GridifyHelloWorldTaskExample {
   ...
 }
 ```
-### 7.14.2.配置AOP
+### 14.2.配置AOP
 Ignite支持三个AOP框架：
 
  - AspectJ

@@ -1,9 +1,9 @@
-# 4.JDBC
-## 4.1.JDBC驱动
+# JDBC
+## 1.JDBC驱动
 Ignite提供了一个JDBC驱动，它可以通过标准的SQL语句处理分布式数据，比如从JDBC端直接进行`SELECT`、`INSERT`、`UPDATE`和`DELETE`。
 
 目前，Ignite支持两种类型的驱动，轻量易用的JDBC Thin模式驱动以及以客户端节点形式与集群进行交互。
-### 4.1.1.JDBC Thin模式驱动
+### 1.1.JDBC Thin模式驱动
 JDBC Thin模式驱动是默认的，是一个轻量级驱动，要使用这种驱动，只需要将`ignite-core-{version}.jar`放入应用的类路径即可。
 
 驱动会接入集群节点然后将所有的请求转发给它进行处理。节点会处理分布式的查询以及结果集的汇总，然后将结果集反馈给客户端应用。
@@ -30,7 +30,7 @@ jdbc:ignite:thin://<hostAndPortRange0>[,<hostAndPortRange1>]...[,<hostAndPortRan
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
- 
+
 // Open the JDBC connection.
 Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50");
 ```
@@ -81,7 +81,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50")
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
- 
+
 // Open the JDBC connection passing several connection endpoints.
 Connection conn = DriverManager.getConnection(
   "jdbc:ignite:thin://192.168.0.50:101,192.188.5.40:101, 192.168.10.230:101");
@@ -131,7 +131,7 @@ JDBC对象中的`Connection`、`Statement`和`ResultSet`不是线程安全的。
 JDBC Thin模式驱动添加了并发保护，如果检测到了并发访问，那么会抛出`SQLException`，消息为：`Concurrent access to JDBC connection is not allowed [ownThread=<guard_owner_thread_name>, curThread=<current_thread_name>]",
 SQLSTATE="08006`。
 
-### 4.1.2.使用SSL
+### 1.2.使用SSL
 JDBC Thin模式驱动可以使用SSL套接字通讯在驱动和节点间建立安全连接（包括发起握手）。
 
 具体可以看JDBC驱动的`ssl*`相关参数以及`ClientConnectorConfiguration`的`ssl*`和`useIgniteSslContextFactory`参数。
@@ -146,7 +146,7 @@ JDBC Thin模式驱动可以使用SSL套接字通讯在驱动和节点间建立�
 如果生产环境位于不完全可信网络（尤其是公共互联网），不要开启此选项。
 
 如果希望使用自己的实现或者通过某种方式配置`SSLSocketFactory`，可以使用驱动的`sslFactory`参数，这是一个包含`Factory<SSLSocketFactory>`接口实现的类名字符串，该类对于JDBC驱动的类加载器必须可用。
-### 4.1.3.示例
+### 1.3.示例
 要处理集群中的数据，需要使用下面的一种方式来创建一个JDBC`Connection`对象：
 ```java
 // Open the JDBC connection via DriverManager.
@@ -157,26 +157,26 @@ IgniteJdbcThinDataSource ids = new IgniteJdbcThinDataSource();
 ids.setUrl("jdbc:ignite:thin://192.168.0.50");
 ids.setLazy(true);
 ids.setDistributedJoins(true);
-        
+
 Connection conn2 = ids.getConnection();
 ```
 之后就可以执行`SELECT`SQL查询了：
 ```java
 // Query names of all people.
 ResultSet rs = conn.createStatement().executeQuery("select name from Person");
- 
+
 while (rs.next()) {
     String name = rs.getString(1);
     ...
 }
- 
+
 // Query people with specific age using prepared statement.
 PreparedStatement stmt = conn.prepareStatement("select name, age from Person where age = ?");
- 
+
 stmt.setInt(1, 30);
- 
+
 ResultSet rs = stmt.executeQuery();
- 
+
 while (rs.next()) {
     String name = rs.getString("name");
     int age = rs.getInt("age");
@@ -189,7 +189,7 @@ while (rs.next()) {
 ```java
 // Insert a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("INSERT INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
@@ -200,11 +200,11 @@ stmt.execute();
 ```java
 // Merge a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("MERGE INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
- 
+
 stmt.executeUpdate();
 ```
 **UPDATE**
@@ -217,10 +217,10 @@ conn.createStatement().
 ```java
 conn.createStatement().execute("DELETE FROM Person WHERE age = 25");
 ```
-### 4.1.4.流处理
+### 1.4.流处理
 Ignite的JDBC驱动可以通过`SET`命令对流化数据进行批量处理，具体可以看`2.4.2.SET`的相关内容。
-## 4.2.JDBC客户端模式驱动
-### 4.2.1.JDBC客户端模式驱动
+## 2.JDBC客户端模式驱动
+### 2.1.JDBC客户端模式驱动
 JDBC客户端节点模式驱动使用自己的完整功能的客户端节点连接接入集群，这要求开发者提供一个完整的Spring XML配置作为JDBC连接串的一部分，然后拷贝下面所有的jar文件到应用或者SQL工具的类路径中：
 
  - `{apache_ignite_release}\libs`目录下的所有jar文件；
@@ -243,7 +243,7 @@ param1=value1:param2=value2:...:paramN=valueN
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Open JDBC connection (cache name is not specified, which means that we use default cache).
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/config/ignite-jdbc.xml");
 ```
@@ -275,7 +275,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Opening connection in the streaming mode.
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true@file:///etc/config/ignite-jdbc.xml");
 ```
@@ -288,7 +288,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true@
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Opening a connection in the streaming mode and time based flushing set.
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true@streamingFlushFrequency=1000@file:///etc/config/ignite-jdbc.xml");
 
@@ -301,7 +301,7 @@ for (int i = 1; i < 100000; i++) {
       stmt.setInt(1, i);
       stmt.setString(2, "John Smith");
       stmt.setInt(3, 25);
-  
+
       stmt.execute();
 }
 
@@ -309,12 +309,12 @@ conn.close();
 
 // Beyond this point, all data is guaranteed to be flushed into the cache.
 ```
-### 4.2.2.示例
+### 2.2.示例
 要处理集群中的数据，需要使用下面的一种方式来创建一个JDBC`Connection`对象：
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Open JDBC connection (cache name is not specified, which means that we use default cache).
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/config/ignite-jdbc.xml");
 ```
@@ -322,19 +322,19 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 ```java
 // Query names of all people.
 ResultSet rs = conn.createStatement().executeQuery("select name from Person");
- 
+
 while (rs.next()) {
     String name = rs.getString(1);
     ...
 }
- 
+
 // Query people with specific age using prepared statement.
 PreparedStatement stmt = conn.prepareStatement("select name, age from Person where age = ?");
- 
+
 stmt.setInt(1, 30);
- 
+
 ResultSet rs = stmt.executeQuery();
- 
+
 while (rs.next()) {
     String name = rs.getString("name");
     int age = rs.getInt("age");
@@ -347,7 +347,7 @@ while (rs.next()) {
 ```java
 // Insert a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("INSERT INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
@@ -358,11 +358,11 @@ stmt.execute();
 ```java
 // Merge a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("MERGE INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
- 
+
 stmt.executeUpdate();
 ```
 **UPDATE**
@@ -375,12 +375,12 @@ conn.createStatement().
 ```java
 conn.createStatement().execute("DELETE FROM Person WHERE age = 25");
 ```
-## 4.3.错误码
+## 3.错误码
 Ignite的JDBC驱动将错误码封装进了`java.sql.SQLException`类，它简化了应用端的错误处理。要获得错误码，可以使用`java.sql.SQLException.getSQLState()`方法，它会返回一个字符串：
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
- 
+
 // Open JDBC connection.
 Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1");
 
@@ -395,11 +395,11 @@ catch (SQLException e) {
       case "0700B":
         System.out.println("Conversion failure");
         break;
-        
+
       case "42000":
         System.out.println("Parsing error");
         break;
-        
+
       default:
         System.out.println("Unprocessed error: " + e.getSQLState());
         break;

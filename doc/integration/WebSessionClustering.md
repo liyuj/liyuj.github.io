@@ -1,6 +1,6 @@
-# 3.Web会话集群化
-## 3.1.Web会话集群化
-### 3.1.1.概述
+# Web会话集群化
+## 1.Web会话集群化
+### 1.1.概述
 Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web Session的能力。包括Apache Tomcat,Eclipse Jetty,Oracle WebLogic以及其它的。
 
 缓存Web会话对于运行一个应用服务器集群时是有用的。当在一个Servlet容器中运行一个Web应用时，可能面临性能和可扩展性的问题，一个单独的应用服务器通常可能无法自己处理很大的流量，一个常规的解决方案就是跨越多个集群实例扩展Web应用。
@@ -17,14 +17,14 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 
 这个章节给出了一个Ignite的Web会话缓存功能的主要架构概况以及介绍了如何配置Web应用来启用Web会话缓存。
 
-### 3.1.2.架构
+### 1.2.架构
 要用Ignite配置一个分布式Web会话缓存，通常需要将应用启动为一个Ignite节点(嵌入式模式)，当多个应用服务器实例启动后，所有的Ignite节点会形成一个分布式缓存。
 
 ::: tip 注意
 并不是所有的Ignite缓存节点都需要运行在应用服务器内部，也可以启动额外的，独立的Ignite节点，然后将它们加入集群。
 :::
 
-### 3.1.3.复制策略
+### 1.3.复制策略
 当将会话存储在Ignite中时有几个复制策略可供选择，复制策略是在缓存的备份设定中定义的，本章节将主要覆盖最常用的配置。
 
 **全复制缓存**
@@ -60,7 +60,7 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 关于Ignite不同复制策略的更多信息,请参见[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
 :::
 
-### 3.1.4.过期和退出
+### 1.4.过期和退出
 当会话过期后会被缓存自动清理。不过如果创建了大量的长期存活的会话，当缓存达到一个特定的限值时，为了节省内存可能需要将不必要的缓存退出。这个可以通过设置缓存的退出策略以及指定缓存中可以存储的会话的最大值来实现。比如，要启用基于LRU算法的自动退出以及10000个会话的限制，可以通过如下的缓存配置来实现：
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -81,7 +81,7 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 要了解各个退出策略的更多信息，可以参照[退出策略](/doc/java/DurableMemory.md#_#_10-4-退出策略)章节。
 :::
 
-### 3.1.5.配置
+### 1.5.配置
 要在应用中通过Ignite开启Web会话缓存，需要：
 
 1. **添加Ignite的jar包**，下载Ignite然后将如下的jar包加入应用的类路径(WEB-INF/lib目录)；
@@ -177,7 +177,7 @@ WebSessionFilter有如下的配置参数：
 |`IgniteWebSessionsCacheName`|Web会话缓存的缓存名|无|
 |`IgniteWebSessionsMaximumRetriesOnFail`|只对`ATOMIC`缓存有效，指定了当主节点故障时的重试次数|3|
 
-### 3.1.6.支持的容器
+### 1.6.支持的容器
 Ignite官方测试了如下的应用服务器：
 
  - Apache Tomcat 7

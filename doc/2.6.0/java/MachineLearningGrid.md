@@ -1,6 +1,6 @@
-# 15.机器学习网格
-## 15.1.机器学习网格
-### 15.1.1.概述
+# 机器学习网格
+## 1.机器学习网格
+### 1.1.概述
 Ignite的机器学习（ML）是一组简单的、可扩展以及高效的工具，在不需要成本高昂的数据转换的前提下，就可以构建可预测的机器学习模型。
 
 将机器和深度学习加入Ignite的原理是很简单的，当前，如果要想让机器学习成为主流，数据科学家要解决两个主要的问题：
@@ -16,7 +16,7 @@ Ignite的机器学习依赖于Ignite基于内存的存储，这给机器学习�
 **容错和持续学习**
 
 Ignite的机器学习能够对节点的故障容错。这意味着如果在学习期间节点出现故障，所有的恢复过程对用户是透明的，学习过程不会被中断，就像所有节点都正常那样获得结果。
-### 15.1.2.算法和适用性
+### 1.2.算法和适用性
 
 **分类**
 
@@ -50,7 +50,7 @@ Ignite的机器学习能够对节点的故障容错。这意味着如果在学�
 
 *算法*：Ignite的机器学习支持使用分区化的数据集自定义预处理，同时也有默认的预处理器。
 
-### 15.1.3.入门
+### 1.3.入门
 机器学习入门的最快方式是构建和运行示例代码，学习它的输出和代码，机器学习的的示例代码位于Ignite发行版的`examples`文件夹中。
 
 下面是相关的步骤：
@@ -90,8 +90,8 @@ cd examples
 mvn clean package -DskipTests
 ```
 如果必要，可以参考项目根目录的`DEVNOTES.txt`文件以及`ignite-ml`模块的`README`文件，以了解更多的信息。
-## 15.2.预处理
-### 15.2.1.概述
+## 2.预处理
+### 2.1.概述
 预处理是将存储于Ignite中的原始数据转换为特征向量，以便于机器学习算法的进一步使用，这个过程可以被视为一个转换链。正常流程是从Ignite数据中提取特征，对特征进行转换然后进行归一化，相关的转换代码如下：
 ```java
 // Define feature extractor.
@@ -105,7 +105,7 @@ IgniteBiFunction<Integer, double[], double[]> extractorTransformer =
 IgniteBiFunction<Integer, double[], double[]> extractorTransformerNormalizer =
     normalizationTrainer.fit(ignite, upstreamCache, transformer);
 ```
-### 15.2.2.归一化预处理器
+### 2.2.归一化预处理器
 除了可以自定义预处理器之外，Ignite还提供了一个内置的归一化预处理器，它会根据如下的函数对间隔的[0,1]进行归一化。
 ![](https://files.readme.io/ae0ef26-CodeCogsEqn_2.gif)
 为了归一化，需要创建一个`NormalizationTrainer`，然后将其与归一化预处理器进行匹配：
@@ -166,10 +166,10 @@ LinearRegressionModel mdl = trainer.fit(
 // Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
-### 15.2.3.示例
+### 2.3.示例
 要了解归一化预处理器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/NormalizationExample.java)，该实例也会随着每个Ignite发行版进行发布。
-## 15.3.分区化的数据集
-### 15.3.1.概述
+## 3.分区化的数据集
+### 3.1.概述
 分区化的数据集是在Ignite的计算和存储能力之上构建的抽象层，可以在遵循无ETL和容错的原则下，进行算法运算。
 
 分区化的数据集的主要原理是Ignite的计算网格实现的经典MapReduce范式。
@@ -189,7 +189,7 @@ MapReduce的主要优势在于，可以在分布于整个集群的数据上执�
 Ignite中的一个基本思想是，分区是原子化的，这意味着分区无法在多个节点上进行拆分（具体可以看`分区和复制`相关的章节）。在再平衡或者节点故障的情况下，分区在其它节点恢复时，数据和它在原来节点时保持一致。
 
 而在机器学习算法中，这很重要，因为大多数机器学习算法是迭代的，并且需要在迭代之间保持一定的上下文，该上下文无法被拆分或者合并，并且应该在整个学习期间保持一致的状态。
-### 15.3.2.使用
+### 3.2.使用
 要构造一个分区化的数据集，可以这么做：
 
  - 有一个上游的数据源，可以是Ignite的缓存或者仅仅是一个数据的Map；
@@ -229,10 +229,10 @@ int numerOfRows = dataset.compute(
 ```java
 dataset.close();
 ```
-### 15.3.3.示例
+### 3.3.示例
 要了解分区化的数据集在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/dataset/AlgorithmSpecificDatasetExample.java)，该实例也会随着每个Ignite发行版进行发布。
-## 15.4.线性回归
-### 15.4.1.概述
+## 4.线性回归
+### 4.1.概述
 Ignite支持普通最小二乘线性回归算法，这是最基本也是最强大的机器学习算法之一，本文会说明该算法的工作方式以及Ignite是如何实现的。
 
 线性回归算法的基本原理是，假定因变量y和自变量x有如下的关系：
@@ -240,14 +240,14 @@ Ignite支持普通最小二乘线性回归算法，这是最基本也是最强�
 注意，后续的文档中会使用向量x和b的点积，并且明确地避免使用常数项，当向量x由一个等于1的值补充时，在数学上是正确的。
 
 如果向量b已知，上面的假设可以基于特征向量x进行预测，它反映在Ignite中负责预测的`LinearRegressionModel`类中。
-### 15.4.2.模型
+### 4.2.模型
 线性回归的模型表示为`LinearRegressionModel`类，它能够对给定的特征向量进行预测，如下：
 ```java
 LinearRegressionModel model = ...;
 double prediction = model.predict(observation);
 ```
 模型是完全独立的对象，训练之后可以被保存、序列化以及恢复。
-### 15.4.3.训练法
+### 4.3.训练法
 线性回归是一种监督学习算法，这意味着为了找到参数（向量b），需要在训练数据集上进行训练，并且使损失函数最小化。
 ![](https://files.readme.io/b20f1ce-222.gif)
 Ignite支持两种线性回归训练法，基于LSQR算法的训练法以及另一个基于随机梯度下降法的训练法。
@@ -345,11 +345,11 @@ LinearRegressionModel mdl = trainer.fit(
 // Make a prediction.
 double prediction = mdl.apply(coordinates);
 ```
-### 15.4.4.示例
+### 4.4.示例
 要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/regression/linear)，该实例也会随着每个Ignite发行版进行发布。
-## 15.5.K-均值聚类
+## 5.K-均值聚类
 在Ignite的机器学习组件中，提供了一个K-均值聚类算法的实现。
-### 15.5.1.模型
+### 5.1.模型
 K-均值聚类的目标是，将n个待观测值分为k个簇，这里每个观测值和所属的簇都有最近的均值，这被称为簇的原型。
 
 该模型持有一个k中心向量以及距离指标，这些由比如欧几里得、海明或曼哈顿这样的机器学习框架提供。
@@ -360,7 +360,7 @@ MeansModel mdl = ...;
 
 double prediction = model.predict(observation);
 ```
-### 15.5.2.训练法
+### 5.2.训练法
 K均值是一种无监督学习算法，它解决了将对象分组的聚类问题，即在同一个组（叫做簇）中的对象（某种意义上）比其它簇中的对象更相似。
 
 K均值是一种参数化的迭代算法，在每个迭代中，计算每个簇中的新的均值，作为观测值的质心。
@@ -388,12 +388,12 @@ KMeansModel knnMdl = trainer.fit(
   labelExtractor
 );
 ```
-### 15.5.3.示例
+### 5.3.示例
 要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/clustering)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集是鸢尾花数据集的一个子集（具有标签1和标签2，它们是线性可分离的两类数据集），可以从[UCL机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
-## 15.6.遗传算法
-### 15.6.1.概述
+## 6.遗传算法
+### 6.1.概述
 Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过模拟生物进化过程来解决优化问题的一种方法。 遗传算法非常适合于以最优的方式检索大量复杂的数据集，在现实世界中，遗传算法的应用包括：汽车设计、计算机游戏、机器人、投资、交通和运输等等。
 
 所有的遗传操作，比如适应度计算、交叉和变异，都会被建模为分布式的ComputeTask。此外，这些ComputeTask会通过Ignite的关联并置，将ComputeJob分发到染色体实际存储的节点。
@@ -402,7 +402,7 @@ Ignite的机器学习组件包括一组遗传算法（GA），它是一种通过
 ![](https://files.readme.io/07790ee-GAGrid_Overview.png)
 下图是遗传算法的执行步骤：
 ![](https://files.readme.io/352730c-GAProcessDiagram2.png)
-### 15.6.2.使用
+### 6.2.使用
 下面会使用`HelloWorldGAExample`进行演示，一步步讲解遗传算法如何使用，目标是得到“HELLO WORLD”这个短语。
 
 **创建一个GAConfiguration**
@@ -535,7 +535,7 @@ gaGrid = new GAGrid(gaConfig, ignite);
 // Evolve the population
 Chromosome fittestChromosome = gaGrid.evolve();
 ```
-### 15.6.3.启动
+### 6.3.启动
 如果要使用遗传算法，打开命令终端，转到`IGNITE_HOME`目录，然后执行下面的脚本：
 ```bash
 $ bin/ignite.sh examples/config/example-ignite.xml
@@ -561,7 +561,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 [19:04:17,311][INFO][main][]
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 53.883 sec
 ```
-### 15.6.4.Apache Zeppelin集成
+### 6.4.Apache Zeppelin集成
 Apache Zeppelin是一个基于Web的笔记本，可以进行交互式的数据分析。下面会介绍如何利用Zeppelin的可视化特性来显示由遗传算法生成的优化解。
 
 >下面的步骤，对所有遗传算法的示例都有效。
@@ -644,7 +644,7 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 ```
 若干代之后，会发现解已经演变到最后的短语"HELLO WORLD"，对于HellowWorldGAExample这个示例，遗传算法会为每一代维护一个500个解的种群，另外，本示例的解会包含总共11个基因，适应度得分最高的，会被认为是“最适合”。
 ![](https://files.readme.io/52055cb-Zeppelin_HelloWorldGATest.png)
-### 15.6.5.词汇表
+### 6.5.词汇表
 **染色体**：是一系列基因，一个染色体代表一个潜在的解；
 
 **交叉**：是染色体内的基因结合以获得新染色体的过程；
@@ -661,19 +661,19 @@ mvn exec:java -Dexec.mainClass="org.apache.ignite.examples.ml.genetic.helloworld
 
 **选择**：是为下一代选择候选解（染色体）的过程。
 
-## 15.7.多层感知
-### 15.7.1.概述
+## 7.多层感知
+### 7.1.概述
 多层感知（MLP）是神经网络的基本形式，它由一个输入层和0或多个转换层组成，每个转换层都通过如下的方程依赖于前一个转换层：
 ![](https://files.readme.io/60458a8-333.gif)
 在上面的方程中，点运算符是两个向量的点积，由σ表示的函数称为激活函数，`w`表示的向量称为权重，`b`表示的向量成为偏差。每个转换层都和权重、激活以及可选的偏差有关，MLP中中所有权重和偏差的集合，就被称为MLP的参数集。
-### 15.7.2.模型
+### 7.2.模型
 神经网络的模型由`MultilayerPerceptron`类表示，它可以对给定的特征向量通过如下方式进行预测：
 ```java
 MultilayerPerceptron mlp = ...
 Matrix prediction = mlp.apply(coordinates);
 ```
 模型是完全独立的对象，训练后可以保存、序列化和恢复。
-### 15.7.3.训练法
+### 7.3.训练法
 批量训练是监督模型训练的常用方法之一。在这种方法中，训练是迭代进行的，在每次迭代中，提取标记数据的`subpart(batch)`（由近似函数的输入和该函数的相应值组成的数据，通常称为“地面实况”），在这里使用这个子部分训练和更新模型参数，进行更新以使批处理中的损失函数最小化。
 
 Ignite的`MLPTrainer`就是用于分布式批量训练的，它运行于MapReduce模式，每个迭代（称为全局迭代）由若干个并行迭代组成，这些迭代又相应地由若干局部步骤组成，每个局部迭代由它自己的工作进程来执行，并执行指定数量的本地步骤（成为同步周期）来计算模型参数的更新，然后会在发起训练的节点上累计所有的更新，并将其转换为全局更新，全局更新会被反馈给所有的工作进程，在达到标准之前，这个过程会一直持续。
@@ -746,10 +746,10 @@ MultilayerPerceptron mlp = trainer.fit(
 // Make a prediction.
 Matrix prediction = mlp.apply(coordinates);
 ```
-### 15.7.4.示例
+### 7.4.示例
 要了解多层感知在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/nn/MLPTrainerExample.java)，该实例也会随着每个Ignite发行版进行发布。
-## 15.8.决策树
-### 15.8.1.概述
+## 8.决策树
+### 8.1.概述
 决策树是监督学习中一个简单而强大的模型。其主要思想是将特征空间分割成区域，每个区域中的值变化不大。一个区域中的值变化的度量被称为区域的纯度。
 
 Ignite对于行数据存储，提供了一种优化算法，具体可以看[15.3.分区化的数据集](#_15-3-分区化的数据集)。
@@ -763,14 +763,14 @@ Ignite对于行数据存储，提供了一种优化算法，具体可以看[15.3
 这里`X_0`是`x`的一个子集。
 
 该模型的工作方式为，当算法达到配置的最大深度时，拆分过程停止，或者任何区域的拆分没有导致明显的纯度损失。从`S`预测点`s`的值是将树向下遍历，直到节点对应的区域包含`s`，并返回与该叶子相关联的值。
-### 15.8.2.模型
+### 8.2.模型
 决策树分类的模型由`DecisionTreeNode`表示，对于给定的特征向量进行预测，如下所示：
 ```java
 DecisionTreeNode mdl = ...
 double prediction = mdl.apply(observation);
 ```
 模型是完全独立的对象，训练之后可以保存、序列化以及恢复。
-### 15.8.3.训练法
+### 8.3.训练法
 决策树算法可用于基于纯度度量和节点实例化方法的分类和回归。
 
 **分类**
@@ -857,13 +857,13 @@ DecisionTreeNode mdl = trainer.fit(
 // Make a prediction.
 double prediction = mdl.apply(x);
 ```
-### 15.8.4.示例
+### 8.4.示例
 要了解决策树在实践中是如何使用的，可以看这个[分类示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeClassificationTrainerExample.java)和[回归示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeRegressionTrainerExample.java)，这些实例也会随着每个Ignite发行版进行发布。
-## 15.9.k-NN分类
+## 9.k-NN分类
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
 本文会描述k-NN作为分类任务的解决方案。
-### 15.9.1.模型
+### 9.1.模型
 K-NN算法是一种非参数方法，其输入由特征空间中的K-最近训练样本组成。
 
 另外，k-NN分类的输出表示为类的成员。一个对象按其邻居的多数票进行分类。该对象会被分配为K近邻中最常见的一个特定类。`k`是正整数，通常很小，当`k`为1时是一个特殊的情况，该对象会简单地分配给该单近邻的类。
@@ -893,15 +893,15 @@ KNNClassificationModel knnMdl = trainer.fit(
 // Make a prediction.
 double prediction = knnMdl.apply(vectorizedData);
 ```
-### 15.9.2.示例
+### 9.2.示例
 要了解k-NN分类在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/classification)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
-## 15.10.k-NN回归
+## 10.k-NN回归
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
 本文会描述k-NN作为回归任务的解决方案。
-### 15.10.1.模型
+### 10.1.模型
 K-NN算法是一种非参数方法，其输入由特征空间中的K-最近训练样本组成。每个训练样本具有与给定的训练样本相关联的数值形式的属性值。
 
 K-NN算法使用所有训练集来预测给定测试样本的属性值，这个预测的属性值是其k近邻值的平均值。如果`k`是1，那么测试样本会被简单地分配给单个最近邻的属性值。
@@ -929,17 +929,17 @@ KNNRegressionModel knnMdl = (KNNRegressionModel) trainer.fit(
 // Make a prediction.
 double prediction = knnMdl.apply(vectorizedData);
 ```
-### 15.10.2.示例
+### 10.2.示例
 要了解k-NN回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/regression)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
-## 15.11.SVM二元分类
+## 11.SVM二元分类
 支持向量机（SVM）是相关数据分析学习算法中的监督学习模型，用于分类和回归分析。
 
 给定一组训练样本，每一个被标记为属于两个类别中的一个，SVM训练算法会建立一个模型，该模型将新的样本分配给其中一个类别，使其成为非概率二元线性分类器。
 
 Ignite机器学习模块只支持线性支持向量机。更多信息请参见维基百科中的[支持向量机](https://en.wikipedia.org/wiki/Support_vector_machine)。
-### 15.11.1.模型
+### 11.1.模型
 SVM的模型表示为`SVMLinearBinaryClassificationModel`，它通过如下的方式对给定的特征向量进行预测：
 ```java
 SVMLinearBinaryClassificationModel model = ...;
@@ -959,7 +959,7 @@ double prediction = model
   .withThreshold(5)
   .predict(observation);
 ```
-### 15.11.2.训练法
+### 11.2.训练法
 基于具有铰链损失函数的高效通信分布式双坐标上升算法（COCOA），提供软余量SVM线性分类训练法的基类。该训练法将输入作为具有-1和+1两个分类的标签化数据集，并进行二元分类。
 
 关于这个算法的论文可以在[这里](https://arxiv.org/abs/1409.1458)找到。
@@ -984,24 +984,24 @@ SVMLinearBinaryClassificationModel mdl = trainer.fit(
   labelExtractor
 );
 ```
-### 15.11.3.示例
+### 11.3.示例
 要了解SVM线性分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/binary/SVMBinaryClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
 
 训练数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载，其是鸢尾花数据集的子集（具有标签1和标签2的分类，它们是线性可分离的两类数据集）。
-## 15.12.SVM多类分类
+## 12.SVM多类分类
 多类SVM的目的是通过使用支持向量机将标签分配给样本，其中标签是从多个元素的有限集合中提取的。
 
 这个实现方法是通过一对所有的方法将单个多类问题总结成多个二元分类问题。
 
 一对所有的方法是建立二元分类器的过程，它将一个标签和其余的区分开。
-### 15.12.1.模型
+### 12.1.模型
 该模型持有`<ClassLabel, SVMLinearBinaryClassificationModel>`对，它通过如下的方式对给定的特征向量进行预测：
 ```java
 SVMLinearMultiClassClassificationModel model = ...;
 
 double prediction = model.predict(observation);
 ```
-### 15.12.2.训练法
+### 12.2.训练法
 目前，Ignite为`SVMLinearMultiClassClassificationTrainer`支持如下的参数：
 
  - `amountOfIterations`：外部SDCA算法的迭代量。（默认值：200）；
@@ -1023,7 +1023,7 @@ SVMLinearMultiClassClassificationModel mdl = trainer.fit(
   labelExtractor
 );
 ```
-### 15.12.3.示例
+### 12.3.示例
 要了解SVM线性多类分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/multiclass/SVMMultiClassClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
 
 预处理的分类数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。

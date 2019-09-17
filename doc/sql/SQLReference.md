@@ -1,5 +1,5 @@
-# 2.SQL参考
-## 2.1.概述
+# SQL参考
+## 1.概述
 本文档描述了Apache Ignite支持的SQL语法，其中包括：
 
  - 数据定义语言（DDL）
@@ -11,8 +11,8 @@
  - 系统函数
  - 数据类型
 
-## 2.2.数据定义语言（DDL）
-### 2.2.1.ALTER TABLE
+## 2.数据定义语言（DDL）
+### 2.1.ALTER TABLE
 修改已有表的结构：
 ```sql
 ALTER TABLE [IF EXISTS] tableName {alter_specification}
@@ -94,7 +94,7 @@ ALTER TABLE Person DROP COLUMN (code, gdp);
 ```sql
 ALTER TABLE Person NOLOGGING
 ```
-### 2.2.2.CREATE INDEX
+### 2.2.CREATE INDEX
 为表创建索引。
 ```sql
 CREATE [SPATIAL] INDEX [[IF NOT EXISTS] indexName] ON tableName
@@ -183,7 +183,7 @@ CREATE INDEX fast_city_idx ON sales (country, city) INLINE_SIZE 60;
 ```sql
 CREATE SPATIAL INDEX idx_person_address ON Person (address);
 ```
-### 2.2.3.CREATE TABLE
+### 2.3.CREATE TABLE
 创建一个新表及其底层的缓存。
 ```sql
 CREATE TABLE [IF NOT EXISTS] tableName (tableColumn [, tableColumn]...
@@ -192,7 +192,7 @@ CREATE TABLE [IF NOT EXISTS] tableName (tableColumn [, tableColumn]...
 
 tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
 ```
-#### 2.2.3.1.参数
+#### 2.3.1.参数
 
  - `tableName`：表名；
  - `tableColumn`：新表中一个列的名字和类型；
@@ -214,7 +214,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
    - `WRAP_KEY=<true | false>`：这个标志控制**单列**主键是否会被包装成二进制对象形式，这个标志默认值为`false`，这个标志对多列的`PRIMARY KEY`不会产生影响，不管这个参数值是什么，它总是会被包装；
    - `WRAP_VALUE=<true | false>`：这个标志控制**单列**基本类型的值是否会被包装成二进制对象形式，这个标志默认值为`true`，这个标志对多列的值不会产生影响，不管这个参数值是什么，它总是会被包装。如果表中只有一个列，并且没有计划添加额外的列时，可以将其配置为`false`。注意如果该参数配置为`false`，就无法在该表上执行`ALTER TABLE ADD COLUMN`命令；
 
-#### 2.2.3.2.描述
+#### 2.3.2.描述
 
 `CREATE TABLE`会创建一个新的缓存，然后在其上定义一个新的SQL表，缓存以键-值对的形式存储数据，并且该表允许在数据上执行SQL查询。
 
@@ -227,7 +227,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
  - `CREATE TABLE`执行后，生成的缓存名是`SQL_{SCHEMA_NAME}_{TABLE}`形式的，使用`CACHE_NAME`参数可以覆盖默认的名字；
  - 另外，该命令会创建两个新的二进制类型，分别对应键和值。Ignite会随机地生成包含UUID字符串的类型名，这使从非SQL API中使用这些`类型`变得复杂.这时可以使用自定义的`KEY_TYPE`和`VALUE_TYPE`来覆盖默认值，它们可以分别对应业务模型对象；
 
-#### 2.2.3.3.示例
+#### 2.3.3.示例
 
 创建`Person`表：
 ```sql
@@ -257,7 +257,7 @@ CREATE TABLE Person (
   company varchar
 ) WITH "atomicity=transactional,cachegroup=somegroup";
 ```
-### 2.2.4.DROP INDEX
+### 2.4.DROP INDEX
 删除表的一个索引。
 ```sql
 DROP INDEX [IF EXISTS] indexName
@@ -281,7 +281,7 @@ DROP INDEX [IF EXISTS] indexName
 ```sql
 DROP INDEX idx_person_name;
 ```
-### 2.2.5.DROP TABLE
+### 2.5.DROP TABLE
 删除指定的表及其底层的索引。
 ```sql
 DROP TABLE [IF EXISTS] tableName
@@ -305,7 +305,7 @@ DROP TABLE [IF EXISTS] tableName
 ```sql
 DROP TABLE IF EXISTS "Person";
 ```
-### 2.2.6.CREATE USER
+### 2.6.CREATE USER
 用指定的用户名和密码创建用户。
 ```sql
 CREATE USER userName WITH PASSWORD 'password';
@@ -341,7 +341,7 @@ CREATE USER test WITH PASSWORD 'test';
 ```sql
 CREATE USER "TeSt" WITH PASSWORD 'test'
 ```
-### 2.2.7.ALTER USER
+### 2.7.ALTER USER
 修改已有用户的密码。
 ```sql
 ALTER USER userName WITH PASSWORD 'newPassword';
@@ -363,7 +363,7 @@ ALTER USER userName WITH PASSWORD 'newPassword';
 ```sql
 ALTER USER test WITH PASSWORD 'test123';
 ```
-### 2.2.8.DROP USER
+### 2.8.DROP USER
 删除一个已有用户：
 ```sql
 DROP USER userName;
@@ -384,8 +384,8 @@ DROP USER userName;
 ```sql
 DROP USER test;
 ```
-## 2.3.数据操作语言（DML）
-### 2.3.1.SELECT
+## 3.数据操作语言（DML）
+### 3.1.SELECT
 从一张表或者多张表中获得数据。
 ```sql
 SELECT
@@ -469,7 +469,7 @@ SELECT p.name, c.name
 	FROM Person p, City c
 	WHERE p.city_id = c.id;
 ```
-### 2.3.2.INSERT
+### 3.2.INSERT
 往表中插入数据。
 ```sql
 INSERT INTO tableName
@@ -504,7 +504,7 @@ INSERT INTO Person(id, name, city_id)
    (SELECT a.id + 1000, concat(a.firstName, a.secondName), a.city_id
    FROM Account a WHERE a.id > 100 AND a.id < 1000);
 ```
-### 2.3.3.UPDATE
+### 3.3.UPDATE
 修改表中的数据。
 ```sql
 UPDATE tableName [[AS] newTableAlias]
@@ -544,7 +544,7 @@ UPDATE Person SET name = 'John Black' WHERE id = 2;
 ```sql
 UPDATE Person p SET name = (SELECT a.first_name FROM Account a WHERE a.id = p.id)
 ```
-### 2.3.4.MERGE
+### 3.4.MERGE
 将数据合并后入表。
 ```sql
 MERGE INTO tableName [(columnName [,...])]
@@ -579,7 +579,7 @@ MERGE INTO Person(id, name, city_id)
    (SELECT a.id + 1000, concat(a.firstName, a.secondName), a.city_id
    FROM Account a WHERE a.id > 100 AND a.id < 1000);
 ```
-### 2.3.5.DELETE
+### 3.5.DELETE
 从表中删除数据。
 ```sql
 DELETE
@@ -609,8 +609,8 @@ DELETE
 ```sql
 DELETE FROM Person WHERE name = 'John Doe';
 ```
-## 2.4.操作型命令
-### 2.4.1.COPY
+## 4.操作型命令
+### 4.1.COPY
 将CSV文件的数据复制进一个SQL表。
 ```sql
 COPY FROM '/path/to/local/file.csv'
@@ -638,7 +638,7 @@ COPY FROM '/path/to/local/file.csv' INTO city (
   ID, Name, CountryCode, District, Population) FORMAT CSV
 ```
 在上面的命令中，需要将`/path/to/local/file.csv`替换为CSV文件的实际路径，比如，可以使用最新的Ignite发行版中自带的`city.csv`，该文件位于`[IGNITE_HOME]/examples/src/main/resources/sql/`目录。
-### 2.4.2.SET STREAMING
+### 4.2.SET STREAMING
 将文件内容流化，批量地导入SQL表。
 ```sql
 SET STREAMING ON;
@@ -705,8 +705,8 @@ INSERT INTO City(ID, Name, CountryCode, District, Population) VALUES (5,'Amsterd
 
 ![](https://files.readme.io/580d1a2-streaming.png)
 
-## 2.5.聚合函数
-### 2.5.1.AVG
+## 5.聚合函数
+### 5.1.AVG
 ```sql
 AVG ([DISTINCT] expression)
 ```
@@ -724,7 +724,7 @@ AVG ([DISTINCT] expression)
 ```sql
 SELECT AVG(age) "AverageAge" FROM Players;
 ```
-### 2.5.2.BIT_AND
+### 5.2.BIT_AND
 ```sql
 BIT_AND (expression)
 ```
@@ -735,7 +735,7 @@ BIT_AND (expression)
 对长度相等的两个二进制表达式的每一对对应的位执行逻辑与操作。
 
 对于每个对，如果第一个为1且第二个也为1，则返回值为1，否则返回0。
-### 2.5.3.BIT_OR
+### 5.3.BIT_OR
 ```sql
 BIT_OR (expression)
 ```
@@ -746,7 +746,7 @@ BIT_OR (expression)
 对长度相等的两个二进制表达式的每一对对应的位执行逻辑或操作。
 
 对于每个对，如果第一个为1或者第二个为1或者两者都为1，则返回值为1，否则返回0。
-### 2.5.4.BOOL_AND
+### 5.4.BOOL_AND
 ```sql
 BOOL_AND (boolean)
 ```
@@ -758,7 +758,7 @@ BOOL_AND (boolean)
 ```sql
 SELECT item, BOOL_AND(price > 10) FROM Items GROUP BY item;
 ```
-### 2.5.5.BOOL_OR
+### 5.5.BOOL_OR
 ```sql
 BOOL_OR (boolean)
 ```
@@ -770,7 +770,7 @@ BOOL_OR (boolean)
 ```sql
 SELECT BOOL_OR(CITY LIKE 'W%') FROM Users;
 ```
-### 2.5.6.COUNT
+### 5.6.COUNT
 ```sql
 COUNT (* | [DISTINCT] expression)
 ```
@@ -784,7 +784,7 @@ COUNT (* | [DISTINCT] expression)
 ```sql
 SELECT city_id, COUNT(*) FROM Players GROUP BY city_id;
 ```
-### 2.5.7.MAX
+### 5.7.MAX
 ```sql
 MAX (expression)
 ```
@@ -802,7 +802,7 @@ MAX (expression)
 ```sql
 SELECT MAX(height) FROM Players;
 ```
-### 2.5.8.MIN
+### 5.8.MIN
 ```sql
 MIN (expression)
 ```
@@ -820,7 +820,7 @@ MIN (expression)
 ```sql
 SELECT MIN(age) FROM Players;
 ```
-### 2.5.9.SUM
+### 5.9.SUM
 ```sql
 SUM ([DISTINCT] expression)
 ```
@@ -839,7 +839,7 @@ SUM ([DISTINCT] expression)
 ```sql
 SELECT SUM(goal) FROM Players;
 ```
-### 2.5.10.SELECTIVITY
+### 5.10.SELECTIVITY
 ```sql
 SELECTIVITY (expression)
 ```
@@ -858,7 +858,7 @@ SELECTIVITY (expression)
 SELECT SELECTIVITY(first_name), SELECTIVITY(second_name) FROM Player
   WHERE ROWNUM() < 20000;
 ```
-### 2.5.11.STDDEV_POP
+### 5.11.STDDEV_POP
 ```sql
 STDDEV_POP ([DISTINCT] expression)
 ```
@@ -877,7 +877,7 @@ STDDEV_POP ([DISTINCT] expression)
 ```sql
 SELECT STDDEV_POP(age) from Players;
 ```
-### 2.5.12.STDDEV_SAMP
+### 5.12.STDDEV_SAMP
 ```sql
 STDDEV_SAMP ([DISTINCT] expression)
 ```
@@ -896,7 +896,7 @@ STDDEV_SAMP ([DISTINCT] expression)
 ```sql
 SELECT STDDEV_SAMP(age) from Players;
 ```
-### 2.5.13.VAR_POP
+### 5.13.VAR_POP
 ```sql
 VAR_POP ([DISTINCT] expression)
 ```
@@ -915,7 +915,7 @@ VAR_POP ([DISTINCT] expression)
 ```sql
 SELECT VAR_POP (age) from Players;
 ```
-### 2.5.14.VAR_SAMP
+### 5.14.VAR_SAMP
 ```sql
 VAR_SAMP ([DISTINCT] expression)
 ```
@@ -933,7 +933,7 @@ VAR_SAMP ([DISTINCT] expression)
 ```sql
 SELECT VAR_SAMP(age) FROM Players;
 ```
-### 2.5.15.GROUP_CONCAT
+### 5.15.GROUP_CONCAT
 ```sql
 GROUP_CONCAT([DISTINCT] expression || [expression || [expression ...]]
   [ORDER BY expression [ASC|DESC], [[ORDER BY expression [ASC|DESC]]]
@@ -962,8 +962,8 @@ GROUP_CONCAT([DISTINCT] expression || [expression || [expression ...]]
 ```sql
 SELECT GROUP_CONCAT(name ORDER BY id SEPARATOR ', ') FROM Players;
 ```
-## 2.6.数值函数
-### 2.6.1.ABS
+## 6.数值函数
+### 6.1.ABS
 ```sql
 ABS (expression)
 ```
@@ -981,7 +981,7 @@ ABS (expression)
 ```sql
 SELECT transfer_id, ABS (price) from Transfers;
 ```
-### 2.6.2.ACOS
+### 6.2.ACOS
 ```sql
 ACOS (expression)
 ```
@@ -999,7 +999,7 @@ ACOS (expression)
 ```sql
 SELECT acos(angle) FROM Triangles;
 ```
-### 2.6.3.ASIN
+### 6.3.ASIN
 ```sql
 ASIN (expression)
 ```
@@ -1017,7 +1017,7 @@ ASIN (expression)
 ```sql
 SELECT asin(angle) FROM Triangles;
 ```
-### 2.6.4.ATAN
+### 6.4.ATAN
 ```sql
 ATAN (expression)
 ```
@@ -1035,7 +1035,7 @@ ATAN (expression)
 ```sql
 SELECT atan(angle) FROM Triangles;
 ```
-### 2.6.5.COS
+### 6.5.COS
 ```sql
 COS (expression)
 ```
@@ -1053,7 +1053,7 @@ COS (expression)
 ```sql
 SELECT COS(angle) FROM Triangles;
 ```
-### 2.6.6.COSH
+### 6.6.COSH
 ```sql
 COSH (expression)
 ```
@@ -1071,7 +1071,7 @@ COSH (expression)
 ```sql
 SELECT COSH(angle) FROM Triangles;
 ```
-### 2.6.7.COT
+### 6.7.COT
 ```sql
 COT (expression)
 ```
@@ -1089,7 +1089,7 @@ COT (expression)
 ```sql
 SELECT COT(angle) FROM Triangles;
 ```
-### 2.6.8.SIN
+### 6.8.SIN
 ```sql
 SIN (expression)
 ```
@@ -1107,7 +1107,7 @@ SIN (expression)
 ```sql
 SELECT SIN(angle) FROM Triangles;
 ```
-### 2.6.9.SINH
+### 6.9.SINH
 ```sql
 SINH (expression)
 ```
@@ -1125,7 +1125,7 @@ SINH (expression)
 ```sql
 SELECT SINH(angle) FROM Triangles;
 ```
-### 2.6.10.TAN
+### 6.10.TAN
 ```sql
 TAN (expression)
 ```
@@ -1143,7 +1143,7 @@ TAN (expression)
 ```sql
 SELECT TAN(angle) FROM Triangles;
 ```
-### 2.6.11.TANH
+### 6.11.TANH
 ```sql
 TANH (expression)
 ```
@@ -1161,7 +1161,7 @@ TANH (expression)
 ```sql
 SELECT TANH(angle) FROM Triangles;
 ```
-### 2.6.12.ATAN2
+### 6.12.ATAN2
 ```sql
 ATAN2 (y, x)
 ```
@@ -1179,7 +1179,7 @@ ATAN2 (y, x)
 ```sql
 SELECT ATAN2(X, Y) FROM Triangles;
 ```
-### 2.6.13.BITAND
+### 6.13.BITAND
 ```sql
 BITAND (y, x)
 ```
@@ -1195,7 +1195,7 @@ BITAND (y, x)
 ```sql
 SELECT BITAND(X, Y) FROM Triangles;
 ```
-### 2.6.14.BITGET
+### 6.14.BITGET
 ```sql
 BITGET (y, x)
 ```
@@ -1213,7 +1213,7 @@ BITGET (y, x)
 ```sql
 SELECT BITGET(X, 3) from Triangles;
 ```
-### 2.6.15.BITOR
+### 6.15.BITOR
 ```sql
 BITOR (y, x)
 ```
@@ -1231,7 +1231,7 @@ BITOR (y, x)
 ```sql
 SELECT BITOR(X, Y) from Triangles;
 ```
-### 2.6.16.BITXOR
+### 6.16.BITXOR
 ```sql
 BITXOR (y, x)
 ```
@@ -1249,7 +1249,7 @@ BITXOR (y, x)
 ```sql
 SELECT BITXOR(X, Y) from Triangles;
 ```
-### 2.6.17.MOD
+### 6.17.MOD
 ```sql
 MOD (y, x)
 ```
@@ -1267,7 +1267,7 @@ MOD (y, x)
 ```sql
 SELECT MOD(X, Y) from Triangles;
 ```
-### 2.6.18.CEILING
+### 6.18.CEILING
 ```sql
 CEIL (expression)
 CEILING (expression)
@@ -1286,7 +1286,7 @@ CEILING (expression)
 ```sql
 SELECT item_id, CEILING(price) FROM Items;
 ```
-### 2.6.19.DEGREES
+### 6.19.DEGREES
 ```sql
 DEGREES (expression)
 ```
@@ -1304,7 +1304,7 @@ DEGREES (expression)
 ```sql
 SELECT DEGREES(X) FROM Triangles;
 ```
-### 2.6.20.EXP
+### 6.20.EXP
 ```sql
 EXP (expression)
 ```
@@ -1322,7 +1322,7 @@ EXP (expression)
 ```sql
 SELECT EXP(X) FROM Triangles;
 ```
-### 2.6.21.FLOOR
+### 6.21.FLOOR
 ```sql
 FLOOR (expression)
 ```
@@ -1340,7 +1340,7 @@ FLOOR (expression)
 ```sql
 SELECT FLOOR(X) FROM Items;
 ```
-### 2.6.22.LOG
+### 6.22.LOG
 ```sql
 LOG (expression)
 LN (expression)
@@ -1359,7 +1359,7 @@ LN (expression)
 ```sql
 SELECT LOG(X) from Items;
 ```
-### 2.6.23.LOG10
+### 6.23.LOG10
 ```sql
 LOG10 (expression)
 ```
@@ -1377,7 +1377,7 @@ LOG10 (expression)
 ```sql
 SELECT LOG10(X) from Items;
 ```
-### 2.6.24.RADIANS
+### 6.24.RADIANS
 ```sql
 RADIANS (expression)
 ```
@@ -1395,7 +1395,7 @@ RADIANS (expression)
 ```sql
 SELECT RADIANS(X) FROM Triangles;
 ```
-### 2.6.25.SQRT
+### 6.25.SQRT
 ```sql
 SQRT (expression)
 ```
@@ -1413,7 +1413,7 @@ SQRT (expression)
 ```sql
 SELECT SQRT(X) FROM Items;
 ```
-### 2.6.26.PI
+### 6.26.PI
 ```sql
 PI (expression)
 ```
@@ -1431,7 +1431,7 @@ PI (expression)
 ```sql
 SELECT PI(X) FROM Items;
 ```
-### 2.6.27.POWER
+### 6.27.POWER
 ```sql
 POWER (X, Y)
 ```
@@ -1450,7 +1450,7 @@ POWER (X, Y)
 ```sql
 SELECT pow(2, n) FROM Rows;
 ```
-### 2.6.28.RAND
+### 6.28.RAND
 ```sql
 {RAND | RANDOM} ([expression])
 ```
@@ -1468,7 +1468,7 @@ SELECT pow(2, n) FROM Rows;
 ```sql
 SELECT random() FROM Play;
 ```
-### 2.6.29.RANDOM_UUID
+### 6.29.RANDOM_UUID
 ```sql
 {RANDOM_UUID | UUID} ()
 ```
@@ -1482,7 +1482,7 @@ SELECT random() FROM Play;
 ```sql
 SELECT UUID(),name FROM Player;
 ```
-### 2.6.30.ROUND
+### 6.30.ROUND
 ```sql
 ROUND ( expression [, precision] )
 ```
@@ -1501,7 +1501,7 @@ ROUND ( expression [, precision] )
 ```sql
 SELECT name, ROUND(age) FROM Player;
 ```
-### 2.6.31.ROUNDMAGIC
+### 6.31.ROUNDMAGIC
 ```sql
 ROUNDMAGIC (expression)
 ```
@@ -1521,7 +1521,7 @@ ROUNDMAGIC (expression)
 ```sql
 SELECT name, ROUNDMAGIC(AGE/3*3) FROM Player;
 ```
-### 2.6.32.SECURE_RAND
+### 6.32.SECURE_RAND
 ```sql
 SECURE_RAND (int)
 ```
@@ -1539,7 +1539,7 @@ SECURE_RAND (int)
 ```sql
 SELECT name, SECURE_RAND(10) FROM Player;
 ```
-### 2.6.33.SIGN
+### 6.33.SIGN
 ```sql
 SIGN (expression)
 ```
@@ -1557,7 +1557,7 @@ SIGN (expression)
 ```sql
 SELECT name, SIGN(VALUE) FROM Player;
 ```
-### 2.6.34.ENCRYPT
+### 6.34.ENCRYPT
 ```sql
 ENCRYPT (algorithmString , keyBytes , dataBytes)
 ```
@@ -1577,7 +1577,7 @@ ENCRYPT (algorithmString , keyBytes , dataBytes)
 ```sql
 SELECT ENCRYPT('AES', '00', STRINGTOUTF8(Name)) FROM Player;
 ```
-### 2.6.35.DECRYPT
+### 6.35.DECRYPT
 ```sql
 DECRYPT (algorithmString , keyBytes , dataBytes)
 ```
@@ -1597,7 +1597,7 @@ DECRYPT (algorithmString , keyBytes , dataBytes)
 ```sql
 SELECT DECRYPT('AES', '00', '3fabb4de8f1ee2e97d7793bab2db1116'))) FROM Player;
 ```
-### 2.6.36.TRUNCATE
+### 6.36.TRUNCATE
 ```sql
 {TRUNC | TRUNCATE} ({{numeric, digitsInt} | timestamp | date | timestampString})
 ```
@@ -1610,7 +1610,7 @@ SELECT DECRYPT('AES', '00', '3fabb4de8f1ee2e97d7793bab2db1116'))) FROM Player;
 ```sql
 TRUNCATE(VALUE, 2);
 ```
-### 2.6.37.COMPRESS
+### 6.37.COMPRESS
 ```sql
 COMPRESS(dataBytes [, algorithmString])
 ```
@@ -1628,7 +1628,7 @@ COMPRESS(dataBytes [, algorithmString])
 ```sql
 COMPRESS(STRINGTOUTF8('Test'))
 ```
-### 2.6.38.EXPAND
+### 6.38.EXPAND
 ```sql
 EXPAND(dataBytes)
 ```
@@ -1644,7 +1644,7 @@ EXPAND(dataBytes)
 ```sql
 UTF8TOSTRING(EXPAND(COMPRESS(STRINGTOUTF8('Test'))))
 ```
-### 2.6.39.ZERO
+### 6.39.ZERO
 ```sql
 ZERO()
 ```
@@ -1656,8 +1656,8 @@ ZERO()
 ```sql
 ZERO()
 ```
-## 2.7.字符串函数
-### 2.7.1.ASCII
+## 7.字符串函数
+### 7.1.ASCII
 ```sql
 ASCII(string)
 ```
@@ -1673,7 +1673,7 @@ ASCII(string)
 ```sql
 select ASCII(name) FROM Players;
 ```
-### 2.7.2.BIT_LENGTH
+### 7.2.BIT_LENGTH
 ```sql
 BIT_LENGTH(string)
 ```
@@ -1689,7 +1689,7 @@ BIT_LENGTH(string)
 ```sql
 select BIT_LENGTH(name) FROM Players;
 ```
-### 2.7.3.LENGTH
+### 7.3.LENGTH
 ```sql
 {LENGTH | CHAR_LENGTH | CHARACTER_LENGTH} (string)
 ```
@@ -1705,7 +1705,7 @@ select BIT_LENGTH(name) FROM Players;
 ```sql
 SELECT LENGTH(name) FROM Players;
 ```
-### 2.7.4.OCTET_LENGTH
+### 7.4.OCTET_LENGTH
 ```sql
 OCTET_LENGTH(string)
 ```
@@ -1721,7 +1721,7 @@ OCTET_LENGTH(string)
 ```sql
 SELECT OCTET_LENGTH(name) FROM Players;
 ```
-### 2.7.5.CHAR
+### 7.5.CHAR
 ```sql
 {CHAR | CHR} (int)
 ```
@@ -1737,7 +1737,7 @@ SELECT OCTET_LENGTH(name) FROM Players;
 ```sql
 SELECT CHAR(65)||name FROM Players;
 ```
-### 2.7.6.CONCAT
+### 7.6.CONCAT
 ```sql
 CONCAT(string, string [,...])
 ```
@@ -1753,7 +1753,7 @@ CONCAT(string, string [,...])
 ```sql
 SELECT CONCAT(NAME, '!') FROM Players;
 ```
-### 2.7.7.CONCAT_WS
+### 7.7.CONCAT_WS
 ```sql
 CONCAT_WS(separatorString, string, string [,...])
 ```
@@ -1770,7 +1770,7 @@ CONCAT_WS(separatorString, string, string [,...])
 ```sql
 SELECT CONCAT_WS(',', NAME, '!') FROM Players;
 ```
-### 2.7.8.DIFFERENCE
+### 7.8.DIFFERENCE
 ```sql
 DIFFERENCE(X, Y)
 ```
@@ -1789,7 +1789,7 @@ DIFFERENCE(X, Y)
 select DIFFERENCE(T1.NAME, T2.NAME) FROM players T1, players T2
    WHERE T1.ID = 10 AND T2.ID = 11;
 ```
-### 2.7.9.HEXTORAW
+### 7.9.HEXTORAW
 ```sql
 HEXTORAW(string)
 ```
@@ -1805,7 +1805,7 @@ HEXTORAW(string)
 ```sql
 SELECT HEXTORAW(DATA) FROM Players;
 ```
-### 2.7.10.RAWTOHEX
+### 7.10.RAWTOHEX
 ```sql
 RAWTOHEX(string)
 ```
@@ -1821,7 +1821,7 @@ RAWTOHEX(string)
 ```sql
 SELECT RAWTOHEX(DATA) FROM Players;
 ```
-### 2.7.11.INSTR
+### 7.11.INSTR
 ```sql
 INSTR(string, searchString, [, startInt])
 ```
@@ -1841,7 +1841,7 @@ INSTR(string, searchString, [, startInt])
 ```sql
 SELECT INSTR(EMAIL,'@') FROM Players;
 ```
-### 2.7.12.INSERT
+### 7.12.INSERT
 ```sql
 INSERT(originalString, startInt, lengthInt, addString)
 ```
@@ -1860,7 +1860,7 @@ INSERT(originalString, startInt, lengthInt, addString)
 ```sql
 SELECT INSERT(NAME, 1, 1, ' ') FROM Players;
 ```
-### 2.7.13.LOWER
+### 7.13.LOWER
 ```sql
 {LOWER | LCASE} (string)
 ```
@@ -1876,7 +1876,7 @@ SELECT INSERT(NAME, 1, 1, ' ') FROM Players;
 ```sql
 SELECT LOWER(NAME) FROM Players;
 ```
-### 2.7.14.UPPER
+### 7.14.UPPER
 ```sql
 {UPPER | UCASE} (string)
 ```
@@ -1893,7 +1893,7 @@ SELECT LOWER(NAME) FROM Players;
 ```sql
 SELECT UPPER(last_name) "LastNameUpperCase" FROM Players;
 ```
-### 2.7.15.LEFT
+### 7.15.LEFT
 ```sql
 LEFT(string, int)
 ```
@@ -1912,7 +1912,7 @@ LEFT(string, int)
 ```sql
 SELECT LEFT(NAME, 3) FROM Players;
 ```
-### 2.7.16.RIGHT
+### 7.16.RIGHT
 ```sql
 RIGHT(string, int)
 ```
@@ -1931,7 +1931,7 @@ RIGHT(string, int)
 ```sql
 SELECT RIGHT(NAME, 3) FROM Players;
 ```
-### 2.7.17.LOCATE
+### 7.17.LOCATE
 ```sql
 LOCATE(searchString, string [, startInt])
 ```
@@ -1951,7 +1951,7 @@ LOCATE(searchString, string [, startInt])
 ```sql
 SELECT LOCATE('.', NAME) FROM Players;
 ```
-### 2.7.18.POSITION
+### 7.18.POSITION
 ```sql
 POSITION(searchString, string)
 ```
@@ -1963,7 +1963,7 @@ POSITION(searchString, string)
 ```sql
 SELECT POSITION('.', NAME) FROM Players;
 ```
-### 2.7.19.LPAD
+### 7.19.LPAD
 ```sql
 LPAD(string, int[, paddingString])
 ```
@@ -1975,7 +1975,7 @@ LPAD(string, int[, paddingString])
 ```sql
 SELECT LPAD(AMOUNT, 10, '*') FROM Players;
 ```
-### 2.7.20.RPAD
+### 7.20.RPAD
 ```sql
 RPAD(string, int[, paddingString])
 ```
@@ -1987,7 +1987,7 @@ RPAD(string, int[, paddingString])
 ```sql
 SELECT RPAD(TEXT, 10, '-') FROM Players;
 ```
-### 2.7.21.LTRIM
+### 7.21.LTRIM
 ```sql
 LTRIM(string)
 ```
@@ -1999,7 +1999,7 @@ LTRIM(string)
 ```sql
 SELECT LTRIM(NAME) FROM Players;
 ```
-### 2.7.22.RTRIM
+### 7.22.RTRIM
 ```sql
 RTRIM(string)
 ```
@@ -2011,7 +2011,7 @@ RTRIM(string)
 ```sql
 SELECT RTRIM(NAME) FROM Players;
 ```
-### 2.7.23.TRIM
+### 7.23.TRIM
 ```sql
 TRIM ([{LEADING | TRAILING | BOTH} [string] FROM] string)
 ```
@@ -2023,7 +2023,7 @@ TRIM ([{LEADING | TRAILING | BOTH} [string] FROM] string)
 ```sql
 SELECT TRIM(BOTH '_' FROM NAME) FROM Players;
 ```
-### 2.7.24.REGEXP_REPLACE
+### 7.24.REGEXP_REPLACE
 ```sql
 REGEXP_REPLACE(inputString, regexString, replacementString [, flagsString])
 ```
@@ -2042,7 +2042,7 @@ flagsString参数可以为`i`、`c`、`n`、`m`，其它的字符会出现异常
 ```sql
 SELECT REGEXP_REPLACE(name, 'w+', 'W', 'i') FROM Players;
 ```
-### 2.7.25.REGEXP_LIKE
+### 7.25.REGEXP_LIKE
 ```sql
 REGEXP_LIKE(inputString, regexString [, flagsString])
 ```
@@ -2061,7 +2061,7 @@ flagsString参数可以为`i`、`c`、`n`、`m`，其它的字符会出现异常
 ```sql
 SELECT REGEXP_LIKE(name, '[A-Z ]*', 'i') FROM Players;
 ```
-### 2.7.26.REPEAT
+### 7.26.REPEAT
 ```sql
 REPEAT(string, int)
 ```
@@ -2073,7 +2073,7 @@ REPEAT(string, int)
 ```sql
 SELECT REPEAT(NAME || ' ', 10) FROM Players;
 ```
-### 2.7.27.REPLACE
+### 7.27.REPLACE
 ```sql
 REPLACE(string, searchString [, replacementString])
 ```
@@ -2085,7 +2085,7 @@ REPLACE(string, searchString [, replacementString])
 ```sql
 SELECT REPLACE(NAME, ' ') FROM Players;
 ```
-### 2.7.28.SOUNDEX
+### 7.28.SOUNDEX
 ```sql
 SOUNDEX(string)
 ```
@@ -2097,7 +2097,7 @@ SOUNDEX(string)
 ```sql
 SELECT SOUNDEX(NAME) FROM Players;
 ```
-### 2.7.29.SPACE
+### 7.29.SPACE
 ```sql
 SPACE(int)
 ```
@@ -2109,7 +2109,7 @@ SPACE(int)
 ```sql
 SELECT name, SPACE(80) FROM Players;
 ```
-### 2.7.30.STRINGDECODE
+### 7.30.STRINGDECODE
 ```sql
 STRINGDECODE(string)
 ```
@@ -2121,7 +2121,7 @@ STRINGDECODE(string)
 ```sql
 STRINGENCODE(STRINGDECODE('Lines 1\nLine 2'));
 ```
-### 2.7.31.STRINGENCODE
+### 7.31.STRINGENCODE
 ```sql
 STRINGENCODE(string)
 ```
@@ -2133,7 +2133,7 @@ STRINGENCODE(string)
 ```sql
 STRINGENCODE(STRINGDECODE('Lines 1\nLine 2'))
 ```
-### 2.7.32.STRINGTOUTF8
+### 7.32.STRINGTOUTF8
 ```sql
 STRINGTOUTF8(string)
 ```
@@ -2145,7 +2145,7 @@ STRINGTOUTF8(string)
 ```sql
 SELECT UTF8TOSTRING(STRINGTOUTF8(name)) FROM Players;
 ```
-### 2.7.33.SUBSTRING
+### 7.33.SUBSTRING
 ```sql
 {SUBSTRING | SUBSTR} (string, startInt [, lengthInt])
 ```
@@ -2157,7 +2157,7 @@ SELECT UTF8TOSTRING(STRINGTOUTF8(name)) FROM Players;
 ```sql
 SELECT SUBSTR(name, 2, 5) FROM Players;
 ```
-### 2.7.34.UTF8TOSTRING
+### 7.34.UTF8TOSTRING
 ```sql
 UTF8TOSTRING(bytes)
 ```
@@ -2169,7 +2169,7 @@ UTF8TOSTRING(bytes)
 ```sql
 SELECT UTF8TOSTRING(STRINGTOUTF8(name)) FROM Players;
 ```
-### 2.7.35.XMLATTR
+### 7.35.XMLATTR
 ```sql
 XMLATTR(nameString, valueString)
 ```
@@ -2181,7 +2181,7 @@ XMLATTR(nameString, valueString)
 ```sql
 XMLNODE('a', XMLATTR('href', 'http://h2database.com'))
 ```
-### 2.7.36.XMLNODE
+### 7.36.XMLNODE
 ```sql
 XMLNODE(elementString [, attributesString [, contentString [, indentBoolean]]])
 ```
@@ -2193,7 +2193,7 @@ XMLNODE(elementString [, attributesString [, contentString [, indentBoolean]]])
 ```sql
 XMLNODE('a', XMLATTR('href', 'http://h2database.com'), 'H2')
 ```
-### 2.7.37.XMLCOMMENT
+### 7.37.XMLCOMMENT
 ```sql
 XMLCOMMENT(commentString)
 ```
@@ -2205,7 +2205,7 @@ XMLCOMMENT(commentString)
 ```sql
 XMLCOMMENT('Test')
 ```
-### 2.7.38.XMLCDATA
+### 7.38.XMLCDATA
 ```sql
 XMLCDATA(valueString)
 ```
@@ -2217,7 +2217,7 @@ XMLCDATA(valueString)
 ```sql
 XMLCDATA('data')
 ```
-### 2.7.39.XMLSTARTDOC
+### 7.39.XMLSTARTDOC
 ```sql
 XMLSTARTDOC()
 ```
@@ -2229,7 +2229,7 @@ XMLSTARTDOC()
 ```sql
 XMLSTARTDOC()
 ```
-### 2.7.40.XMLTEXT
+### 7.40.XMLTEXT
 ```sql
 XMLTEXT(valueString [, escapeNewlineBoolean])
 ```
@@ -2241,7 +2241,7 @@ XMLTEXT(valueString [, escapeNewlineBoolean])
 ```sql
 XMLSTARTDOC()
 ```
-### 2.7.41.TO_CHAR
+### 7.41.TO_CHAR
 ```sql
 TO_CHAR(value [, formatString[, nlsParamString]])
 ```
@@ -2253,7 +2253,7 @@ TO_CHAR(value [, formatString[, nlsParamString]])
 ```sql
 TO_CHAR(TIMESTAMP '2010-01-01 00:00:00', 'DD MON, YYYY')
 ```
-### 2.7.42.TRANSLATE
+### 7.42.TRANSLATE
 ```sql
 TRANSLATE(value , searchString, replacementString]])
 ```
@@ -2265,8 +2265,8 @@ TRANSLATE(value , searchString, replacementString]])
 ```sql
 TRANSLATE('Hello world', 'eo', 'EO')
 ```
-## 2.8.日期和时间函数
-### 2.8.1.CURRENT_DATE
+## 8.日期和时间函数
+### 8.1.CURRENT_DATE
 ```sql
 {CURRENT_DATE [()] | CURDATE() | SYSDATE | TODAY}
 ```
@@ -2278,7 +2278,7 @@ TRANSLATE('Hello world', 'eo', 'EO')
 ```sql
 CURRENT_DATE()
 ```
-### 2.8.2.CURRENT_TIME
+### 8.2.CURRENT_TIME
 ```sql
 {CURRENT_TIME [ () ] | CURTIME()}
 ```
@@ -2290,7 +2290,7 @@ CURRENT_DATE()
 ```sql
 CURRENT_TIME()
 ```
-### 2.8.3.CURRENT_TIMESTAMP
+### 8.3.CURRENT_TIMESTAMP
 ```sql
 {CURRENT_TIMESTAMP [([int])] | NOW([int])}
 ```
@@ -2302,7 +2302,7 @@ CURRENT_TIME()
 ```sql
 CURRENT_TIMESTAMP()
 ```
-### 2.8.4.DATEADD
+### 8.4.DATEADD
 ```sql
 {DATEADD| TIMESTAMPADD} (unitString, addIntLong, timestamp)
 ```
@@ -2314,7 +2314,7 @@ CURRENT_TIMESTAMP()
 ```sql
 DATEADD('MONTH', 1, DATE '2001-01-31')
 ```
-### 2.8.5.DATEDIFF
+### 8.5.DATEDIFF
 ```sql
 {DATEDIFF | TIMESTAMPDIFF} (unitString, aTimestamp, bTimestamp)
 ```
@@ -2326,7 +2326,7 @@ DATEADD('MONTH', 1, DATE '2001-01-31')
 ```sql
 DATEDIFF('YEAR', T1.CREATED, T2.CREATED)
 ```
-### 2.8.6.DAYNAME
+### 8.6.DAYNAME
 ```sql
 DAYNAME(date)
 ```
@@ -2338,7 +2338,7 @@ DAYNAME(date)
 ```sql
 DAYNAME(CREATED)
 ```
-### 2.8.7.DAY_OF_MONTH
+### 8.7.DAY_OF_MONTH
 ```sql
 DAY_OF_MONTH(date)
 ```
@@ -2350,7 +2350,7 @@ DAY_OF_MONTH(date)
 ```sql
 DAY_OF_MONTH(CREATED)
 ```
-### 2.8.8.DAY_OF_WEEK
+### 8.8.DAY_OF_WEEK
 ```sql
 DAY_OF_WEEK(date)
 ```
@@ -2362,7 +2362,7 @@ DAY_OF_WEEK(date)
 ```sql
 DAY_OF_WEEK(CREATED)
 ```
-### 2.8.9.DAY_OF_YEAR
+### 8.9.DAY_OF_YEAR
 ```sql
 DAY_OF_YEAR(date)
 ```
@@ -2374,7 +2374,7 @@ DAY_OF_YEAR(date)
 ```sql
 DAY_OF_YEAR(CREATED)
 ```
-### 2.8.10.EXTRACT
+### 8.10.EXTRACT
 ```sql
 EXTRACT ({EPOCH | YEAR | YY | QUARTER | MONTH | MM | WEEK | ISO_WEEK
 | DAY | DD | DAY_OF_YEAR | DOY | DAY_OF_WEEK | DOW | ISO_DAY_OF_WEEK
@@ -2390,7 +2390,7 @@ FROM timestamp)
 ```sql
 EXTRACT(SECOND FROM CURRENT_TIMESTAMP)
 ```
-### 2.8.11.FORMATDATETIME
+### 8.11.FORMATDATETIME
 ```sql
 FORMATDATETIME (timestamp, formatString [,localeString [,timeZoneString]])
 ```
@@ -2402,7 +2402,7 @@ FORMATDATETIME (timestamp, formatString [,localeString [,timeZoneString]])
 ```sql
 FORMATDATETIME(TIMESTAMP '2001-02-03 04:05:06', 'EEE, d MMM yyyy HH:mm:ss z', 'en', 'GMT')
 ```
-### 2.8.12.HOUR
+### 8.12.HOUR
 ```sql
 HOUR(timestamp)
 ```
@@ -2414,7 +2414,7 @@ HOUR(timestamp)
 ```sql
 HOUR(CREATED)
 ```
-### 2.8.13.MINUTE
+### 8.13.MINUTE
 ```sql
 MINUTE(timestamp)
 ```
@@ -2426,7 +2426,7 @@ MINUTE(timestamp)
 ```sql
 MINUTE(CREATED)
 ```
-### 2.8.14.MONTH
+### 8.14.MONTH
 ```sql
 MONTH(timestamp)
 ```
@@ -2438,7 +2438,7 @@ MONTH(timestamp)
 ```sql
 MONTH(CREATED)
 ```
-### 2.8.15.MONTHNAME
+### 8.15.MONTHNAME
 ```sql
 MONTHNAME(date)
 ```
@@ -2450,7 +2450,7 @@ MONTHNAME(date)
 ```sql
 MONTHNAME(CREATED)
 ```
-### 2.8.16.PARSEDATETIME
+### 8.16.PARSEDATETIME
 ```sql
 PARSEDATETIME(string, formatString [, localeString [, timeZoneString]])
 ```
@@ -2462,7 +2462,7 @@ PARSEDATETIME(string, formatString [, localeString [, timeZoneString]])
 ```sql
 PARSEDATETIME('Sat, 3 Feb 2001 03:05:06 GMT', 'EEE, d MMM yyyy HH:mm:ss z', 'en', 'GMT')
 ```
-### 2.8.17.QUARTER
+### 8.17.QUARTER
 ```sql
 QUARTER(timestamp)
 ```
@@ -2474,7 +2474,7 @@ QUARTER(timestamp)
 ```sql
 QUARTER(CREATED)
 ```
-### 2.8.18.SECOND
+### 8.18.SECOND
 ```sql
 SECOND(timestamp)
 ```
@@ -2486,7 +2486,7 @@ SECOND(timestamp)
 ```sql
 SECOND(CREATED)
 ```
-### 2.8.19.WEEK
+### 8.19.WEEK
 ```sql
 WEEK(timestamp)
 ```
@@ -2498,7 +2498,7 @@ WEEK(timestamp)
 ```sql
 WEEK(CREATED)
 ```
-### 2.8.20.YEAR
+### 8.20.YEAR
 ```sql
 YEAR(timestamp)
 ```
@@ -2510,8 +2510,8 @@ YEAR(timestamp)
 ```sql
 YEAR(CREATED)
 ```
-## 2.9.系统函数
-### 2.9.1.COALESCE
+## 9.系统函数
+### 9.1.COALESCE
 ```sql
 {COALESCE | NVL } (aValue, bValue [,...])
 ```
@@ -2523,7 +2523,7 @@ YEAR(CREATED)
 ```sql
 COALESCE(A, B, C)
 ```
-### 2.9.2.DECODE
+### 9.2.DECODE
 ```sql
 DECODE(value, whenValue, thenValue [,...])
 ```
@@ -2535,7 +2535,7 @@ DECODE(value, whenValue, thenValue [,...])
 ```sql
 DECODE(RAND()>0.5, 0, 'Red', 1, 'Black')
 ```
-### 2.9.3.GREATEST
+### 9.3.GREATEST
 ```sql
 GREATEST(aValue, bValue [,...])
 ```
@@ -2547,7 +2547,7 @@ GREATEST(aValue, bValue [,...])
 ```sql
 GREATEST(1, 2, 3)
 ```
-### 2.9.4.IFNULL
+### 9.4.IFNULL
 ```sql
 IFNULL(aValue, bValue)
 ```
@@ -2559,7 +2559,7 @@ IFNULL(aValue, bValue)
 ```sql
 IFNULL(NULL, '')
 ```
-### 2.9.5.LEAST
+### 9.5.LEAST
 ```sql
 LEAST(aValue, bValue [,...])
 ```
@@ -2571,7 +2571,7 @@ LEAST(aValue, bValue [,...])
 ```sql
 LEAST(1, 2, 3)
 ```
-### 2.9.6.NULLIF
+### 9.6.NULLIF
 ```sql
 NULLIF(aValue, bValue)
 ```
@@ -2583,7 +2583,7 @@ NULLIF(aValue, bValue)
 ```sql
 NULLIF(A, B)
 ```
-### 2.9.7.NVL2
+### 9.7.NVL2
 ```sql
 NVL2(testValue, aValue, bValue)
 ```
@@ -2595,7 +2595,7 @@ NVL2(testValue, aValue, bValue)
 ```sql
 NVL2(X, 'not null', 'null')
 ```
-### 2.9.8.CASEWHEN
+### 9.8.CASEWHEN
 ```sql
 CASEWHEN (boolean , aValue , bValue)
 ```
@@ -2607,7 +2607,7 @@ CASEWHEN (boolean , aValue , bValue)
 ```sql
 CASEWHEN(ID=1, 'A', 'B')
 ```
-### 2.9.9.CAST
+### 9.9.CAST
 ```sql
 CAST (value AS dataType)
 ```
@@ -2628,7 +2628,7 @@ CAST(NAME AS INT);
 CAST(65535 AS BINARY);
 CAST(CAST('FFFF' AS BINARY) AS INT);
 ```
-### 2.9.10.CONVERT
+### 9.10.CONVERT
 ```sql
 CONVERT (value , dataType)
 ```
@@ -2640,7 +2640,7 @@ CONVERT (value , dataType)
 ```sql
 CONVERT(NAME, INT)
 ```
-### 2.9.11.TABLE
+### 9.11.TABLE
 ```sql
 TABLE	| TABLE_DISTINCT	(name dataType = expression)
 ```
@@ -2652,11 +2652,11 @@ TABLE	| TABLE_DISTINCT	(name dataType = expression)
 ```sql
 SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
 ```
-## 2.10.数据类型
+## 10.数据类型
 本章节中列出了Ignite中支持的SQL数据类型列表，比如string、numeric以及date/time类型。
 
 对于每个SQL类型来说，都会被映射到Ignite原生支持的编程语言或者驱动指定的类型上。
-### 2.10.1.BOOLEAN
+### 10.1.BOOLEAN
 可选值：`TRUE`和`FALSE`。
 
 映射：
@@ -2666,7 +2666,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `bool`
  - ODBC: `SQL_BIT`
 
-### 2.10.2.INT
+### 10.2.INT
 可选值：[`-2147483648`, `2147483647`]。
 
 映射：
@@ -2676,7 +2676,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `int32_t`
  - ODBC: `SQL_INTEGER`
 
-### 2.10.3.TINYINT
+### 10.3.TINYINT
 可选值：[`-128`, `127`]。
 
 映射：
@@ -2686,7 +2686,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `int8_t`
  - ODBC: `SQL_TINYINT`
 
-### 2.10.4.SMALLINT
+### 10.4.SMALLINT
 可选值：[`-32768`, `32767`]。
 
 映射：
@@ -2696,7 +2696,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `int16_t`
  - ODBC: `SQL_SMALLINT`
 
-### 2.10.5.BIGINT
+### 10.5.BIGINT
 可选值：[`-9223372036854775808`, `9223372036854775807`]。
 
 映射：
@@ -2706,7 +2706,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `int64_t`
  - ODBC: `SQL_BIGINT`
 
-### 2.10.6.DECIMAL
+### 10.6.DECIMAL
 可选值：带有固定精度的数值类型。
 
 映射：
@@ -2716,7 +2716,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `ignite::Decimal`
  - ODBC: `SQL_DECIMAL`
 
-### 2.10.7.DOUBLE
+### 10.7.DOUBLE
 可选值：浮点数。
 
 映射：
@@ -2726,7 +2726,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `double`
  - ODBC: `SQL_DOUBLE`
 
-### 2.10.8.REAL
+### 10.8.REAL
 可选值：单精度浮点数。
 
 映射：
@@ -2736,7 +2736,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `float`
  - ODBC: `SQL_FLOAT`
 
-### 2.10.9.TIME
+### 10.9.TIME
 可选值：时间数据类型，格式为`hh:mm:ss`。
 
 映射：
@@ -2746,7 +2746,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `ignite::Time`
  - ODBC: `SQL_TYPE_TIME`
 
-### 2.10.10.DATE
+### 10.10.DATE
 可选值：日期数据类型，格式为`yyyy-MM-dd`。
 
 映射：
@@ -2759,7 +2759,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
 ::: danger 注意
 尽可能地使用`TIMESTAMP`而不是`DATE`，因为`DATE`类型的序列化/反序列化效率非常低，导致性能下降。
 :::
-### 2.10.11.TIMESTAMP
+### 10.11.TIMESTAMP
 可选值：时间戳数据类型，格式为`yyyy-MM-dd hh:mm:ss[.nnnnnnnnn]`。
 
 映射：
@@ -2769,7 +2769,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `ignite::Timestamp`
  - ODBC: `SQL_TYPE_TIMESTAMP`
 
-### 2.10.12.VARCHAR
+### 10.12.VARCHAR
 可选值：Unicode字符串。
 
 映射：
@@ -2779,7 +2779,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `std::string`
  - ODBC: `SQL_VARCHAR`
 
-### 2.10.13.CHAR
+### 10.13.CHAR
 可选值：Unicode字符串。支持这个类型是为了与旧的应用或者其它数据库进行兼容。
 
 映射：
@@ -2789,7 +2789,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `std::string`
  - ODBC: `SQL_CHAR`
 
-### 2.10.14.UUID
+### 10.14.UUID
 可选值：通用唯一标识符，长度128位。
 
 映射：
@@ -2799,7 +2799,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `ignite::Guid`
  - ODBC: `SQL_GUID`
 
-### 2.10.15.BINARY
+### 10.15.BINARY
 可选值：表示一个字节数组。
 
 映射：
@@ -2809,7 +2809,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `int8_t[]`
  - ODBC: `SQL_BINARY`
 
-### 2.10.16.GEOMETRY
+### 10.16.GEOMETRY
 可选值：空间几何类型，基于`com.vividsolutions.jts`库，通常以文本格式表示。
 
 映射：
@@ -2819,7 +2819,7 @@ SELECT * FROM TABLE(ID INT=(1, 2), NAME VARCHAR=('Hello', 'World'))
  - C/C++: `N/A`
  - ODBC: `N/A`
 
-## 2.11.规范一致性
+## 11.规范一致性
 Ignite直接支持ANSI-99标准的主要特性，下面的表格会显示Ignite与[SQL:1999 (核心)](https://en.wikipedia.org/wiki/SQL_compliance)的兼容性。
 
 |特性ID，特姓名|支持度|
@@ -2861,7 +2861,7 @@ Ignite直接支持ANSI-99标准的主要特性，下面的表格会显示Ignite�
 |`S011`明确的数据类型|Ignite不支持下面的子特性：<br>　　S011–01：USER_DEFINED_TYPES视图|
 |`T321`基本SQL调用的存储过程|Ignite不支持下面的子特性：<br>　　T321–01：无过载的用户定义函数<br>　　T321–02：无过载的用户定义存储过程<br>　　T321–03：函数调用<br>　　T321–04：CALL语句<br>　　T321–05：RETURN语句<br>　　T321–06：ROUTINES视图<br>　　T321–07：PARAMETERS视图|
 
-## 2.12.事务
+## 12.事务
 Ignite支持下面的语句，用户可以对事务进行开启、提交和回滚。
 ```sql
 BEGIN [TRANSACTION]
@@ -2879,11 +2879,11 @@ ROLLBACK [TRANSACTION]
 事务内不支持DDL语句。
 :::
 
-### 2.12.1.描述
+### 12.1.描述
 `BEGIN`、`COMMIT`和`ROLLBACK`命令可用于处理SQL的事务，事务是一组有序的SQL操作，通过`BEGIN`语句开始，以`COMMIT`结束，事务内的操作要么全部成功，要么全部失败。
 
 `ROLLBACK [TRANSACTION]`语句会撤销上次`COMMIT`或者`ROLLBACK`命令之后的所有更新。
-### 2.12.2.示例
+### 12.2.示例
 在一个事务内，插入一条Person数据，更新City的population字段：
 ```sql
 BEGIN;

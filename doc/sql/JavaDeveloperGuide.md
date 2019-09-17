@@ -1,7 +1,7 @@
-# 7.Java开发向导
-## 7.1.SQL API
+# Java开发向导
+## 1.SQL API
 除了JDBC驱动，Java开发者可以使用特定的SQL API来查询和修改存储于数据库中的数据。
-### 7.1.1.SqlQuery
+### 1.1.SqlQuery
 `SqlQuery`适用于查询执行完毕后需要获得返回的结果集中整个对象的场景，下面的代码片段显示了在实践中如何实现：
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
@@ -19,7 +19,7 @@ try (QueryCursor<Entry<Long, Person>> cursor = cache.query(sql.setArgs(1000))) {
 
 因为SqlQuery总是返回所有的字段，所以完全可以忽略查询中的SELECT子句，即使用`FROM Persons WHERE ...`或者像上例这样只提供WHERE子句`salary > ?`。
 :::
-### 7.1.2.SqlFieldsQueries
+### 1.2.SqlFieldsQueries
 不需要查询整个对象，只需要指定几个特定的字段即可，这样可以最小化网络和序列化的开销。为此，Ignite实现了一个`字段查询`的概念。`SqlFieldsQuery`接受一个标准SQL查询作为它的构造器参数，然后像下面的示例那样立即执行：
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
@@ -69,10 +69,10 @@ IgniteCache<Long, Person> cache = ignite.cache("personCache");
 cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
            " values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
-### 7.1.3.示例
+### 1.3.示例
 Ignite的发布版包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
-## 7.2.模式和索引
-### 7.2.1.概述
+## 2.模式和索引
+### 2.1.概述
 不管是通过[注解](#_7-2-2-基于注解的配置)或者通过[QueryEntity](#_7-2-3-基于queryentity的配置)的方式，表和索引建立之后，它们所属的模式名为`CacheConfiguration`对象中配置的缓存名，也可以使用`CacheConfiguration.setSqlSchema`方法进行修改。
 
 但是，如果表和索引是通过DDL语句的形式定义的，那么模式名就会完全不同，这时，表和索引所属的模式名默认为`PUBLIC`。
@@ -111,7 +111,7 @@ qry.setSchema("PUBLIC");
 // Executing the query.
 cache.query(qry).getAll();
 ```
-### 7.2.2.基于注解的配置
+### 2.2.基于注解的配置
 索引，和可查询的字段一样，是可以通过编程的方式用`@QuerySqlField`进行配置的。如下所示，期望的字段已经加注了该注解。
 
 Java：
@@ -264,7 +264,7 @@ public class Person implements Serializable {
 将`@QuerySqlField.Group`放在`@QuerySqlField(orderedGroups={...})`外面是无效的。
 :::
 
-### 7.2.3.基于QueryEntity的配置
+### 2.3.基于QueryEntity的配置
 索引和字段也可以通过`org.apache.ignite.cache.QueryEntity`进行配置，它便于利用Spring进行基于XML的配置。
 
 在上面基于注解的配置中涉及的所有概念，对于基于`QueryEntity`的方式也都有效，此外，如果类型的字段通过`@QuerySqlField`进行了配置并且通过`CacheConfiguration.setIndexedTypes`注册过的，在内部也会被转换为查询实体。
@@ -331,7 +331,7 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 ::: tip 运行时更新索引和可查询字段
 如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-数据定义语言（ddl）)命令。
 :::
-### 7.2.4.自定义键
+### 2.4.自定义键
 如果只使用预定义的SQL数据类型作为缓存键，那么就没必要对和DML相关的配置做额外的操作，这些数据类型在`GridQueryProcessor#SQL_TYPES`常量中进行定义，列举如下：
 ::: tip 预定义SQL数据类型
  - 所有的基本类型及其包装器，除了`char`和`Character`；
@@ -429,7 +429,7 @@ ignite.createCache(cacheCfg);
 但是，如果是`Externalizable`类型，那么就无法序列化为二进制形式，那么就需要自行实现`hashCode`和`equals`方法。
 :::
 
-### 7.2.5.空间查询
+### 2.5.空间查询
 这个空间模块只对`com.vividsolutions.jts`类型的对象有用。
 
 要配置索引以及/或者几何类型的可查询字段，可以使用和已有的非几何类型同样的方法，首先，可以使用`org.apache.ignite.cache.QueryEntity`定义索引，它对于基于Spring的XML配置文件非常方便，第二，通过`@QuerySqlField`注解来声明索引也可以达到同样的效果，它在内部会转化为`QueryEntities`。
@@ -499,7 +499,7 @@ System.out.println("Fetched points [" + entries.size() + ']');
 Ignite中用于演示空间查询的可以立即执行的完整示例，可以在[这里](https://github.com/dmagda/geospatial)找到。
 :::
 
-## 7.3.自定义SQL函数
+## 3.自定义SQL函数
 Ignite的SQL引擎支持通过额外用Java编写的自定义SQL函数，来扩展ANSI-99规范定义的SQL函数集。
 
 一个自定义SQL函数仅仅是一个加注了`@QuerySqlFunction`注解的公共静态方法。
@@ -533,7 +533,7 @@ cache.query(query).getAll();
 在自定义SQL函数可能要执行的所有节点上，通过`CacheConfiguration.setSqlFunctionClasses(...)`注册的类都需要添加到类路径中，否则在自定义函数执行时会抛出`ClassNotFoundException`异常。
 :::
 
-## 7.4.查询取消
+## 4.查询取消
 Ignite中有两种方式停止长时间运行的SQL查询，SQL查询时间长的原因，比如使用了未经优化的索引等。
 
 第一个方法是为特定的`SqlQuery`和`SqlFieldsQuery`设置查询执行的超时时间。

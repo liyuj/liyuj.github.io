@@ -1,9 +1,9 @@
-# 12.平台和协议
-## 12.1.概述
+# 平台和协议
+## 1.概述
 Ignite为主要的语言和技术，以原生库的形式提供了一套API，包括Java，.NET和C++，还支持包括REST、Memcached以及Redis在内的多种协议。
-## 12.2.REST API
+## 2.REST API
 Ignite提供了一个HTTP REST客户端，可以以REST的方式通过HTTP或者HTTPS协议与集群进行通信。REST API可以用于执行不同的操作，比如对缓存进行读/写，执行任务，获取各种指标等等。
-### 12.2.1.入门
+### 2.1.入门
 要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在发布版中，这意味着将其从`IGNITE_HOME\libs\optional\`拷贝到`IGNITE_HOME\libs`中。
 不需要显式地进行配置，连接器就会自动启动，然后监听`8080`端口，可以通过`curl`检测其是否工作正常。
 ```bash
@@ -37,7 +37,7 @@ http://[host]:[port]/ignite?cmd=top&sessionToken=[sessionToken]
 会话令牌有效期只有**30秒**，如果使用一个过期的令牌会报错：`{"successStatus":1,"error":"Failed to handle request - unknown session token (maybe expired session) [sesTok=12FFFD4827D149068E9FFF59700E5FDA]","sessionToken":null,"response":null}`。如果要自定义过期时间，可以配置`IGNITE_REST_SESSION_TIMEOUT`系统参数，单位为秒。
 比如：`-DIGNITE_REST_SESSION_TIMEOUT=3600`
 
-### 12.2.2.数据类型
+### 2.2.数据类型
 对于**put/get**操作，REST API还可以通过`keyType`和`valueType`参数支持Java的内置类型，注意除非显式指定了下面提到的数据类型，REST协议会将键-值数据转换为`String`类型，这意味着集群中对数据的读写都是作为`String`的。
 
 |REST键类型/值类型|对应的Java类型|
@@ -63,7 +63,7 @@ http://[host]:[port]/ignite?cmd=put&key=1&val=2018-01-01&cacheName=myCache&keyTy
 ```
 http://[host]:[port]/ignite?cmd=get&key=1&cacheName=myCache&keyType=int&valueType=date
 ```
-### 12.2.3.API参考
+### 2.3.API参考
 
  - [返回值](#12.2.3.1.返回值)
  - [log](#12.2.3.2.log)
@@ -106,7 +106,7 @@ http://[host]:[port]/ignite?cmd=get&key=1&cacheName=myCache&keyType=int&valueTyp
  - [qryscanexe](#12.2.3.39.qryscanexe)
 
 在内部，Ignite使用Jetty来提供HTTP服务的功能，HTTP REST客户端可以使用`ConnectorConfiguration`进行配置。
-#### 12.2.3.1.返回值
+#### 2.3.1.返回值
 HTTP REST请求返回一个JSON对象，每一个命令都有一个类似的结构，这个对象有如下的结构：
 
 |名字|类型|描述|示例|
@@ -117,7 +117,7 @@ HTTP REST请求返回一个JSON对象，每一个命令都有一个类似的结�
 |response|jsonObject|该命令包含命令执行结果|每个命令单独指定|
 |successStatus|Integer|返回状态码：<br>成功：0<br>失败：1<br>授权失败：2<br>安全检查失败：3|0|
 
-#### 12.2.3.2.log
+#### 2.3.2.log
 **log**命令显示服务器的日志。
 URL:
 ```
@@ -143,7 +143,7 @@ http://host:port/ignite?cmd=log&from=10&to=100&path=/var/log/ignite.log
 |---|---|---|---|
 |response|string|日志|["[14:01:56,626][INFO ][test-runner][GridDiscoveryManager] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.8GB]"]|
 
-#### 12.2.3.3.version
+#### 2.3.3.version
 **version**命令显示当前Ignite的版本。
 URL:
 ```
@@ -166,7 +166,7 @@ http://host:port/ignite?cmd=version
 |---|---|---|---|
 |response|string|Ignite版本|1.0.0|
 
-#### 12.2.3.4.decr
+#### 2.3.4.decr
 **decr**命令减去然后获得给定原子性Long类型的当前值。
 URL:
 ```
@@ -194,7 +194,7 @@ http://host:port/ignite?cmd=decr&cacheName=partionedCache&key=decrKey&init=15&de
 |---|---|---|---|
 |response|long|操作之后的值|-42|
 
-#### 12.2.3.5.incr
+#### 2.3.5.incr
 **incr**命令增加然后获得给定原子性Long类型的当前值。
 URL:
 ```
@@ -222,7 +222,7 @@ http://host:port/ignite?cmd=incr&cacheName=partionedCache&key=incrKey&init=15&de
 |---|---|---|---|
 |response|long|操作之后的值|42|
 
-#### 12.2.3.6.cache
+#### 2.3.6.cache
 **cache**命令可以获得Ignite缓存的指标。
 URL:
 ```
@@ -258,7 +258,7 @@ http://host:port/ignite?cmd=cache&cacheName=partionedCache&destId=8daab5ea-af83-
 "createTime": 1415179251551, "hits": 0, "misses": 0, "readTime":1415179251551, "reads": 0,"writeTime": 1415179252198, "writes": 2
 }|
 
-#### 12.2.3.7.cas
+#### 2.3.7.cas
 **cas**命令在之前的值等于预期值时会在缓存中存储给定的键值对。
 URL:
 ```
@@ -287,7 +287,7 @@ http://host:port/ignite?cmd=cas&key=casKey&val2=casOldVal&val1=casNewVal&cacheNa
 |---|---|---|---|
 |response|boolean|如果替换发生则为true，否则false|true|
 
-#### 12.2.3.8.prepend
+#### 2.3.8.prepend
 **prepend**命令为给定的键关联的值增加一个前缀。
 URL:
 ```
@@ -315,7 +315,7 @@ http://host:port/ignite?cmd=prepend&key=prependKey&val=prefix_&cacheName=partion
 |---|---|---|---|
 |response|boolean|如果替换发生则为true，否则false|true|
 
-#### 12.2.3.9.append
+#### 2.3.9.append
 **append**命令为给定的键关联的值增加一个后缀。
 URL:
 ```
@@ -343,7 +343,7 @@ http://host:port/ignite?cmd=append&key=appendKey&val=_suffix&cacheName=partioned
 |---|---|---|---|
 |response|boolean|如果替换发生则为true，否则false|true|
 
-#### 12.2.3.10.rep
+#### 2.3.10.rep
 **rep**命令为给定的键存储一个新值。
 URL:
 ```
@@ -371,7 +371,7 @@ http://host:port/ignite?cmd=rep&key=repKey&val=newValue&cacheName=partionedCache
 |---|---|---|---|
 |response|boolean|如果替换发生则为true，否则false|true|
 
-#### 12.2.3.11.getrep
+#### 2.3.11.getrep
 **getrep**命令为给定的键存储一个新值,然后返回原值。
 URL:
 ```
@@ -399,7 +399,7 @@ http://host:port/ignite?cmd=getrep&key=repKey&val=newValue&cacheName=partionedCa
 |---|---|---|---|
 |response|jsonObject|给定键的原值|{"name": "Bob"}|
 
-#### 12.2.3.12.repval
+#### 2.3.12.repval
 **repval**命令在之前的值等于预期值时会替换给定键的值。
 URL:
 ```
@@ -428,7 +428,7 @@ http://host:port/ignite?cmd=repval&key=repKey&val=newValue&val2=oldVal&cacheName
 |---|---|---|---|
 |response|boolean|如果替换发生则为true，否则false|true|
 
-#### 12.2.3.13.rmvall
+#### 2.3.13.rmvall
 **rmvall**命令会从缓存中删除给定键的数据。
 URL:
 ```
@@ -455,7 +455,7 @@ http://host:port/ignite?cmd=rmvall&k1=rmKey1&k2=rmKey2&k3=rmKey3&cacheName=parti
 |---|---|---|---|
 |response|boolean|如果删除发生则为true，否则false|true|
 
-#### 12.2.3.14.rmvval
+#### 2.3.14.rmvval
 **rmvval**命令当当前值等于预期值时在缓存中删除给定键对应的映射。
 URL:
 ```
@@ -483,7 +483,7 @@ http://host:port/ignite?cmd=rmvval&key=rmvKey&val=rmvVal&cacheName=partionedCach
 |---|---|---|---|
 |response|boolean|false，如果没有映射的键|true|
 
-#### 12.2.3.15.rmv
+#### 2.3.15.rmv
 **rmv**命令在缓存中删除给定键对应的映射。
 URL:
 ```
@@ -510,7 +510,7 @@ http://host:port/ignite?cmd=rmv&key=rmvKey&cacheName=partionedCache&destId=8daab
 |---|---|---|---|
 |response|boolean|true,如果删除发生，否则，false|true|
 
-#### 12.2.3.16.getrmv
+#### 2.3.16.getrmv
 **getrmv**命令在缓存中删除给定键的映射,然后返回原值。
 URL:
 ```
@@ -537,7 +537,7 @@ http://host:port/ignite?cmd=getrmv&cacheName=partionedCache&destId=8daab5ea-af83
 |---|---|---|---|
 |response|jsonObject|给定键的原值|{"name": "Bob"}|
 
-#### 12.2.3.17.add
+#### 2.3.17.add
 **add**命令当缓存中不存在该映射时存储该映射。
 URL:
 ```
@@ -565,7 +565,7 @@ http://host:port/ignite?cmd=add&key=newKey&val=newValue&cacheName=partionedCache
 |---|---|---|---|
 |response|boolean|true，如果成功存储，否则，false|true|
 
-#### 12.2.3.18.putall
+#### 2.3.18.putall
 **putall**命令会在缓存中存储给定的键值对。
 URL:
 ```
@@ -593,7 +593,7 @@ http://host:port/ignite?cmd=putall&k1=putKey1&k2=putKey2&k3=putKey3&v1=value1&v2
 |---|---|---|---|
 |response|boolean|如果成功保存则为true，否则false|true|
 
-#### 12.2.3.19.put
+#### 2.3.19.put
 **put**命令在缓存中存储该映射。
 URL:
 ```
@@ -621,7 +621,7 @@ http://host:port/ignite?cmd=put&key=newKey&val=newValue&cacheName=partionedCache
 |---|---|---|---|
 |response|boolean|true，如果成功存储，否则，false|true|
 
-#### 12.2.3.20.getall
+#### 2.3.20.getall
 **getall**命令会从缓存中获取给定键的数据。
 URL:
 ```
@@ -651,7 +651,7 @@ http://host:port/ignite?cmd=getall&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=pa
 |---|---|---|---|
 |response|jsonObject|键值对映射|{"key1": "value1","key2": "value2"}|
 
-#### 12.2.3.21.get
+#### 2.3.21.get
 **get**命令在缓存中获取给定的键对应的值。
 URL:
 ```
@@ -697,7 +697,7 @@ http://host:port/ignite?cmd=get&cacheName=SQL_PUBLIC_PERSON&keyType=int&key=1
 |---|---|---|---|
 |response|jsonObject|给定键的值|{"name": "Alex","id":1,"salary":2000}|
 
-#### 12.2.3.22.conkey
+#### 2.3.22.conkey
 **conkey**命令在缓存中检测是否有给定键对应的条目。
 URL:
 ```
@@ -724,7 +724,7 @@ http://host:port/ignite?cmd=conkey&key=getKey&cacheName=partionedCache
 |---|---|---|---|
 |response|boolean|存在给定键对应的映射则为true|true|
 
-#### 12.2.3.23.conkeys
+#### 2.3.23.conkeys
 **conkeys**命令在缓存中检测是否有给定键对应的条目。
 URL:
 ```
@@ -751,7 +751,7 @@ http://host:port/ignite?cmd=conkeys&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=p
 |---|---|---|---|
 |response|boolean|存在给定键对应的映射则为true|true|
 
-#### 12.2.3.24.getput
+#### 2.3.24.getput
 **getput**命令在缓存中存储给定的键值对，如果之前存在该映射，则返回原值。
 URL:
 ```
@@ -779,7 +779,7 @@ http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCach
 |---|---|---|---|
 |response|jsonObject|给定键的原值|{"name": "bob"}|
 
-#### 12.2.3.25.putifabs
+#### 2.3.25.putifabs
 **putifabs**命令只有在缓存中存在该映射，才会存储给定的键值对。
 URL:
 ```
@@ -807,7 +807,7 @@ http://host:port/ignite?cmd=putifabs&key=getKey&val=newVal&cacheName=partionedCa
 |---|---|---|---|
 |response|boolean|成功存储则为true|true|
 
-#### 12.2.3.26.getputifabs
+#### 2.3.26.getputifabs
 **getputifabs**命令只有在缓存中不存在该映射时才会进行存储，否则会返回对应该键的原值。
 URL:
 ```
@@ -835,7 +835,7 @@ http://host:port/ignite?cmd=getputifabs&key=getKey&val=newVal&cacheName=partione
 |---|---|---|---|
 |response|jsonObject|给定键对应的原值|{"name": "bob"}|
 
-#### 12.2.3.27.size
+#### 2.3.27.size
 **size**命令返回指定缓存的总条目的数量。
 URL:
 ```
@@ -860,7 +860,7 @@ http://host:port/ignite?cmd=size&cacheName=partionedCache
 |---|---|---|---|
 |response|number|给定缓存的总条目数量|5|
 
-#### 12.2.3.28.getorcreate
+#### 2.3.28.getorcreate
 **getorcreate**命令如果不存在给定名字的缓存，则会进行创建。
 URL:
 ```
@@ -881,7 +881,7 @@ http://host:port/ignite?cmd=getorcreate&cacheName=partionedCache
 }
 ```
 
-#### 12.2.3.29.destcache
+#### 2.3.29.destcache
 **destcache**命令删除给定名字的缓存。
 URL:
 ```
@@ -902,7 +902,7 @@ http://host:port/ignite?cmd=destcache&cacheName=partionedCache
 }
 ```
 
-#### 12.2.3.30.node
+#### 2.3.30.node
 **node**命令获取一个节点的信息。
 URL:
 ```
@@ -941,7 +941,7 @@ http://host:port/ignite?cmd=node&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-7
 |---|---|---|---|
 |response|jsonObject|一个节点的信息|{"attributes": null,"caches": {},"consistentId": "127.0.0.1:47500","defaultCacheMode": "REPLICATED","metrics": null,"nodeId": "2d0d6510-6fed-4fa3-b813-20f83ac4a1a9","replicaCount": 128,"tcpAddresses": ["127.0.0.1"],"tcpHostNames": [""],"tcpPort": 11211}|
 
-#### 12.2.3.31.top
+#### 2.3.31.top
 **top**命令获取一个拓扑的信息。
 URL:
 ```
@@ -1015,7 +1015,7 @@ http://host:port/ignite?cmd=top&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70
 |---|---|---|---|
 |response|jsonObject|一个拓扑的信息|[{"attributes": {...},"caches": [{name: "",mode: "PARTITIONED"},{name: "partionedCache",mode: "PARTITIONED",sqlSchema: "partionedCache"}],"consistentId": "127.0.0.1:47500","REPLICATED","metrics": {...},"nodeId": "96baebd6-dedc-4a68-84fd-f804ee1ed995",..."tcpPort": 11211},{"attributes": {...},"caches": [{name: "",mode: "REPLICATED"}],"consistentId": "127.0.0.1:47501","metrics": {...},"nodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",..."tcpPort": 11212}]|
 
-#### 12.2.3.32.exe
+#### 2.3.32.exe
 **exe**命令在集群中执行给定的任务。
 URL:
 ```
@@ -1047,7 +1047,7 @@ http://host:port/ignite?cmd=exe&name=taskName&p1=param1&p2=param2&async=true
 |---|---|---|---|
 |response|jsonObject|JSON对象，包含了与错误有关的信息，任务的唯一标识，计算的结果和状态|{"error": "","finished": true,"id":"~ee2d1688-2605-4613-8a57-6615a8cbcd1b","result": 4}|
 
-#### 12.2.3.33.res
+#### 2.3.33.res
 **res**命令获取指定任务的计算结果。
 URL:
 ```
@@ -1077,7 +1077,7 @@ http://host:port/ignite?cmd=res&id=8daab5ea-af83-4d91-99b6-77ed2ca06647
 |---|---|---|---|
 |response|jsonObject|JSON对象，包含了与错误有关的信息，任务的唯一标识，计算的结果和状态|{"error": "","finished": true,"id":"~ee2d1688-2605-4613-8a57-6615a8cbcd1b","result": 4}|
 
-#### 12.2.3.34.qryexe
+#### 2.3.34.qryexe
 **qryexe**命令在缓存中执行指定的查询。
 URL:
 ```
@@ -1112,7 +1112,7 @@ http://host:port/ignite?cmd=qryexe&type=Person&pageSize=10&cacheName=Person&arg1
 |---|---|---|---|
 |response|jsonObject|JSON对象，包含了查询的结果集，最后页的标识以及查询的id|{"fieldsMetadata":[],"items":[{"key":3,"value":{"name":"Jane","id":3,salary":2000}},{"key":0,"value":{"name":"John","id":0,"salary":2000}}],"last":true,"queryId":0}|
 
-#### 12.2.3.35.qryfldexe
+#### 2.3.35.qryfldexe
 **qryfldexe**命令在缓存中执行指定的有字段的查询。
 URL:
 ```
@@ -1144,7 +1144,7 @@ http://host:port/ignite?cmd=qryfldexe&pageSize=10&cacheName=Person&qry=select+fi
 |---|---|---|---|
 |response|jsonObject|JSON对象，包含了查询的结果集，字段查询的元数据，最后页的标识以及查询的id|{"fieldsMetadata":[{"fieldName":"FIRSTNAME","fieldTypeName":"java.lang.String","schemaName":"person","typeName":"PERSON"},...],"items":[["Jane","Doe"],["John","Doe"]],"last":true,"queryId":0}|
 
-#### 12.2.3.36.qryfetch
+#### 2.3.36.qryfetch
 **qryfetch**命令获取指定查询的下一页数据。
 URL:
 ```
@@ -1174,7 +1174,7 @@ http://host:port/ignite?cmd=qryfetch&pageSize=10&qryId=5
 |---|---|---|---|
 |response|jsonObject|JSON对象，包含了查询的结果集，最后页的标识以及查询的id|{"fieldsMetadata":[],"items":[["Jane","Doe"],["John","Doe"]],"last":true,"queryId":0}|
 
-#### 12.2.3.37.qrycls
+#### 2.3.37.qrycls
 **qrycls**命令关闭查询占用的资源。
 URL:
 ```
@@ -1199,7 +1199,7 @@ http://host:port/ignite?cmd=qrycls&qryId=5
 |---|---|---|---|
 |response|boolean|如果成功关闭则为true|true|
 
-#### 12.2.3.38.metadata
+#### 2.3.38.metadata
 **metadata**命令返回指定缓存的元数据。
 URL:
 ```
@@ -1265,7 +1265,7 @@ http://host:port/ignite?cmd=metadata&cacheName=partionedCache
 |---|---|---|---|
 |response|jsonObject|给定缓存的元数据|{"cacheName": "partionedCache","types": ["Person"],"keyClasses": {"Person":"java.lang.Integer"},"valClasses": {"Person":"org.apache.ignite.Person"},"fields": {"Person": {"_KEY":"java.lang.Integer","_VAL": "org.apache.ignite.Person","ID":"java.lang.Integer","FIRSTNAME":"java.lang.String","LASTNAME": "java.lang.String","SALARY": "double"}},"indexes": {"Person": [{"name": "ID_IDX","fields": ["id"],"descendings": [],"unique": false},{"name": "SALARY_IDX","fields": ["salary"],"descendings": [],"unique": false}]}}|
 
-#### 12.2.3.39.qryscanexe
+#### 2.3.39.qryscanexe
 **qryscanexe**命令在缓存中执行SQL扫描查询。
 URL:
 ```
@@ -1329,7 +1329,7 @@ http://host:port/ignite?cmd=qryscanexe&pageSize=10&cacheName=Person&className=or
 |---|---|---|---|
 |response|jsonObject|JSON对象，包含了扫描查询的结果集，字段查询的元数据，最后页的标识以及查询的id|{"fieldsMetadata":[{"fieldName":"key","fieldTypeName":"", "schemaName":"","typeName":""},{"fieldName":"value","fieldTypeName":"","schemaName":"","typeName":""}],"items":[{"key":1,"value":{"firstName":"Jane","id":1,"lastName":"Doe","salary":1000}},{"key":3,"value":{"firstName":"Jane","id":3,"lastName":"Smith","salary":2000}}],"last":true,"queryId":0}|
 
-### 12.2.4.常规配置
+### 2.4.常规配置
 |参数名|描述|可选|默认值|
 |---|---|---|---|
 |`setSecretKey(String)`|定义用于客户端认证的密钥，如果进行了设定，客户端请求必须包含HTTP头`X-Signature`，值为：`[1]:[2]`，这里`[1]`为毫秒值的时间戳，`[2]`为密钥的Base64格式的SHA1哈希值。|是|null|
@@ -1337,7 +1337,7 @@ http://host:port/ignite?cmd=qryscanexe&pageSize=10&cacheName=Person&className=or
 |`setJettyPath(String)`|Jetty配置文件的路径，要么是绝对路径，要么是相对于`IGNITE_HOME`，如果未指定，Ignite会用简单的HTTP连接器启动Jetty服务，这个连接器会分别使用`IGNITE_JETTY_HOST`和`IGNITE_JETTY_PORT`系统参数作为主机和端口，如果`IGNITE_JETTY_HOST`未设定，会使用localhost，如果`IGNITE_JETTY_PORT`未设定，默认会使用8080。|是|null|
 |`setMessageInterceptor(ConnectorMessageInterceptor)`|转换通过REST协议进行交换的所有对象的拦截器。比如在客户端使用自定义的序列化，那么可以写一个拦截器来将从客户端收到的二进制数据转换为Java对象，然后就可以直接访问。|是|null|
 
-### 12.2.5.Jetty XML配置示例
+### 2.5.Jetty XML配置示例
 配置文件的路径需要通过上面描述的`ConnectorConfiguration.setJettyPath(String)`进行设定。
 ```xml
 <?xml version="1.0"?>
@@ -1394,7 +1394,7 @@ http://host:port/ignite?cmd=qryscanexe&pageSize=10&cacheName=Person&className=or
     <Set name="stopAtShutdown">false</Set>
 </Configure>
 ```
-## 12.3.Memcached
+## 3.Memcached
 Ignite支持[Memcached](http://memcached.org/)协议，可以通过任何Memcached兼容客户端从Ignite缓存中存储和获取分布化的数据。
 
 > 当前，Ignite只支持Memcached的二进制协议。
@@ -1406,7 +1406,7 @@ Ignite支持[Memcached](http://memcached.org/)协议，可以通过任何Memcach
  - Python
  - Ruby
 
-### 12.3.1.PHP
+### 3.1.PHP
 要使用PHP客户端通过Memcached连接到Ignite，首先要[下载Ignite](https://ignite.incubator.apache.org/download.html)，然后：
 
  - 启动配置有缓存的Ignite，比如：
@@ -1435,7 +1435,7 @@ if ($client->add("key", "val"))
 echo("Value for 'key': " . $client->get("key") . "\n");
 ```
 
-### 12.3.2.Java
+### 3.2.Java
 要使用Java客户端通过Memcached连接到Ignite，首先要[下载Ignite](https://ignite.incubator.apache.org/download.html)，然后：
 
  - 启动配置有缓存的Ignite，比如：
@@ -1461,7 +1461,7 @@ client.set("key", 0, "val");
 System.out.println("Value for 'key': " + client.get("key"));
 ```
 
-### 12.3.3.Python
+### 3.3.Python
 要使用Python客户端通过Memcached连接到Ignite，首先要[下载Ignite](https://ignite.incubator.apache.org/download.html)，然后：
 
  - 启动配置有缓存的Ignite，比如：
@@ -1484,7 +1484,7 @@ print "Value for 'key': %s" %
 client.get("key")
 ```
 
-### 12.3.4.Ruby
+### 3.4.Ruby
 要使用Ruby客户端通过Memcached连接到Ignite，首先要[下载Ignite](https://ignite.incubator.apache.org/download.html)，然后：
 
  - 启动配置有缓存的Ignite，比如：
@@ -1506,7 +1506,7 @@ client.set('key', 'value')
 
 value = client.get('key')
 ```
-## 12.4.Redis
+## 4.Redis
 Ignite实现了对[Redis](http://redis.io/)的部分兼容，可以使用任何Redis兼容客户端在缓存中存储以及获取分布化的数据。
 Ignite客户端支持如下的命令：
 **连接**
@@ -1559,7 +1559,7 @@ Ignite客户端支持如下的命令：
 需要配置一个默认的`redis-ignite-internal-cache-0`缓存，用于默认的Redis数据库，当切换到SELECT命令时也可以用做其它数据库的模板。
 
 可以使用自己喜欢的[Redis客户端](http://redis.io/clients)接入Ignite，下面是是用几种语言的简单示例：
-### 12.4.1.Java
+### 4.1.Java
 要使用Redis的java客户端接入Ignite，需要先配置并启动一个Ignite集群。
 要接入使用`6379`端口的Ignite，以[Jedis](https://github.com/xetorthio/jedis)为例：
 ```java
@@ -1576,7 +1576,7 @@ try (Jedis jedis = pool.getResource()) {
 
 pool.destroy();
 ```
-### 12.4.2.Python
+### 4.2.Python
 要使用Redis的Python客户端接入Ignite，需要先配置并启动一个Ignite集群。
 要接入使用`6379`端口的Ignite，以[redis-py](https://github.com/andymccurdy/redis-py)为例：
 ```python
@@ -1587,7 +1587,7 @@ True
 >>> r.get('k1')
 '1'
 ```
-### 12.4.3.PHP
+### 4.3.PHP
 要使用Redis的PHP客户端接入Ignite，需要先配置并启动一个Ignite集群。
 要接入使用`6379`端口的Ignite，以[predis](https://github.com/nrk/predis)为例：
 ```php

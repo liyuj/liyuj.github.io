@@ -1,12 +1,12 @@
-# 2.Oracle GoldenGate集成
-## 2.1.GoldenGate复制
+# Oracle GoldenGate集成
+## 1.GoldenGate复制
 针对与GoldenGate兼容的所有数据源和GridGain集群之间的数据实时集成和复制问题，GridGain的GoldenGate组件为这个需求提供了一套解决方案。配置好GoldenGate集成复制后，GridGain将自动从GoldenGate数据源中接收更新，同时还会将源数据转换为与GridGain兼容的缓存对象，GoldenGate还通过支持实时数据集成的核心功能实现了高可用性和灾难承受能力，同时保留了性能并确保了可扩展性。
 
 ::: tip 兼容性
 GridGain兼容于Oracle GoldenGate的11.2及其以后的版本。
 这个[页面](http://www.oracle.com/technetwork/middleware/goldengate/certify-100402.html)中包含了Oracle GoldenGate支持的数据源列表。
 :::
-### 2.1.1.角色
+### 1.1.角色
 下面是GoldenGate复制过程中的主要角色：`源数据库`、`提取器`、`队列文件`以及`GridGain处理器`（GridGain Java适配器）。
 
  - `源数据库`：包含源数据的数据库；
@@ -23,7 +23,7 @@ GoldenGate复制有如下的方案：
 
 ![](https://files.readme.io/o7v7a4T5TXCFfoioo5A5_replicat.png)
 
-### 2.1.2.特性
+### 1.2.特性
 **批处理**
 
 从源数据库过来的更新可以在不同的模式下执行。如果复制是在`事务`模式下完成的，则更新首先由事务机制累积，然后批量注入缓存中。
@@ -35,14 +35,14 @@ GridGain的处理支持故障转移，如果由于某些原因GoldenGate在处�
 **冲突解决**
 
 在双活或者多活场景中，多个数据源对缓存中同一个键的更新叫做冲突，为了确保跨越多个数据中心的冲突解决的一致性。
-## 2.2.GridGain处理器
+## 2.GridGain处理器
 GridGain处理器是一个GoldenGate的扩展，它会启动一个GridGain的客户端节点，接收不同的事件，接收从`提取`或者`复制`进程过来的更新信息，对信息进行处理，必要时执行缓存操作，然后回给Oracle GoldenGate一个反馈信息。
 
 从`源数据库`接收的更新将传递给数据源操作处理器，该处理器应由用户实现和设置。GridGain处理程序能处理GridGain集群中的任意缓存。如果更新处理因任何原因（例如网络问题等）失败，则GridGain处理程序返回错误代码，从而在GoldenGate中启动故障转移。
 
 `数据源操作处理器`提供了一组API，进行数据库的关系模型到缓存之间的转换，该API可以访问GridGain的完整API：缓存API、数据流处理、计算操作等等（具体可以看下一章节），还可以进行冲突的解决。
 
-### 2.2.1.GoldenGate的配置
+### 2.1.GoldenGate的配置
 要使用GoldenGate集成组件，GoldenGate需要安装两个组件：
 
  - C/C++实现的动态链接或者共享库，通过一个C API与Oracle的GoldenGate提取进程集成作为`userexit (UE)`；
@@ -54,7 +54,7 @@ GridGain处理器是一个GoldenGate的扩展，它会启动一个GridGain的客
 
 要复制的所有模式和表，必要的日志级别要配置好，具体要看应用使用的数据库的文档（比如Oracle，可以看[这里](https://docs.oracle.com/goldengate/1212/gg-winux/GIORA/setup.htm#GIORA364)）。
 
-### 2.2.2.GridGain处理器配置
+### 2.2.GridGain处理器配置
 要安装GridGain处理器，按照如下步骤操作：
 
 1.从[http://www.gridgain.com/download/](http://www.gridgain.com/download/)下载和解压GridGain的安装包；
@@ -96,7 +96,7 @@ gg.handler.gridgain.configurationPath=dirprm/gridgain-configuration.xml
 # GoldenGate Handler bean name.
 gg.handler.gridgain.operationHandlerBeanName=personOpHandler
 
-# GoldenGate settings 
+# GoldenGate settings
 gg.report.time=30sec
 gg.classpath=gridgain-goldengate/*
 
@@ -141,18 +141,18 @@ GridGain处理器有如下的属性：
 |`mode`|操作模式。可用值为：`op`、`tx`、`meta`和`all`|`op`|
 |`operationHandlerBeanName`|GridGain处理器bean的名字，该bean必须在XML配置文件中存在，必须实现`DataSourceOperationHandler`接口|无|
 
-## 2.3.数据源操作处理器
+## 3.数据源操作处理器
 `DataSourceOperationHandler`接口可以将从`数据源`过来的更新转换为对应的缓存对象，并且执行缓存操作，`DataSourceOperationHandler`接口应该由开发者实现。
 
 ```java
 /**
- * An function that allows applications to perform operations on updates from 
- * DataBase and store they to cache. The callback will be invoked on each 
+ * An function that allows applications to perform operations on updates from
+ * DataBase and store they to cache. The callback will be invoked on each
  * operations such as insert, update, delete rows and etc.
  */
 public interface DataSourceOperationHandler {
     /**
-     * Init method. This method will be invoked before the handler starts 
+     * Init method. This method will be invoked before the handler starts
      * to receive updates from database.
      *
      * @param ignite Ignite instance.
@@ -160,23 +160,23 @@ public interface DataSourceOperationHandler {
     public void init(Ignite ignite);
 
     /**
-     * Handle single operation update. This method invoked when 
+     * Handle single operation update. This method invoked when
      * {@link GridGainHandler#setMode(String)} in "op" mode.
      *
-     * @param dsOp An operation on a data source, containing the current 
-     *      column values (after the operation occurred) and optionally 
+     * @param dsOp An operation on a data source, containing the current
+     *      column values (after the operation occurred) and optionally
      *      the "before" values (before the operation occurred). An operation
-     *      can in general be a database operation such as 
+     *      can in general be a database operation such as
      *      insert/update/delete or a primary-key update.
      * @param opCtx Operation context contains information about operations.
      */
     public void handleOperation(DsOperation dsOp, OperationContext opCtx);
 
     /**
-     * Handle transaction update. This method invoked when 
+     * Handle transaction update. This method invoked when
      * {@link GridGainHandler#setMode(String)} in "tx" mode.
      *
-     * @param tx Data source transaction. This object contains info about 
+     * @param tx Data source transaction. This object contains info about
      *      whole transaction: changed rows, value, type and etc.
      * @param opCtx Operation context contains information about operations.
      */
@@ -227,10 +227,10 @@ public class PersonOperationHandler implements DataSourceOperationHandler {
     /**
      * The methods convert data from database to {@code Person} object and performs cache operation.
      *
-     * @param dsOp An operation on a data source, containing the 
+     * @param dsOp An operation on a data source, containing the
      *      current column values (after the operation occurred)
-     *      and optionally the "before" values (before the operation occurred). 
-     *      An operation can in general be a database operation such as 
+     *      and optionally the "before" values (before the operation occurred).
+     *      An operation can in general be a database operation such as
      *      insert/update/delete or a primary-key update.
      * @param opCtx Operation context contains information about operations.
      */
@@ -348,7 +348,7 @@ gg.handler.gridgain.operationHandlerBeanName=personOperationHandler
 
 ...
 ```
-## 2.4.GoldenGate冲突解决
+## 4.GoldenGate冲突解决
 当通过GoldenGate和GridGain缓存API更新缓存时，可以选择继续更新、保留旧值或通过合并旧值和新值生成其它值。为了实现这一点，GridGain提供了冲突解决方案。
 
 要对缓存操作和数据流处理使用冲突解决机制，需要使用`GridGain.cache(String cacheName, byte dataCenterId)`和`GridGain.dataStreamer(String cacheName, byte dataCenterId)`方法。它预计数据中心ID对于参与数据中心复制的所有拓扑都是唯一的，对于属于给定拓扑的所有节点也是唯一的。
@@ -364,7 +364,7 @@ IgniteCache cache = gridGain.cache("Person", 31);
 ...
 
 /**
- * Conflict resolver for Person entity. In conflicts always used an entry 
+ * Conflict resolver for Person entity. In conflicts always used an entry
  * with data center id equals 31.
  */
 public class PersonConflictResolver implements CacheConflictResolver<Integer, Person> {
@@ -387,9 +387,9 @@ GridGain gridGain = ignite.plugin(GridGain.PLUGIN_NAME);
 IgniteDataStreamer cache = gridGain.dataStreamer("Person", 31);
 
 ...
-  
+
 /**
- * Conflict resolver for Person entity. In conflicts always used an entry 
+ * Conflict resolver for Person entity. In conflicts always used an entry
  * with data center id equals 31.
  */
 public class PersonConflictResolver implements CacheConflictResolver<Integer, Person> {

@@ -1,12 +1,12 @@
-# 5.Spring
-## 5.1.Spring缓存
-### 5.1.1.概述
+# Spring
+## 1.Spring缓存
+### 1.1.概述
 Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)的实现。它提供了基于注解的方式来启用Java方法的缓存，这样方法的执行结果就会存储在Ignite缓存中。如果之后同一个方法通过同样的参数集被调用，结果会直接从缓存中获得而不是实际执行这个方法。
 
 > **Spring缓存抽象文档**
 关于如何使用Spring缓存抽象的更多信息，包括可用的注解，可以参照这个文档页面：[http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html).
 
-### 5.1.2.如何启用缓存
+### 1.2.如何启用缓存
 只需要两个简单的步骤就可以将Ignite缓存嵌入基于Spring的应用：
 
  - 在嵌入式模式中使用正确的配置文件启动一个Ignite节点（即应用运行的同一个JVM）。它也可以有预定义的缓存，但不是必须的-如果必要缓存会在第一次访问时自动创建。
@@ -81,7 +81,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 注意应用内部启动的节点只是接入拓扑的一个入口，可以使用`bin/ignite.{sh|bat}`脚本按需启动任意数量的远程节点，所有这些节点都会参与缓存数据。
 :::
 
-### 5.1.3.动态缓存
+### 1.3.动态缓存
 虽然通过Ignite配置文件可以获得所有必要的缓存，但是这不是必要的。如果Spring要使用一个不存在的缓存时，`SpringCacheManager`会自动创建它。
 
 如果不指定，会使用默认值创建一个新的缓存。也可以通过`dynamicCacheConfiguration`属性提供一个配置模板进行定制，比如，如果希望使用`复制`缓存而不是`分区`缓存，可以像下面这样配置`SpringCacheManager`:
@@ -108,7 +108,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
     </property>
 </bean>
 ```
-### 5.1.4.示例
+### 1.4.示例
 如果在Spring应用上下文中已经加入了`SpringCacheManager`，就可以通过简单地加上注解为任意的java方法启用缓存。
 
 通常为很重的操作使用缓存，比如数据库访问。比如，假设有个Dao类有一个`averageSalary(...)`方法，它计算一个组织内的所有雇员的平均工资，那么可以通过`@Cacheable`注解来开启这个方法的缓存。
@@ -150,12 +150,12 @@ public void updateSalary(Employee e) {
 注意这个方法是以雇员为参数的，而平均值是通过组织的Id将平均值存储在缓存中的。为了明确地指定什么作为缓存键，可以使用注解的`key`参数和[Spring表达式语言](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html)。
 `#e.organizationId`表达式的意思是从e变量中获取`organizationId`属性的值。本质上会在提供的雇员对象上调用`getOrganizationId()`方法，以及将返回的值作为缓存键。
 
-## 5.2.Spring Data
-### 5.2.1.概述
+## 2.Spring Data
+### 2.1.概述
 [Spring Data框架](http://projects.spring.io/spring-data/)提供了一套统一并且广泛使用的API，它从应用层抽象了底层的数据存储，Spring Data有助于避免锁定到特定的数据库厂商，通过很小的代价就可以从一个数据库切换到另一个。
 
 Ignite实现了Spring Data的`CrudRepository`接口，它不仅仅支持基本的CRUD操作，还支持通过统一的Spring Data API访问Ignite的SQL网格。
-### 5.2.2.Maven配置
+### 2.2.Maven配置
 开始使用Ignite的Spring Data库的最简单方式就是将下面的Maven依赖加入应用的`pom.xml`文件：
 ```xml
 <dependency>
@@ -166,7 +166,7 @@ Ignite实现了Spring Data的`CrudRepository`接口，它不仅仅支持基本�
 ```
 >**Ignite版本**
 Ignite从2.0版本开始支持Spring Data，因此需要使用`2.0.0`及之后的版本。
-### 5.2.3.IgniteRepository
+### 2.3.IgniteRepository
 Ignite引入了一个特定的`IgniteRepository`接口，扩展了默认的`CrudRepository`，这个接口可以被所有希望从Ignite集群中存储和查询数据的自定义Spring Data Repository继承。
 
 比如，创建一个名为`PersonRepository`的自定义Repository：
@@ -212,7 +212,7 @@ public interface PersonRepository extends IgniteRepository<Person, Long> {
  2.`save(Map<ID, S> entities)`
  3.`deleteAll(Iterable<ID> ids)`
 
-### 5.2.4.Spring Data和Ignite配置
+### 2.4.Spring Data和Ignite配置
 要在Spring Data中启用面向Ignite的Repository，需要在应用的配置上添加`@EnableIgniteRepositories`注解，如下所示：
 ```java
 @Configuration
@@ -252,7 +252,7 @@ public class SpringAppCfg {
  - 名为`igniteCfg`的`IgniteConfiguration`对象；
  - 名为`igniteSpringCfgPath`的指向Ignite的Spring XML配置文件的路径。
 
-### 5.2.5.使用IgniteRepository
+### 2.5.使用IgniteRepository
 所有的配置和Repository准备好之后，就可以在应用的上下文中注册配置以及获取Repository的引用。
 
 下面的示例代码就会展示如何在应用的上下文中注册`SpringAppCfg`（上面章节的示例配置），然后获取`PersonRepository`的引用：
@@ -292,5 +292,5 @@ Cache.Entry<Long, Person> topPerson = repo.findTopByLastNameLike("Smith");
 System.out.println("\n>>> Top Person with surname 'Smith': " +
 		topPerson.getValue());
 ```
-### 5.2.6.示例
+### 2.6.示例
 [GitHub](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/springdata)上有完整的示例，也可以在Ignite发行版的`examples`文件夹中找到。

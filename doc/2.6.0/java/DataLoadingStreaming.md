@@ -1,5 +1,5 @@
-# 5.数据注入和流处理
-## 5.1.数据注入和流处理
+# 数据注入和流处理
+## 1.数据注入和流处理
 Ignite数据加载和流处理功能可以以可扩展以及容错的方式处理持续不断的数据流或者在集群中预加载初始数据。在一个中等规模的集群中，数据注入Ignite或者预加载数据的速度可以很高，甚至轻易地达到每秒处理百万级的事件。
 
 **数据加载**
@@ -21,17 +21,17 @@ Ignite数据加载和流处理功能可以以可扩展以及容错的方式处�
 可以和Ignite的SQL、TEXT以及基于谓词的缓存查询一起使用Ignite数据索引能力的全部功能来在数据流中进行查询。
 **与已有的流处理技术集成**
 Ignite可以与各种主要的流处理技术和kuaig进行集成，比如Kafka、Camel、Storm或者JMS，从而为基于Ignite的架构带来更强大的流处理功能。
-## 5.2.数据加载
-### 5.2.1.概述
+## 2.数据加载
+### 2.1.概述
 用标准的缓存`put(...)`和`putAll(...)`操作加载大量的数据通常是比较低效的。Ignite提供了`IgniteDataStreamer`API来与主要的流技术集成，还有`CacheStore`API，它们有助于以一个更高效的方式将大量数据注入Ignite缓存。
-### 5.2.2.IgniteDataStreamer
+### 2.2.IgniteDataStreamer
 数据流处理器是通过`IgniteDataStreamer`API定义的，它可以将大量的连续数据注入Ignite缓存。数据流处理器以可扩展和容错的方式在数据被发送到集群节点之前通过把批量数据放在一起以获得高性能。
 
 > 数据流处理器可以用于任何时候将大量数据载入缓存，包括启动时的预加载。
 
 想了解更多信息请参照[数据流处理器](#_5-3-数据流处理器)。
 
-### 5.2.3.IgniteCache.loadCache()
+### 2.3.IgniteCache.loadCache()
 如果数据由第三方数据库持久化，Ignite需要将数据从磁盘上预加载到内存中，应用才能使用SQL等更高级的功能。
 >**Ignite原生持久化**
 Ignite的原生持久化不需要在重启时将数据预热到内存，因此，与IgniteCache.loadCache()有关的加载技术和这种类型的持久化存储没什么关系。
@@ -146,11 +146,11 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 >**性能改进**
 为了保证一致性和持久性，Ignite的原生持久化支持**预写日志**，预写日志默认是开启的。但是这会影响数据预加载的性能，因此建议在数据预加载时禁用WAL，加载完成启用WAL，具体可以看WAL的Java API文档，以及SQL的ALTER TABLE文档。
 
-## 5.3.数据流处理器
-### 5.3.1.概述
+## 3.数据流处理器
+### 3.1.概述
 数据流处理器是通过`IgniteDataStreamer`API定义的，用于将大量的持续数据流注入Ignite缓存。数据流处理器以可扩展以及容错的方式，为将所有的数据流注入Ignite提供了**至少一次保证**。
 数据流处理器不参与事务。
-### 5.3.2.IgniteDataStreamer
+### 3.2.IgniteDataStreamer
 快速地将大量的数据流注入Ignite的主要抽象是`IgniteDataStreamer`，在内部它会适当地将数据整合成批次然后将这些批次与缓存这些数据的节点并置在一起。
 高速加载是通过如下技术获得的：
 
@@ -174,13 +174,13 @@ try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCac
 `AllowOverwrite`属性如果是`false`（默认），第三方存储的更新会被忽略。
 只有当`AllowOverwrite`为`true`时，第三方存储才会被更新。
 
-### 5.3.3.StreamReceiver
+### 3.3.StreamReceiver
 对于希望执行一些自定义的逻辑而不仅仅是添加新数据的情况，可以利用一下`StreamReceiver`API。
 流接收器可以以并置的方式直接在缓存该数据条目的节点上对数据流做出反应，可以在数据进入缓存之前修改数据或者在数据上添加任何的预处理逻辑。
 
 > 注意`StreamReceiver`不会自动地将数据加入缓存，需要显式地调用任意的`cache.put(...)`方法。
 
-### 5.3.4.StreamTransformer
+### 3.4.StreamTransformer
 `StreamTransformer`是一个`StreamReceiver`的简单实现，它会基于之前的值来修改数据流缓存中的数据。更新是并置的，即它会明确地在数据缓存的集群节点上发生。
 在下面的例子中，通过`StreamTransformer`在文本流中为每个发现的确切的单词增加一个计数。
 
@@ -237,7 +237,7 @@ try (IgniteDataStreamer<String, Long> stmr = ignite.dataStreamer(stmCache.getNam
   for (String word : text)
     stmr.addData(word, 1L);
 ```
-### 5.3.5.StreamVisitor
+### 3.5.StreamVisitor
 `StreamVisitor`也是`StreamReceiver`的一个方便实现，它会访问流中的每个键值组。注意，访问器不会更新缓存。如果键值组需要存储在缓存内，那么需要显式地调用任意的`cache.put(...)`方法。
 在下面的示例中，有两个缓存:`marketData`和`instruments`,收到market数据的瞬间就会将它们放入`marketData`缓存的流处理器，映射到特定market数据的集群节点上的`marketData`的流处理器的`StreamVisitor`就会被调用，在分别收到market数据后就会用最新的市场价格更新`instrument`缓存。
 注意，根本不会更新`marketData`缓存，它一直是空的，只是直接在数据将要存储的集群节点上简单利用了market数据的并置处理能力。

@@ -1,5 +1,5 @@
-# 19.瘦客户端
-## 19.1.瘦客户端
+# 瘦客户端
+## 1.瘦客户端
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
@@ -13,13 +13,13 @@
   - Python瘦客户端
   - PHP瘦客户端
 
-## 19.2.二进制客户端协议
-### 19.2.1.二进制客户端协议
-#### 19.2.1.1.概述
+## 2.二进制客户端协议
+### 2.1.二进制客户端协议
+#### 2.1.1.概述
 Ignite的二进制客户端协议使得应用不用启动一个全功能的节点，就可以与已有的集群进行通信。应用使用原始的TCP套接字，就可以接入集群。连接建立之后，就可以使用定义好的格式执行缓存操作。
 
 与集群通信，客户端必须遵守下述的数据格式和通信细节。
-#### 19.2.1.2.数据格式
+#### 2.1.2.数据格式
 
 **字节序**
 
@@ -28,7 +28,7 @@ Ignite的二进制客户端协议使用小端字节顺序。
 **数据对象**
 
 用户数据，比如缓存的键和值，是以Ignite的二进制对象表示的，一个数据对象可以是标准类型（预定义），也可以是复杂对象，具体可以看[数据格式](#_19-2-2-数据格式)的相关章节。
-#### 19.2.1.3.消息格式
+#### 2.1.3.消息格式
 所有消息的请求和响应，包括握手，都以`int`类型消息长度开始（不包括开始的4个字节），后面是消息体。
 
 **握手**
@@ -106,7 +106,7 @@ private static void readResponseHeader(DataInputStream in) throws IOException {
   int statusCode = readIntLittleEndian(in);
 }
 ```
-#### 19.2.1.4.接入
+#### 2.1.4.接入
 
 **TCP套接字**
 
@@ -232,7 +232,7 @@ private static byte readByteLittleEndian(DataInputStream in) throws IOException 
 
 // Other write and read methods
 ```
-#### 19.2.1.5.客户端操作
+#### 2.1.5.客户端操作
 握手成功之后，客户端就可以执行各种缓存操作了。
 
  - 键-值查询；
@@ -240,7 +240,7 @@ private static byte readByteLittleEndian(DataInputStream in) throws IOException 
  - 二进制类型操作；
  - 缓存配置操作。
 
-### 19.2.2.数据格式
+### 2.2.数据格式
 标准数据类型表示为类型代码和值的组合。
 
 |字段|长度（字节）|描述|
@@ -250,7 +250,7 @@ private static byte readByteLittleEndian(DataInputStream in) throws IOException 
 
 下面会详细描述支持的类型及其格式。
 
-#### 19.2.2.1.基础类型
+#### 2.2.1.基础类型
 基础类型都是非常基本的类型，比如数值类型。
 
 **Byte**
@@ -352,7 +352,7 @@ private static byte readByteLittleEndian(DataInputStream in) throws IOException 
 
 没有实际内容，只有类型代码。
 
-#### 19.2.2.2.标准对象
+#### 2.2.2.标准对象
 
 **String**
 
@@ -448,7 +448,7 @@ UTF-8编码的字符串，必须是有效的UTF-8编码的字符串。
 |`type_id`|4|低位优先的有符号整形值，具体可以看下面的`Type ID`。|
 |`ordinal`|4|低位优先的有符号整形值，枚举值序号。它在枚举声明中的位置，初始常数为0。|
 
-#### 19.2.2.3.基础类型数组
+#### 2.2.3.基础类型数组
 这种数组只包含值（元素）的内容，它们类型类似，具体可以看下表的格式描述。注意数组只包含内容，没有类型代码。
 
 |字段|长度（字节）|描述|
@@ -562,7 +562,7 @@ UTF-16编码单元数组。和`String`不同，此类型不是必须包含有效
 |`length`|4|有符号整数，数组里的元素个数|
 |`elements`|`length`|元素序列。每个元素都是`bool`类型。|
 
-#### 19.2.2.4.标准对象数组
+#### 2.2.4.标准对象数组
 这种数组包含完整值（元素）的内容，这意味着，数组的元素包含类型代码和内容。此格式允许元素为`NULL`值。这就是它们被称为“对象”的原因。它们都有相似的格式，具体可以看下表的格式描述。
 
 |字段|长度（字节）|描述|
@@ -650,7 +650,7 @@ UUID（Guid）数组。
 |`length`|4|有符号整数，数组里的元素个数|
 |`elements`|可变长度，对于每个元素，数值为`9 + 值长度`，`NULL`为`1`|元素序列。每个元素都是`decimal`类型的完整值，包括类型代码，或者`NULL`。|
 
-#### 19.2.2.5.对象集合
+#### 2.2.5.对象集合
 **对象数组**
 
 类型代码：23
@@ -726,7 +726,7 @@ UUID（Guid）数组。
 |`length`|4|有符号整数，数组里的元素个数|
 |`elements`|可变长度，取决于对象的长度|元素序列。每个元素都是枚举类型的完整值，或者`NULL`。|
 
-#### 19.2.2.6.复杂对象
+#### 2.2.6.复杂对象
 类型代码：103
 
 复杂对象由一个24位的头、一组字段（数据对象）以及一个模式（字段ID和位置）组成。根据操作和数据模型，一个数据对象可以为一个基础类型或者复杂类型（一组字段）。
@@ -968,7 +968,7 @@ int32_t CalculateSchemaId(const int32_t* fieldIds, size_t num)
 可选字段。仅存在于对象中，如果有任何字段，则以原始模式写入。这时，设置了`HAS_RAW_DATA`标志并且存在原始数据偏移量字段，存储为低位优先4字节。该值指向复杂对象中的原始数据偏移量，从头部的第一个字节开始（即，此字段始终大于头部的长度）。
 
 此字段用于用户以原始模式开始读取时对流进行定位。
-#### 19.2.2.7.特殊类型
+#### 2.2.7.特殊类型
 **包装数据**
 
 类型代码：27
@@ -998,7 +998,7 @@ int32_t CalculateSchemaId(const int32_t* fieldIds, size_t num)
 |`type_id`|4|低位优先的4字节有符号整数，具体可以看`type_id`相关章节的内容。|
 |`ordinal`|4|低位优先的4字节有符号整数，枚举值序号，即在枚举声明中的位置，这个序号的初始值为0|
 
-#### 19.2.2.8.序列化和反序列化示例
+#### 2.2.8.序列化和反序列化示例
 
 **常规对象读**
 
@@ -1089,12 +1089,12 @@ private static String readString(DataInputStream in) throws IOException {
   return new String(buf);
 }
 ```
-### 19.2.3.键-值查询
+### 2.3.键-值查询
 本章节会描述可以对缓存进行的键值操作，该键值操作等同于Ignite原生的缓存操作，具体可以看[IgniteCache](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html)的文档，每个操作都会有一个[头信息](#_19-2-1-3-消息格式)及与该操作对应的数据。
 
 在[数据格式](#_19-2-2-数据格式)章节，可以参阅可用的数据类型和数据格式规范的清单。
 
-#### 19.2.3.1.操作代码
+#### 2.3.1.操作代码
 与Ignite服务端节点成功握手后，客户端可以通过发送带有特定操作代码的请求（参见下面的请求/响应结构）来开始执行各种键值操作：
 
 |操作|操作代码|
@@ -1123,7 +1123,7 @@ private static String readString(DataInputStream in) throws IOException {
 
 注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
 
-#### 19.2.3.2.OP_CACHE_GET
+#### 2.3.2.OP_CACHE_GET
 通过键从缓存获得值，如果不存在则返回`null`。
 
 |请求类型|描述|
@@ -1168,7 +1168,7 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
-#### 19.2.3.3.OP_CACHE_GET_ALL
+#### 2.3.3.OP_CACHE_GET_ALL
 从一个缓存中获得多个键值对。
 
 |请求类型|描述|
@@ -1230,7 +1230,7 @@ for (int i = 0; i < resCount; i++) {
   int resValue = readIntLittleEndian(in); // Cache value
 }
 ```
-#### 19.2.3.4.OP_CACHE_PUT
+#### 2.3.4.OP_CACHE_PUT
 往缓存中写入给定的键值对（会覆盖已有的值）。
 
 |请求类型|描述|
@@ -1274,7 +1274,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-#### 19.2.3.5.OP_CACHE_PUT_ALL
+#### 2.3.5.OP_CACHE_PUT_ALL
 往缓存中写入给定的多个键值对（会覆盖已有的值）。
 
 |请求类型|描述|
@@ -1329,7 +1329,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-#### 19.2.3.6.OP_CACHE_CONTAINS_KEY
+#### 2.3.6.OP_CACHE_CONTAINS_KEY
 判断缓存中是否存在给定的键。
 
 |请求类型|描述|
@@ -1372,7 +1372,7 @@ readResponseHeader(in);
 // Result
 boolean res = readBooleanLittleEndian(in);
 ```
-#### 19.2.3.7.OP_CACHE_CONTAINS_KEYS
+#### 2.3.7.OP_CACHE_CONTAINS_KEYS
 判断缓存中是否存在给定的所有键。
 
 |请求类型|描述|
@@ -1426,7 +1426,7 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
-#### 19.2.3.8.OP_CACHE_GET_AND_PUT
+#### 2.3.8.OP_CACHE_GET_AND_PUT
 往缓存中插入一个键值对，并且返回与该键对应的原值，如果缓存中没有该键，则会创建一个新的条目并返回`null`。
 
 |请求类型|描述|
@@ -1475,7 +1475,7 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
-#### 19.2.3.9.OP_CACHE_GET_AND_REPLACE
+#### 2.3.9.OP_CACHE_GET_AND_REPLACE
 替换缓存中给定键的值，然后返回原值，如果缓存中该键不存在，该操作会返回`null`而缓存不会有改变。
 
 |请求类型|描述|
@@ -1524,7 +1524,7 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
-#### 19.2.3.10.OP_CACHE_GET_AND_REMOVE
+#### 2.3.10.OP_CACHE_GET_AND_REMOVE
 删除缓存中给定键对应的数据，然后返回原值，如果缓存中该键不存在，该操作会返回`null`。
 
 |请求类型|描述|
@@ -1568,7 +1568,7 @@ readResponseHeader(in);
 int resTypeCode = readByte(in);
 int value = readInt(in);
 ```
-#### 19.2.3.11.OP_CACHE_PUT_IF_ABSENT
+#### 2.3.11.OP_CACHE_PUT_IF_ABSENT
 在条目不存在时插入一个新的条目。
 
 |请求类型|描述|
@@ -1616,7 +1616,7 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
-#### 19.2.3.12.OP_CACHE_GET_AND_PUT_IF_ABSENT
+#### 2.3.12.OP_CACHE_GET_AND_PUT_IF_ABSENT
 在条目不存在时插入一个新的条目，否则返回已有的值。
 
 |请求类型|描述|
@@ -1665,7 +1665,7 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
-#### 19.2.3.13.OP_CACHE_REPLACE
+#### 2.3.13.OP_CACHE_REPLACE
 替换缓存中已有键的值。
 
 |请求类型|描述|
@@ -1712,7 +1712,7 @@ readResponseHeader(in);
 
 boolean res = readBooleanLittleEndian(in);
 ```
-#### 19.2.3.14.OP_CACHE_REPLACE_IF_EQUALS
+#### 2.3.14.OP_CACHE_REPLACE_IF_EQUALS
 当在缓存中给定的键已存在且值等于给定的值时，才会用新值替换旧值。
 
 |请求类型|描述|
@@ -1764,7 +1764,7 @@ readResponseHeader(in);
 
 boolean res = readBooleanLittleEndian(in);
 ```
-#### 19.2.3.15.OP_CACHE_CLEAR
+#### 2.3.15.OP_CACHE_CLEAR
 清空缓存而不通知监听器或者缓存写入器，具体可以看对应方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#clear--)。
 
 |请求类型|描述|
@@ -1798,7 +1798,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-#### 19.2.3.16.OP_CACHE_CLEAR_KEY
+#### 2.3.16.OP_CACHE_CLEAR_KEY
 清空缓存键而不通知监听器或者缓存写入器，具体可以看对应方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#clear-K-)。
 
 |请求类型|描述|
@@ -1837,7 +1837,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-#### 19.2.3.17.OP_CACHE_CLEAR_KEYS
+#### 2.3.17.OP_CACHE_CLEAR_KEYS
 清空缓存的多个键而不通知监听器或者缓存写入器，具体可以看对应方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#clearAll-java.util.Set-)。
 
 |请求类型|描述|
@@ -1884,7 +1884,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-#### 19.2.3.18.OP_CACHE_REMOVE_KEY
+#### 2.3.18.OP_CACHE_REMOVE_KEY
 删除给定键对应的数据，通知监听器和缓存的写入器，具体可以看相关方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#remove-K-)。
 
 |请求类型|描述|
@@ -1927,7 +1927,7 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
-#### 19.2.3.19.OP_CACHE_REMOVE_IF_EQUALS
+#### 2.3.19.OP_CACHE_REMOVE_IF_EQUALS
 当给定的值等于当前值时，删除缓存中给定键对应的条目，然后通知监听器和缓存写入器。
 
 |请求类型|描述|
@@ -1975,7 +1975,7 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
-#### 19.2.3.20.OP_CACHE_GET_SIZE
+#### 2.3.20.OP_CACHE_GET_SIZE
 获取缓存条目的数量，该方法等同于[IgniteCache.size(CachePeekMode... peekModes)](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#size-org.apache.ignite.cache.CachePeekMode...-)。
 
 |请求类型|描述|
@@ -2021,7 +2021,7 @@ readResponseHeader(in);
 // Number of entries in cache
 long cacheSize = readLongLittleEndian(in);
 ```
-#### 19.2.3.21.OP_CACHE_REMOVE_KEYS
+#### 2.3.21.OP_CACHE_REMOVE_KEYS
 删除给定键对应的条目，通知监听器和缓存写入器，具体可以看相关方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#removeAll-java.util.Set-)。
 
 |请求类型|描述|
@@ -2072,7 +2072,7 @@ readResponseHeader(in);
 int resTypeCode = readByte(in);
 int value = readInt(in);
 ```
-#### 19.2.3.22.OP_CACHE_REMOVE_ALL
+#### 2.3.22.OP_CACHE_REMOVE_ALL
 从缓存中删除所有的条目，通知监听器和缓存写入器，具体可以看相关方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#removeAll--)。
 
 |请求类型|描述|
@@ -2112,8 +2112,8 @@ long resReqId = readLongLittleEndian(in);
 // Success
 int statusCode = readIntLittleEndian(in);
 ```
-### 19.2.4.SQL和扫描查询
-#### 19.2.4.1.操作代码
+### 2.4.SQL和扫描查询
+#### 2.4.1.操作代码
 与Ignite服务端节点成功握手后，客户端就可以通过发送带有特定操作代码的请求（请参见下面的请求/响应结构）来执行各种SQL和扫描查询了：
 
 |操作|操作代码|
@@ -2127,7 +2127,7 @@ int statusCode = readIntLittleEndian(in);
 |`OP_RESOURCE_CLOSE`|0|
 
 注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
-#### 19.2.4.2.OP_QUERY_SQL
+#### 2.4.2.OP_QUERY_SQL
 在集群存储的数据中执行SQL查询，查询会返回所有的结果集（键值对）。
 
 |请求类型|描述|
@@ -2221,7 +2221,7 @@ for (int i = 0; i < rowCount; i++) {
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
-#### 19.2.4.3.OP_QUERY_SQL_CURSOR_GET_PAGE
+#### 2.4.3.OP_QUERY_SQL_CURSOR_GET_PAGE
 通过`OP_QUERY_SQL`的游标ID，查询下一个游标页。
 
 |请求类型|描述|
@@ -2267,7 +2267,7 @@ for (int i = 0; i < rowCount; i++){
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
-#### 19.2.4.4.OP_QUERY_SQL_FIELDS
+#### 2.4.4.OP_QUERY_SQL_FIELDS
 执行SQLFieldQuery。
 
 |请求类型|描述|
@@ -2392,7 +2392,7 @@ for (int i = 0; i < rowCount; i++) {
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
-#### 19.2.4.5.OP_QUERY_SQL_FIELDS_CURSOR_GET_PAGE
+#### 2.4.5.OP_QUERY_SQL_FIELDS_CURSOR_GET_PAGE
 通过`OP_QUERY_SQL_FIELDS`的游标ID，获取下一页的查询结果。
 
 |请求类型|描述|
@@ -2434,7 +2434,7 @@ for (int i = 0; i < rowCount; i++){
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
-#### 19.2.4.6.OP_QUERY_SCAN
+#### 2.4.6.OP_QUERY_SCAN
 执行扫描查询。
 
 |请求类型|描述|
@@ -2505,7 +2505,7 @@ for (int i = 0; i < rowCount; i++) {
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
-#### 19.2.4.7.OP_QUERY_SCAN_CURSOR_GET_PAGE
+#### 2.4.7.OP_QUERY_SCAN_CURSOR_GET_PAGE
 通过`OP_QUERY_SCAN`获取的游标，查询下一页的数据。
 
 |请求类型|描述|
@@ -2521,7 +2521,7 @@ boolean moreResults = readBooleanLittleEndian(in);
 |键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SCAN_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
-#### 19.2.4.8.OP_RESOURCE_CLOSE
+#### 2.4.8.OP_RESOURCE_CLOSE
 关闭一个资源，比如游标。
 
 |请求类型|描述|
@@ -2552,8 +2552,8 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-### 19.2.5.二进制类型元数据
-#### 19.2.5.1.操作代码
+### 2.5.二进制类型元数据
+#### 2.5.1.操作代码
 与Ignite服务端节点成功握手后，客户端就可以通过发送带有特定操作代码的请求（请参见下面的请求/响应结构）来执行与二进制类型有关的各种操作了：
 
 |操作|操作代码|
@@ -2565,7 +2565,7 @@ readResponseHeader(in);
 
 注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
 
-#### 19.2.5.2.OP_GET_BINARY_TYPE_NAME
+#### 2.5.2.OP_GET_BINARY_TYPE_NAME
 通过ID取得和平台相关的完整二进制类型名，比如，.NET和Java都可以映射相同的类型`Foo`，但是在.NET中类型是`Apache.Ignite.Foo`，而在Java中是`org.apache.ignite.Foo`。
 
 名字是使用`OP_REGISTER_BINARY_TYPE_NAME`注册的。
@@ -2617,7 +2617,7 @@ String s = new String(buf);
 
 System.out.println(s);
 ```
-#### 19.2.5.3.OP_REGISTER_BINARY_TYPE_NAME
+#### 2.5.3.OP_REGISTER_BINARY_TYPE_NAME
 通过ID注册平台相关的完整二进制类型名，比如，.NET和Java都可以映射相同的类型`Foo`，但是在.NET中类型是`Apache.Ignite.Foo`，而在Java中是`org.apache.ignite.Foo`。
 
 |请求类型|描述|
@@ -2657,7 +2657,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
-#### 19.2.5.4.OP_GET_BINARY_TYPE
+#### 2.5.4.OP_GET_BINARY_TYPE
 通过ID获取二进制类型信息。
 
 |请求类型|描述|
@@ -2734,7 +2734,7 @@ private static void readBinaryTypeField (DataInputStream in) throws IOException{
   System.out.println(fieldName);
 }
 ```
-#### 19.2.5.5.OP_PUT_BINARY_TYPE
+#### 2.5.5.OP_PUT_BINARY_TYPE
 在集群中注册二进制类型信息。
 
 |请求类型|描述|
@@ -2814,8 +2814,8 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
-### 19.2.6.缓存配置
-#### 19.2.6.1.操作代码
+### 2.6.缓存配置
+#### 2.6.1.操作代码
 与Ignite服务端节点成功握手后，客户端就可以通过发送带有特定操作代码的请求（请参见下面的请求/响应结构）来执行各种缓存配置操作了：
 
 |操作|操作代码|
@@ -2830,7 +2830,7 @@ readResponseHeader(in);
 
 注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
 
-#### 19.2.6.2.OP_CACHE_CREATE_WITH_NAME
+#### 2.6.2.OP_CACHE_CREATE_WITH_NAME
 通过给定的名字创建缓存，如果缓存的名字中有`*`，则可以应用一个缓存模板，如果给定名字的缓存已经存在，则会抛出异常。
 
 |请求类型|描述|
@@ -2868,7 +2868,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
-#### 19.2.6.3.OP_CACHE_GET_OR_CREATE_WITH_NAME
+#### 2.6.3.OP_CACHE_GET_OR_CREATE_WITH_NAME
 通过给定的名字创建缓存，如果缓存的名字中有`*`，则可以应用一个缓存模板，如果给定名字的缓存已经存在，则什么也不做。
 
 |请求类型|描述|
@@ -2906,7 +2906,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
-#### 19.2.6.4.OP_CACHE_GET_NAMES
+#### 2.6.4.OP_CACHE_GET_NAMES
 获取已有缓存的名字。
 
 |请求类型|描述|
@@ -2951,7 +2951,7 @@ for (int i = 0; i < cacheCount; i++) {
   System.out.println(s);
 }
 ```
-#### 19.2.6.5.OP_CACHE_GET_CONFIGURATION
+#### 2.6.5.OP_CACHE_GET_CONFIGURATION
 获取指定缓存的配置信息。
 
 |请求类型|描述|
@@ -3057,7 +3057,7 @@ boolean copyOnRead = readBooleanLittleEndian(in);
 
 // Other configurations
 ```
-#### 19.2.6.6.OP_CACHE_CREATE_WITH_CONFIGURATION
+#### 2.6.6.OP_CACHE_CREATE_WITH_CONFIGURATION
 用给定的配置创建缓存，如果该缓存已存在会抛出异常。
 
 |请求类型|描述|
@@ -3155,7 +3155,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-#### 19.2.6.7.OP_CACHE_GET_OR_CREATE_WITH_CONFIGURATION
+#### 2.6.7.OP_CACHE_GET_OR_CREATE_WITH_CONFIGURATION
 根据提供的配置创建缓存，如果该缓存已存在则什么都不做。
 
 |请求类型|描述|
@@ -3199,7 +3199,7 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
-#### 19.2.6.8.OP_CACHE_DESTROY
+#### 2.6.8.OP_CACHE_DESTROY
 销毁指定的缓存。
 
 |请求类型|描述|
@@ -3233,15 +3233,15 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
-## 19.3.Java瘦客户端
-### 19.3.1.Java瘦客户端
-#### 19.3.1.1.概述
+## 3.Java瘦客户端
+### 3.1.Java瘦客户端
+#### 3.1.1.概述
 Java瘦客户端将[二进制客户端协议](#_19-2-二进制客户端协议)暴露给Java开发者。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 
 按照下面的步骤操作，可以学习瘦客户端API和开发环境的基础知识。
-#### 19.3.1.2.Maven配置
+#### 3.1.2.Maven配置
 添加`ignite-core`这一个依赖就可以使用所有的瘦客户端API。
 
 Maven：
@@ -3270,7 +3270,7 @@ dependencies {
 瘦客户端和Ignite服务端版本可以不同，只要二进制协议版本是兼容的即可。
 :::
 
-#### 19.3.1.3.简单应用
+#### 3.1.3.简单应用
 ```java
 public static void main(String[] args) {
     ClientConfiguration cfg = new ClientConfiguration().setAddresses("127.0.0.1:10800");
@@ -3310,7 +3310,7 @@ public static void main(String[] args) {
  - 使用`IgniteClient#getOrCreateCache(cacheName)`创建了一个指定名字的缓存；
  - 使用`ClientCache#put(key, val)}`和`ClientCache#get(key)`存储和获取数据。
 
-#### 19.3.1.4.启动集群
+#### 3.1.4.启动集群
 在本地主机上启动集群：
 
 Unix：
@@ -3331,7 +3331,7 @@ Windows：
 与Ignite客户端模式不同，它会等待服务端节点的启动，而瘦客户端在无法找到配置好的服务端时，会连接失败。
 :::
 
-#### 19.3.1.5.启动应用
+#### 3.1.5.启动应用
 在IDE中运行程序，然后会看到如下的输出：
 ```
 >>> Thin client put-get example started.
@@ -3343,9 +3343,9 @@ Windows：
 瘦客户端没有成为集群的一个成员，这是一个轻量级的应用，它会使用二进制客户端协议，通过TCP套接字与集群通信。
 :::
 
-### 19.3.2.初始化和配置
+### 3.2.初始化和配置
 `IgniteClient`API是Java瘦客户端的入口。
-#### 19.3.2.1.初始化
+#### 3.2.1.初始化
 `Ignition#startClient(ClientConfiguration)`方法会发起一个瘦客户端连接请求。
 
 `IgniteClient`是一个可以自动关闭的资源，因此可以使用**try-with-resources**语句初始化和释放`IgniteClient`。
@@ -3356,9 +3356,9 @@ try (IgniteClient client = Ignition.startClient(
   // Do something here.
 }
 ```
-#### 19.3.2.2.配置
+#### 3.2.2.配置
 使用`ClientConfiguration`和`ClientCacheConfiguration`可以分别对瘦客户端和客户端缓存进行配置。
-#### 19.3.2.3.ClientCache API
+#### 3.2.3.ClientCache API
 `ClientCache`API表示一个缓存，并且可以在存储数据的Ignite集群中执行键-值操作，通过如下的方法可以获得`ClientCache`的实例：
 
  - `IgniteClient#cache(String)`：假定给定名字的缓存已存在，该方法不会与集群通信确认缓存是否真实存在，如果缓存不存在之后的缓存操作会报错；
@@ -3374,21 +3374,21 @@ ClientCacheConfiguration cacheCfg = new ClientCacheConfiguration()
 
 ClientCache<Integer, String> cache = client.getOrCreateCache(cacheCfg);
 ```
-#### 19.3.2.4.多线程
+#### 3.2.4.多线程
 瘦客户端是单线程且线程安全的。唯一的共享资源是底层的通信管道，同时只有一个线程对管道进行读写，这时其它线程会等待其完成。
 
 ::: warning 使用瘦客户端连接池的多线程来改进性能
 目前瘦客户端无法通过多线程来改进吞吐量，但是可以在应用中使用瘦客户端连接池来创建多线程，以改进吞吐量。
 :::
-#### 19.3.2.5.异步API
+#### 3.2.5.异步API
 ::: tip 异步API暂不支持
 虽然二进制客户端协议设计时是支持异步API的，但是Java瘦客户端目前还不支持，异步API的功能下个版本会添加。
 :::
-#### 19.3.2.6.客户端-服务端兼容性
+#### 3.2.6.客户端-服务端兼容性
 客户端`ignite-core`的版本号要小于等于服务端`ignite-core`的版本号。
 
 Ignite的服务端会维持二进制协议的向后兼容性，如果两者协议版本不兼容，会抛出`RuntimeException`。
-#### 19.3.2.7.故障转移
+#### 3.2.7.故障转移
 Ignite不支持服务器端的瘦客户端故障转移。在客户端连接到的服务端停机时，瘦客户端通过自动重连到其它服务端并重试操作来提供故障转移。
 
 配置多个服务端以启用故障转移机制：
@@ -3421,8 +3421,8 @@ for (Query<Cache.Entry<Integer, Person>> qry : queries) {
  - 如果数据量较小足够放入内存，那么获取所有数据后可以将其放入一个Map：`Map<Integer, Person> res = cur.getAll().stream().collect(Collectors.toMap(Cache.Entry::getKey, Cache.Entry::getValue))`，Map会处理掉重复的条目；
  - 针对条目可能重复的问题，对条目进行幂等处理。
 
-### 19.3.3.键-值
-#### 19.3.3.1.支持的JCache API
+### 3.3.键-值
+#### 3.3.1.支持的JCache API
 目前，瘦客户端只实现了[JCache](https://jcp.org/aboutJava/communityprocess/final/jsr107/index.html)的一个子集，因此并没有实现`javax.cache.Cache`（`ClientCacheConfiguration`也没有实现`javax.cache.configuration`）。
 
 `ClientCache<K, V>`目前支持如下的JCache API：
@@ -3470,7 +3470,7 @@ assertEquals("101", cache.get(101));
 cache.removeAll();
 assertEquals(0, cache.size());
 ```
-#### 19.3.3.2.扫描查询
+#### 3.3.2.扫描查询
 使用`ScanQuery<K, V>`可以在服务端使用Java谓词对数据进行过滤，然后在客户端对过滤后的结果集进行迭代。
 
 过滤后的条目是按页传输到客户端的，这样每次只有一个页面的数据会被加载到客户单的内存，页面大小可以通过`ScanQuery#setPageSize(int)`进行配置。
@@ -3482,7 +3482,7 @@ for (Query<Cache.Entry<Integer, Person>> qry : queries) {
     for (Cache.Entry<Integer, Person> entry : cur) {
       // Handle the entry ...
 ```
-### 19.3.4.SQL
+### 3.4.SQL
 SQL查询共有2种：
 
  - **数据定义语言语句**：用来管理缓存和索引；
@@ -3516,7 +3516,7 @@ Object cachedName = client.query(
 
 assertEquals(val.getName(), cachedName);
 ```
-### 19.3.5.二进制类型
+### 3.5.二进制类型
 瘦客户端完全支持[二进制编组器](/doc/java/#_1-10-二进制编组器)章节中描述的二进制对象API。
 
 使用`CacheClient#withKeepBinary()`将缓存切换到二进制模式，然后直接处理Ignite的二进制对象，可以避免序列化/反序列化。
@@ -3536,8 +3536,8 @@ cache.put(1, val);
 
 BinaryObject cachedVal = cache.get(1);
 ```
-### 19.3.6.安全
-#### 19.3.6.1.加密
+### 3.6.安全
+#### 3.6.1.加密
 通过在通信管道上开启SSL/TLS，可以确保瘦客户端上的数据是加密的。
 ```java
 ClientConfiguration clientCfg = new ClientConfiguration()
@@ -3558,7 +3558,7 @@ clientCfg
 try (IgniteClient client = Ignition.startClient(clientCfg)) {
 	...
 ```
-#### 19.3.6.2.认证
+#### 3.6.2.认证
 如果服务端开启认证，那么用户必须提供凭据。
 
 如果认证失败，会抛出`ClientAuthenticationException`。
@@ -3578,17 +3578,17 @@ catch (ClientAuthenticationException e) {
 ::: tip 确保开启服务端的认证
 确保[服务端的认证](/doc/java/Security.md#_2-高级安全)已开启，并且在凭据存储中配置了客户端凭据。
 :::
-#### 19.3.6.3.授权
+#### 3.6.3.授权
 目前，Ignite本身还不支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这个](https://docs.gridgain.com/docs/security-and-audit)。
-## 19.4.Node.js瘦客户端
-### 19.4.1.Node.js瘦客户端
-#### 19.4.1.1.概述
+## 4.Node.js瘦客户端
+### 4.1.Node.js瘦客户端
+#### 4.1.1.概述
 这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
-#### 19.4.1.2.入门
+#### 4.1.2.入门
 **要求**
 
  - [Node.js](https://nodejs.org/en/)的版本要求是8.0及以上，可以下载Node.js针对特定平台预编译好的[二进制安装包](https://nodejs.org/en/download/)，也可以使用[包管理器](https://nodejs.org/en/download/package-manager)安装Node.js；
@@ -3617,7 +3617,7 @@ cd local_ignite_path/modules/platforms/nodejs
 npm link
 npm link apache-ignite-client #linking examples (optional)
 ```
-#### 19.4.1.3.运行示例
+#### 4.1.3.运行示例
 为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)。
 
 1.运行Ignite的服务端：
@@ -3646,7 +3646,7 @@ node CachePutGetExample.js
 ::: tip Node.js示例文件
 Node.js瘦客户端有完整的直接可用的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)，它们可以演示客户端的行为。
 :::
-### 19.4.2.初始化和配置
+### 4.2.初始化和配置
 本文会描述使用Node.js瘦客户端与Ignite集群进行交互的基本步骤。
 
 在用Node.js瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
@@ -3659,7 +3659,7 @@ Windows：
 ```batch
 ignite.bat
 ```
-#### 19.4.2.1.初始化IgniteClient
+#### 4.2.1.初始化IgniteClient
 客户端的使用始于`IgniteClient`类实例的创建，它会将Node.js应用接入Ignite集群。其构造函数有一个可选的参数`onStateChanged`回调函数，每次客户端跳转到新的连接状态时都会调用该回调函数（请参见下文）。
 
 可以根据需要创建尽可能多的`IgniteClient`实例，它们都将独立工作。
@@ -3680,7 +3680,7 @@ function onStateChanged(state, reason) {
     }
 }
 ```
-#### 19.4.2.2.配置IgniteClient
+#### 4.2.2.配置IgniteClient
 下一步是为客户端连接创建配置，可以通过注入`IgniteClientConfiguration`类实例实现。
 
 必须要配置（在构造函数中指定）的是Ignite节点的端点列表。至少要指定一个端点。客户端只会连接到一个节点（从提供的列表中随机选一个端点）。其它节点（如果提供）由客户端用于`故障转移重连算法`：如果当前连接断开，客户端将尝试重连到列表中的下一个随机端点。
@@ -3710,7 +3710,7 @@ const igniteClientConfiguration = new IgniteClientConfiguration('127.0.0.1:10800
     setPassword('ignite').
     setConnectionOptions(false, { 'timeout' : 0 });
 ```
-#### 19.4.2.3.接入集群
+#### 4.2.3.接入集群
 下一步是将客户端连接到Ignite集群。在`connect`方法中指定了客户端连接的配置，其中包括要连接到的端点。
 
 客户端有三种连接状态：`CONNECTING`、`CONNECTED`、`DISCONNECTED`。如果在客户端的构造函数中有回调函数，则该状态会通过`onStateChanged`回调函数反馈。
@@ -3756,7 +3756,7 @@ function onStateChanged(state, reason) {
 
 connectClient();
 ```
-#### 19.4.2.4.配置缓存
+#### 4.2.4.配置缓存
 下一步是获取一个缓存实例，一个用于访问存储在Ignite中的数据的`CacheClient`类实例。
 
 瘦客户端提供了几种方法来处理Ignite缓存和创建缓存实例：按名称获取缓存、使用指定名称和可选缓存配置创建缓存、获取或创建缓存、销毁缓存等。
@@ -3874,7 +3874,7 @@ async function setCacheKeyValueTypes() {
 setCacheKeyValueTypes();
 ```
 到这里，就可以对存储的数据进行处理，或者将数据放入Ignite。
-#### 19.4.2.5.数据类型
+#### 4.2.5.数据类型
 在二进制客户端协议中定义的Ignite类型和JavaScript类型之间，客户端支持两种映射方式：
 
  - 显式映射；
@@ -3901,7 +3901,7 @@ Ignite和JavaScript类型之间的默认映射说明在[这里](https://rawgit.c
 如果应用没有指定字段的Ignite类型并读取字段的值，客户端会将接收到的Ignite复杂对象作为`BinaryObject`类的实例返回（Ignite复杂对象的二进制形式）。`BinaryObject`无需反序列化就可以对其内容进行处理（读取和写入对象字段的值、添加和删除字段等），而且应用还可以从JavaScript对象创建`BinaryObject`类的实例。如果该字段没有显式指定的Ignite类型，则应用程序可以将二进制对象作为字段的值写入Ignite。
 
 客户端负责从/在Ignite集群获取或注册有关Ignite复杂对象类型的信息（包括模式）。当需要从/到Ignite点读取或写入Ignite复杂对象时，这个过程由客户端自动完成。
-#### 19.4.2.6.支持的API
+#### 4.2.6.支持的API
 客户端API的规范在[这里](https://rawgit.com/apache/ignite/master/modules/platforms/nodejs/api_spec/index.html)。
 
 除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
@@ -3916,7 +3916,7 @@ Ignite和JavaScript类型之间的默认映射说明在[这里](https://rawgit.c
  - SSL/TLS连接；
  - 故障转移重连算法
 
-#### 19.4.2.7.启用调试
+#### 4.2.7.启用调试
 要打开/关闭客户端的调试输出开关（包括错误日志），可以调用`IgniteClient`实例的`setDebug()`方法，调试输出默认是关闭的。
 ```javascript
 const IgniteClient = require('apache-ignite-client');
@@ -3924,8 +3924,8 @@ const IgniteClient = require('apache-ignite-client');
 const igniteClient = new IgniteClient();
 igniteClient.setDebug(true);
 ```
-### 19.4.3.键-值
-#### 19.4.3.1.键-值操作
+### 4.3.键-值
+#### 4.3.1.键-值操作
 `CacheClient`类为缓存的键值数据提供了键值操作的方法，`put`、`get`、`putAll`、`getAll`、`replace`等，下面是一个示例：
 ```javascript
 const IgniteClient = require('apache-ignite-client');
@@ -3960,7 +3960,7 @@ async function performCacheKeyValueOperations() {
 
 performCacheKeyValueOperations();
 ```
-#### 19.4.3.2.扫描查询
+#### 4.3.2.扫描查询
 Node.js客户端完全支持Ignite的扫描查询。查询方法会返回一个游标类，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
 
 首先，通过创建和配置一个`ScanQuery`类的实例来定义查询。
@@ -4008,8 +4008,8 @@ async function performScanQuery() {
 
 performScanQuery();
 ```
-### 19.4.4.SQL
-#### 19.4.4.1.SQL查询
+### 4.4.SQL
+#### 4.4.1.SQL查询
 Node.js客户端完全支持Ignite的SQL查询，查询方法会返回一个游标类，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
 
 首先，通过创建和配置一个`SqlQuery`类的实例来定义查询。
@@ -4071,7 +4071,7 @@ async function performSqlQuery() {
 
 performSqlQuery();
 ```
-#### 19.4.4.2.SQL字段查询
+#### 4.4.2.SQL字段查询
 这种类型的查询用于获取作为SQL查询结果集一部分的部分字段，执行诸如INSERT、UPDATE、DELETE、CREATE等DML和DDL语句。
 
 首先，通过创建和配置`SqlFieldsQuery`类的实例来定义查询。然后，将`SqlFieldsQuery`传递到`Cache`实例的查询方法，并获取`SqlFieldsCursor`类的实例。最后，使用`SqlFieldsCursor`实例迭代或获取查询返回的所有元素。
@@ -4123,7 +4123,7 @@ async function performSqlFieldsQuery() {
 
 performSqlFieldsQuery();
 ```
-### 19.4.5.二进制类型
+### 4.5.二进制类型
 除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
 
  - `OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作是不支持的；
@@ -4195,8 +4195,8 @@ async function putGetComplexAndBinaryObjects() {
 
 putGetComplexAndBinaryObjects();
 ```
-### 19.4.6.安全
-#### 19.4.6.1.认证
+### 4.6.安全
+#### 4.6.1.认证
 关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_2-高级安全)。在Node.js端，将用户名/密码传递给`IgniteClientConfiguration`的方法如下：
 ```javascript
 const ENDPOINT = 'localhost:10800';
@@ -4207,7 +4207,7 @@ const cfg = new IgniteClientConfiguration(ENDPOINT).
 	setUserName(USER_NAME).
   setPassword(PASSWORD);
 ```
-#### 19.4.6.2.加密
+#### 4.6.2.加密
 1.获取TLS所需的证书：
 
  - 或着获取指定的Ignite服务端可用的现有证书；
@@ -4339,15 +4339,15 @@ class AuthTlsExample {
 const authTlsExample = new AuthTlsExample();
 authTlsExample.start();
 ```
-## 19.5.Python瘦客户端
-### 19.5.1.Python瘦客户端
-#### 19.5.1.1.概述
+## 5.Python瘦客户端
+### 5.1.Python瘦客户端
+#### 5.1.1.概述
 Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
-#### 19.5.1.2.入门
+#### 5.1.2.入门
 **要求**
 
  - Python的3.4及以后的版本
@@ -4380,7 +4380,7 @@ ignite.bat
 $ cd IGNITE_HOME/platforms/python/examples
 $ python get_and_put.py
 ```
-### 19.5.2.初始化和配置
+### 5.2.初始化和配置
 本文会描述使用Python瘦客户端与Ignite集群进行交互的基本步骤。
 
 在用Python瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
@@ -4393,7 +4393,7 @@ Windows：
 ```batch
 ignite.bat
 ```
-#### 19.5.2.1.接入集群
+#### 5.2.1.接入集群
 下面的代码片段显示了如何从Python瘦客户端接入Ignite集群：
 ```python
 from pyignite import Client
@@ -4402,7 +4402,7 @@ from pyignite import Client
 client = Client()
 client.connect('127.0.0.1', 10800)
 ```
-#### 19.5.2.2.创建缓存
+#### 5.2.2.创建缓存
 使用Python瘦客户端，可以在集群中创建缓存，比如：
 ```python
 from pyignite import Client
@@ -4414,7 +4414,7 @@ client.connect('127.0.0.1', 10800)
 ## Create a cache
 my_cache = client.create_cache('my cache')
 ```
-#### 19.5.2.3.配置缓存
+#### 5.2.3.配置缓存
 `prop_codes`模块包含表示各种缓存设置的顺序值列表。
 
 与缓存同步、再平衡、关联和其它与缓存配置相关的详细信息，可以参阅[数据网格](/doc/java/Key-ValueDataGrid.md)的相关文档。
@@ -4512,7 +4512,7 @@ my_cache = client.create_cache(cache_config)
  - `type_name`：复杂对象名；
  - `affinity_key_field_name`：关联键字段名；
 
-#### 19.5.2.4.数据类型
+#### 5.2.4.数据类型
 Ignite使用一个复杂的可序列化数据类型系统来存储和检索用户数据，并通过Ignite的二进制协议管理其缓存的配置。
 
 大多数Ignite数据类型都可以用标准的Python数据类型或类来表示。但是，其中一些在概念上与Python动态类型系统不一样、过于复杂或模棱两可。
@@ -4581,7 +4581,7 @@ Ignite使用一个复杂的可序列化数据类型系统来存储和检索用�
 |复杂对象|object|BinaryObject|
 |包装数据|tuple|WrappedDataObject|
 
-#### 19.5.2.5.故障转移
+#### 5.2.5.故障转移
 当与服务器的连接断开或超时时，`Client`对象传播原始异常（`OSError`或`SocketError`），但保持其构造函数的参数不变，并尝试透明地重新连接。
 
 当`Client`无法重新连接时，会抛出一个特殊的`ReconnectError`异常。
@@ -4654,8 +4654,8 @@ client.connect(nodes)
 client.connect(RoundRobin(nodes, max_reconnects=20))
 ```
 这时在节点3故障后，客户端会尝试重连到节点1，然后是节点2，要让`RoundRobin`策略正常工作，要求至少有一个节点在线。
-### 19.5.3.键-值
-#### 19.5.3.1.键-值操作
+### 5.3.键-值
+#### 5.3.1.键-值操作
 `pyignite.cache.Cache`类为缓存的键值数据提供了键值操作的方法，`put`、`get`、`putAll`、`getAll`、`replace`等，下面是一个示例：
 ```python
 from pyignite import Client
@@ -4721,7 +4721,7 @@ my_cache.remove([
 ])
 ```
 参见[数据类型](#_19-5-2-4-数据类型)章节，可以了解可用作类型提示的所有解析器/构造函数类列表。
-#### 19.5.3.2.扫描查询
+#### 5.3.2.扫描查询
 缓存的`scan()`查询方法可以逐元素获取缓存的全部内容。
 
 下面往缓存中注入部分数据：
@@ -4762,15 +4762,15 @@ print(dict(result))
 # }
 ```
 注意：如果缓存包含大量数据，字典可能会消耗太多内存。
-#### 19.5.3.3.清理
+#### 5.3.3.清理
 销毁创建的缓存并且断开连接：
 ```python
 my_cache.destroy()
 client.close()
 ```
-### 19.5.4.SQL
+### 5.4.SQL
 Python瘦客户端完整支持Ignite的SQL查询，具体的示例可以看[这里](/doc/sql/README.md#_2-入门)。
-#### 19.5.4.1.准备
+#### 5.4.1.准备
 首先建立一个连接：
 ```python
 client = Client()
@@ -4861,7 +4861,7 @@ for row in LANGUAGE_DATA:
 具体的数据示例，在[GitHub](https://github.com/apache/ignite/blob/master/examples/sql/world.sql)上可以获得。
 
 到这里准备工作就完成了。
-#### 19.5.4.2.SQL查询
+#### 5.4.2.SQL查询
 显示指定城市的所有信息：
 ```python
 CITY_INFO_QUERY = '''SELECT * FROM City WHERE id = ?'''
@@ -4884,7 +4884,7 @@ for field_name, field_value in zip(field_names*len(field_data), field_data):
 # DISTRICT: Michigan
 # POPULATION: 951270
 ```
-#### 19.5.4.3.SQL字段查询
+#### 5.4.3.SQL字段查询
 在样本数据中，最大的10个城市是什么？
 ```python
 MOST_POPULATED_QUERY = '''
@@ -4908,7 +4908,7 @@ for row in result:
 # ['Harbin', 4289800]
 ```
 `sql()`函数会返回一个生成器函数，然后对结果集进行迭代。
-#### 19.5.4.4.SQL关联查询
+#### 5.4.4.SQL关联查询
 在3个指定的国家中，人口最多的10个城市是什么？
 
 注意，如果配置了`include_field_names`参数为`true`，`sql()`方法会在第一次迭代时返回一个字段名的列表，然后可以使用Python内置的`next`函数访问它们。
@@ -4954,7 +4954,7 @@ for table_name in [
 ]:
     result = client.sql(DROP_TABLE_QUERY.format(table_name))
 ```
-### 19.5.5.二进制类型
+### 5.5.二进制类型
 复杂对象（通常称为`二进制对象`）是一个Ignite的数据类型，设计为表示Java类。它具有以下特点：
 
  - 一个唯一ID（类型ID），由类名（类型名）派生；
@@ -5011,7 +5011,7 @@ class Person(metaclass=GenericObjectMeta, schema=OrderedDict([
 client.register_binary_type(Person)
 ```
 如果已经了解了复杂对象的`pyignite`实现的基本概念，下一步就会讨论更详细的示例。
-#### 19.5.5.1.读
+#### 5.5.1.读
 Ignite SQL在内部使用复杂对象来表示SQL表中的键和行。通常来说SQL数据是通过查询访问的，因此只需考虑下面的示例就可以了解二进制对象（而不是Ignite SQL）是如何工作的。
 
 在前面的示例中创建了一些SQL表。这里再做一次，然后检查Ignite存储：
@@ -5073,7 +5073,7 @@ print(next(result))
 #     )
 # )
 ```
-#### 19.5.5.2.创建
+#### 5.5.2.创建
 现在，在了解了Ignite SQL存储的内部结构后，就可以创建一个表，只使用键-值函数将数据放入其中。
 
 例如创建一个表来注册高中生：大致相当于以下SQL DDL语句：
@@ -5179,7 +5179,7 @@ print(*result)
 ```python
 student_cache.destroy()
 ```
-#### 19.5.5.3.迁移
+#### 5.5.3.迁移
 假设有一个会计应用程序，它以键-值格式存储数据。目标是对原始费用凭证的格式和数据进行以下更改：
 
  - 将`date`重命名为`expense_date`；
@@ -5280,8 +5280,8 @@ client.close()
 这个版本控制机制非常简单和健壮，但是它有其局限性。主要是：不能更改现有字段的类型。如果做了，将会收到以下消息：`org.apache.ignite.binary.BinaryObjectException: Wrong value has been set [typeName=SomeType, fieldName=f1, fieldType=String, assignedValueType=int]`
 
 或者，可以重命名字段或创建新的复杂对象。
-### 19.5.6.安全
-#### 19.5.6.1.SSL/TLS
+### 5.6.安全
+#### 5.6.1.SSL/TLS
 测试SSL连接有一些特殊的要求。
 
 Ignite服务端必须配置为保护二进制协议端口，服务端配置过程可以分为以下若干个基本步骤：
@@ -5324,7 +5324,7 @@ client = Client(
 client.connect('ignite-example.com', 10800)
 ```
 如果默认值（ssl._DEFAULT_CIPHERS和TLS 1.1）不适合，还可以提供诸如密码集（ssl_ciphers）和SSL版本（ssl_version）等参数。
-#### 19.5.6.2.密码认证
+#### 5.6.2.密码认证
 要进行身份验证，必须在Ignite的XML配置文件中将`authenticationEnabled`属性设置为`true`，并启用持久化，具体请参见[认证](/doc/java/Security.md#_2-1-认证)中的相关内容。
 
 请注意，不鼓励通过开放通道发送凭据，因为它们很容易被拦截。提供凭据会自动从客户端打开SSL。强烈建议保护到Ignite服务端的连接，如[SSL/TLS](#_19-5-6-1-ssl/tls)示例中所述，以便使用密码验证。
@@ -5341,15 +5341,15 @@ client.connect('ignite-example.com', 10800)
 client = Client(username='ignite', password='ignite', use_ssl=False)
 ```
 注意，Ignite瘦客户端无法通过二进制协议获得集群的身份验证设置。服务端会简单地忽略意外的凭据。在相反的情况下，用户会收到以下消息：`pyignite.exceptions.HandshakeError: Handshake error: Unauthenticated sessions are prohibited. Expected protocol version: 0.0.0`。
-## 19.6.PHP瘦客户端
-### 19.6.1.PHP瘦客户端
-#### 19.6.1.1.概述
+## 6.PHP瘦客户端
+### 6.1.PHP瘦客户端
+#### 6.1.1.概述
 这个瘦客户端使得PHP应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
 它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
-#### 19.6.1.2.入门
+#### 6.1.2.入门
 **要求**
 
  - [PHP](http://php.net/manual/en/install.php)的7.2及其以后的版本和[Composer依赖管理器](https://getcomposer.org/download/)；
@@ -5401,7 +5401,7 @@ ignite.bat
 cd IGNITE_HOME/platforms/php/examples
 php CachePutGetExample.php
 ```
-### 19.6.2.初始化和配置
+### 6.2.初始化和配置
 本文会描述使用PHP瘦客户端与Ignite集群进行交互的基本步骤。
 
 在用PHP瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
@@ -5414,7 +5414,7 @@ Windows：
 ```batch
 ignite.bat
 ```
-#### 19.6.2.1.实例化Ignite客户端
+#### 6.2.1.实例化Ignite客户端
 这个客户端的使用，是以`Client`对象的创建开始的，它负责将一个PHP应用接入Ignite集群。
 
 如果需要，可以创建很多个客户端对象，它们之间互相独立。
@@ -5423,7 +5423,7 @@ use Apache\Ignite\Client;
 
 $client = new Client();
 ```
-#### 19.6.2.2.配置Ignite客户端
+#### 6.2.2.配置Ignite客户端
 下一步是通过注入`ClientConfiguration`对象来定义客户端连接的配置。
 
 必须要配置（在构造函数中指定）的是Ignite节点的端点列表。必须至少指定一个端点。客户端只会从提供的列表中随机选一个端点连接。其它节点（如果提供）由客户端用于`故障转移重连算法`：如果当前连接丢失，客户端将尝试重连到列表中的下一个随机端点。
@@ -5450,7 +5450,7 @@ $clientConfiguration = (new ClientConfiguration('127.0.0.1:10800'))->
     setPassword('ignite')->
     setTimeout(5000);
 ```
-#### 19.6.2.3.接入集群
+#### 6.2.3.接入集群
 下一步是将客户端接入Ignite集群。在`connect`方法中指定了客户端连接的配置，其中包括要连接到的端点。
 
 如果客户端无法连接（包括使用`故障转移重连算法`无法成功重连的情况），则会针对Ignite集群的任何操作抛出`NoConnectionException`。
@@ -5480,7 +5480,7 @@ function connectClient(): void
 
 connectClient();
 ```
-#### 19.6.2.4.缓存的使用和配置
+#### 6.2.4.缓存的使用和配置
 下一步是获取一个表示Ignite缓存的对象。它是一个具有`CacheInterface`的PHP类的实例。
 
 瘦客户端提供了若干方法来处理Ignite缓存和使用`CacheInterface`获取对象：按名称获取缓存、使用指定名称和可选缓存配置创建缓存、获取或创建缓存、销毁缓存等。
@@ -5597,7 +5597,7 @@ function setCacheKeyValueTypes(): void
 
 setCacheKeyValueTypes();
 ```
-#### 19.6.2.5.数据类型
+#### 6.2.5.数据类型
 每当应用通过客户端的API在Ignite中写入或读取字段时，都会在二进制客户端协议定义的Ignite类型和PHP类型之间进行映射。这里的字段是任何存储在Ignite中的数据，包括Ignite条目的全部键或值、数组或集合的元素、复杂对象的字段等。
 
 客户端支持两种映射模式：
@@ -5616,7 +5616,7 @@ setCacheKeyValueTypes();
 如果应用没有指定字段的Ignite类型并读取字段的值，客户端将返回接收到的Ignite复杂对象作为`BinaryObject`类（Ignite复杂对象的二进制形式）的实例。`BinaryObject`不需要反序列化就可以对其内容（对象字段值的读写、添加和删除字段等）进行处理。此外，如果该字段没有显式指定的Ignite类型，应用可以从PHP对象创建`BinaryObject`类的实例，也可以将二进制对象作为字段的值写入Ignite。
 
 客户端负责从/在Ignite集群获取或注册有关Ignite复杂对象类型的信息，包括模式。当需要从/往Ignite读取或写入Ignite复杂对象时，这个过程由客户端自动完成。
-#### 19.6.2.6.支持的API
+#### 6.2.6.支持的API
 客户端API规范可以在[这里](https://rawgit.com/nobitlost/ignite/ignite-7783-docs/modules/platforms/php/api_docs/html/index.html)找到。
 
 除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
@@ -5632,7 +5632,7 @@ setCacheKeyValueTypes();
  - 故障转移重连算法；
  - 所有API方法调用都是同步的。
 
-#### 19.6.2.7.开启调试
+#### 6.2.7.开启调试
 要打开/关闭客户端的调试输出（包括错误日志记录），请调用Ignite客户端对象的`setDebug()`方法。默认情况下调试输出是禁用的：
 ```php
 use Apache\Ignite\Client;
@@ -5640,8 +5640,8 @@ use Apache\Ignite\Client;
 $client = new Client();
 $client->setDebug(true);
 ```
-### 19.6.3.键-值
-#### 19.6.3.1.键-值操作
+### 6.3.键-值
+#### 6.3.1.键-值操作
 `CacheInterface`为缓存的键值数据提供了键值操作的方法，`put`、`get`、`putAll`、`getAll`、`replace`等，下面是一个示例：
 ```php
 use Apache\Ignite\Client;
@@ -5677,7 +5677,7 @@ function performCacheKeyValueOperations(): void
 
 performCacheKeyValueOperations();
 ```
-#### 19.6.3.2.扫描查询
+#### 6.3.2.扫描查询
 PHP客户端支持Ignite扫描查询。查询方法返回一个带有标准PHP迭代器接口的游标对象，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
 
 首先，通过创建和配置`ScanQuery`类的实例来定义查询；
@@ -5727,8 +5727,8 @@ function performScanQuery(): void
 
 performScanQuery();
 ```
-### 19.6.4.SQL
-#### 19.6.4.1.SQL查询
+### 6.4.SQL
+#### 6.4.1.SQL查询
 PHP客户端支持Ignite的SQL查询。查询方法返回一个带有标准PHP迭代器接口的游标对象，它可以用于对结果集的延迟迭代，或者一次获取所有的结果。
 
 首先，通过创建和配置`SqlQuery`类的实例来定义查询；
@@ -5783,7 +5783,7 @@ function performSqlFieldsQuery(): void
 
 performSqlFieldsQuery();
 ```
-#### 19.6.4.2.SQL字段查询
+#### 6.4.2.SQL字段查询
 这种类型的查询用于获取作为SQL查询结果集一部分的各个字段，执行诸如INSERT、UPDATE、DELETE、CREATE等DML和DDL语句。
 
 首先，通过创建和配置`SqlFieldsQuery`类的实例来定义查询；
@@ -5838,7 +5838,7 @@ function performSqlFieldsQuery(): void
 
 performSqlFieldsQuery();
 ```
-### 19.6.5.二进制对象
+### 6.5.二进制对象
 除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
 
  - 不支持`OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作；
@@ -5917,8 +5917,8 @@ function putGetComplexAndBinaryObjects(): void
 
 putGetComplexAndBinaryObjects();
 ```
-### 19.6.6.安全
-#### 19.6.6.1.认证
+### 6.6.安全
+#### 6.6.1.认证
 关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_2-高级安全)。在PHP端，将用户名/密码传递给`ClientConfiguration`的方法如下：
 ```php
 const ENDPOINT = 'localhost:10800';
@@ -5929,7 +5929,7 @@ $config = (new ClientConfiguration(AuthTlsExample::ENDPOINT))->
     setUserName(AuthTlsExample::USER_NAME)->
     setPassword(AuthTlsExample::PASSWORD);
 ```
-#### 19.6.6.2.加密
+#### 6.6.2.加密
 1.获取TLS所需的证书：
 
  - 或着获取指定的Ignite服务端可用的现有证书；
