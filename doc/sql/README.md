@@ -17,7 +17,7 @@ Ignite支持数据定义语言(DDL)语句，可以在运行时创建和删除表
 
 在下面的示例中，会使用一个包含两个表的模式，这些表会用于保存城市以及居住在那里的人的信息，假定一个城市有很多的人，并且人只会居住于一个城市，这是一个一对多（1：m）的关系。
 ### 1.2.2.SQL接入
-作为入门来说，可以使用一个SQL工具，在后面的[SQL工具](/doc/sql/ToolsAndAnalytics.md#_6-1-sql工具)章节中会有一个示例来演示如何配置SQL工具。还可以使用[SQLLine](/doc/sql/ToolsAndAnalytics.md#_6-2-sqlline)接入集群然后在命令行执行SQL语句。
+作为入门来说，可以使用一个SQL工具，在后面的[SQL工具](/doc/sql/ToolsAndAnalytics.md#_1-sql工具)章节中会有一个示例来演示如何配置SQL工具。还可以使用[SQLLine](/doc/sql/ToolsAndAnalytics.md#_2-sqlline)接入集群然后在命令行执行SQL语句。
 
 如果希望从源代码入手，下面的示例代码会演示如果通过JDBC以及ODBC驱动来获得一个连接：
 
@@ -140,7 +140,7 @@ SQLExecDirect(stmt, query, queryLen);
 
 和分布式缓存相关的参数是通过`WITH`子句传递的，如果忽略了`WITH`子句，那么缓存会使用`CacheConfiguration`对象的默认参数来创建。
 
-在上面的示例中，对于`Person`表，Ignite创建了一个有一份备份数据的分布式缓存，`city_id`作为关联键，这些扩展参数是Ignite特有的，通过`WITH`进行传递，要为表配置其它的缓存参数，需要使用`template`参数，并且使用之前注册的缓存配置的名字（通过代码或者XML），具体可以参照[扩展参数](/doc/sql/SQLReference.md#_2-2-3-1-参数)相关章节。
+在上面的示例中，对于`Person`表，Ignite创建了一个有一份备份数据的分布式缓存，`city_id`作为关联键，这些扩展参数是Ignite特有的，通过`WITH`进行传递，要为表配置其它的缓存参数，需要使用`template`参数，并且使用之前注册的缓存配置的名字（通过代码或者XML），具体可以参照[扩展参数](/doc/sql/SQLReference.md#_2-3-1-参数)相关章节。
 
 很多时候将不同的条目并置在一起非常有用，通常业务逻辑需要访问不止一个数据条目，将它们并置在一起会确保具有相同`affinityKey`的所有条目会被缓存在同一个节点上，这样就不需要从远程获取数据以避免耗时的网络开销。
 

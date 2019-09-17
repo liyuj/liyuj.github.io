@@ -206,7 +206,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
    - `ATOMICITY=<ATOMIC | TRANSACTIONAL>`：为底层缓存设置`ATOMIC`或者`TRANSACTIONAL`模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`ATOMIC`模式；
    - `WRITE_SYNCHRONIZATION_MODE=<PRIMARY_SYNC | FULL_SYNC | FULL_ASYNC>`：设置底层缓存的写同步模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`FULL_SYNC`模式；
    - `CACHE_GROUP=<group name>`：设置底层缓存所属的组名；
-   - `AFFINITY_KEY=<affinity key column name>`：设置[关联键](/doc/java/Key-ValueDataGrid.md#_3-7-关联并置)名字，它应该是`PRIMARY KEY`约束中的一个列；
+   - `AFFINITY_KEY=<affinity key column name>`：设置[关联键](/doc/java/Key-ValueDataGrid.md#_7-关联并置)名字，它应该是`PRIMARY KEY`约束中的一个列；
    - `CACHE_NAME=<custom name of the new cache>`：命令创建的底层缓存的名字，下面会详细描述；
    - `DATA_REGION=<existing data region name>`：表数据存储的数据区的名字，Ignite默认会将所有的数据存储于默认的数据区中；
    - `KEY_TYPE=<custom name of the key type>`：设置自定义键类型的名字，用于Ignite的键值API中，名字需要与Java、.NET和C++的类相对应，或者如果使用了二进制对象而不是自定义类时，也可以是随机的。在自定义键中，字段的数量和类型需要与`PRIMARY KEY`相对应，下面会详细描述；
@@ -218,7 +218,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
 
 `CREATE TABLE`会创建一个新的缓存，然后在其上定义一个新的SQL表，缓存以键-值对的形式存储数据，并且该表允许在数据上执行SQL查询。
 
-该表将存储在连接参数中指定的模式中。如果未指定模式，将使用`PUBLIC`模式。有关Ignite中模式的详细信息，请参见[模式](/doc/sql/Architecture.md#_3-6-模式)。
+该表将存储在连接参数中指定的模式中。如果未指定模式，将使用`PUBLIC`模式。有关Ignite中模式的详细信息，请参见[模式](/doc/sql/Architecture.md#_6-模式)。
 
 注意`CREATE TABLE`操作是同步的，在`CREATE TABLE`执行过程中会阻塞其它DDL命令的执行，DML命令的执行不受影响，还会以并行的方式执行。
 

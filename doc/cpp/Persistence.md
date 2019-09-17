@@ -6,7 +6,7 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
 
 此外，值得一提的是，与纯内存的场景一样，当启用持久化时，每个节点仅持有数据的一个子集，仅包括节点做为主节点或备份节点的分区。而整个集群则持有完整的数据集。
 
-具体的细节可以参见Java版本的[持久化](/doc/java/Persistence.md#_16-1-ignite持久化)文档。
+具体的细节可以参见Java版本的[持久化](/doc/java/Persistence.md#_1-ignite持久化)文档。
 ### 7.1.1.用法
 要启用原生持久化，需要在节点的配置中配置`DataStorageConfiguration`：
 ```xml

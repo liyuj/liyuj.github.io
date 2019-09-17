@@ -26,7 +26,7 @@ CREATE TABLE City (
 ```
 注意，在语句的后面，通过`KEY_TYPE`和`VALUE_TYPE`分别指定了键类和值类。如果没指定这些参数，Ignite会使用默认的名字创建这些类。
 
-如果想进一步了解与缓存的名字及对应的键是如何生成的更多信息，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的文档。
+如果想进一步了解与缓存的名字及对应的键是如何生成的更多信息，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)的文档。
 ### 10.1.2.使用键-值API
 `IgniteCache`接口提供了一组方法，可用于通过键-值API访问缓存。比如，`IgniteCache.get(key)`可以获得指定键对应的值，在下面的示例中，获取了`Amsterdam`记录并更新了`POPULATION`字段，该代码在客户端执行（数据从服务端获得）。
 ```java
@@ -92,9 +92,9 @@ try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
     }
 }
 ```
-如何进行SQL查询的更多细节，可以看[SQL API](/doc/sql/JavaDeveloperGuide.md#_7-1-sql-api)的文档。
+如何进行SQL查询的更多细节，可以看[SQL API](/doc/sql/JavaDeveloperGuide.md#_1-sql-api)的文档。
 ### 10.1.4.执行计算任务
-在上例中，更新Amsterdam记录的地方，数据是从服务端节点获取的，如果使用[关联并置](/doc/java/Key-ValueDataGrid.md#_3-7-关联并置)，可以在指定键所在的节点执行自定义业务逻辑，这样就不需要将数据传输到客户端。
+在上例中，更新Amsterdam记录的地方，数据是从服务端节点获取的，如果使用[关联并置](/doc/java/Key-ValueDataGrid.md#_7-关联并置)，可以在指定键所在的节点执行自定义业务逻辑，这样就不需要将数据传输到客户端。
 
 ::: tip 对等类加载
 如果在关联并置中使用自定义的类，然后在服务端节点的类路径中又没有，可以配置`IgniteConfiguration.peerClassLoadingEnabled`属性值为`true`，已开启对等类加载功能。

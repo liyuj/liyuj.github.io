@@ -214,7 +214,7 @@ private:
 ::: tip 注意
 为了传递给其它的节点，作业要被序列化和反序列化，因此需要为它们限定`BinaryType<T>`模板。具体内容可以参见[序列化](/doc/cpp/#_1-4-序列化)章节。
 :::
-与[远程过滤器](/doc/cpp/Key-ValueDataGrid.md#_3-6-1-2-远程过滤器)一样，作业可以在随机节点上执行。为此，要确保在集群的所有节点上使用`IgniteBinding::RegisterComputeFunc()`注册作业：
+与[远程过滤器](/doc/cpp/Key-ValueDataGrid.md#_6-1-2-远程过滤器)一样，作业可以在随机节点上执行。为此，要确保在集群的所有节点上使用`IgniteBinding::RegisterComputeFunc()`注册作业：
 ```cpp
 // This callback called by Ignite on node startup and could be
 // used to register code, that needs to be called remotely.

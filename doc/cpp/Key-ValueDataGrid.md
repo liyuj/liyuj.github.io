@@ -134,7 +134,7 @@ success = cache.Replace(22, "World", "World!");
 success = cache.Remove(1, "Hello");
 ```
 ## 3.3.缓存模式
-Ignite C++提供了不同的缓存操作模式，可以通过Spring的XML配置文件对其进行配置，具体请参见Ignite的[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-3-1-分区和复制)文档。
+Ignite C++提供了不同的缓存操作模式，可以通过Spring的XML配置文件对其进行配置，具体请参见Ignite的[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)文档。
 ## 3.4.缓存查询
 Ignite C++支持非常优雅的查询API，包括：
 

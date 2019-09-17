@@ -953,7 +953,7 @@ int32_t CalculateSchemaId(const int32_t* fieldIds, size_t num)
 
 这个模式中，配置了`COMPACT_FOOTER`标志然后只有字段偏移量的序列会被写入对象的尾部。这时，客户端使用`schema_id`字段搜索以前存储的元数据中的对象模式，以查找字段顺序并将字段与其偏移量关联。
 
-如果使用了这个方式，客户端需要在一个特定的元数据中持有模式，然后将其发送/接收给/自Ignite服务端，具体可以看[二进制类型元数据](/doc/java/ThinClients.md#_19-2-5-二进制类型元数据)的相关章节。
+如果使用了这个方式，客户端需要在一个特定的元数据中持有模式，然后将其发送/接收给/自Ignite服务端，具体可以看[二进制类型元数据](/doc/java/ThinClients.md#_2-5-二进制类型元数据)的相关章节。
 
 这个场景中`schema`的结构如下：
 
@@ -3576,7 +3576,7 @@ catch (ClientAuthenticationException e) {
 }
 ```
 ::: tip 确保开启服务端的认证
-确保[服务端的认证](/doc/java/Security.md#_4-2-高级安全)已开启，并且在凭据存储中配置了客户端凭据。
+确保[服务端的认证](/doc/java/Security.md#_2-高级安全)已开启，并且在凭据存储中配置了客户端凭据。
 :::
 #### 19.3.6.3.授权
 目前，Ignite本身还不支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这个](https://docs.gridgain.com/docs/security-and-audit)。
@@ -4197,7 +4197,7 @@ putGetComplexAndBinaryObjects();
 ```
 ### 19.4.6.安全
 #### 19.4.6.1.认证
-关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_4-2-高级安全)。在Node.js端，将用户名/密码传递给`IgniteClientConfiguration`的方法如下：
+关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_2-高级安全)。在Node.js端，将用户名/密码传递给`IgniteClientConfiguration`的方法如下：
 ```javascript
 const ENDPOINT = 'localhost:10800';
 const USER_NAME = 'ignite';
@@ -4218,7 +4218,7 @@ const cfg = new IgniteClientConfiguration(ENDPOINT).
  - `keystore.jks`，`truststore.jks` - 用于服务端；
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
-3.设置Ignite服务端以支持[SSL和TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
+3.设置Ignite服务端以支持[SSL和TLS](/doc/java/Security.md#_1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
 
 4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置；
 
@@ -4769,7 +4769,7 @@ my_cache.destroy()
 client.close()
 ```
 ### 19.5.4.SQL
-Python瘦客户端完整支持Ignite的SQL查询，具体的示例可以看[这里](/doc/sql/README.md#_1-2-入门)。
+Python瘦客户端完整支持Ignite的SQL查询，具体的示例可以看[这里](/doc/sql/README.md#_2-入门)。
 #### 19.5.4.1.准备
 首先建立一个连接：
 ```python
@@ -5287,7 +5287,7 @@ client.close()
 Ignite服务端必须配置为保护二进制协议端口，服务端配置过程可以分为以下若干个基本步骤：
 
  1. 使用Java的[keytool](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html)创建密钥存储和信任存储。创建信任存储时，可能需要客户端X.509证书。还需要导出服务端X.509证书以包含在客户端信任链中；
- 2. 根据本文档：[保护节点之间的连接](/doc/java/Security.md#_4-1-1-保护节点间的连接)，打开Ignite集群的`SSLContextFactory`；
+ 2. 根据本文档：[保护节点之间的连接](/doc/java/Security.md#_1-1-保护节点间的连接)，打开Ignite集群的`SSLContextFactory`；
  3. 通知Ignite使用[ClientConnectorConfiguration](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/configuration/ClientConnectorConfiguration.html)的配置在其瘦客户端端口上加密数据。如果只想加密连接，而不是验证客户端的证书，请将`sslClientAuth`属性设置为`false`。不过，还是需要在步骤1中设置信任存储。
 
 客户端SSL设置的总结在[这里](https://apache-ignite-binary-protocol-client.readthedocs.io/en/latest/source/pyignite.client.html#pyignite.client.Client)。
@@ -5325,7 +5325,7 @@ client.connect('ignite-example.com', 10800)
 ```
 如果默认值（ssl._DEFAULT_CIPHERS和TLS 1.1）不适合，还可以提供诸如密码集（ssl_ciphers）和SSL版本（ssl_version）等参数。
 #### 19.5.6.2.密码认证
-要进行身份验证，必须在Ignite的XML配置文件中将`authenticationEnabled`属性设置为`true`，并启用持久化，具体请参见[认证](/doc/java/Security.md#_4-2-1-认证)中的相关内容。
+要进行身份验证，必须在Ignite的XML配置文件中将`authenticationEnabled`属性设置为`true`，并启用持久化，具体请参见[认证](/doc/java/Security.md#_2-1-认证)中的相关内容。
 
 请注意，不鼓励通过开放通道发送凭据，因为它们很容易被拦截。提供凭据会自动从客户端打开SSL。强烈建议保护到Ignite服务端的连接，如[SSL/TLS](#_19-5-6-1-ssl/tls)示例中所述，以便使用密码验证。
 
@@ -5919,7 +5919,7 @@ putGetComplexAndBinaryObjects();
 ```
 ### 19.6.6.安全
 #### 19.6.6.1.认证
-关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_4-2-高级安全)。在PHP端，将用户名/密码传递给`ClientConfiguration`的方法如下：
+关于如何在Ignite的集群端打开和配置认证，说明在[这里](/doc/java/Security.md#_2-高级安全)。在PHP端，将用户名/密码传递给`ClientConfiguration`的方法如下：
 ```php
 const ENDPOINT = 'localhost:10800';
 const USER_NAME = 'ignite';
@@ -5940,7 +5940,7 @@ $config = (new ClientConfiguration(AuthTlsExample::ENDPOINT))->
  - `keystore.jks`，`truststore.jks` - 用于服务端；
  - `client.key`，`client.crt`，`ca.crt` - 用于客户端；
 
-3.设置Ignite服务端以支持[SSL和TLS](/doc/java/Security.md#_4-1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
+3.设置Ignite服务端以支持[SSL和TLS](/doc/java/Security.md#_1-ssl和tls)，在启动过程中提供获得的`keystore.jks`和`truststore.jks`证书；
 
 4.将`client.key`、`client.crt`和`ca.crt`文件放在客户端本地的某个位置；
 

@@ -800,7 +800,7 @@ status:
 kubectl create -f web-console-deployment.yaml
 ```
 ### 1.6.3.安装Web代理
-安装Web代理之前，需要有一个正在运行的Ignite集群，并且这个Web代理要和集群安装在同一个命名空间中，关于Ignite的Kubernetes环境部署的详细信息，可以参见这个[文档](/doc/java/KubernetesDeployment.md#_20-1-kubernetes部署)。
+安装Web代理之前，需要有一个正在运行的Ignite集群，并且这个Web代理要和集群安装在同一个命名空间中，关于Ignite的Kubernetes环境部署的详细信息，可以参见这个[文档](/doc/java/KubernetesDeployment.md#_1-kubernetes部署)。
 
 **获得安全令牌**
 

@@ -70,7 +70,7 @@ cacheRdd.savePairs(sparkContext.parallelize(1 to 10000, 10).map(i => (i, i)))
 ```
 **在Ignite缓存中执行SQL查询**
 
-当Ignite缓存配置为启用索引子系统，就可以使用`objectSql`和`sql`方法在缓存中执行SQL查询。可以参照[缓存查询](/doc/2.6.0/java/Key-ValueDataGrid.md#_3-4-缓存查询)章节来了解有关Ignite SQL查询的更多信息。
+当Ignite缓存配置为启用索引子系统，就可以使用`objectSql`和`sql`方法在缓存中执行SQL查询。可以参照[缓存查询](/doc/2.6.0/java/Key-ValueDataGrid.md#_4-缓存查询)章节来了解有关Ignite SQL查询的更多信息。
 
 比如，假定名为`partitioned`的缓存配置了索引整型对，下面的代码会获得 (10, 100)范围内的所有整型值：
 ```scala

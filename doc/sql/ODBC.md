@@ -279,7 +279,7 @@ driver=Apache Ignite
 ### 5.3.1.概述
 本章会详细描述如何接入Ignite集群，如何使用ODBC驱动执行各种SQL查询。
 
-在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](/doc/sql/JavaDeveloperGuide.md#_7-2-模式和索引)的字段。
+在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](/doc/sql/JavaDeveloperGuide.md#_2-模式和索引)的字段。
 
 另外，从Ignite的1.8.0版本开始，ODBC驱动支持DML，这意味着通过ODBC连接不仅仅可以访问数据，还可以修改网格中的数据。
 
@@ -752,7 +752,7 @@ SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 注意这种类型的批处理目前只支持INSERT、UPDATE、 DELETE、和MERGE语句，还不支持SELECT，data-at-execution功能也不支持通过参数数组进行批处理。
 :::
 ### 5.3.9.流处理
-Ignite的ODBC驱动可以通过`SET STREAMING`命令对流化数据进行批量处理，具体可以看[SET STREAMING](/doc/sql/SQLReference.md#_2-4-2-set-streaming)的相关内容。
+Ignite的ODBC驱动可以通过`SET STREAMING`命令对流化数据进行批量处理，具体可以看[SET STREAMING](/doc/sql/SQLReference.md#_4-2-set-streaming)的相关内容。
 ::: tip 注意
 流处理模式中，参数数组和data-at-execution参数是不支持的。
 :::

@@ -22,7 +22,7 @@ XML：
 
             <!-- Enable metrics for this data region  -->
             <property name="metricsEnabled" value="true"/>
-            
+
             <!-- Other configurations -->
             ...
           </bean>
@@ -30,7 +30,7 @@ XML：
       </property>
     </bean>
   </property>
-  
+
   <!-- Other Ignite configurations -->
   ...
 </bean>
@@ -68,7 +68,7 @@ cfg.setDataStorageConfiguration(storageCfg);
 ```java
 // Get the metrics of all the data regions configured on a node.
 Collection<DataRegionMetrics> regionsMetrics = ignite.dataRegionMetrics();
-            
+
 // Print out some of the metrics.
 for (DataRegionMetrics metrics : regionsMetrics) {
     System.out.println(">>> Memory Region Name: " + metrics.getName());
@@ -118,12 +118,12 @@ XML：
     <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
       <!-- Enable metrics for Ignite persistence  -->
       <property name="metricsEnabled" value="true"/>
-      
+
       <!-- Other configurations -->
       ...
     </bean>
   </property>
-  
+
   <!-- Other Ignite configurations -->
   ...
 </bean>
@@ -181,7 +181,7 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
 
 ::: warning 启用指标收集
 指标收集不是一个无代价的操作，会影响应用的性能，因此默认是关闭的，如果要打开，可以使用下面的方式：
- 
+
  1.对于数据区可以配置`DataRegionConfiguration.setMetricsEnabled(true)`；
  2.对于原生持久化可以配置`DataStorageConfiguration.setMetricsEnabled(true)`；
  3.可以使用特定JMXbean暴露的`DataRegionMetricsMXBean.enableMetrics()`方法；
@@ -219,7 +219,7 @@ XML：
     <list>
       <bean class="org.apache.ignite.configuration.CacheConfiguration">
         <property name="name" value="test-cache"/>
-      
+
         <!-- Enabling statistics for this specific cache. -->
         <property name="statisticsEnabled" value="true"/>
       </bean>
@@ -232,7 +232,7 @@ Java：
 IgniteConfiguration cfg = new IgniteConfiguration();
 
 CacheConfiguration cacheCfg = new CacheConfiguration("test-cache");
-        
+
 // Enabling the metrics for the cache.
 cacheCfg.setStatisticsEnabled(true);
 
@@ -249,7 +249,7 @@ Ignition.start(cfg);
 ```java
 IgniteCache<Integer, Person> cache = ignite.getOrCreateCache("myCache");
 
-// Get cache metrics 
+// Get cache metrics
 CacheMetrics cm = cache.metrics();
 
 System.out.println("Avg put time: " + cm.getAveragePutTime());
@@ -265,4 +265,4 @@ System.out.println("Avg get time: " + cm.getAverageGetTime());
 查看[CacheMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/CacheMetricsMXBean.html)的javadoc，可以了解完整的可用指标列表。
 
 ### 18.2.4.缓存大小计算
-要了解如何计算缓存的大小，可以参阅[内存使用量计算](/doc/java/Metrics.md#_18-1-3-内存使用量计算)。
+要了解如何计算缓存的大小，可以参阅[内存使用量计算](/doc/java/Metrics.md#_1-3-内存使用量计算)。

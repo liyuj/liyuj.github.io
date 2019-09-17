@@ -70,7 +70,7 @@ cacheRdd.savePairs(sparkContext.parallelize(1 to 10000, 10).map(i => (i, i)))
 ```
 **在Ignite缓存中执行SQL查询**
 
-当Ignite缓存配置为启用索引子系统，就可以使用`objectSql`和`sql`方法在缓存中执行SQL查询。可以参照[缓存查询](/doc/java/Key-ValueDataGrid.md#_3-4-缓存查询)章节来了解有关Ignite SQL查询的更多信息。
+当Ignite缓存配置为启用索引子系统，就可以使用`objectSql`和`sql`方法在缓存中执行SQL查询。可以参照[缓存查询](/doc/java/Key-ValueDataGrid.md#_4-缓存查询)章节来了解有关Ignite SQL查询的更多信息。
 
 比如，假定名为`partitioned`的缓存配置了索引整型对，下面的代码会获得 (10, 100)范围内的所有整型值：
 ```scala
@@ -407,7 +407,7 @@ import org.apache.ignite.configuration._
 ```
 **MESOS部署**
 
-Ignite可以部署在Mesos集群上，具体细节请参见[Mesos部署](/doc/java/Deployment.md#_14-5-mesos部署)。
+Ignite可以部署在Mesos集群上，具体细节请参见[Mesos部署](/doc/java/Deployment.md#_5-mesos部署)。
 ### 4.4.2.嵌入式部署
 ::: danger 嵌入式模式已被弃用
 嵌入式模式意味着需要在Spark执行器中启动Ignite服务端节点，这可能导致意外的再平衡甚至数据丢失，因此该模式目前已被弃用并且最终会被废弃。可以考虑启动一个单独的Ignite集群然后使用独立模式来避免数据的一致性和性能问题。

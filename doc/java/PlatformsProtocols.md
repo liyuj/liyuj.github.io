@@ -947,7 +947,7 @@ http://host:port/ignite?cmd=getorcreate&cacheName=myPartionedCache
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|
 |backups|int|是|缓存数据的备份数量，默认值为0|
 |dataRegion|string|是|缓存所属的内存区的名字|
-|templateName|string|是|Ignite中注册的用作缓存配置的缓存模板名，具体可以看[缓存模板](/doc/java/Key-ValueDataGrid.md#_3-3-5-缓存模板)|
+|templateName|string|是|Ignite中注册的用作缓存配置的缓存模板名，具体可以看[缓存模板](/doc/java/Key-ValueDataGrid.md#_3-5-缓存模板)|
 |cacheGroup|string|是|缓存所属的缓存组名|
 |writeSynchronizationMode|string|是|配置缓存的写同步模式：`FULL_SYNC`、`FULL_ASYNC`和`PRIMARY_SYNC`|
 

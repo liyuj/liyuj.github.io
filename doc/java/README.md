@@ -774,7 +774,7 @@ public class ServiceGridExample {
 :::
 
 ### 1.3.9.集群管理和监控
-查看数据网格的数据、以及执行其它的管理和监控操作的最简单方式是使用[Ignite Web控制台](/doc/tools/#_1-1-ignite-web控制台)，还有就是使用Ignite的[Visor命令行](/doc/tools/VisorManagementConsole.md#_3-1-命令行接口)工具。
+查看数据网格的数据、以及执行其它的管理和监控操作的最简单方式是使用[Ignite Web控制台](/doc/tools/#_1-1-ignite-web控制台)，还有就是使用Ignite的[Visor命令行](/doc/tools/VisorManagementConsole.md#_1-命令行接口)工具。
 
 ### 1.3.10.Docker和云镜像安装
 最新的Ignite Docker镜像以及AWS和Google计算引擎的云镜像，可以通过Ignite的[下载页面](https://ignite.apache.org/download.cgi#docker)获得。

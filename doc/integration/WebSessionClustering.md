@@ -57,7 +57,7 @@ Ignite具有缓存所有兼容Java Servlet3.0规范的Java Servlet容器的Web S
 ```
 
 ::: tip 提示
-关于Ignite不同复制策略的更多信息,请参见[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-3-1-分区和复制)。
+关于Ignite不同复制策略的更多信息,请参见[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
 :::
 
 ### 3.1.4.过期和退出

@@ -551,7 +551,7 @@ Ignition.start(cfg);
 #### 3.3.5.1.概述
 模板是`CacheConfiguration`类的实例，可以通过`Ignite.addCacheConfiguration(...)`方法在集群中注册。基本上来说，可以使用某个名称创建一个`CacheConfiguration`并将其注册。这样做之后就可以将此配置用作模板，其中模板的名称与注册的配置的名称相对应。
 
-如果希望用和集群中已有缓存相同的配置创建新的缓存时，缓存模板会非常有用，这样不用定义一长串的配置参数就可以创建一个缓存。目前，Ignite中的模板支持[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)和[REST](/doc/java/PlatformsProtocols.md#_12-2-rest-api)命令。如果使用了模板名，Ignite就会用模板中的所有配置来实例化新缓存。
+如果希望用和集群中已有缓存相同的配置创建新的缓存时，缓存模板会非常有用，这样不用定义一长串的配置参数就可以创建一个缓存。目前，Ignite中的模板支持[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)和[REST](/doc/java/PlatformsProtocols.md#_2-rest-api)命令。如果使用了模板名，Ignite就会用模板中的所有配置来实例化新缓存。
 
 #### 3.3.5.2.示例
 下面会创建一个缓存模板并且在集群中注册:
@@ -877,7 +877,7 @@ XML:
 持续查询的功能是通过`ContinuousQuery`类体现的，下面会详细描述。
 
 ::: danger 持续查询和MVCC
-对于开启了MVCC的缓存，持续查询有一些[功能限制](/doc/java/Key-ValueDataGrid.md#_3-8-2-5-限制)。
+对于开启了MVCC的缓存，持续查询有一些[功能限制](/doc/java/Key-ValueDataGrid.md#_8-2-5-限制)。
 :::
 
 #### 3.6.1.1.初始化查询
@@ -1015,7 +1015,7 @@ qry.setLocalListener(names -> {
 
 具体做法是，用于缓存`Person`对象的缓存键应该有一个属性加注了`@AffinityKeyMapped`注解，它会提供用于并置的`Company`键的值，为了方便也可以选用`AffinityKey`类。
 
-如果缓存是通过SQL创建的，那么关联键是通过[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的`AFFINITY_KEY`参数传递的。
+如果缓存是通过SQL创建的，那么关联键是通过[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)的`AFFINITY_KEY`参数传递的。
 ::: tip Scala中的注解
 注意，如果Scala的case class用于键类并且它的构造函数参数之一加注了`@AffinityKeyMapped`注解，默认这个注解并不会正确地用于生成的字段，因此也就不会被Ignite识别。要覆盖这个行为，可以使用`@field`[元注解](http://www.scala-lang.org/api/current/#scala.annotation.meta.package)而不是`@AffinityKeyMapped `（看下面的示例）。
 :::
@@ -1127,7 +1127,7 @@ ignite.compute().affinityRun("myCache", companyId, new IgniteRunnable() {
 而`affinityRun(...)`和`affinityCall(...)`不持有任何锁。比如，在这些方法内开启多个事务或者执行缓存查询是绝对合法的，不用担心死锁，这时Ignite会自动检测处理是并置的然后对事务采用优化过的一阶段提交而不是二阶段提交。
 
 ::: tip 注意
-关于`IgniteCache.invoke(...)`方法的更多信息，请参照[EntryProcessor](/doc/java/Key-ValueDataGrid.md#_3-2-4-entryprocessor)文档。
+关于`IgniteCache.invoke(...)`方法的更多信息，请参照[EntryProcessor](/doc/java/Key-ValueDataGrid.md#_2-4-entryprocessor)文档。
 :::
 
 ### 3.7.4.映射函数
@@ -1683,12 +1683,12 @@ jdbc:ignite:thin://127.0.0.1/?nestedTransactionsMode=COMMIT
 
 开启MVCC的缓存，下面的特性是不支持的：
 
- - [近缓存](/doc/java/Key-ValueDataGrid.md#_3-5-近缓存)；
- - [过期策略](/doc/java/DurableMemory.md#_10-5-过期策略)；
- - [事件](/doc/java/MessagingEvents.md#_9-2-本地和远程事件)；
+ - [近缓存](/doc/java/Key-ValueDataGrid.md#_5-近缓存)；
+ - [过期策略](/doc/java/DurableMemory.md#_5-过期策略)；
+ - [事件](/doc/java/MessagingEvents.md#_2-本地和远程事件)；
  - [缓存拦截器](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/cache/CacheInterceptor.html)；
- - [第三方持久化](/doc/java/Persistence.md#_16-4-第三方持久化)；
- - [堆内缓存](/doc/java/DurableMemory.md#_10-3-3-堆内缓存)；
+ - [第三方持久化](/doc/java/Persistence.md#_4-第三方持久化)；
+ - [堆内缓存](/doc/java/DurableMemory.md#_3-3-堆内缓存)；
  - [显式锁](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#lock-K-)；
  - [localEvict()](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#localEvict-java.util.Collection-)和[localPeek()](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#localPeek-K-org.apache.ignite.cache.CachePeekMode...-)方法。
 

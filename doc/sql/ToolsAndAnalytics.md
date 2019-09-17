@@ -289,7 +289,7 @@ Ignite有自己的JDBC驱动，这样就使得通过Pentaho平台接入Ignite成
  - 打开一个命令行工具，切换到`{pentaho}/jdbc-distribution`目录然后执行脚本：`./distribute-files.sh ignite-core-{version}.jar`。
 
 ### 6.4.3.JDBC驱动配置
-下一步是配置JDBC驱动然后接入集群，下面做的都是必要的，[JDBC Thin模式驱动](/doc/sql/JDBC.md#_4-1-1-jdbc-thin模式驱动)有更多的细节信息。
+下一步是配置JDBC驱动然后接入集群，下面做的都是必要的，[JDBC Thin模式驱动](/doc/sql/JDBC.md#_1-1-jdbc-thin模式驱动)有更多的细节信息。
 
  - 打开命令行工具，切换到`{pentaho}/design-tools/data-integration`目录，然后使用`./spoon.sh`脚本启动Pentaho；
  - 出现下面的界面之后，点击`File`菜单然后创建一个新的转换：`New`->`Transformation`；
@@ -370,9 +370,9 @@ Ignite SQL解释器只需要`ignite.jdbc.url`属性，它的值是JDBC连接URL�
 
 在大多数简单的场景中，Ignite解释器需要下述属性：
 
- - `ignite.addresses`：逗号分割的Ignite集群主机列表，要了解细节信息可以参照[集群发现](/doc/java/Clustering.md#_2-5-集群发现)章节；
+ - `ignite.addresses`：逗号分割的Ignite集群主机列表，要了解细节信息可以参照[集群发现](/doc/java/Clustering.md#_5-集群发现)章节；
  - `ignite.clientMode`：可以以客户端节点也可以以服务端节点连接到Ignite集群，要了解细节可以参照[客户端和服务器端](/doc/java/#_1-7-客户端和服务端)章节。可以使用`true`或者`false`分别以客户端或者服务端模式连接到集群。
- - `ignite.peerClassLoadingEnabled`：启用对等类加载，要了解细节可以参照[零部署](/doc/java/Clustering.md#_2-6-零部署)章节。可以用`true`或者`false`分别启用或者禁用对等类加载。
+ - `ignite.peerClassLoadingEnabled`：启用对等类加载，要了解细节可以参照[零部署](/doc/java/Clustering.md#_6-零部署)章节。可以用`true`或者`false`分别启用或者禁用对等类加载。
 
 对于更复杂的场景，可以通过指向Ignite配置文件的`ignite.config.url`属性来自定义Ignite配置，注意如果定义了`ignite.config.url`属性，那么上述的属性都会被忽略。
 

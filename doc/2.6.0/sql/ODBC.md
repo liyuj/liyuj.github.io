@@ -285,7 +285,7 @@ driver=Apache Ignite
 ### 5.3.1.概述
 本章会详细描述如何接入Ignite集群，如何使用ODBC驱动执行各种SQL查询。
 
-在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](/doc/2.6.0/sql/JavaDeveloperGuide.md#_7-2-模式和索引)的字段。
+在实现层，Ignite的ODBC驱动使用SQL字段查询来获取Ignite缓存中的数据，这意味着通过ODBC只可以访问这些[集群配置中定义](/doc/2.6.0/sql/JavaDeveloperGuide.md#_2-模式和索引)的字段。
 另外，从Ignite的1.8.0版本开始，ODBC驱动支持DML，这意味着通过ODBC连接不仅仅可以访问数据，还可以修改网格中的数据。
 
 > 这里是完整的[ODBC示例](https://github.com/apache/ignite/tree/master/modules/platforms/cpp/examples/odbc-example)。

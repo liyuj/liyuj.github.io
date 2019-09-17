@@ -90,7 +90,7 @@ spec:
         - containerPort: 10800 # SQL port number.
         - containerPort: 10900 # Thin clients port number.
 ```
-如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看[Docker部署](/doc/java/Deployment.md#_14-2-docker部署)的相关章节。
+如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看[Docker部署](/doc/java/Deployment.md#_2-docker部署)的相关章节。
 ::: tip Ignite Docker镜像版本
 Kubernetes支持Ignite的1.9及其以后的版本，一定要使用有效的Docker镜像版本，完整的标签列表在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)。
 :::
@@ -232,7 +232,7 @@ spec:
 #### 20.2.2.3.有状态集部署
 最后一步是以有状态集的形式在Kubernetes中部署Ignite配置组。
 
-建议为预写日志文件（WAL）和数据库文件提供[单独的磁盘设备](/doc/java/ProductionReadiness.md#_11-4-2-2-为WAL使用单独的磁盘设备)，以获得更好的性能。这就是为什么本节提供了两种部署方案的说明：当WAL和数据库文件位于同一个存储中以及分别存储时。
+建议为预写日志文件（WAL）和数据库文件提供[单独的磁盘设备](/doc/java/ProductionReadiness.md#_4-2-2-为WAL使用单独的磁盘设备)，以获得更好的性能。这就是为什么本节提供了两种部署方案的说明：当WAL和数据库文件位于同一个存储中以及分别存储时。
 
 ::: warning 有状态集部署时间
 Kubernetes环境可能需要一段时间来分配需要的持久化存储，从而成功地部署所有配置组。在分配时，配置组的部署状态可能会显示如下消息：“pod has unbound persistentvolumeclaims（repeated 4 times）”。
@@ -472,7 +472,7 @@ spec:
 # Create the stateful set
 kubectl create -f ignite-stateful-set.yaml
 ```
-如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看[Docker部署](/doc/java/Deployment.md#_14-2-docker部署)的相关章节。
+如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看[Docker部署](/doc/java/Deployment.md#_2-docker部署)的相关章节。
 
 确认Ignite的配置组已经启动运行：
 ```bash
@@ -954,7 +954,7 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
     GROUP BY country.name, city.name ORDER BY max_pop DESC LIMIT 3;
 ```
 ### 20.3.4.安装Web控制台
-如果希望在Kubernetes中安装[Web控制台](/doc/tools/README.md#_1-1-ignite-web控制台)，请参见这个[安装文档](/doc/tools/README.md#_1-6-kubernetes安装)。
+如果希望在Kubernetes中安装[Web控制台](/doc/tools/README.md#_1-ignite-web控制台)，请参见这个[安装文档](/doc/tools/README.md#_6-kubernetes安装)。
 ## 20.4.Google Cloud部署
 ### 20.4.1.Google Kubernetes引擎部署
 第一步是按照Google的说明配置Google Kubernetes引擎（GKE）集群：
@@ -1160,7 +1160,7 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
     GROUP BY country.name, city.name ORDER BY max_pop DESC LIMIT 3;
 ```
 ### 20.4.4.安装Web控制台
-如果希望在Kubernetes中安装[Web控制台](/doc/tools/README.md#_1-1-ignite-web控制台)，请参见这个[安装文档](/doc/tools/README.md#_1-6-kubernetes安装)。
+如果希望在Kubernetes中安装[Web控制台](/doc/tools/README.md#_1-ignite-web控制台)，请参见这个[安装文档](/doc/tools/README.md#_6-kubernetes安装)。
 
 ## 20.5.AWS EKS部署
 ### 20.5.1.Amazon Web Services EKS部署
@@ -1382,4 +1382,4 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
     GROUP BY country.name, city.name ORDER BY max_pop DESC LIMIT 3;
 ```
 ### 20.5.4.安装Web控制台
-如果希望在Kubernetes中安装[Web控制台](/doc/tools/README.md#_1-1-ignite-web控制台)，请参见这个[安装文档](/doc/tools/README.md#_1-6-kubernetes安装)。
+如果希望在Kubernetes中安装[Web控制台](/doc/tools/README.md#_1-ignite-web控制台)，请参见这个[安装文档](/doc/tools/README.md#_6-kubernetes安装)。

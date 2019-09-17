@@ -5,8 +5,8 @@ Informatica是一个云数据管理和集成工具，可以通过ODBC连接将In
 ### 5.1.2.从Informatica PowerCenter Designer接入
 在PowerCenter Designer中，必须安装32位的Ignite ODBC驱动才能接入Ignite，可以按照下面链接的内容安装ODBC驱动并且创建DSN：
 
- - [在Windows上安装](/doc/sql/ODBC.md#_5-1-6-1-在Windows上安装)
- - [配置DSN](/doc/sql/ODBC.md#_5-2-4-配置DSN)
+ - [在Windows上安装](/doc/sql/ODBC.md#_1-6-1-在Windows上安装)
+ - [配置DSN](/doc/sql/ODBC.md#_2-4-配置DSN)
 
 然后：
 
@@ -15,7 +15,7 @@ Informatica是一个云数据管理和集成工具，可以通过ODBC连接将In
 
 ![](https://files.readme.io/decd6fe-ImportTables.png)
 ### 5.1.3.在Informatica服务节点上安装Ignite ODBC
-在[在Linux上构建](/doc/sql/ODBC.md#_5-1-5-2-在Linux上构建)和[在Linux上安装](/doc/sql/ODBC.md#_5-1-6-2-在Linux上安装)文档中，描述了如何在Ignite服务端节点上安装Ignite ODBC。
+在[在Linux上构建](/doc/sql/ODBC.md#_1-5-2-在Linux上构建)和[在Linux上安装](/doc/sql/ODBC.md#_1-6-2-在Linux上安装)文档中，描述了如何在Ignite服务端节点上安装Ignite ODBC。
 
 Informatica会使用`$ODBCINI`和`$ODBCISTINI`环境变量指定的配置文件（[为ODBC配置UNIX环境变量](https://kb.informatica.com/howto/6/Pages/19/499306.aspx)）。
 

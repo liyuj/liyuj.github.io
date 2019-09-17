@@ -30,7 +30,7 @@ jdbc:ignite:thin://<hostAndPortRange0>[,<hostAndPortRange1>]...[,<hostAndPortRan
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
- 
+
 // Open the JDBC connection.
 Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50");
 ```
@@ -83,7 +83,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50")
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
- 
+
 // Open the JDBC connection passing several connection endpoints.
 Connection conn = DriverManager.getConnection(
   "jdbc:ignite:thin://192.168.0.50:101,192.188.5.40:101, 192.168.10.230:101");
@@ -160,26 +160,26 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50")
 IgniteJdbcThinDataSource ids = new IgniteJdbcThinDataSource();
 ids.setUrl("jdbc:ignite:thin://192.168.0.50");
 ids.setDistributedJoins(true);
-        
+
 Connection conn2 = ids.getConnection();
 ```
 之后就可以执行`SELECT`SQL查询了：
 ```java
 // Query names of all people.
 ResultSet rs = conn.createStatement().executeQuery("select name from Person");
- 
+
 while (rs.next()) {
     String name = rs.getString(1);
     ...
 }
- 
+
 // Query people with specific age using prepared statement.
 PreparedStatement stmt = conn.prepareStatement("select name, age from Person where age = ?");
- 
+
 stmt.setInt(1, 30);
- 
+
 ResultSet rs = stmt.executeQuery();
- 
+
 while (rs.next()) {
     String name = rs.getString("name");
     int age = rs.getInt("age");
@@ -192,7 +192,7 @@ while (rs.next()) {
 ```java
 // Insert a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("INSERT INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
@@ -203,11 +203,11 @@ stmt.execute();
 ```java
 // Merge a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("MERGE INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
- 
+
 stmt.executeUpdate();
 ```
 **UPDATE**
@@ -221,7 +221,7 @@ conn.createStatement().
 conn.createStatement().execute("DELETE FROM Person WHERE age = 25");
 ```
 ### 4.1.4.流处理
-Ignite的JDBC驱动可以通过`SET STREAMING`命令对流化数据进行批量处理，具体可以看[SET STREAMING](/doc/sql/SQLReference.md#_2-4-2-set-streaming)的相关内容。
+Ignite的JDBC驱动可以通过`SET STREAMING`命令对流化数据进行批量处理，具体可以看[SET STREAMING](/doc/sql/SQLReference.md#_4-2-set-streaming)的相关内容。
 ## 4.2.JDBC客户端模式驱动
 ### 4.2.1.JDBC客户端模式驱动
 JDBC客户端节点模式驱动使用自己的完整功能的客户端节点连接接入集群，这要求开发者提供一个完整的Spring XML配置作为JDBC连接串的一部分，然后拷贝下面所有的jar文件到应用或者SQL工具的类路径中：
@@ -246,12 +246,12 @@ param1=value1:param2=value2:...:paramN=valueN
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Open JDBC connection (cache name is not specified, which means that we use default cache).
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/config/ignite-jdbc.xml");
 ```
 ::: tip 安全连接
-关于如何保护JDBC客户端驱动的更多信息，请参阅[高级安全](/doc/java/Security.md#_4-2-高级安全)的相关文档。
+关于如何保护JDBC客户端驱动的更多信息，请参阅[高级安全](/doc/java/Security.md#_2-高级安全)的相关文档。
 :::
 它支持如下的参数：
 
@@ -273,7 +273,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 |`skipReducerOnUpdate`|开启服务端的更新特性。当Ignite执行DML操作时，首先，它会获取所有受影响的中间行给查询发起方进行分析（通常被称为汇总），然后会准备一个更新值的批量发给远程节点。这个方式可能影响性能，如果一个DML操作会移动大量数据条目时，还可能会造成网络堵塞。使用这个标志可以提示Ignite在对应的远程节点上进行中间行的分析和更新。默认值为false，这意味着会首先获取中间行然后发给查询发起方。|false|
 
 ::: tip 跨缓存查询
-驱动连接到的缓存会被视为默认的模式，要跨越多个缓存进行查询，可以参照[分布式关联](/doc/sql/Architecture.md#_3-2-分布式关联)章节。
+驱动连接到的缓存会被视为默认的模式，要跨越多个缓存进行查询，可以参照[分布式关联](/doc/sql/Architecture.md#_2-分布式关联)章节。
 :::
 
 **流模式**
@@ -282,7 +282,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Opening connection in the streaming mode.
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true@file:///etc/config/ignite-jdbc.xml");
 ```
@@ -290,7 +290,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true@
 ::: danger 缓存名
 确保在JDBC连接字符串中通过`cache=`参数为流操作指定目标缓存。如果未指定缓存或缓存与流式DML语句中使用的表不匹配，则更新会被忽略。
 :::
-这些参数几乎覆盖了`IgniteDataStreamer`的所有常规配置，这样就可以根据需要更好地调整流处理器。关于如何配置流处理器可以参考[流处理器](/doc/java/DataLoadingStreaming.md#_5-3-数据流处理器)的相关文档来了解更多的信息。
+这些参数几乎覆盖了`IgniteDataStreamer`的所有常规配置，这样就可以根据需要更好地调整流处理器。关于如何配置流处理器可以参考[流处理器](/doc/java/DataLoadingStreaming.md#_3-数据流处理器)的相关文档来了解更多的信息。
 ::: tip 基于时间的刷新
 默认情况下，当要么连接关闭，要么达到了`streamingPerNodeBufferSize`，数据才会被刷新，如果希望按照时间的方式来刷新，那么可以调整`streamingFlushFrequency`参数。
 :::
@@ -298,7 +298,7 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true@
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Opening a connection in the streaming mode and time based flushing set.
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://streaming=true:streamingFlushFrequency=1000@file:///etc/config/ignite-jdbc.xml");
 
@@ -311,7 +311,7 @@ for (int i = 1; i < 100000; i++) {
       stmt.setInt(1, i);
       stmt.setString(2, "John Smith");
       stmt.setInt(3, 25);
-  
+
       stmt.execute();
 }
 
@@ -324,7 +324,7 @@ conn.close();
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcDriver");
- 
+
 // Open JDBC connection (cache name is not specified, which means that we use default cache).
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/config/ignite-jdbc.xml");
 ```
@@ -332,19 +332,19 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/con
 ```java
 // Query names of all people.
 ResultSet rs = conn.createStatement().executeQuery("select name from Person");
- 
+
 while (rs.next()) {
     String name = rs.getString(1);
     ...
 }
- 
+
 // Query people with specific age using prepared statement.
 PreparedStatement stmt = conn.prepareStatement("select name, age from Person where age = ?");
- 
+
 stmt.setInt(1, 30);
- 
+
 ResultSet rs = stmt.executeQuery();
- 
+
 while (rs.next()) {
     String name = rs.getString("name");
     int age = rs.getInt("age");
@@ -357,7 +357,7 @@ while (rs.next()) {
 ```java
 // Insert a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("INSERT INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
@@ -368,11 +368,11 @@ stmt.execute();
 ```java
 // Merge a Person with a Long key.
 PreparedStatement stmt = conn.prepareStatement("MERGE INTO Person(_key, name, age) VALUES(CAST(? as BIGINT), ?, ?)");
- 
+
 stmt.setInt(1, 1);
 stmt.setString(2, "John Smith");
 stmt.setInt(3, 25);
- 
+
 stmt.executeUpdate();
 ```
 **UPDATE**
@@ -390,7 +390,7 @@ Ignite的JDBC驱动将错误码封装进了`java.sql.SQLException`类，它简�
 ```java
 // Register JDBC driver.
 Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
- 
+
 // Open JDBC connection.
 Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1");
 
@@ -405,11 +405,11 @@ catch (SQLException e) {
       case "0700B":
         System.out.println("Conversion failure");
         break;
-        
+
       case "42000":
         System.out.println("Parsing error");
         break;
-        
+
       default:
         System.out.println("Unprocessed error: " + e.getSQLState());
         break;

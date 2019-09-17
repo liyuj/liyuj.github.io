@@ -1,6 +1,6 @@
 # 6.固化内存
 ## 6.1.固化内存
-Ignite分布式内存平台基于固化内存架构，在启用[Ignite持久化存储](/doc/cpp/Persistence.md#_7-1-ignite持久化)特性之后，可以同时在内存和磁盘上存储和处理数据，这个架构可以使用集群的所有可用资源，实现了带有磁盘存储能力的内存级性能。
+Ignite分布式内存平台基于固化内存架构，在启用[Ignite持久化存储](/doc/cpp/Persistence.md#_1-ignite持久化)特性之后，可以同时在内存和磁盘上存储和处理数据，这个架构可以使用集群的所有可用资源，实现了带有磁盘存储能力的内存级性能。
 
 ![](https://files.readme.io/ac2ff0d-durable-memory.png)
 
@@ -10,7 +10,7 @@ Java版本的[固化内存](/doc/java/DurableMemory.md)文档有更详细的描�
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
-<!-- Redefining maximum memory size for the cluster node usage. -->  
+<!-- Redefining maximum memory size for the cluster node usage. -->
 <property name="dataStorageConfiguration">
   <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
     <!-- Redefining the default region's settings -->
@@ -23,8 +23,8 @@ Java版本的[固化内存](/doc/java/DurableMemory.md)文档有更详细的描�
     </property>
   </bean>
 </property>
-  
+
 <!-- The rest of the parameters. -->
 </bean>
 ```
-更多的内容，可以看[内存配置](/doc/java/DurableMemory.md#_10-3-内存配置)的文档。
+更多的内容，可以看[内存配置](/doc/java/DurableMemory.md#_3-内存配置)的文档。

@@ -22,7 +22,7 @@ GridGain支持可插拔的`Authenticator`，用户可以将任何现有的认证
  6. 存储在缓存中的所有数据都包含有关字段的元数据信息，因此在打印输出时，所有字段名都会与值一起列出，这样用户就可以立即知道哪个字段已更改，而无需追溯和关联不同的日志。
 
 ::: tip 保护集群的两种方法
-可以通过两种方式配置安全性：使用GridGain的认证和授权机制或Ignite的[认证机制](/doc/java/Security.md#_4-2-高级安全)，不过GridGain的安全性和Ignite的安全性是互斥的，同时只能使用一个，建议使用GridGain的安全性，因为它提供了更广泛的功能。
+可以通过两种方式配置安全性：使用GridGain的认证和授权机制或Ignite的[认证机制](/doc/java/Security.md#_2-高级安全)，不过GridGain的安全性和Ignite的安全性是互斥的，同时只能使用一个，建议使用GridGain的安全性，因为它提供了更广泛的功能。
 :::
 ## 4.2.安全概念
 ### 4.2.1.GridSecurity入口
@@ -40,9 +40,9 @@ GridSecurity security = grid.security();
 Java：
 ```java
 GridGainConfiguration cfg = new GridGainConfiguration();
- 
+
 SecurityCredentials creds = new SecurityCredentials("username", "password");
- 
+
 // Create basic security provider.
 SecurityCredentialsBasicProvider provider = new SecurityCredentialsBasicProvider(creds);
 
@@ -56,7 +56,7 @@ XML：
     <constructor-arg value="YOUR_USERNAME"/>
     <constructor-arg value="YOUR_PASSWORD"/>
 </bean>
- 
+
 <!-- GridGain plugin configuration. -->
 <bean class="org.gridgain.grid.configuration.GridGainConfiguration">
     ...
@@ -133,8 +133,8 @@ Java：
 ```java
 // GridGain plugin configuration.
 GridGainConfiguration cfg = new GridGainConfiguration();
- 
-// Set JAAS authenticator. 
+
+// Set JAAS authenticator.
 cfg.setAuthenticator(new JaasAuthenticator());
 ```
 XML：
@@ -157,23 +157,23 @@ Java：
 // Provide security credentials.
 SecurityCredentials serverCreds = new SecurityCredentials("server", "password");
 SecurityCredentials clientCreds = new SecurityCredentials("client", "password");
- 
+
 // GridGain plugin configuration.
 GridGainConfiguration cfg = new GridGainConfiguration();
- 
+
 PasscodeAuthenticator authenticator = new PasscodeAuthenticator();
- 
-// Create map for node and client with their security credentials and permissions.       
+
+// Create map for node and client with their security credentials and permissions.
 Map<SecurityCredentials, String> authMap = new HashMap<>();
- 
+
 // Allow all operations on server nodes.
 authMap.put(serverCreds, "{defaultAllow:true}");
- 
+
 // Allow only cache reads on client nodes.
 authMap.put(clientCreds, "{defaultAllow:false, {cache:'*', permissions:[CACHE_READ]}}");
- 
+
 authenticator.setAclProvider(new AuthenticationAclBasicProvider(authMap));
- 
+
 cfg.setAuthenticator(authenticator);
 ```
 XML：
@@ -183,13 +183,13 @@ XML：
     <constructor-arg value="server"/>
     <constructor-arg value="password"/>
 </bean>
- 
+
 <!-- Client node credentials. -->
 <bean id="client.cred" class="org.apache.ignite.plugin.security.SecurityCredentials">
     <constructor-arg value="client"/>
     <constructor-arg value="password"/>
 </bean>
- 
+
 <bean class="org.gridgain.grid.configuration.GridGainConfiguration">
     ...
     <property name="authenticator">
@@ -200,7 +200,7 @@ XML：
                         <map>
                             <!-- Allow all operations on server nodes. -->
                             <entry key-ref="server.cred" value="{defaultAllow:true}"/>
-                            
+
                             <!-- Allow only cache reads on client nodes. -->
                             <entry key-ref="client.cred"
                                 value="

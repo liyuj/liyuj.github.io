@@ -143,7 +143,7 @@ Ignite设计和支持的**非并置**分布式关联就是针对的这样的场�
 
 不过在应用显式开启本地模式的第三个场景中需要注意，原因是如果希望在部分节点的`分区`缓存上执行本地查询时拓扑还发生了变化，那么可能得到结果集的一部分，因为这时会触发一个自动的数据再平衡过程，SQL引擎无法处理这个特殊情况。
 
-如果仍然希望在`分区`缓存上执行本地查询，那么需要考虑使用[这里](/doc/java/ComputeGrid.md#_7-6-2-基于关联的call方法和run方法)描述的关联计算技术。
+如果仍然希望在`分区`缓存上执行本地查询，那么需要考虑使用[这里](/doc/java/ComputeGrid.md#_6-2-基于关联的call方法和run方法)描述的关联计算技术。
 ## 3.4.空间支持
 ### 3.4.1.概述
 Ignite除了支持标准ANSI-99标准的SQL查询，支持基本数据类型或者特定/自定义对象类型之外，还可以查询和索引几何数据类型，比如点、线以及包括这些几何形状空间关系的多边形。
@@ -229,9 +229,9 @@ Ignite在索引本身中部分包含索引值，以优化查询和数据更新�
 
 使用以下属性之一设置内联大小（值都是以字节为单位设置的）：
 
- - `QueryIndex.inlineSize`：如果通过`org.apache.ignite.cache.QueryEntity`对象配置索引时，具体细节可以参见[使用QueryEntity进行查询配置](/doc/java/Key-ValueDataGrid.md#_3-4-7-使用queryentity进行查询配置)；
- - `@QuerySqlField.inlineSize`：具体细节可以参见[通过注解进行查询的配置](/doc/java/Key-ValueDataGrid.md#_3-4-6-通过注解进行查询的配置)；
- - `INLINE_SIZE`：[CREATE INDEX](/doc/sql/SQLReference.md#_2-2-2-create-index)的`INLINE_SIZE`属性。
+ - `QueryIndex.inlineSize`：如果通过`org.apache.ignite.cache.QueryEntity`对象配置索引时，具体细节可以参见[使用QueryEntity进行查询配置](/doc/java/Key-ValueDataGrid.md#_4-7-使用queryentity进行查询配置)；
+ - `@QuerySqlField.inlineSize`：具体细节可以参见[通过注解进行查询的配置](/doc/java/Key-ValueDataGrid.md#_4-6-通过注解进行查询的配置)；
+ - `INLINE_SIZE`：[CREATE INDEX](/doc/sql/SQLReference.md#_2-2-create-index)的`INLINE_SIZE`属性。
 
 ::: warning 注意
 每个长度固定的列（如long）有1个字节的常量开销，每个`VARCHAR`列有2个字节的常量开销，在指定内联大小时应该考虑这些开销。还要注意的是，由于ignite将字符串编码为`UTF-8`，所以有些字符使用的字节数超过了1。
@@ -245,7 +245,7 @@ select * from Person where p.id = ?
 ```sql
 select SUM(salary) from Person
 ```
-通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
+通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
 
 如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行化配置。
 
@@ -262,7 +262,7 @@ SELECT * FROM Person USE INDEX(index_age)
   WHERE salary > 150000 AND age < 35;
 ```
 ### 3.5.9.分区修剪
-分区修剪是一种在WHERE条件中使用关联键来对查询进行优化的技术。当执行这样的查询时，Ignite将只扫描存储请求数据的那些分区。这将减少查询时间，因为查询将只发送到存储所请求分区的节点。要了解有关分区分布的更多信息，请参阅[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-3-1-分区和复制)。
+分区修剪是一种在WHERE条件中使用关联键来对查询进行优化的技术。当执行这样的查询时，Ignite将只扫描存储请求数据的那些分区。这将减少查询时间，因为查询将只发送到存储所请求分区的节点。要了解有关分区分布的更多信息，请参阅[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
 
 在下面的示例中，Employee对象通过`id`字段并置处理（如果未指定关联键，则Ignite将使用主键来并置数据）：
 ```sql
@@ -302,7 +302,7 @@ SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象�
  1. 存储在堆外数据区的主条目被更新或者删除；
  2. 存储主条目的数据页面从内存中退出。
 
-堆内行缓存是缓存级的（SQL表或者缓存的创建也可以使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)语句，相关的参数可以通过缓存模板传递）。
+堆内行缓存是缓存级的（SQL表或者缓存的创建也可以使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)语句，相关的参数可以通过缓存模板传递）。
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
 		<property name="name" value="person"/>
@@ -318,13 +318,13 @@ SQL堆内行缓存的目的就是在Java堆内存储热点数据（键值对象�
 2.调整JVM的垃圾回收。
 :::
 ### 3.5.12.用TIMESTAMP替代DATE
-尽可能地使用[TIMESTAMP](/doc/sql/SQLReference.md#_2-10-11-timestamp)替代[DATE](/doc/sql/SQLReference.md#_2-10-10-date)，DATE类型的序列化/反序列化效率较低，导致性能下降。
+尽可能地使用[TIMESTAMP](/doc/sql/SQLReference.md#_10-11-timestamp)替代[DATE](/doc/sql/SQLReference.md#_10-10-date)，DATE类型的序列化/反序列化效率较低，导致性能下降。
 ## 3.6.模式
 Ignite有一组默认的模式，为了更好地对表进行管理，也允许用户创建自定义的模式。
 
 默认有两个可用的模式：
 
- - `IGNITE`模式：它包含了一组与集群节点信息有关的系统视图，具体可以参考[系统视图](/doc/sql/ManagementMonitoring.md#_9-1-系统视图)章节；
+ - `IGNITE`模式：它包含了一组与集群节点信息有关的系统视图，具体可以参考[系统视图](/doc/sql/ManagementMonitoring.md#_1-系统视图)章节；
  - `PUBLIC`模式：未指定模式时的默认模式。
 
 在如下的场景中，可以创建自定义模式：
@@ -374,7 +374,7 @@ CREATE TABLE City (
   PRIMARY KEY (ID, CountryCode)
 ) WITH "backups=1, CACHE_NAME=City";
 ```
-具体细节，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-2-3-create-table)的相关内容。
+具体细节，可以看[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)的相关内容。
 
 如果未使用这个参数，缓存名为如下的形式：
 ```
@@ -384,7 +384,7 @@ SQL_<SchemaName>_<TableName>
 ### 3.7.1.概述
 如果使用`TRANSACTIONAL_SNAPSHOT`模式，SQL的事务也是支持的。`TRANSACTIONAL_SNAPSHOT`模式是Ignite缓存的多版本并发控制（MVCC）的实现。
 
-关于Ignite支持的事务语法以及示例代码，可以看[事务](/doc/sql/SQLReference.md#_2-12-事务)章节。
+关于Ignite支持的事务语法以及示例代码，可以看[事务](/doc/sql/SQLReference.md#_12-事务)章节。
 ### 3.7.2.开启MVCC
 要开启缓存的MVCC支持，需要在缓存的配置中使用`TRANSACTIONAL_SNAPSHOT`原子化模式。如果是使用的`CREATE TABLE`语句建的表，可以使用命令的`WITH`子句传递指定的原子化模式参数。
 

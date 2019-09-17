@@ -52,7 +52,7 @@ cfg.setDataStorageConfiguration(storageCfg);
 ```
 持久化开启之后，所有的数据和索引都会存储在所有集群节点的内存和磁盘上，下图描述了在单独的集群节点的文件系统层看到的持久化结构：
 ::: tip 每个数据区和每个缓存的持久化
-Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[内存区](/doc/2.6.0/java/DurableMemory.md#_10-3-2-内存区)。
+Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[内存区](/doc/2.6.0/java/DurableMemory.md#_3-2-内存区)。
 :::
 
 ![](https://files.readme.io/74a2aac-persistent_store_structure_final.png)
@@ -89,7 +89,7 @@ Ignite的原生持久化可以将Ignite作为一个分布式的SQL数据库。
  - [Ignite原生持久化架构](https://cwiki.apache.org/confluence/display/IGNITE/Persistent+Store+Architecture)
 
 ### 16.1.6.性能提示
-在[固化内存调优](/doc/java/ProductionReadiness.md#_11-4-固化内存调优)章节中有关于性能方面的建议。
+在[固化内存调优](/doc/java/ProductionReadiness.md#_4-固化内存调优)章节中有关于性能方面的建议。
 ### 16.1.7.示例
 要了解Ignite的原生持久化在实践中的应用，可以看Github中的这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/persistentstore)。
 ## 16.2.预写日志(WAL)
@@ -161,7 +161,7 @@ WAL是Ignite持久化的一个基本组件，会在集群故障时保证持久�
 
 分别通过`IgniteCluster.enableWal(cacheName)`和`IgniteCluster.disableWal(cachename)`方法可以打开和关闭WAL。如果要检查某个缓存是否开启了WAL，可以使用`IgniteCluster.isWalEnabled(cacheName)`。
 
-如果使用SQL，可以使用[ALTER TABLE](/doc/sql/SQLReference.md#_2-2-1-alter-table)命令打开/关闭WAL。
+如果使用SQL，可以使用[ALTER TABLE](/doc/sql/SQLReference.md#_2-1-alter-table)命令打开/关闭WAL。
 
 ::: danger 注意
 如果禁用了WAL并重新启动节点，则将从该节点上的持久化存储中删除所有数据，这是因为如果没有WAL，在节点故障或重新启动时无法保证数据的一致性。
@@ -169,7 +169,7 @@ WAL是Ignite持久化的一个基本组件，会在集群故障时保证持久�
 ### 16.2.4.WAL存档
 WAL存档用于保存故障后恢复节点所需的WAL段。存档中保存的段的数量应确保所有段的总大小不超过WAL存档的既定大小。
 
-WAL存档的大小可以通过`DataStorageConfiguration.maxWalArchiveSize`属性进行配置，如果该属性在配置中未指定，存档的大小定义为4倍于[检查点缓冲区](/doc/java/ProductionReadiness.md#_11-4-2-6-检查点缓冲区大小)的大小。
+WAL存档的大小可以通过`DataStorageConfiguration.maxWalArchiveSize`属性进行配置，如果该属性在配置中未指定，存档的大小定义为4倍于[检查点缓冲区](/doc/java/ProductionReadiness.md#_4-2-6-检查点缓冲区大小)的大小。
 
 ::: warning 注意
 将WAL存档大小配置为小于默认值可能影响性能，用于生产之前需要进行测试。
@@ -268,7 +268,7 @@ dsCfg.setWalArchivePath(walAbsPath);
 
 ## 16.4.第三方存储
 ### 16.4.1.概述
-Ignite可以做为已有的第三方数据库之上的一个缓存层（数据网格），包括RDBMS、Apache Cassandra，该模式可以对底层数据库进行加速。Ignite对于在任何RDBMS和[Cassandra](/doc/integration/CassandraIntegration.md#_6-1-ignite和apache-cassandra)中进行数据库记录的读写，提供了直接的支持，而对于其它NoSQL数据库的通读和通写功能，则没有现成的实现，不过Ignite提供了API，可以实现自定义的CacheStore。
+Ignite可以做为已有的第三方数据库之上的一个缓存层（数据网格），包括RDBMS、Apache Cassandra，该模式可以对底层数据库进行加速。Ignite对于在任何RDBMS和[Cassandra](/doc/integration/CassandraIntegration.md#_1-ignite和apache-cassandra)中进行数据库记录的读写，提供了直接的支持，而对于其它NoSQL数据库的通读和通写功能，则没有现成的实现，不过Ignite提供了API，可以实现自定义的CacheStore。
 
 JCache规范提供了[javax.cache.integration.CacheLoader](https://ignite.apache.org/jcache/1.0.0/javadoc/javax/cache/integration/CacheLoader.html)和[javax.cache.integration.CacheWriter](https://ignite.apache.org/jcache/1.0.0/javadoc/javax/cache/integration/CacheWriter.html)API，它们分别用于底层持久化存储的`通读`和`通写`（比如RDBMS中的Oracle或者MySQL，以及NoSQL数据库中的MongoDB或者CouchDB）。除了键-值操作，Ignite还支持INSERT、UPDATE和MERGE操作的通写，但是SELECT查询是无法读取第三方数据库的数据的。
 
@@ -360,7 +360,7 @@ Ignite可以和任意RDBMS集成，将数据加载进Ignite缓存，然后执行
 
 **自动**
 
-使用Ignite的Web控制台可以从RDBMS中自动导入元数据，以及创建Ignite的集群配置，具体细节可以看[自动化RDBMS集成](/doc/tools/IgniteWebConsoleAbilities.md#_2-2-自动化RDBMS集成)的相关文档。
+使用Ignite的Web控制台可以从RDBMS中自动导入元数据，以及创建Ignite的集群配置，具体细节可以看[自动化RDBMS集成](/doc/tools/IgniteWebConsoleAbilities.md#_2-自动化RDBMS集成)的相关文档。
 
 **手动**
 
@@ -749,7 +749,7 @@ public class Person implements Serializable {
 </bean>
 ```
 ### 16.4.6.NoSQL集成
-Ignite可以与NoSQL数据库（比如Cassandra）集成。具体请参阅[Cassandra集成](/doc/integration/CassandraIntegration.md#_6-1-ignite和apache-cassandra)的相关文档，以了解如何将Cassandra用作Ignite持久化存储。对于其它NoSQL数据库，Ignite不提供任何现成的实现，开发者可以实现自己的`CacheStore`。
+Ignite可以与NoSQL数据库（比如Cassandra）集成。具体请参阅[Cassandra集成](/doc/integration/CassandraIntegration.md#_1-ignite和apache-cassandra)的相关文档，以了解如何将Cassandra用作Ignite持久化存储。对于其它NoSQL数据库，Ignite不提供任何现成的实现，开发者可以实现自己的`CacheStore`。
 
 注意，虽然Ignite支持分布式事务，但如果将NoSQL数据库用作Ignite的持久层，Ignite也不会使其具有事务性。除非，NoSQL数据库直接支持事务。比如，在Ignite缓存上执行的事务不会传播到Cassandra。
 ### 16.4.7.自定义CacheStore
@@ -1184,7 +1184,7 @@ REST
 
 https://[host]:[port]/ignite?cmd=activate
 ```
-有关如何通过REST API来对集群进行激活/冻结的更新信息，可以看这个[文档](/doc/java/PlatformsProtocols.md#_12-2-3-40-activate)。
+有关如何通过REST API来对集群进行激活/冻结的更新信息，可以看这个[文档](/doc/java/PlatformsProtocols.md#_2-3-40-activate)。
 
 **通过代码配置基线拓扑**
 

@@ -171,7 +171,7 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 		"WHERE id > 1500 LIMIT 10");
 ```
 ::: tip 运行时更新索引和可查询字段
-如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-2-数据定义语言（ddl）)命令。
+如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-数据定义语言（ddl）)命令。
 :::
 
 **索引嵌套对象**
@@ -329,7 +329,7 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 		"WHERE id > 1500 LIMIT 10");
 ```
 ::: tip 运行时更新索引和可查询字段
-如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-2-数据定义语言（ddl）)命令。
+如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-数据定义语言（ddl）)命令。
 :::
 ### 7.2.4.自定义键
 如果只使用预定义的SQL数据类型作为缓存键，那么就没必要对和DML相关的配置做额外的操作，这些数据类型在`GridQueryProcessor#SQL_TYPES`常量中进行定义，列举如下：

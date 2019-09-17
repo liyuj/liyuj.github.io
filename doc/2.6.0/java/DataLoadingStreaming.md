@@ -42,7 +42,7 @@ Ignite的原生持久化不需要在重启时将数据预热到内存，因此�
 > 对于分区缓存以及像关系数据库这样的第三方存储，如果键没有映射到某个节点，不管是主节点还是备份节点，都会被自动忽略。
 这与Ignite持久化存储无关，因为每个节点只会存储属于它的数据。
 
-下面是一个第三方存储的`CacheStore.loadCache()`实现的例子，对于`CacheStore`的完整例子，可以参照[第三方存储](/doc/2.6.0/java/Persistence.md#_16-4-第三方存储)章节。
+下面是一个第三方存储的`CacheStore.loadCache()`实现的例子，对于`CacheStore`的完整例子，可以参照[第三方存储](/doc/2.6.0/java/Persistence.md#_4-第三方存储)章节。
 ```java
 public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 	...

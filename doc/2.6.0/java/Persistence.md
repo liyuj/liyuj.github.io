@@ -52,7 +52,7 @@ cfg.setDataStorageConfiguration(storageCfg);
 ```
 持久化开启之后，所有的数据和索引都会存储在所有集群节点的内存和磁盘上，下图描述了在单独的集群节点的文件系统层看到的持久化结构：
 >**每个数据区和每个缓存的持久化**<br>
-Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[10.3.2.内存区](/doc/2.6.0/java/DurableMemory.md#_10-3-2-内存区)。
+Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[10.3.2.内存区](/doc/2.6.0/java/DurableMemory.md#_3-2-内存区)。
 
 ![](https://files.readme.io/74a2aac-persistent_store_structure_final.png)
 首先，节点中的每个缓存都要有一个唯一的目录，从上图可知，可以看到至少两个缓存（Cache_A和Cache_B），由节点来维护它们的数据和索引。
@@ -84,7 +84,7 @@ Ignite的原生持久化可以将Ignite作为一个分布式的SQL数据库。
  - [Ignite原生持久化架构](https://cwiki.apache.org/confluence/display/IGNITE/Persistent+Store+Architecture)
 
 ### 16.1.6.性能提示
-在[固化内存调优](/doc/2.6.0/java/ProductionReadiness.md#_11-4-固化内存调优)章节中有关于性能方面的建议。
+在[固化内存调优](/doc/2.6.0/java/ProductionReadiness.md#_4-固化内存调优)章节中有关于性能方面的建议。
 ### 16.1.7.示例
 要了解Ignite的原生持久化在实践中的应用，可以看Github中的这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/persistentstore)。
 ## 16.2.预写日志
