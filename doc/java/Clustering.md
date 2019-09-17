@@ -946,7 +946,7 @@ ZooKeeper发现机制通过如下的方式来处理拓扑分区（脑裂）以�
 使用ZooKeeper发现机制，需要确保两个系统的配置参数相互匹配不矛盾。
 
 比如下面的ZooKeeper简单配置：
-```
+```properties
 # The number of milliseconds of each tick
 tickTime=2000
 
@@ -1047,12 +1047,12 @@ Ignite ignite = Ignition.start(cfg);
 
 |setter方法|描述|默认值|
 |---|---|---|
-|`setPeerClassLoadingEnabled(boolean)`|启用/禁用对等类加载|`false`|
-|`setPeerClassLoadingExecutorService(ExecutorService)`|配置对等类加载使用的线程池，如果未配置，会使用一个默认的。|`null`|
-|`setPeerClassLoadingExecutorServiceShutdown(boolean)`|对等类加载ExecutorService关闭标志，如果该标志设置为true，对等类加载线程池当节点停止时会强制关闭。|`true`|
-|`setPeerClassLoadingLocalClassPathExclude(String...)`|系统类路径的包列表，即使它们在本地存在，P2P也不会加载。|`null`|
-|`setPeerClassLoadingMissedResourcesCacheSize(int)`|错过的资源缓存的大小，设为0会避免错过的资源缓存。|`100`|
-|`setDeploymentMode(DeploymentMode)`|为部署的类和任务设置部署模式。|`SHARED`|
+|`setPeerClassLoadingEnabled()`|启用/禁用对等类加载|`false`|
+|`setPeerClassLoadingExecutorService()`|配置对等类加载使用的线程池，如果未配置，会使用一个默认的。|`null`|
+|`setPeerClassLoadingExecutorServiceShutdown()`|对等类加载ExecutorService关闭标志，如果该标志设置为true，对等类加载线程池当节点停止时会强制关闭。|`true`|
+|`setPeerClassLoadingLocalClassPathExclude()`|系统类路径的包列表，即使它们在本地存在，P2P也不会加载。|`null`|
+|`setPeerClassLoadingMissedResourcesCacheSize()`|错过的资源缓存的大小，设为0会避免错过的资源缓存。|`100`|
+|`setDeploymentMode()`|为部署的类和任务设置部署模式。|`SHARED`|
 
 XML：
 ```xml
@@ -1117,24 +1117,24 @@ Ignition.start(cfg);
 
 |方法|描述|默认值|
 |---|---|---|
-|`setLocalAddress(String)`|设置套接字绑定的本地主机地址|任意有效的本地主机地址|
-|`setLocalPort(int)`|设置套接字绑定的本地主机端口|47100|
-|`setLocalPortRange(int)`|当之前尝试的所有端口都被占用时，控制尝试的本地端口的最大数量。|100|
-|`setTcpNoDelay(boolean)`|设置套接字选项`TCP_NODELAY`的值，每个创建或者接收的套接字都会使用这个值，它应该设置为true（默认），以减少通过TCP协议进行通讯期间请求/响应的时间。大多数情况下不建议改变这个选项|true|
-|`setConnectTimeout(long)`|设置当与远程节点建立连接时使用的连接超时时间。|1000|
-|`setIdleConnectionTimeout(long)`|设置当与客户端的连接将要关闭时，最大空闲连接超时时间。|30000|
-|`setBufferSizeRatio(double)`|设置这个SPI的缓冲区大小比率，当发送消息时，缓冲区大小会使用这个比率进行调整。|0.8，或者设置了`IGNITE_COMMUNICATION_BUF_RESIZE_RATIO`系统属性值|
-|`setMinimumBufferedMessageCount(int)`|设置这个SPI的最小消息数量，它们在发送之前被缓冲。|512，或者设置了`IGNITE_MIN_BUFFERED_COMMUNICATION_MSG_CNT`系统属性|
-|`setUsePairedConnections(boolean)`|设置节点间是否要强制双向套接字连接的标志，如果设置为true，通信的节点间会建立两个独立的连接，一个用于输出消息，一个用于输入，如果设置为false，只会建立一个TCP连接用于双向通信，当消息的传递花费太长时间时，这个标志对于某些操作系统非常有用。|false|
-|`setConnectionBufferSize(int)`|只有当`setAsyncSend(boolean)`设置为false时，这个参数才有用。设置同步连接时的缓冲区大小，当同步地发送和接收大量的小消息时，可以增加缓冲区大小。不过大多数情况下这个值应该设置为0（默认）。|0|
-|`setSelectorsCount(int)`|设置TCP服务器使用的选择器数量。|默认的选择器数量等于`Math.min(4, Runtime.getRuntime() .availableProcessors())`这个表达式的结果|
-|`setConnectionBufferFlushFrequency(long)`|只有当`setAsyncSend(boolean)`设置为false时，这个参数才有用。设置连接缓冲区刷新频率（毫秒），这个参数只有当同步发送并且连接缓冲区大小非0时才有意义。一旦在指定的时间段内如果没有足够的消息让其自动刷新时，缓冲区会被刷新。|100|
-|`setDirectBuffer(boolean)`|在使用NIO Direct以及NIO Heap分配缓冲区之间进行切换。虽然Direct Buffer执行的更好，但有时（尤其在Windows）可能会造成JVM崩溃，如果在自己的环境中发生了，需要将这个属性设置为false。|true|
-|`setDirectSendBuffer(boolean)`|当使用异步模式进行消息发送时，在使用NIO Direct以及NIO Heap分配缓冲区之间进行切换。|false|
-|`setAsyncSend(boolean)`|在同步或者异步消息发送之间进行切换。当节点间通过网络以多线程的方式发送大量的数据时，这个值应该设为true（默认），但是这个依赖于环境以及应用，因此建议对应用针对这两种模式进行基准测试。|true|
-|`setSharedMemoryPort(int)`|当在同一台主机上启动了`IpcSharedMemoryServerEndpoint`节点时，通过IPC共享内存进行通信的端口（只针对Linux和MacOS主机），设置为-1可以禁用IPC共享内存通信。|48100|
-|`setSocketReceiveBuffer(int)`|设置这个SPI创建或者接收的套接字的接收缓冲区大小，如果未指定，默认值为0，它会导致套接字创建之后缓冲区无法交换（即使用操作系统默认值）。|0|
-|`setSocketSendBuffer(int)`|设置这个SPI创建或者接收的套接字的发送缓冲区大小，如果未指定，默认值为0，它会导致套接字创建之后缓冲区无法交换（即使用操作系统默认值）。|0|
+|`setLocalAddress()`|设置套接字绑定的本地主机地址|任意有效的本地主机地址|
+|`setLocalPort()`|设置套接字绑定的本地主机端口|47100|
+|`setLocalPortRange()`|当之前尝试的所有端口都被占用时，控制尝试的本地端口的最大数量。|100|
+|`setTcpNoDelay()`|设置套接字选项`TCP_NODELAY`的值，每个创建或者接收的套接字都会使用这个值，它应该设置为true（默认），以减少通过TCP协议进行通讯期间请求/响应的时间。大多数情况下不建议改变这个选项|true|
+|`setConnectTimeout()`|设置当与远程节点建立连接时使用的连接超时时间。|1000|
+|`setIdleConnectionTimeout()`|设置当与客户端的连接将要关闭时，最大空闲连接超时时间。|30000|
+|`setBufferSizeRatio()`|设置这个SPI的缓冲区大小比率，当发送消息时，缓冲区大小会使用这个比率进行调整。|0.8，或者设置了`IGNITE_COMMUNICATION_BUF_RESIZE_RATIO`系统属性值|
+|`setMinimumBufferedMessageCount()`|设置这个SPI的最小消息数量，它们在发送之前被缓冲。|512，或者设置了`IGNITE_MIN_BUFFERED_COMMUNICATION_MSG_CNT`系统属性|
+|`setUsePairedConnections()`|设置节点间是否要强制双向套接字连接的标志，如果设置为true，通信的节点间会建立两个独立的连接，一个用于输出消息，一个用于输入，如果设置为false，只会建立一个TCP连接用于双向通信，当消息的传递花费太长时间时，这个标志对于某些操作系统非常有用。|false|
+|`setConnectionBufferSize()`|只有当`setAsyncSend(boolean)`设置为false时，这个参数才有用。设置同步连接时的缓冲区大小，当同步地发送和接收大量的小消息时，可以增加缓冲区大小。不过大多数情况下这个值应该设置为0（默认）。|0|
+|`setSelectorsCount()`|设置TCP服务器使用的选择器数量。|默认的选择器数量等于`Math.min(4, Runtime.getRuntime() .availableProcessors())`这个表达式的结果|
+|`setConnectionBufferFlushFrequency()`|只有当`setAsyncSend(boolean)`设置为false时，这个参数才有用。设置连接缓冲区刷新频率（毫秒），这个参数只有当同步发送并且连接缓冲区大小非0时才有意义。一旦在指定的时间段内如果没有足够的消息让其自动刷新时，缓冲区会被刷新。|100|
+|`setDirectBuffer()`|在使用NIO Direct以及NIO Heap分配缓冲区之间进行切换。虽然Direct Buffer执行的更好，但有时（尤其在Windows）可能会造成JVM崩溃，如果在自己的环境中发生了，需要将这个属性设置为false。|true|
+|`setDirectSendBuffer()`|当使用异步模式进行消息发送时，在使用NIO Direct以及NIO Heap分配缓冲区之间进行切换。|false|
+|`setAsyncSend()`|在同步或者异步消息发送之间进行切换。当节点间通过网络以多线程的方式发送大量的数据时，这个值应该设为true（默认），但是这个依赖于环境以及应用，因此建议对应用针对这两种模式进行基准测试。|true|
+|`setSharedMemoryPort()`|当在同一台主机上启动了`IpcSharedMemoryServerEndpoint`节点时，通过IPC共享内存进行通信的端口（只针对Linux和MacOS主机），设置为-1可以禁用IPC共享内存通信。|48100|
+|`setSocketReceiveBuffer()`|设置这个SPI创建或者接收的套接字的接收缓冲区大小，如果未指定，默认值为0，它会导致套接字创建之后缓冲区无法交换（即使用操作系统默认值）。|0|
+|`setSocketSendBuffer()`|设置这个SPI创建或者接收的套接字的发送缓冲区大小，如果未指定，默认值为0，它会导致套接字创建之后缓冲区无法交换（即使用操作系统默认值）。|0|
 
 **示例**
 
