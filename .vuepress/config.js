@@ -25,6 +25,7 @@ module.exports = {
         '/doc/2.6.0/': {}
     },
     evergreen: true,
+    plugins: ['@dovyp/vuepress-plugin-clipboard-copy'],
     themeConfig: {
         lastUpdated: '最后更新时间：',
         search: false,
