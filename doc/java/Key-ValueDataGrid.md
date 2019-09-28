@@ -127,7 +127,7 @@ for (int i = 0; i < 10; i++)
 ```
 Java7：
 ```java
-IgniteCache<String, Integer> cache = ignite.jcache("mycache");
+IgniteCache<String, Integer> cache = ignite.cache("mycache");
 
 // Increment cache value 10 times.
 for (int i = 0; i < 10; i++)
@@ -162,8 +162,8 @@ IgniteFuture<Integer> fut = asyncCache.future();
 // Asynchronously listen for the operation to complete.
 fut.listenAsync(f -> System.out.println("Previous cache value: " + f.get()));
 ```
-### 2.6.将Ignite作为JCache提供者
-如果创建缓存实例时使用JCache管理器，JCache可以接受一个特定的提供者配置。如果从另一个JCache实现上移植，在不修改已有代码的前提下，就可以利用Ignite提供的分布式缓存的优势。
+### 2.6.将Ignite作为JCache实现
+如果创建缓存实例时使用JCache管理器，JCache可以接受一个特定的供应商配置。如果从另一个JCache实现上移植，在不修改已有代码的前提下，就可以利用Ignite提供的分布式缓存的优势。
 
 下面是使用JCache管理器时，如何进行Ignite缓存配置的示例：
 ```java

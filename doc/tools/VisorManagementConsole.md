@@ -193,7 +193,7 @@ script=/bin/ignite.sh
 ```
 
 ## 4.批处理模式
-### 4.1.使用批处理模式启动VVisor
+### 4.1.使用批处理模式启动Visor
 Visor命令行可以开启一个批处理模式（运行一组命令）。
 
 运行`ignitevisorcmd.{sh|bat} -?`后，会显示可用的选项：

@@ -1,5 +1,5 @@
 module.exports = {
-    title: 'Apache Ignite中文站',
+    title: 'Apache Ignite中文网',
     description: '轻量级分布式内存HTAP数据库及计算平台',
     dest: "dist",
     head: [
@@ -51,6 +51,10 @@ module.exports = {
                 {
                     text: 'C++',
                     link: '/doc/cpp/'
+                },
+                {
+                    text: 'C#/.NET',
+                    link: '/doc/net/'
                 },
                 {
                     text: 'SQL',
@@ -113,6 +117,9 @@ module.exports = {
                         'ComputeGrid',
                         'DurableMemory',
                         'Persistence'
+                    ],
+                    '/doc/net/':[
+                        ''
                     ],
                     '/doc/sql/': [
                         '',
