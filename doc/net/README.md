@@ -196,7 +196,7 @@ using (var cacheLock = cache.Lock(11))
 }
 ```
 ### 2.6.Ignite Visor管理控制台
-要确认数据网格的内容以及执行一些其它的管理和监视操作，最简单的方法是使用Ignite的[Visor命令行工具](/doc/toos/VisorManagementConsole.md)。
+要确认数据网格的内容以及执行一些其它的管理和监视操作，最简单的方法是使用Ignite的[Visor命令行工具](/doc/tools/VisorManagementConsole.md)。
 
 通过下面的命令可以启动Visor：
 ```batch
@@ -211,3 +211,98 @@ Apache Ignite.NET NuGet软件包包括LINQPad示例。
  - 转到Samples选项卡 -> nuget -> Apache.Ignite；
 
 更多的信息可以参见：[在LINQPad中使用Apache Ignite.NET](https://ptupitsyn.github.io/Using-Apache-Ignite-Net-in-LINQPad/)。
+## 3.跨平台支持
+从2.4版本开始，同Windows平台一样，也可以在Linux和macOS平台上运行.NET节点以及开发Ignite.NET应用，.NET Core和Mono平台都是支持的。
+
+### 3.1..NET Core
+**环境要求**
+
+ - [.NET Core SDK 2.0+](https://www.microsoft.com/net/download/)；
+ - [Java 8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html)（macOS需要JDK，否则JRE也可以）。
+
+**使用NuGet**
+
+ - `dotnet new console`；
+ - `dotnet add package Apache.Ignite`；
+
+编辑`Program.cs`文件：
+```csharp
+using System;
+using Apache.Ignite.Core;
+
+namespace IgniteTest
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Ignition.Start();
+        }
+    }
+}
+```
+
+ - `dotnet run`
+
+**运行示例**
+
+[二进制发行版](https://ignite.apache.org/download.cgi#binaries)中包含了.NET Core的示例：
+
+ - 从[这里](https://ignite.apache.org/download.cgi#binaries)下载二进制发行版然后解压；
+ - `cd platforms/dotnet/examples/dotnetcore`；
+ - `dotnet run`。
+
+### 3.2.Mono
+**环境要求**
+
+ - [Mono](http://www.mono-project.com/download/)；
+ - [Java 8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html)（macOS需要JDK，否则JRE也可以）。
+
+**使用NuGet**
+
+请参见[入门](#_2-入门)章节中的相关内容。
+
+一个额外的步骤是配置`IGNITE_HOME`环境变量或者`IgniteConfiguration.IgniteHome`，指向NuGet的包路径（通常是`packages/Apache.Ignite.2.4.0`）。
+
+**运行示例**
+
+Mono可以直接在.NET 4环境中构建和运行。
+
+ - `cd platforms/dotnet/examples`；
+ - `nuget restore`；
+ - `msbuild`；
+ - `mono Apache.Ignite.Examples/bin/Debug/Apache.Ignite.Examples.exe`。
+
+### 3.3.Java检测
+Ignite.NET会在如下路径中查找Java运行环境：
+
+ - `HKLM\Software\JavaSoft\Java Runtime Environment`（Windows）；
+ - `/usr/bin/java`（Linux）；
+ - `/Library/Java/JavaVirtualMachines`（macOS）；
+
+如果在其它位置自行安装Java环境，则需配置下面的任一配置项：
+
+ - `IgniteConfiguration.JvmDllPath`属性；
+ - `JAVA_HOME`环境变量。
+
+### 3.4.已知问题
+**NU1701**
+
+`warning NU1701: Package 'Apache.Ignite 2.4.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.`。
+
+Ignite.NET完全支持.NET Core，但NuGet针对的是.NET 4.0。通过在`csproj`文件中添加`<PropertyGroup><NoWarn>NU1701</NoWarn></PropertyGroup>`，可以安全地忽略此警告。
+
+**No Java runtime present, requesting install**
+
+在macOS上Java的`8u151`版本存在一个问题：[JDK-7131356](https://bugs.openjdk.java.net/browse/JDK-7131356)，一定要安装`8u152`及其以后的版本。
+
+**Serializing delegates is not supported on this platform**
+
+.NET Core不支持序列化委托，执行`System.MulticastDelegate.GetObjectData`[会抛出异常](https://github.com/dotnet/coreclr/blob/master/src/mscorlib/src/System/MulticastDelegate.cs#L52)，因此Ignite.NET无法对委托或包含委托的对象进行序列化。
+
+**Could not load file or assembly 'System.Configuration.ConfigurationManager'**
+
+已知的[.NET问题(506)](https://github.com/dotnet/standard/issues/506)，有时需要额外的包引用：
+
+ - `dotnet add package System.Configuration.ConfigurationManager`
+
