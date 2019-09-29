@@ -29,9 +29,62 @@ Ignite.NET构建于Ignite之上：
  - Java计算作业可以在任意节点上执行（.NET、C++和Java）；
  - .NET计算作业只能运行在.NET节点上；
 
-Ignite.NET还可以运行于[瘦客户端](#_15-瘦客户端)模式，不需要Java/JVM，与服务端使用单一的TCP连接进行通信。
-## 2.入门
-### 2.1.环境要求
+Ignite.NET还可以运行于[瘦客户端](#_16-瘦客户端)模式，不需要Java/JVM，与服务端使用单一的TCP连接进行通信。
+## 2.Ignite定位
+
+**Ignite是不是持久化或者纯内存存储？**
+
+**都是**，Ignite的原生持久化可以打开，也可以关闭。这使得Ignite可以存储比可用内存容量更大的数据集。也就是说，可以只在内存中存储较少的操作性数据集，然后将不适合存储在内存中的较大数据集存储在磁盘上，即为了提高性能将内存作为一个缓存层。
+
+**Ignite是不是内存数据库（IMDB）？**
+
+**是**，虽然Ignite的*固化内存*在内存和磁盘中都工作得很好，但是磁盘持久化是可以关闭的，使Ignite成为一个支持SQL以及分布式关联的*内存数据库*。
+
+**Ignite是不是内存数据网格（IMDG）？**
+
+**是**，Ignite是一个全功能的数据网格，它既可以用于纯内存模式，也可以带有Ignite的原生持久化，它也可以与任何第三方数据库集成，包括RDBMS和NoSQL。
+
+**Ignite是不是一个分布式缓存？**
+
+**是**，如果关闭原生持久化，Ignite就会成为一个分布式缓存，Ignite实现了JCache规范（JSR107），并且提供了比规范要求更多的功能，包括分区和复制模式、分布式ACID事务、SQL查询以及原生持久化等。
+
+**Ignite是不是分布式数据库？**
+
+**是**，在整个集群的多个节点中，Ignite中的数据要么是*分区模式*的，要么是*复制模式*的，这给系统带来了伸缩性，增加了系统的弹性。Ignite可以自动控制数据如何分区，同时，开发者也可以插入自定义的分布（关联）函数，以及为了提高效率将部分数据并置在一起。
+
+**Ignite是不是SQL数据库？**
+
+**不完整**，尽管Ignite的目标是和其它的关系型SQL数据库具有类似的行为，但是在处理约束和索引方面还是有不同的。Ignite支持*一级*和*二级*索引，但是只有一级索引支持*唯一性*，Ignite还不支持*外键*约束。
+
+总体来说，Ignite作为约束不支持任何会导致集群广播消息的更新以及显著降低系统性能和可伸缩性的操作。
+
+**Ignite是不是一个NoSQL数据库?**
+
+**不完全**，和其它NoSQL数据库一样，Ignite支持高可用和水平扩展，但是，和其它的NoSQL数据库不同，Ignite支持SQL和ACID。
+
+**Ignite是不是事务型数据库？**
+
+**不完整**，ACID事务是支持的，但是仅仅在键-值API级别，Ignite还支持*跨分区的事务*，这意味着事务可以跨越不同服务器不同分区中的键。
+
+Ignite在2.7版本中，通过MVCC技术，实现了包括SQL事务在内的全事务支持，不过目前还处于测试阶段。
+
+**Ignite是不是一个多模式数据库？**
+
+**是**，Ignite的数据建模和访问，同时支持键值和SQL，另外，Ignite还为在分布式数据上的计算处理，提供了强大的API。
+
+**Ignite是不是键-值存储？**
+
+**是**，Ignite提供了丰富的键-值API，兼容于JCache (JSR-107)，并且支持Java，C++和.NET。
+
+**固化内存是什么？**
+
+Ignite的*固化内存*架构使得Ignite可以将内存计算延伸至磁盘，它基于一个页面化的堆外内存分配器，它通过预写日志（WAL）的持久化来对数据进行固化，当持久化禁用之后，固化内存就会变成一个纯粹的内存存储。
+
+**并置处理是什么？**
+
+Ignite是一个分布式系统，因此，有能力将数据和数据以及数据和计算进行并置就变得非常重要，这会避免分布式数据噪声。当执行分布式SQL关联时数据的并置就变得非常的重要。Ignite还支持将用户的逻辑（函数，lambda等）直接发到数据所在的节点然后在本地进行数据的运算。
+## 3.入门
+### 3.1.环境要求
 
  - JDK：8+；
  - OS：Windows(7及以上)，Windows Server（2008 R2及以上），Linux（支持.NET Core的任何发行版），macOS；
@@ -40,16 +93,16 @@ Ignite.NET还可以运行于[瘦客户端](#_15-瘦客户端)模式，不需要J
  - .NET框架：.NET 4.0+, .NET Core 2.0+；
  - IDE：.NET 4.0+, .NET Core 2.0+；
 
-下面的内容基于Windows和Visual Studio，对于Linux和macOS平台的使用，请参见[跨平台支持](#_3-跨平台支持)。
+下面的内容基于Windows和Visual Studio，对于Linux和macOS平台的使用，请参见[跨平台支持](#_4-跨平台支持)。
 
-### 2.2.安装
+### 3.2.安装
 **NuGet**
 
 NuGet是将Ignite.NET包含到项目中最便捷的方法，具体可以在软件包管理器控制台中输入以下内容：`Install-Package Apache.Ignite`进行安装。
 
 或者也可以在NuGet Gallery中搜索软件包：[https://www.nuget.org/packages/Apache.Ignite/](https://www.nuget.org/packages/Apache.Ignite/)。
 ::: tip 提示
-安装NuGet软件包会更新项目的`post-build`事件，将Libs文件夹复制到输出目录，具体请参见[部署](#_13-部署)章节的内容。
+安装NuGet软件包会更新项目的`post-build`事件，将Libs文件夹复制到输出目录，具体请参见[部署](#_14-部署)章节的内容。
 :::
 ::: tip 更新NuGet软件包
 当要更新到新版本的Ignite.NET时，一定要清理`bin`文件夹并且重新构建，以更新Libs文件夹。
@@ -79,7 +132,7 @@ cd modules\platforms\dotnet
 
 build
 ```
-### 2.3.从命令行启动
+### 3.3.从命令行启动
 一个Ignite节点可以从命令行启动，可以使用默认的配置也可以传入一个配置文件。可以启动任意个节点，它们彼此之间会自动发现对方。假定当前位于Ignite的安装文件夹，可以在命令行中输入下面的命令：
 ```bash
 platforms\dotnet\bin\Apache.Ignite.exe
@@ -90,9 +143,9 @@ platforms\dotnet\bin\Apache.Ignite.exe
 [02:49:12] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.0GB]
 ```
 ::: tip 提示
-关于如何生成独立的Ignite.NET节点以及使用各种配置参数的更多信息，可以参见[独立节点](#_5-独立节点)。
+关于如何生成独立的Ignite.NET节点以及使用各种配置参数的更多信息，可以参见[独立节点](#_6-独立节点)。
 :::
-### 2.4.第一个Ignite计算应用
+### 3.4.第一个Ignite计算应用
 下面是第一个网格应用，该应用将计算句子中的非空白字符数。例如将一个句子拆分为多个单词，并将统计每个单词中的字符数作为一个计算作业，最后将各个作业获得的结果相加即可得出总数。
 
  - 创建一个新的控制台应用项目；
@@ -126,7 +179,7 @@ class ComputeFunc : IComputeFunc<int>
 }
 
 ```
-### 2.5.第一个Ignite数据网格应用
+### 3.5.第一个Ignite数据网格应用
 下面是一组简单的应用，它们会简单地进行一些分布式缓存的读写，然后执行基本的事务操作：
 
 写和读：
@@ -195,14 +248,14 @@ using (var cacheLock = cache.Lock(11))
     }
 }
 ```
-### 2.6.Ignite Visor管理控制台
+### 3.6.Ignite Visor管理控制台
 要确认数据网格的内容以及执行一些其它的管理和监视操作，最简单的方法是使用Ignite的[Visor命令行工具](/doc/tools/VisorManagementConsole.md)。
 
 通过下面的命令可以启动Visor：
 ```batch
 bin\ignitevisorcmd.bat
 ```
-### 2.7.LINQPad入门
+### 3.7.LINQPad入门
 [LINQPad](http://www.linqpad.net/)非常适合快速入门。
 
 Apache Ignite.NET NuGet软件包包括LINQPad示例。
@@ -211,10 +264,10 @@ Apache Ignite.NET NuGet软件包包括LINQPad示例。
  - 转到Samples选项卡 -> nuget -> Apache.Ignite；
 
 更多的信息可以参见：[在LINQPad中使用Apache Ignite.NET](https://ptupitsyn.github.io/Using-Apache-Ignite-Net-in-LINQPad/)。
-## 3.跨平台支持
+## 4.跨平台支持
 从2.4版本开始，同Windows平台一样，也可以在Linux和macOS平台上运行.NET节点以及开发Ignite.NET应用，.NET Core和Mono平台都是支持的。
 
-### 3.1..NET Core
+### 4.1..NET Core
 **环境要求**
 
  - [.NET Core SDK 2.0+](https://www.microsoft.com/net/download/)；
@@ -252,7 +305,7 @@ namespace IgniteTest
  - `cd platforms/dotnet/examples/dotnetcore`；
  - `dotnet run`。
 
-### 3.2.Mono
+### 4.2.Mono
 **环境要求**
 
  - [Mono](http://www.mono-project.com/download/)；
@@ -260,7 +313,7 @@ namespace IgniteTest
 
 **使用NuGet**
 
-请参见[入门](#_2-入门)章节中的相关内容。
+请参见[入门](#_3-入门)章节中的相关内容。
 
 一个额外的步骤是配置`IGNITE_HOME`环境变量或者`IgniteConfiguration.IgniteHome`，指向NuGet的包路径（通常是`packages/Apache.Ignite.2.4.0`）。
 
@@ -273,7 +326,7 @@ Mono可以直接在.NET 4环境中构建和运行。
  - `msbuild`；
  - `mono Apache.Ignite.Examples/bin/Debug/Apache.Ignite.Examples.exe`。
 
-### 3.3.Java检测
+### 4.3.Java检测
 Ignite.NET会在如下路径中查找Java运行环境：
 
  - `HKLM\Software\JavaSoft\Java Runtime Environment`（Windows）；
@@ -285,12 +338,12 @@ Ignite.NET会在如下路径中查找Java运行环境：
  - `IgniteConfiguration.JvmDllPath`属性；
  - `JAVA_HOME`环境变量。
 
-### 3.4.已知问题
+### 4.4.已知问题
 **NU1701**
 
 `warning NU1701: Package 'Apache.Ignite 2.4.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.`。
 
-Ignite.NET完全支持.NET Core，但NuGet针对的是.NET 4.0。通过在`csproj`文件中添加`<PropertyGroup><NoWarn>NU1701</NoWarn></PropertyGroup>`，可以安全地忽略此警告。
+Ignite.NET完全支持.NET Core，但NuGet程序集针对的是.NET 4.0。通过在`csproj`文件中添加`<PropertyGroup><NoWarn>NU1701</NoWarn></PropertyGroup>`，可以安全地忽略此警告。
 
 **No Java runtime present, requesting install**
 
@@ -306,3 +359,147 @@ Ignite.NET完全支持.NET Core，但NuGet针对的是.NET 4.0。通过在`cspro
 
  - `dotnet add package System.Configuration.ConfigurationManager`
 
+## 5.配置
+Ignite.NET节点可以通过多种方法来配置，具体表现为一组`Ignition.Start*`方法。
+
+### 5.1.C#代码
+在C#代码中，完全可以通过`Ignition.Start(IgniteConfiguration)`配置Ignite.NET。
+```csharp
+Ignition.Start(new IgniteConfiguration
+{
+    DiscoverySpi = new TcpDiscoverySpi
+    {
+        IpFinder = new TcpDiscoveryStaticIpFinder
+        {
+            Endpoints = new[] {"127.0.0.1:47500..47509"}
+        },
+        SocketTimeout = TimeSpan.FromSeconds(0.3)
+    },
+    IncludedEventTypes = EventType.CacheAll,
+    JvmOptions = new[] { "-Xms1024m", "-Xmx1024m" }
+});
+```
+### 5.2.app.config和web.config
+`Ignition.StartFromApplicationConfiguration`方法会从`app.config`或`web.config`文件的`Apache.Ignite.Core.IgniteConfigurationSection`中读取配置。
+
+在二进制发行版的`Apache.Ignite.Core.dll`旁边，以及`Apache.Ignite.Schema`NuGet包中，可以找到`IgniteConfigurationSection.xsd`架构文件。在配置文件中编辑`IgniteConfigurationSection`时，将其包含在项目中并且构建动作为`None`，可以在Visual Studio中启用IntelliSense。
+
+::: tip 提示
+要将`IgniteConfigurationSection.xsd`架构文件添加到Visual Studio项目中，可以转到`Projects`菜单，然后单击`Add Existing Item...`菜单项，之后找到`IgniteConfigurationSection.xsd`并且选中。
+
+或者，安装NuGet软件包：`Install-Package Apache.Ignite.Schema`，这将自动将xsd文件添加到项目中。
+
+为了改善编辑体验，确保在工具-选项-文本编辑器-XML中启用了`语句完成`选项。
+:::
+**app.config**
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+    <configSections>
+        <section name="igniteConfiguration" type="Apache.Ignite.Core.IgniteConfigurationSection, Apache.Ignite.Core" />
+    </configSections>
+
+    <runtime>
+        <gcServer enabled="true"/>
+    </runtime>
+
+    <igniteConfiguration xmlns="http://ignite.apache.org/schema/dotnet/IgniteConfigurationSection" gridName="myGrid1">
+        <discoverySpi type="TcpDiscoverySpi">
+            <ipFinder type="TcpDiscoveryStaticIpFinder">
+                <endpoints>
+                    <string>127.0.0.1:47500..47509</string>
+                </endpoints>
+            </ipFinder>
+        </discoverySpi>
+
+        <cacheConfiguration>
+            <cacheConfiguration cacheMode='Replicated' readThrough='true' writeThrough='true' />
+            <cacheConfiguration name='secondCache' />
+        </cacheConfiguration>
+
+        <includedEventTypes>
+            <int>42</int>
+            <int>TaskFailed</int>
+            <int>JobFinished</int>
+        </includedEventTypes>
+
+        <userAttributes>
+            <pair key='myNode' value='true' />
+        </userAttributes>
+
+        <JvmOptions>
+          <string>-Xms1024m</string>
+          <string>-Xmx1024m</string>
+        </JvmOptions>
+    </igniteConfiguration>
+</configuration>
+```
+**C#**
+```csharp
+var ignite = Ignition.StartFromApplicationConfiguration("igniteConfiguration");
+```
+**Ignite配置段的语法**
+
+Ignite的配置段直接映射到`IgniteConfiguration`类。
+
+ - 简单属性（字符串、基础类型、枚举）映射到XML属性（属性名为驼峰式的C#属性名）；
+ - 复杂属性映射到嵌套的XML元素（元素名为驼峰式的C#属性名）；
+ - 当复杂属性是接口或抽象类时，`type`属性将用于指定类型，需要使用程序集限定名。对于内置类型（例如上面代码示例中的`TcpDiscoverySpi`），可以省略程序集名和命名空间；
+ - 如有疑问，可以查询`IgniteConfigurationSection.xsd`。
+
+### 5.3.Spring XML
+Spring的XML文件可以使用原生的基于Java的Ignite配置，Spring的配置文件可以通过`Ignition.Start(string)`方法以及`IgniteConfiguration.SpringConfigUrl`属性传入。
+
+使用`IgniteConfiguration.SpringConfigUrl`属性时，Spring的配置会首先加载，在其之上才会应用其他的`IgniteConfiguration`属性，这样在Ignite.NET不直接支持某些Java属性时，此功能会有用。
+
+**Spring XML：**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="localHost" value="127.0.0.1"/>
+        <property name="gridName" value="grid1"/>
+        <property name="userAttributes">
+            <map>
+                <entry key="my_attr" value="value1"/>
+            </map>
+        </property>
+
+        <property name="cacheConfiguration">
+            <list>
+                <bean class="org.apache.ignite.configuration.CacheConfiguration">
+                    <property name="name" value="cache1"/>
+                    <property name="startSize" value="10"/>
+                </bean>
+            </list>
+        </property>
+
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>127.0.0.1:47500..47509</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+                <property name="socketTimeout" value="300" />
+            </bean>
+        </property>
+    </bean>
+</beans>
+```
+**C#：**
+```csharp
+var ignite = Ignition.Start("spring-config.xml");
+```
