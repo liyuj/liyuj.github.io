@@ -503,3 +503,72 @@ Spring的XML文件可以使用原生的基于Java的Ignite配置，Spring的配�
 ```csharp
 var ignite = Ignition.Start("spring-config.xml");
 ```
+## 6.独立节点
+Ignite.NET节点可以在.NET应用的代码中通过使用`Ignition.Start()`启动，也可以使用可执行的`Apache.Ignite.exe`（位于`{apache_ignite_release}\platforms\dotnet\bin`文件夹下）作为单独的进程启动。像通常一样，在内部`Apache.Ignite.exe`引用`Apache.Ignite.Core.dll`和使用`Ignition.Start()`，并且可以使用下面列出的命令行参数进行配置，方法是将它们作为命令行选项传递或直接在`Apache.Ignite.exe.config`文件中进行设置。
+### 6.1.通过命令行配置独立节点
+下面是基本的Ignite参数，当使用`Apache.Ignite.exe`程序启动节点时，这些参数可以作为命令行参数传入：
+
+|命令行参数|含义|
+|---|---|
+|`-IgniteHome`|Ignite安装目录路径（如果未提供会使用`IGNITE_HOME`环境变量）|
+|`-ConfigFileName`|`app.config`文件路径（如果未提供会使用`Apache.Ignite.exe.config`）|
+|`-ConfigFileName`|配置文件中`IgniteConfigurationSection`的名字|
+|`-SpringConfigUrl`|Spring配置文件路径|
+|`-JvmDllPath`|JVM库`jvm.dll`的路径（如果未提供会使用`JAVA_HOME`环境变量）|
+|`-JvmClasspath`|传递给JVM的类路径（在这里注册其它的jar文件）|
+|`-SuppressWarnings`|是否输出警告信息|
+|`-J<javaOption>`|JVM参数|
+|`-Assembly`|要加载的其它.NET程序集|
+|`-JvmInitialMemoryMB`|初始Java堆大小（MB），对应于`-Xms`Java参数|
+|`-JvmMaxMemoryMB`|最大Java堆大小（MB），对应于`-Xmx`Java参数|
+|`/install`|根据指定的参数将Ignite安装为Windows服务|
+|`/uninstall`|卸载Ignite Windows服务|
+
+示例：
+```batch
+Apache.Ignite.exe -ConfigFileName=c:\ignite\my-config.xml -ConfigSectionName=igniteConfiguration -Assembly=c:\ignite\my-code.dll -J-Xms1024m -J-Xmx2048m
+```
+### 6.2.通过XML文件配置独立节点
+通过`app.config`XML文件或/和Spring配置文件，也可以配置独立节点。上面列出的每个命令行参数，也可以用于`Apache.Ignite.exe.config`的`appSettings`段。
+```xml
+<configuration>
+  <configSections>
+    <section name="igniteConfiguration" type="Apache.Ignite.Core.IgniteConfigurationSection, Apache.Ignite.Core" />
+  </configSections>
+
+  <igniteConfiguration springConfigUrl="c:\ignite\spring.xml">
+    <cacheConfiguration name="myCache" cacheMode="Replicated" />
+  </igniteConfiguration>
+
+  <appSettings>
+    <add key="Ignite.Assembly.1" value="my-assembly.dll"/>
+    <add key="Ignite.Assembly.2" value="my-assembly2.dll"/>
+    <add key="Ignite.ConfigSectionName" value="igniteConfiguration" />
+  </appSettings>
+</configuration>
+```
+这个示例定义了`igniteConfiguration`段，并通过`Ignite.ConfigSectionName`配置用其启动Ignite，它还引用了一个Spring配置文件，两者最终会组合在一起。
+### 6.3.加载用户程序集
+某些Ignite的API涉及了远程代码执行，因此需要将代码和程序集一起加载到`Apache.Ignite.exe`，这可以通过`-Assembly`命令行参数或者`Ignite.Assembly`应用配置来实现。
+
+以下功能要求在所有节点上加载相应的程序集：
+
+ - `ICompute`（支持自动加载，具体可以参见[远程程序集加载](/doc/net/Clustering.md#_7_远程程序集加载)）。
+ - 带过滤器的扫描查询；
+ - 带过滤器的持续查询；
+ - `远程程序集加载`方法；
+ - 带过滤器的`ICache.LoadCache`；
+ - `IServices`；
+ - `IMessaging.RemoteListen`；
+ - `IEvents.RemoteQuery`。
+
+::: warning 缺失用户程序集
+如果一个用户程序集无法加载，会抛出`Could not load file or assembly 'MyAssembly' or one of its dependencies`异常。
+
+注意任何程序集的**依赖**也是必须要加入该列表的。
+:::
+### 6.4.Ignite.NET作为Windows服务
+`Apache.Ignite.exe`可以安装为Windows的服务，因此可以通过`/install`命令行参数自动启动。每次服务启动时，所有其它命令行参数将被保留和使用。使用`/uninstall`可以卸载服务。
+```batch
+Apache.Ignite.exe /install -J-Xms513m -J-Xmx555m -ConfigSectionName=igniteConfiguration
+```
