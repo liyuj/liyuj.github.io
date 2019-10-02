@@ -572,3 +572,60 @@ Apache.Ignite.exe -ConfigFileName=c:\ignite\my-config.xml -ConfigSectionName=ign
 ```batch
 Apache.Ignite.exe /install -J-Xms513m -J-Xmx555m -ConfigSectionName=igniteConfiguration
 ```
+## 7.Ignite.NET生命周期
+Ignite.NET是基于进程的，单个进程代表一个或多个逻辑Ignite.NET节点（多数情况下单个进程仅运行一个Ignite.NET节点）。在整个Ignite文档中，几乎可以交替使用术语Ignite运行时和Ignite节点，例如当说要求“在该主机上运行5个节点”时，从技术上讲，大多数情况下在该主机上启动5个Ignite.NET进程即可，每个进程都运行一个Ignite节点。当然Ignite.NET也可以在单​​个进程中支持多个节点，比如大多数Ignite.NET自身内部测试即是这样的运行方式。
+
+::: tip 提示
+Ignite.NET运行时 == Ignite.NET进程 == Ignite.NET节点（多数情况下）
+:::
+### 7.1.Ignition类
+`Ignition`类可以在网络拓扑中启动一个独立的Ignite.NET节点，注意一台物理服务器（例如网络上的一台计算机），可以同时运行多个Ignite.NET节点。
+
+下面是在本地使用默认值启动一个节点的方法：
+```csharp
+IIgnite ignite = Ignition.Start();
+```
+也可以传递一个配置文件：
+```csharp
+IIgnite ignite = Ignition.Start("examples/config/example-cache.xml");
+```
+配置文件的路径可以是绝对路径，也可以相对于`IGNITE_HOME`（Ignite安装文件夹）或者当前目录。
+
+### 7.2.ILifecycleHandler
+有时在启动或者停止Ignite节点时需要执行特定的事件，这可以通过实现`ILifecycleHandler`接口实现，然后在`IgniteConfiguration`的`LifecycleHandlers`属性中指定。
+```csharp
+var cfg = new IgniteConfiguration
+{
+    LifecycleHandlers = new [] { new LifecycleExampleHandler() }
+};
+
+using (var ignite = Ignition.Start(cfg))
+{
+  ...
+}
+```
+`ILifecycleHandler`的实现大致如下：
+```csharp
+class LifecycleExampleHandler : ILifecycleHandler
+{
+    public void OnLifecycleEvent(LifecycleEventType evt)
+    {
+        if (evt == LifecycleEventType.AfterNodeStart)
+            Started = true;
+        else if (evt == LifecycleEventType.AfterNodeStop)
+            Started = false;
+    }
+
+    public bool Started { get; private set; }
+}
+```
+### 7.3.生命周期事件类型
+Ignite.NET支持如下的生命周期事件类型：
+
+|事件类型|描述|
+|---|---|
+|`BeforeNodeStart`|启动节点启动过程之前调用|
+|`AfterNodeStart`|节点启动之后调用|
+|`BeforeNodeStop`|启动节点停止过程之前调用|
+|`AfterNodeStop`|节点停止之后调用|
+
