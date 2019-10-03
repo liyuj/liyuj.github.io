@@ -629,3 +629,105 @@ Ignite.NET支持如下的生命周期事件类型：
 |`BeforeNodeStop`|启动节点停止过程之前调用|
 |`AfterNodeStop`|节点停止之后调用|
 
+## 8.异步支持
+Ignite.NET API的所有分布式方法都可以以同步或者异步的方式执行，这些方法以`DoSomething`/`DoSomethingAsync`的方式成对表示。异步方法遵循基于任务的异步模式：它们返回System.Threading.Task，可以使用C# 5的`await`关键字来等待。
+
+支持取消的异步方法具有`CancellationToken`参数重载。
+
+**计算网格示例**
+
+下面的示例说明了同步计算和异步计算之间的区别。
+
+同步：
+```csharp
+ICompute compute = ignite.GetCompute();
+
+// Execute a job and wait for the result.
+string res = compute.Call(new ComputeFunc());
+
+Console.WriteLine(res);
+```
+下面是将上面的代码异步化：
+```csharp
+// Start asynchronous operation and obtain a Task that represents it
+Task<string> asyncRes = compute.CallAsync(new ComputeFunc());
+
+// Synchronously wait for the task to complete and obtain result
+Console.WriteLine(asyncRes.Result);
+
+// OR use C# 5 await keyword
+Console.WriteLine(await asyncRes);
+
+// OR use continuation
+asyncRes.ContinueWith(task => Console.WriteLine(task.Result));
+```
+**数据网格示例**
+
+下面是同步和异步调用的数据网格示例。
+
+同步：
+```csharp
+ICache<int, string> cache = ignite.GetCache<int, string>("myCache");
+
+CacheResult<string> val = cache.GetAndPut(1, "1");
+```
+下面是上面调用的异步形式：
+```csharp
+// Start asynchronous operation and obtain a Task that represents it
+Task<CacheResult<string>> asyncVal = cache.GetAndPutAsync(1, "1");
+
+// Synchronously wait for the task to complete and obtain result
+Console.WriteLine(asyncVal.Result.Success);
+
+// Use C# 5 await keyword
+Console.WriteLine((await asyncVal).Success);
+
+// Use continuation
+asyncVal.ContinueWith(task => Console.WriteLine(task.Result.Success));
+```
+### 8.1.异步延续
+Ignite中的异步操作是通过特殊的系统线程完成的，这些线程具有以下限制：
+
+ - 不应使用Ignite API；
+ - 不应执行繁重的操作。
+
+当`ConfigureAwait(false)`与`async`关键字一起使用时，代码可能最终在Ignite系统线程中：
+```csharp
+var cache = ignite.GetCache<int, int>("ints");
+
+await cache.PutAsync(1, 1).ConfigureAwait(false);
+// All the code below executes in Ignite system thread.
+// Do not access Ignite APIs from here.
+```
+如果需要执行多个等待的操作，请不要使用`ConfigureAwait(false)`。
+
+对于控制台、ASP.NET Core和某些其他类型的应用，`System.Threading.SynchronizationContext`未设置默认值，因此一个自定义的`SynchronizationContext`是必要的，以避免在Ignite系统线程上运行延续。最简单的方法是从这样的`SynchronizationContext`类派生：
+```csharp
+class Program
+{
+    public static async Task<int> Main()
+    {
+        // Run async continuations on .NET Thread Pool threads.
+        SynchronizationContext.SetSynchronizationContext(
+             new ThreadPoolSynchronizationContext());
+
+        using (var ignite = Ignition.Start())
+        {
+            var cache = ignite.GetOrCreateCache<int, string>("my-cache");
+            await cache.PutAsync(1, "Test1");
+            await cache.PutAsync(2, "Test2");
+            await cache.PutAsync(3, "Test3");
+        }
+
+        return 0;
+    }
+}
+
+class ThreadPoolSynchronizationContext : SynchronizationContext
+{
+    // No-op.
+    // Don't use SynchronizationContext class directly because optimization
+    // in the Task class treats that the same way as null context.
+}
+
+```
