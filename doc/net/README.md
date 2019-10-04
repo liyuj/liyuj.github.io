@@ -729,5 +729,162 @@ class ThreadPoolSynchronizationContext : SynchronizationContext
     // Don't use SynchronizationContext class directly because optimization
     // in the Task class treats that the same way as null context.
 }
+```
+## 9.客户端和服务端
+### 9.1.概述
+Ignite.NET有`客户端`和`服务端`节点的概念。服务端节点参与缓存、计算执行、流处理等，而原生客户端节点可以远程接入服务端，可以使用完整的Ignite API，包括客户端近缓存、事务、计算、流处理、服务网格等。
 
+所有Ignite节点默认均以`服务端`模式启动，`客户端`模式是需要显式指定的。
+
+另一个Ignite模式是[瘦客户端](#_16-瘦客户端)，它与原生客户端有很大不同。瘦客户端非常轻量，不参与集群拓扑。每个瘦客户端都通过套接字接入特定的Ignite节点，并通过该节点执行所有操作。瘦客户端API与完整的Ignite API相似，但功能较少。
+### 9.2.配置客户端和服务端
+通过`IgniteConfiguration.clientMode`属性，可以将一个节点配置为客户端或者服务端。
+
+或者为了方便，也可以在`Ignition`类本身上启用或禁用客户端模式，这样可以使客户端和服务端有同样的配置。
+```csharp
+Ignition.ClientMode = true;
+
+// Start Ignite in client mode.
+IIgnite ignite = Ignition.Start();
+```
+### 9.3.创建分布式缓存
+当创建缓存时，不管是通过XML文件，还是通过`IIgnite.CreateCache(...)`或者`IIgnite.GetOrCreateCache(...)`方法，Ignite都会自动在所有服务端节点上部署分布式缓存。
+::: tip 提示
+一个分布式缓存创建之后，它会自动部署到所有的现有和未来的`服务端`节点上。
+:::
+```csharp
+// Enable client mode locally.
+Ignition.ClientMode = true;
+
+// Start Ignite in client mode.
+IIgnite ignite = Ignition.Start();
+
+// Create cache on all the existing and future server nodes.
+// Note that since the local node is a client, it will not
+// be caching any data.
+var cache = ignite.GetOrCreateCache<object, object>("cacheName");
+```
+### 9.4.客户端或者服务端上的计算
+`IgniteCompute`默认会在所有的服务端节点上执行计算作业，不过通过创建对应的集群组，也可以选择只在服务端节点或者只在客户端节点上执行。
+
+服务端上的计算：
+```csharp
+ICompute compute = ignite.GetCompute();
+
+// Execute computation on the server nodes (default behavior).
+compute.Broadcast(new MyComputeAction());
+```
+客户端上的计算：
+```csharp
+IClusterGroup clientGroup = ignite.GetCluster().ForClientNodes(null);
+
+ICompute clientCompute = clientGroup.GetCompute();
+
+// Execute computation on the client nodes.
+clientCompute.Broadcast(new MyComputeAction());
+```
+### 9.5.客户端重连
+在以下几种情况下，客户端节点可能会与集群断开连接：
+
+ - 当客户端节点由于网络问题而无法与服务端节点重建连接时；
+ - 与服务端节点的连接断开了一段时间，客户端节点能够重建与服务端的连接，但是服务端因为未收到客户端心跳，仍然删除了客户端节点；
+ - 速度慢的客户端可能会被服务器节点踢出。
+
+当客户端确定它与集群断开时，它会被分配一个新的节点`id`，并尝试重新接入集群。不过要注意这有副作用，即如果客户端重新连接，则本地`ClusterNode`的`id`属性将更改，这意味着任何依赖于`id`值的应用逻辑都可能受到影响。
+
+当客户端处于断开状态并且正在进行重连尝试时，Ignite API会抛出一个特定的异常： `IgniteClientDisconnectedException`，此异常提供了一个`ClientReconnectTask`属性，该任务在重连完成后将会完成（`IgniteCache`API会抛出`CacheException`，其将`IgniteClientDisconnectedException`作为`InnerException`），该任务也可以通过`IIgnite.ClientReconnectTask`获得。
+
+客户端重连也有对应的Ignite事件（这些事件是本地事件，即它们仅在客户端节点上触发），包括：`EventType.ClientNodeDisconnected`和`EventType.ClientNodeReconnected`。
+
+`IIgnite`中当然也有`ClientDisconnected`和`ClientReconnected`事件：
+
+计算：
+```csharp
+var compute = ignite.GetCompute();
+
+while (true)
+{
+    try
+    {
+        compute.Run(job);
+    }
+    catch (ClientDisconnectedException e)
+    {
+        e.ClientReconnectTask.Wait(); // Wait for reconnection.
+
+        // Can proceed and use the same ICompute instance.
+    }
+}
+```
+缓存：
+```csharp
+var cache = ignite.GetOrCreateCache("myCache");
+
+while (true)
+{
+  try
+  {
+    cache.Put(key, val);
+  }
+  catch (CacheException e)
+  {
+    var discEx = e.InnerException as ClientDisconnectedException;
+
+    if (discEx != null)
+    {
+      discEx.ClientReconnectTask.Wait();
+
+      // Can proceed and use the same ICache instance.
+    }
+  }
+}
+```
+使用`TcpDiscoverySpi`中的`ClientReconnectDisabled`属性，也可以禁用客户端的自动重连。如果重连被禁用，客户端节点会被停止。
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    DiscoverySpi = new TcpDiscoverySpi
+    {
+        ClientReconnectDisabled = true
+    }
+};
+```
+app.config：
+```xml
+<discoverySpi type="TcpDiscoverySpi" clientReconnectDisabled="true" />
+```
+### 9.6.管理慢客户端
+在许多环境中，客户端节点是在主集群之外、网络较差、速度较慢的主机上启动的，这时服务端可能会生成客户端无法处理的负载（例如持续查询通知等），从而导致服务端上出站消息队列的增加。如果启用了背压控制，最终可能会导致服务端内存不足或阻塞整个集群。
+
+要管理这些情况，可以配置面向客户端节点的最大允许出站消息数。如果出站队列的大小超过此值，则此类客户端节点将与集群断开，从而阻止整体变慢。
+
+下面显示了如何配置慢客户端队列限制：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CommunicationSpi = new TcpCommunicationSpi
+    {
+        SlowClientQueueLimit = 1000
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <communicationSpi type="TcpCommunicationSpi" slowClientQueueLimit="1000" />
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+  <property name="communicationSpi">
+    <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+      <property name="slowClientQueueLimit" value="1000"/>
+    </bean>
+  </property>
+</bean>
 ```
