@@ -888,3 +888,250 @@ Spring XML：
   </property>
 </bean>
 ```
+## 10.性能优化技巧
+Ignite.NET内存数据网格的性能和吞吐量很大程度上依赖于使用的功能以及配置，在几乎所有的场景中都可以通过简单地调整缓存的配置来优化缓存的性能。
+### 10.1.禁用内部事件通知
+Ignite有丰富的事件系统来向用户通知各种各样的事件，包括缓存的修改、退出、压缩、拓扑的变化等。因为每秒钟可能产生上千的事件，它会对系统产生额外的负载，这会导致显著地性能下降。因此，强烈建议只有应用逻辑必要时才启用这些事件。事件通知默认是禁用的：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    IncludedEventTypes =
+    {
+        EventType.TaskStarted,
+        EventType.TaskFinished,
+        EventType.TaskFailed
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <includedEventTypes>
+        <int>TaskStarted</int>
+        <int>TaskFinished</int>
+        <int>TaskFailed</int>
+    </includedEventTypes>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <!-- Enable only some events and leave other ones disabled. -->
+    <property name="includeEventTypes">
+        <list>
+            <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_STARTED"/>
+            <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FINISHED"/>
+            <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FAILED"/>
+        </list>
+    </property>
+    ...
+</bean>
+```
+### 10.2.调整缓存初始大小
+在大小和容量方面，Ignite的内部缓存映射的行为与普通的.NET Hashtable或Dictionary完全相同：它有初始容量（默认情况下很小），当没有空余时容量会增加一倍。内部缓存映射调整大小的过程会占用大量CPU且非常耗时，并且如果将巨大的数据集加载到缓存中（这是常规使用场景），则映射将不得不调整很多次。为避免这种情况，建议指定初始缓存映射容量，与数据集的预期大小相当。在加载期间这将节省大量CPU资源，因为不必调整映射的大小。例如如果希望将1亿数据加载到缓存中，则可以使用以下配置：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CacheConfiguration = new[]
+    {
+        new CacheConfiguration
+        {
+            StartSize = 100 * 1024 * 1024
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <cacheConfiguration>
+        <cacheConfiguration startSize="104857600" />
+    </cacheConfiguration>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
+            ...
+            <!-- Set initial cache capacity to ~ 100M. -->
+            <property name="startSize" value="#{100 * 1024 * 1024}"/>
+            ...
+        </bean>
+    </property>
+</bean>
+```
+上面的配置将节省`log₂(10⁸) − log₂(1024) ≈ 16`次缓存映射大小调整（初始映射容量默认为1024）。注意每次后续大小调整平均将比前一次多2倍的时间。
+### 10.3.关闭备份
+如果使用了`分区`缓存，而且数据丢失并不是关键（比如，当有一个备份缓存存储时），可以考虑禁用`分区`缓存的备份。当备份启用时，缓存引擎会为每个条目维护一个远程拷贝，这需要网络交换，因此是耗时的。要禁用备份，可以使用如下的配置：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CacheConfiguration = new[]
+    {
+        new CacheConfiguration
+        {
+            CacheMode = CacheMode.Partitioned,
+            Backups = 0
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <cacheConfiguration>
+        <cacheConfiguration cacheMode="Partitioned" backups="0" />
+    </cacheConfiguration>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
+            ...
+            <!-- Set cache mode. -->
+            <property name="cacheMode" value="PARTITIONED"/>
+            <!-- Set number of backups to 0-->
+            <property name="backups" value="0"/>
+            ...
+        </bean>
+    </property>
+</bean>
+```
+::: warning 可能的数据丢失
+如果没有启用`分区`缓存的备份，会丢失缓存在故障节点的所有数据，这对于缓存临时数据或者数据可以通过某种方式重建可能是可以接受的。禁用备份之前一定要确认对于应用来说丢失数据不是严重问题。
+:::
+### 10.4.调整退出策略
+退出默认是禁用的，为了确保缓存中的数据不会增长到超过限值，需要使用退出机制并选择合适的退出策略，下面的示例是配置LRU退出策略，最大值为100000条数据：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CacheConfiguration = new[]
+    {
+        new CacheConfiguration
+        {
+            EvictionPolicy = new LruEvictionPolicy { MaxSize = 1000000 }
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <cacheConfiguration>
+        <cacheConfiguration>
+          	<evictionPolicy type='LruEvictionPolicy' maxSize='1000000' />
+        </cacheConfiguration>
+    </cacheConfiguration>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.cache.CacheConfiguration">
+    ...
+    <property name="evictionPolicy">
+        <!-- LRU eviction policy. -->
+        <bean class="org.apache.ignite.cache.eviction.lru.LruEvictionPolicy">
+            <!-- Set the maximum cache size to 1 million (default is 100,000). -->
+            <property name="maxSize" value="1000000"/>
+        </bean>
+    </property>
+    ...
+</bean>
+```
+不管使用了哪个退出策略，缓存的性能取决于缓存中退出策略允许的最大数据量，即如果缓存大小超过了限值，就会发生退出。
+### 10.5.调整缓存数据再平衡
+当新节点加入拓扑时，现有节点会放弃某些键的主备数据所有权，并转给新的节点，以使数据在整个网格中始终保持均衡。这可能需要额外的资源并影响缓存性能，要解决此可能的问题，需要考虑调整以下参数：
+
+ - 配置适合自己网络的再平衡批次大小。默认值为512KB，这意味着默认的再平衡消息约为512KB，不过可以根据网络性能将此值设置为更高或更低；
+ - 配置再平衡限流以释放CPU。如果数据集很大并且有很多消息要发送，则CPU或网络可能会被过度消耗，这可能会持续降低应用的性能。这时应该启用数据再平衡限流，这有助于调整再平衡消息之间的等待时间，以确保再平衡过程不会对性能造成任何负面影响。注意在再平衡过程中，应用将继续正常运行；
+ - 配置再平衡线程池大小。与上一点相反，有时可能需要通过使用更多的CPU内核来加快再平衡，这可以通过增加再平衡线程池中的线程数来实现（池中默认只有2个线程）。
+
+以下是在缓存配置中配置所有上述参数的示例：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CacheConfiguration = new[]
+    {
+        new CacheConfiguration
+        {
+            RebalanceBatchSize = 1024 * 1024,
+            RebalanceThrottle = TimeSpan.Zero  // disable throttling
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <cacheConfiguration>
+        <cacheConfiguration rebalanceBatchSize="1048576" rebalanceThrottle="0:0:0" />
+    </cacheConfiguration>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
+            <!-- Set rebalance batch size to 1 MB. -->
+            <property name="rebalanceBatchSize" value="#{1024 * 1024}"/>
+
+            <!-- Explicitly disable rebalance throttling. -->
+            <property name="rebalanceThrottle" value="0"/>
+            ...
+        </bean
+    </property>
+</bean>
+```
+### 10.6.配置线程池
+Ignite的主线程池大小默认为可用CPU核数的2倍。在大多数情况下，每个内核持有2个线程可以提高应用的性能，因为上下文切换会更少，CPU缓存也会更好地工作。不过如果预期作业会因I/O或任何其他原因而阻塞，则增加线程池大小可能是有意义的。以下是如何配置线程池的示例：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <!-- Configure internal thread pool. -->
+    <property name="publicThreadPoolSize" value="64"/>
+
+    <!-- Configure system thread pool. -->
+    <property name="systemThreadPoolSize" value="32"/>
+    ...
+</bean>
+```
+### 10.7.尽可能地使用IBinarizable
+通过网络传输的每个对象都实现`Apache.Ignite.Core.Binary.IBinarizable`是一个最佳实践。这些可能是缓存键或值、作业、作业的参数或将通过网络发送到其他节点的任何内容。实现`IBinarizable`有时性能可能比标准序列化提高10倍以上。
+### 10.8.使用并置计算
+Ignite可以在内存中执行MapReduce计算，不过大多数计算通常需要处理缓存在远程节点上的某些数据。从远程节点加载该数据通常非常昂贵，但是将计算发送到数据所在的节点要廉价得多。最简单的方法是使用`ICompute.AffinityRun()`方法，还有其他方法，包括`ICacheAffinity.MapKeysToNodes()`方法。并置计算概念的更多信息和代码示例，请参见[关联并置](/doc/net/DataGrid.md#_7-关联并置)。
+### 10.9.使用数据流处理器
+如果需要将大量数据加载到缓存中，可以使用`IDataStreamer`。数据流处理器在将更新发送到远程节点之前，会将更新恰当地批量化，还会适当地控制每个节点上并行操作的数量，以避免故障。通常它的性能比一堆单线程更新高10倍。更详细的说明和示例，请参见[数据加载](/doc/net/DataGrid.md#_8-数据加载)章节。
+### 10.10.批量处理消息
+如果能发送10个比较大的作业而不是100个小些的作业，那么应该选择发送大些的作业，这会降低网络上传输作业的数量以及显著地提升性能。类似的对于缓存条目也是一样，应该尽可能使用持有键值集合的API方法，而不是一个一个地传递。
+### 10.11.调整垃圾收集
+如果由于垃圾收集（GC）导致吞吐量大幅波动，则应调整JVM参数。以下的JVM设置已经被证明可提供相当平稳的吞吐量，而不会出现大的波动：
+```
+-XX:+UseParNewGC
+-XX:+UseConcMarkSweepGC
+-XX:+UseTLAB 
+-XX:NewSize=128m
+-XX:MaxNewSize=128m
+-XX:MaxTenuringThreshold=0
+-XX:SurvivorRatio=1024
+-XX:+UseCMSInitiatingOccupancyOnly
+-XX:CMSInitiatingOccupancyFraction=60
+```
