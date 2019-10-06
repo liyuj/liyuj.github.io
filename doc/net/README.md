@@ -1127,11 +1127,241 @@ Ignite可以在内存中执行MapReduce计算，不过大多数计算通常需�
 ```
 -XX:+UseParNewGC
 -XX:+UseConcMarkSweepGC
--XX:+UseTLAB 
+-XX:+UseTLAB
 -XX:NewSize=128m
 -XX:MaxNewSize=128m
 -XX:MaxTenuringThreshold=0
 -XX:SurvivorRatio=1024
 -XX:+UseCMSInitiatingOccupancyOnly
 -XX:CMSInitiatingOccupancyFraction=60
+```
+## 11.序列化
+大多数用户定义的类都会使用Ignite.NET API通过网络传递给其他节点，这些类包括：
+
+ - 缓存键和值；
+ - 缓存处理器和过滤器（`ICacheEntryProcessor`、`ICacheEntryFilter`、`ICacheEntryEventFilter`、`ICacheEntryEventListener`）；
+ - 计算函数（`IComputeFunc`）、操作（`IComputeAction`）和作业（`IComputeJob`）；
+ - 服务（`IService`）；
+ - 事件和消息处理器（`IEventListener`，`IEventFilter`，`IMessageListener`）。
+
+通过网络传输的这些类对象需要序列化，Ignite.NET支持以下序列化用户数据的方式：
+
+ - `Apache.Ignite.Core.Binary.IBinarizable`接口；
+ - `Apache.Ignite.Core.Binary.IBinarySerializer`接口；
+ - `System.Runtime.Serialization.ISerializable`接口；
+ - Ignite反射式序列化（当以上都不适用时）。
+
+::: warning Ignite.NET 2.0不需要在`BinaryConfigurations`中注册类型
+Ignite.NET的早期版本（1.9和更早版本）要求在`IgniteConfiguration.BinaryConfiguration`中注册所有的类型（除了`Serializable`），而在Ignite.NET 2.0和更高版本不再有此限制。
+:::
+::: warning Ignite.NET 2.0允许在`Serializable`类型上使用SQL
+从2.0版本开始，所有序列化都以Ignite二进制格式执行，从而启用了所有的Ignite功能，例如SQL和[二进制模式](#_12-二进制模式)，这包括带有和不带有`ISerializable`接口的`Serializable`类型。
+:::
+::: tip 自动化`GetHashCode`和`Equals`实现
+如果对象可以序列化为二进制形式，则Ignite将在序列化时计算其哈希值，并将其写入二进制数组。此外，Ignite还提供了`equals`方法的自定义实现，用于二进制对象的比较。这意味着无需覆盖自定义键和值的`GetHashCode`和`Equals`方法即可在Ignite中使用它们。
+:::
+### 11.1.IBinarizable
+`IBinarizable`方式提供了对序列化的细粒度控制，这是高性能生产代码的首选方法。
+
+首先，在自己的类中实现`IBinarizable`接口：
+```csharp
+public class Address : IBinarizable
+{
+    public string Street { get; set; }
+
+    public int Zip { get; set; }
+
+    public void WriteBinary(IBinaryWriter writer)
+    {
+        // Alphabetic field order is required for SQL DML to work.
+        // Even if DML is not used, alphabetic order is recommended.
+        writer.WriteString("street", Street);
+        writer.WriteInt("zip", Zip);
+    }
+
+    public void ReadBinary(IBinaryReader reader)
+    {
+      	// Read order does not matter, however, reading in the same order
+        // as writing improves performance.
+        Street = reader.ReadString("street");
+        Zip = reader.ReadInt("zip");
+    }
+}
+```
+`IBinarizable`也可以在没有字段名的原始模式下实现，这提供了最快和最紧凑的序列化，但是SQL查询不可用：
+```csharp
+public class Address : IBinarizable
+{
+    public string Street { get; set; }
+
+    public int Zip { get; set; }
+
+    public void WriteBinary(IBinaryWriter writer)
+    {
+        var rawWriter = writer.GetRawWriter();
+
+        rawWriter.WriteString(Street);
+        rawWriter.WriteInt(Zip);
+    }
+
+    public void ReadBinary(IBinaryReader reader)
+    {
+        // Read order must be the same as write order
+        var rawReader = reader.GetRawReader();
+
+        Street = rawReader.ReadString();
+        Zip = rawReader.ReadInt();
+    }
+}
+```
+### 11.2.IBinarySerializer
+`IBinarySerializer`与`IBinarizable`类似，但是将序列化逻辑与类实现分开。当无法修改类代码，并且在多个类之间共享序列化逻辑等场景时，这可能很有用。以下代码产生与上面的`Address`示例完全相同的序列化：
+```csharp
+public class Address : IBinarizable
+{
+    public string Street { get; set; }
+
+    public int Zip { get; set; }
+}
+
+public class AddressSerializer : IBinarySerializer
+{
+    public void WriteBinary(object obj, IBinaryWriter writer)
+    {
+      	var addr = (Address) obj;
+
+        writer.WriteString("street", addr.Street);
+        writer.WriteInt("zip", addr.Zip);
+    }
+
+    public void ReadBinary(object obj, IBinaryReader reader)
+    {
+      	var addr = (Address) obj;
+
+        addr.Street = reader.ReadString("street");
+        addr.Zip = reader.ReadInt("zip");
+    }
+}
+```
+序列化器应在配置中指定，如下：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    BinaryConfiguration = new BinaryConfiguration
+    {
+        TypeConfigurations = new[]
+        {
+            new BinaryTypeConfiguration(typeof (Address))
+            {
+                Serializer = new AddressSerializer()
+            }
+        }
+    }
+};
+
+using (var ignite = Ignition.Start(cfg))
+{
+  ...
+}
+```
+### 11.3.ISerializable
+实现`System.Runtime.Serialization.ISerializable`接口的类型将相应地进行序列化（通过调用`GetObjectData`和序列化构造函数）。所有的系统功能都支持：包括`IObjectReference`、`IDeserializationCallback`、`OnSerializingAttribute`、`OnSerializedAttribute`、`OnDeserializingAttribute`、`OnDeserializedAttribute`。
+
+`GetObjectData`的结果以Ignite二进制格式写入。以下三个类提供相同的序列化表示形式：
+```csharp
+class Reflective
+{
+	public int Id { get; set; }
+	public string Name { get; set; }
+}
+
+class Binarizable : IBinarizable
+{
+	public int Id { get; set; }
+	public string Name { get; set; }
+
+	public void WriteBinary(IBinaryWriter writer)
+	{
+		writer.WriteInt("Id", Id);
+		writer.WriteString("Name", Name);
+	}
+
+	public void ReadBinary(IBinaryReader reader)
+	{
+		Id = reader.ReadInt("Id");
+		Name = reader.ReadString("Name");
+	}
+}
+
+class Serializable : ISerializable
+{
+	public int Id { get; set; }
+	public string Name { get; set; }
+
+	public Serializable() {}
+
+	protected Serializable(SerializationInfo info, StreamingContext context)
+	{
+		Id = info.GetInt32("Id");
+		Name = info.GetString("Name");
+	}
+
+	public void GetObjectData(SerializationInfo info, StreamingContext context)
+	{
+		info.AddValue("Id", Id);
+		info.AddValue("Name", Name);
+	}
+}
+```
+### 11.4.Ignite反射式序列化
+Ignite反射式序列化本质上是一种`IBinarizable`方式，其是通过反射所有字段并发出读/写调用自动实现的。
+
+该机制没有条件，任何类或结构都可以序列化（包括所有系统类型、委托、表达式树、匿名类型等）。
+
+可以使用`NonSerialized`属性排除不需要的字段。
+
+可以通过`BinaryReflectiveSerializer`显式启用原始模式：
+```csharp
+var binaryConfiguration = new BinaryConfiguration
+{
+    TypeConfigurations = new[]
+    {
+        new BinaryTypeConfiguration(typeof(MyClass))
+        {
+            Serializer = new BinaryReflectiveSerializer {RawMode = true}
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+	<binaryConfiguration>
+		<typeConfigurations>
+			<binaryTypeConfiguration typeName='Apache.Ignite.ExamplesDll.Binary.Address'>
+				<serializer type='Apache.Ignite.Core.Binary.BinaryReflectiveSerializer, Apache.Ignite.Core' rawMode='true' />
+			</binaryTypeConfiguration>
+		</typeConfigurations>
+	</binaryConfiguration>
+</igniteConfiguration>
+```
+如果没有这个配置，`BinaryConfiguration`是不需要的。
+
+性能与手工实现`IBinarizable`相同，反射只在启动阶段使用，用于遍历所有的字段并发出有效的IL代码。
+
+带有`Serializable`属性但没有`ISerializable`接口的类型使用Ignite反射式序列化器写入。
+### 11.5.使用Entity Framework POCOs
+Ignite中可以直接使用Entity Framework POCOs。
+
+但是，Ignite无法直接序列化或反序列化POCO代理[https://msdn.microsoft.com/zh-cn/data/jj592886.aspx](https://msdn.microsoft.com/en-us/data/jj592886.aspx)，因为代理类型是动态类型。
+
+将EF对象与Ignite结合使用时，要确认禁用创建代理：
+
+Entity Framework 6：
+```csharp
+ctx.Configuration.ProxyCreationEnabled = false;
+```
+Entity Framework 5：
+```csharp
+ctx.ContextOptions.ProxyCreationEnabled = false;
 ```
