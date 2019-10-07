@@ -1151,13 +1151,13 @@ Ignite可以在内存中执行MapReduce计算，不过大多数计算通常需�
  - `System.Runtime.Serialization.ISerializable`接口；
  - Ignite反射式序列化（当以上都不适用时）。
 
-::: warning Ignite.NET 2.0不需要在`BinaryConfigurations`中注册类型
+::: warning Ignite.NET 2.0不需要在BinaryConfigurations中注册类型
 Ignite.NET的早期版本（1.9和更早版本）要求在`IgniteConfiguration.BinaryConfiguration`中注册所有的类型（除了`Serializable`），而在Ignite.NET 2.0和更高版本不再有此限制。
 :::
-::: warning Ignite.NET 2.0允许在`Serializable`类型上使用SQL
+::: warning Ignite.NET 2.0允许在Serializable类型上使用SQL
 从2.0版本开始，所有序列化都以Ignite二进制格式执行，从而启用了所有的Ignite功能，例如SQL和[二进制模式](#_12-二进制模式)，这包括带有和不带有`ISerializable`接口的`Serializable`类型。
 :::
-::: tip 自动化`GetHashCode`和`Equals`实现
+::: tip 自动化GetHashCode和Equals实现
 如果对象可以序列化为二进制形式，则Ignite将在序列化时计算其哈希值，并将其写入二进制数组。此外，Ignite还提供了`equals`方法的自定义实现，用于二进制对象的比较。这意味着无需覆盖自定义键和值的`GetHashCode`和`Equals`方法即可在Ignite中使用它们。
 :::
 ### 11.1.IBinarizable
@@ -1267,7 +1267,7 @@ using (var ignite = Ignition.Start(cfg))
 ### 11.3.ISerializable
 实现`System.Runtime.Serialization.ISerializable`接口的类型将相应地进行序列化（通过调用`GetObjectData`和序列化构造函数）。所有的系统功能都支持：包括`IObjectReference`、`IDeserializationCallback`、`OnSerializingAttribute`、`OnSerializedAttribute`、`OnDeserializingAttribute`、`OnDeserializedAttribute`。
 
-`GetObjectData`的结果以Ignite二进制格式写入。以下三个类提供相同的序列化表示形式：
+`GetObjectData`的结果以Ignite二进制格式写入，以下三个类提供相同的序列化表示形式：
 ```csharp
 class Reflective
 {
@@ -1364,4 +1364,79 @@ ctx.Configuration.ProxyCreationEnabled = false;
 Entity Framework 5：
 ```csharp
 ctx.ContextOptions.ProxyCreationEnabled = false;
+```
+## 12.二进制模式
+上一章节[序列化](#_11-序列化)讲解了Ignite.NET如何将用户定义类型（类和结构）的实例转换为序列化形式，反之亦然。
+
+Ignite还提供了一种直接以二进制（序列化）形式处理数据的方法，而无需在节点或整个集群中持有该类型，可能的场景是：
+
+ - 部分节点已加载类型并且可以处理反序列化形式的数据，但是部分节点因无法访问持有该类型的程序集，而无法处理二进制格式的数据（服务端节点）；
+ - 类型在编译时未知，是动态构造的；
+ - 当只需要处理大对象中的一小部分数据时，以二进制方式处理数据要比反序列化整个对象更快。
+
+### 12.1.启用二进制模式
+部分Ignite.NET API具有以下`WithKeepBinary()`方法：
+
+ - `ICache<TK, TV>.WithKeepBinary<TK1, TV1>()`；
+ - `ICompute.WithKeepBinary()`；
+ - `IServices.WithKeepBinary()`和`IServices.WithServerKeepBinary()`；
+ - `IDataStreamer<TK, TV>.WithKeepBinary<TK1, TV1>`；
+
+启用二进制模式后，这些方法会返回该API的新实例（当前实例不受影响），这意味着其会返回`IBinaryObject`实例，而不是用户定义的类型实例。
+::: tip 基本类型
+注意并非所有类型都可以表示为`IBinaryObject`，基本类型、`string`、`Guid`、`DateTime`以及这些类型的集合和数组总是返回原始对象。
+:::
+
+在下面的示例中，键类型`int`不变，因为它是基本类型：
+```csharp
+ICache<int, Person> cache = ignite.GetCache<int, Person>("persons");
+cache[1] = new Person { Name = "Joe" };
+
+ICache<int, IBinaryObject> binaryCache = cache.WithKeepBinary<int, IBinaryObject>();
+IBinaryObject binaryPerson = binaryCache[1];
+
+string name = binaryPerson.GetField<string>("Name");
+```
+对于泛型API，要由用户提供适当的泛型类型参数。如果缓存中有多个键或值类型并且部分是基本类型，需要使用`.WithKeepBinary<object, object>`，然后将其安全地强制转换为`IBinaryObject`。
+### 12.2.修改二进制对象
+`IBinaryObject`是不可变的，调用`IBinaryObject.ToBuilder()`方法可以获得`IBinaryObjectBuilder`的一个实例，其持有所有二进制对象内容的副本，然后通过各种`.Set*`方法修改数据，并调用`Build()`方法来构造持有所有变更的`IBinaryObject`新实例：
+```csharp
+ICache<int, IBinaryObject> binaryCache = cache.WithKeepBinary<int, IBinaryObject>();
+IBinaryObject binaryPerson = binaryCache[1];
+string name = binaryPerson.GetField<string>("Name");
+
+IBinaryObjectBuilder builder = binaryPerson.ToBuilder();
+builder.SetField("Name", name + " - Copy");
+
+IBinaryObject binaryPerson2 = builder.Build();
+binaryCache[2] = binaryPerson2;
+```
+### 12.3.创建二进制对象
+可以从头开始创建任意类型的二进制对象，而无需通过`IBinary.GetBuilder()`方法持有任何类/结构。具体请参见`BinaryModeExample.cs`。
+```csharp
+IIgnite ignite = Ignition.Start();
+
+IBinaryObjectBuilder builder = ignite.GetBinary().GetBuilder("Book");
+
+IBinaryObject book = builder
+  .SetField("ISBN", "xyz")
+  .SetField("Title", "War and Peace")
+  .Build();
+```
+还可以使用`IBinary.GetBuilder(Type)`重载来构造已知类型的实例。
+### 12.4.二进制类型元数据
+`IBinaryObject`的元数据（类型名，字段名和类型）可以通过`IBinaryObject.GetBinaryType()`方法获得，其会返回`IBinaryType`的实例。
+
+例如，以下代码会打印任意二进制对象的内容：
+```csharp
+IBinaryObject binaryObj = binaryCache.Get(1);
+IBinaryType binaryType = binaryObj.GetBinaryType();
+
+Console.WriteLine("Object of type {0}:", binaryType.TypeName);
+
+foreach (string field in binaryType.Fields)
+{
+  object fieldVal = binaryObj.GetField<object>(field);
+  Console.WriteLine("{0} = {1}", field, fieldVal);
+}
 ```
