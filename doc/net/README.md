@@ -1440,3 +1440,143 @@ foreach (string field in binaryType.Fields)
   Console.WriteLine("{0} = {1}", field, fieldVal);
 }
 ```
+## 13.平台互操作性
+Ignite允许不同的平台（例如.NET、Java和C++）彼此互操作，不同平台上定义的类之间可以相互转换。
+
+### 13.1.标识符
+为了实现互操作性，Ignite使用通用二进制格式写入对象，此格式使用整数标识符对对象类型和字段进行编码。
+
+Ignite通过两个阶段，将对象的类型和字段名转换为整数值：
+
+ - 名称转换：将完整的类型名和字段名传递给`IBinaryNameMapper`接口，并转换为某种通用形式；
+ - ID转换：将生成的字符串传递给`IBinaryIdMapper`以生成字段ID或者类型ID。
+
+可以在`BinaryConfiguration`中配置全局映射器，也可以在`BinaryTypeConfiguration`中为具体类型配置映射器。
+
+Java有相同的接口`BinaryNameMapper`和`BinaryIdMapper`，它们也是配置在`BinaryConfiguration`或`BinaryTypeConfiguration`上。
+
+.NET和Java类型必须映射到相同的类型ID，并且相关字段必须映射到相同的字段ID。
+
+### 13.2.默认行为
+Ignite.NET的.NET部分默认会应用以下转换：
+
+ - 名称转换：`System.Type.FullName`面向非泛型类型的属性，字段或属性名称不变；
+ - ID转换：将名称转换为小写，然后以与Java中的`java.lang.String.hashCode()`方法相同的方式计算ID。
+
+Ignite.NET的Java部分默认会应用以下转换：
+
+ - 名称转换：`Class.getName()`方法用于获取类名称，字段名称保持不变；
+ - ID转换：将名称转换为小写，然后用`java.lang.String.hashCode()`计算ID。
+
+例如，如果以下两种类型在.NET命名空间和Java包外部，则它们将自动彼此映射：
+```csharp
+class Person
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public byte[] Data { get; set; }
+}
+```
+```java
+class Person
+{
+    public int id;
+    public String name;
+    public byte[] data;
+}
+```
+不过类型通常在某些命名空间或包中，包和命名空间的命名约定在Java和.NET中有所不同，.NET命名空间与Java包相同可能会出现问题。
+
+简单名称映射器（忽略命名空间）可以避免此问题，其应该在.NET端和Java端中同时配置：
+
+Java Spring XML：
+```xml
+<bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="binaryConfiguration">
+        <bean class="org.apache.ignite.configuration.BinaryConfiguration">
+            <property name="nameMapper">
+                <bean class="org.apache.ignite.binary.BinaryBasicNameMapper">
+                    <property name="simpleName" value="true"/>
+                </bean>
+            </property>
+        </bean>
+    </property>
+    ...
+</bean>
+```
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+  BinaryConfiguration = new BinaryConfiguration
+  {
+    NameMapper = new BinaryBasicNameMapper {IsSimpleName = true}
+  }
+}
+
+```
+app.config：
+```xml
+<igniteConfiguration>
+  <binaryConfiguration>
+    <nameMapper type="Apache.Ignite.Core.Binary.BinaryBasicNameMapper, Apache.Ignite.Core" isSimpleName="true" />
+  </binaryConfiguration>
+</igniteConfiguration>
+```
+### 13.3.类型兼容性
+
+|C#|Java|
+|---|---|
+|`bool`|`boolean`|
+|`byte`(*)，`sbyte`|`byte`|
+|`short`，`ushort`(*)|`short`|
+|`int`, `uint`(*)|`int`|
+|`long`,`ulong`(*)|`long`|
+|`char`|`char`|
+|`float`|`float`|
+|`double`|`double`|
+|`decimal`|`java.math.BigDecimal`(**)|
+|`decimal`|`java.lang.String`|
+|`Guid`|`java.util.UUID`|
+|`DateTime`|`java.util.Date`,`java.sql.Timestamp`|
+
+* `byte`，`ushort`，`uint`，`ulong`没有对应的Java类型，将直接按字节映射（无范围检查），例如在C#中`byte`值为`200`，对应在Java中为有符号的`byte`值`-56`。
+
+** Java中`BigDecimal`可以有任意的大小和精度，而C#中数值型固定为16个字节和28-29位精度，如果反序列化时一个`BigDecimal`无法匹配`decimal`，则Ignite.NET会抛出`BinaryObjectException`。
+
+枚举，在Ignite中，Java的`writeEnum`只会写入序数值，但是在.NET中，可以为`enumValue`分配任何数字，因此要注意，不会考虑任何自定义的枚举到原始值的绑定。
+
+::: warning DateTime序列化
+DateTime可以是Local和UTC，Java中Timestamp只能是UTC。因此Ignite.NET可以通过两种方式对DateTime进行序列化：.NET风格（可以与非UTC值一起使用，在SQL中不可用）和作为Timestamp（对非UTC值抛出异常，可用在SQL中）。
+
+反射式序列化：使用`QuerySqlField`标记字段以强制执行时间戳序列化。
+
+IBinarizable：使用`IBinaryWriter.WriteTimestamp`方法。
+
+如果无法通过`QuerySqlField`修改类来标记字段或无法实现`IBinarizable`，可以使用`IBinarySerializer`方式。具体请参见[序列化](#_11-序列化)。
+:::
+### 13.4.集合兼容性
+简单类型数组（上表所示）和对象数组都是可互操作的，所有其他集合和数组的默认行为（使用反射式序列化或`IBinaryWriter.WriteObject`）将使用`BinaryFormatter`，Java代码是无法读取的（为了正确支持泛型）。如果要将集合写为可互操作的格式，需要实现`IBinarizable`接口，并使用`IBinaryWriter.WriteCollection`/`IBinaryWriter.WriteDictionary`/`IBinaryReader.ReadCollection`/`IBinaryReader.ReadDictionary`方法。
+
+### 13.5.混合平台集群
+Ignite、Ignite.NET和Ignite.C++节点可以加入同一个集群。
+
+所有平台都是基于Java构建的，因此任何节点都可以执行Java计算。但是.NET和C++计算只能由相对应的节点执行。
+
+如果集群中至少有一个非.NET节点，则不支持以下Ignite.NET功能：
+
+ - 带过滤器的扫描查询；
+ - 带过滤器的持续查询；
+ - `ICache.Invoke`方法；
+ - 带过滤器的`ICache.LoadCache`；
+ - 服务；
+ - `IMessaging.RemoteListen`；
+ - `IEvents.RemoteQuery`；
+
+有关多平台搭建的实战文章：[构建多平台的Ignite集群：Java+.NET](https://my.oschina.net/liyuj/blog/793938)。
+
+### 13.6.混合平台集群中的计算
+`ICompute.ExecuteJavaTask`方法在任何集群上的执行都没有限制。
+
+其他`ICompute`方法将仅在.NET节点上执行闭包，如果集群中没有服务端模式的.NET节点，就会抛出`ClusterGroupEmptyException`异常。
