@@ -1580,3 +1580,91 @@ Ignite、Ignite.NET和Ignite.C++节点可以加入同一个集群。
 `ICompute.ExecuteJavaTask`方法在任何集群上的执行都没有限制。
 
 其他`ICompute`方法将仅在.NET节点上执行闭包，如果集群中没有服务端模式的.NET节点，就会抛出`ClusterGroupEmptyException`异常。
+## 14.部署
+Ignite.NET由.NET程序集和Java jar文件组成。
+
+.NET程序集由具体的项目引用，并在构建过程中自动复制到输出文件夹。
+
+Jar文件需要手工复制，Ignite.NET通过`IgniteHome`或`JvmClasspath`配置发现它们。
+
+### 14.1.完整的二进制包部署
+
+ - 复制从[https://ignite.apache.org](https://ignite.apache.org)下载的整个发行版内容以及自己的应用；
+ - 配置`IGNITE_HOME`环境变量或`IgniteConfiguration.IgniteHome`以指向该文件夹。
+
+### 14.2.NuGet部署
+在Ignite.NET NuGet软件包安装过程中，将自动更新构建后事件，以将jar文件复制到输出目录中的Libs文件夹中（具体参见[入门](#_3-入门)），分发二进制文件时，要确保包括该Libs文件夹。
+
+确认未全局配置`IGNITE_HOME`，除了ASP.NET环境（参见下文）外，通常不需要使用NuGet配置`IGNITE_HOME`。
+
+构建后事件：
+```
+if not exist "$(TargetDir)Libs" md "$(TargetDir)Libs"
+xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.1.6.0\Libs\*.*" "$(TargetDir)Libs"
+```
+### 14.3.自定义部署
+Jar文件位于发行版的`libs`文件夹和NuGet包中。
+
+Ignite.NET必需的最小Jar集合是：
+
+ - `ignite-core-{VER}.jar`；
+ - `cache-api-1.0.0.jar`；
+ - `ignite-indexing`文件夹（如果使用缓存查询）；
+ - `ignite-spring`文件夹（如果使用基于spring的配置）。
+
+将jar部署到默认位置：
+
+ - 将jar文件复制到`Apache.Ignite.Core.dll`旁边的`Libs`文件夹中；
+ - 不要配置`IgniteConfiguration.JvmClasspath`、`IgniteConfiguration.IgniteHome`属性和`IGNITE_HOME`环境变量。
+
+将jar文件部署到任意位置：
+
+ - 将jar文件复制到某处；
+ - 将`IgniteConfiguration.JvmClasspath`属性配置为指向每个jar文件路径的字符串，多个用分号分割；
+ - 不要设置`IGNITE_HOME`环境变量和`IgniteConfiguration.IgniteHome`属性。
+
+IgniteConfiguration.JvmClasspath示例：
+```
+c:\ignite-jars\ignite-core-1.5.0.final.jar;c:\ignite-jars\cache-api-1.0.0.jar
+```
+### 14.4.ASP.NET部署
+在Web环境（IIS和IIS Express）中使用Ignite时，`JvmClasspath`或`IgniteHome`必须显式配置，因为dll文件复制到了临时文件夹，而Ignite无法自动定位这些jar文件。
+
+在ASP.NET环境中可以像下面这样配置`IgniteHome`：
+```csharp
+Ignition.Start(new IgniteConfiguration
+{
+    IgniteHome = HttpContext.Current.Server.MapPath(@"~\bin\")
+});
+```
+或者，可以全局配置`IGNITE_HOME`，将下面这行代码添加到`Global.asax.cs`中`Application_Start`方法的顶部：
+```csharp
+Environment.SetEnvironmentVariable("IGNITE_HOME", HttpContext.Current.Server.MapPath(@"~\bin\"));
+```
+或者，可以使用以下方法填充`JvmClasspath`：
+```csharp
+static string GetDefaultWebClasspath()
+{
+    var dir = HttpContext.Current.Server.MapPath(@"~\bin\libs");
+
+    return string.Join(";", Directory.GetFiles(dir, "*.jar"));
+}
+```
+### 14.5.IIS程序池生命周期、AppDomains和Ignite.NET
+IIS有一个已知的问题：当重启Web应用时（由于代码更改或手动重启），程序池进程仍然在线，而AppDomain被回收。
+
+卸载AppDomain后，Ignite.NET会自动停止。不过在旧域卸载过程中，可能会启动新域，因此，旧域中的节点可能与新域中的节点发生`IgniteConfiguration.IgniteInstanceName`冲突。
+
+要解决此问题，需要确保为`IgniteInstanceName`分配唯一值或将`IgniteConfiguration.AutoGenerateIgniteInstanceName`属性设置为`true`：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration { AutoGenerateIgniteInstanceName = true };
+```
+web.config：
+```xml
+<igniteConfiguration autoGenerateIgniteInstanceName="true">
+  ...
+</igniteConfiguration>
+```
+这样就不会发生`GridName`冲突，并且来自旧AppDomain的节点最终会停止。
