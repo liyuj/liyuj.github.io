@@ -118,8 +118,9 @@ module.exports = {
                         'DurableMemory',
                         'Persistence'
                     ],
-                    '/doc/net/':[
-                        ''
+                    '/doc/net/': [
+                        '',
+                        'Clustering'
                     ],
                     '/doc/sql/': [
                         '',
