@@ -29,7 +29,7 @@ Ignite.NET构建于Ignite之上：
  - Java计算作业可以在任意节点上执行（.NET、C++和Java）；
  - .NET计算作业只能运行在.NET节点上；
 
-Ignite.NET还可以运行于[瘦客户端](#_16-瘦客户端)模式，不需要Java/JVM，与服务端使用单一的TCP连接进行通信。
+Ignite.NET还可以运行于[瘦客户端](#_15-瘦客户端)模式，不需要Java/JVM，与服务端使用单一的TCP连接进行通信。
 ## 2.Ignite定位
 
 **Ignite是不是持久化或者纯内存存储？**
@@ -736,7 +736,7 @@ Ignite.NET有`客户端`和`服务端`节点的概念。服务端节点参与缓
 
 所有Ignite节点默认均以`服务端`模式启动，`客户端`模式是需要显式指定的。
 
-另一个Ignite模式是[瘦客户端](#_16-瘦客户端)，它与原生客户端有很大不同。瘦客户端非常轻量，不参与集群拓扑。每个瘦客户端都通过套接字接入特定的Ignite节点，并通过该节点执行所有操作。瘦客户端API与完整的Ignite API相似，但功能较少。
+另一个Ignite模式是[瘦客户端](#_15-瘦客户端)，它与原生客户端有很大不同。瘦客户端非常轻量，不参与集群拓扑。每个瘦客户端都通过套接字接入特定的Ignite节点，并通过该节点执行所有操作。瘦客户端API与完整的Ignite API相似，但功能较少。
 ### 9.2.配置客户端和服务端
 通过`IgniteConfiguration.clientMode`属性，可以将一个节点配置为客户端或者服务端。
 
@@ -1668,3 +1668,96 @@ web.config：
 </igniteConfiguration>
 ```
 这样就不会发生`GridName`冲突，并且来自旧AppDomain的节点最终会停止。
+## 15.瘦客户端
+**瘦客户端**是一种轻量级的Ignite连接模式，它不会在JVM进程中启动（根本不需要Java），不参与集群，从不持有任何数据或执行计算。
+
+它只是建立与单个Ignite节点的套接字连接，然后通过该节点执行所有操作。
+
+瘦客户端模式非常适合周期短且资源受限的应用，内存和CPU使用率极低。
+
+### 15.1.安装
+瘦客户端API位于同一个`Apache.Ignite.Core`程序集中（`Apache.Ignite`NuGet程序包），然后与完整的Ignite.NET API共享许多类和接口，因此可以轻松地从一种API切换到另一种。基本安装步骤与[入门](#_3-入门)中的描述相同。
+### 15.2.环境要求
+即使程序集和NuGet包相同，要求也不同：
+
+ - 不需要Java；
+ - 支持的运行时：.NET 4.0 + 、. NET Core 2.0+；
+ - 支持的操作系统：Windows、Linux、macOS（.NET Core 2.0+支持的任何操作系统）
+
+::: warning 将多个线程与瘦客户端连接池一起使用可提高性能
+目前.NET瘦客户端没有创建多个线程来提高吞吐量的功能，不过可以通过从应用维护的池中获取瘦客户端连接来创建多个线程，以提高吞吐量。
+:::
+### 15.3.配置服务端节点
+Ignite服务端节点默认是启用了瘦客户端连接器的。该功能可以通过在.NET中将`IgniteConfiguration.ClientConnectorConfigurationEnabled`配置为`false`，或在Java或Spring的XML将`IgniteConfiguration.clientConnectorConfiguration`配置为`null`禁用。
+
+连接器可以做出如下调整：
+
+C#：
+```csharp
+var cfg =  new IgniteConfiguration
+{
+    ClientConnectorConfiguration = new ClientConnectorConfiguration
+    {
+      Host = "myHost",
+      MaxOpenCursorsPerConnection = 64,
+      Port = 10900,
+      PortRange = 50
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+  <clientConnectorConfiguration host='myHost' port='10900' portRange='50' maxOpenCursorsPerConnection='50' />
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean  class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="clientConnectorConfiguration">
+        <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
+            <property name="host" value="myHost"/>
+            <property name="port" value="11110"/>
+            <property name="portRange" value="30"/>
+        </bean>
+    </property>
+</bean>
+```
+### 15.4.接入集群
+瘦客户端API的入口点就是`Ignition.StartClient(IgniteClientConfiguration)`方法，其中`IgniteClientConfiguration.Host`属性是必需的，它应指向运行Ignite服务端节点的主机，其他属性应对应于服务端节点中`ClientConnectorConfiguration`的属性。
+
+假定服务端节点在本地运行，并且`ClientConnectorConfiguration`是默认的配置：
+```csharp
+var cfg = new IgniteClientConfiguration
+{
+  Host = "127.0.0.1"
+};
+
+using (IIgniteClient client = Ignition.StartClient(cfg))
+{
+  ICacheClient<int, string> cache = client.GetCache<int, string>("cache");
+  cache.Put(1, "Hello, World!");
+}
+```
+**认证**
+
+如果服务端[启用了认证](/doc/java/Security.md#_2-高级安全)，则必须提供用户的凭据：
+```csharp
+var cfg = new IgniteClientConfiguration
+{
+  Host = "127.0.0.1",
+  Port = 10900,
+  UserName = "ignite",
+  Password = "kg1mmcoXZU"
+};
+
+using (IIgniteClient client = Ignition.StartClient(cfg))
+{
+  ICacheClient<int, string> cache = client.GetCache<int, string>("cache");
+  cache.Put(1, "Hello, World!");
+}
+```
+### 15.5.瘦客户端API
+瘦客户端提供了完整Ignite.NET API的一个子集，它在不断发展，后续计划在胖客户端和瘦客户端中都支持大多数API。
+
+当前版本支持Cache API`ICacheClient`，包括支持谓词的`ScanQuery`。
