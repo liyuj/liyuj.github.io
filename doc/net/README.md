@@ -1758,6 +1758,76 @@ using (IIgniteClient client = Ignition.StartClient(cfg))
 }
 ```
 ### 15.5.瘦客户端API
-瘦客户端提供了完整Ignite.NET API的一个子集，它在不断发展，后续计划在胖客户端和瘦客户端中都支持大多数API。
+瘦客户端提供了完整Ignite.NET API的一个子集，并且还在不断发展，后续计划在胖客户端和瘦客户端中都支持大多数API。
 
 当前版本支持Cache API`ICacheClient`，包括支持谓词的`ScanQuery`。
+## 16.故障解决
+### 16.1.使用控制台
+Ignite会产生控制台输出（stdout）：信息、指标、警告、错误详细信息等，如果应用未打开控制台，则可以将控制台输出重定向到字符串或文件：
+```csharp
+var sw = new StringWriter();
+Console.SetOut(sw);
+
+// Examine output:
+sw.ToString();
+```
+### 16.2.获取有关异常的更多信息
+当拿到`IgniteException`时，一定要检查其中的`InnerException`属性，该属性通常包含有关错误的更多详细信息，具体可以在Visual Studio的调试器中或通过在异常对象上调用`ToString()`方法看到：
+
+![](https://files.readme.io/e211459-Screen_Shot_2016-10-31_at_12.19.07_PM.png)
+
+```csharp
+try {
+    IQueryCursor<List> cursor = cache.QueryFields(query);
+}
+catch (IgniteException e) {
+    // Printing out the whole exception meesage.
+    Console.WriteLine(e.ToString());
+}
+```
+### 16.3.无法加载jvm.dll
+确认已安装JDK，配置好了`JAVA_HOME`环境变量并指向JDK安装目录。最新的JDK可以在这里找到：[http://www.oracle.com/technetwork/java/javase/downloads/index.html](http://www.oracle.com/technetwork/java/javase/downloads/index.html)。
+
+`errorCode=193`是`ERROR_BAD_EXE_FORMAT`，通常是由x64/x86不匹配引起的。确认已安装的JDK和应用具有相同的x64/x86平台架构。当未设置`JAVA_HOME`时，Ignite会自动检测到合适的JDK，因此即使同时安装了x86和x64的JDK，也没有问题。
+### 16.4.无法找到Java类
+检查`IGNITE_HOME`环境变量、`IgniteConfiguration.IgniteHome`和`IgniteConfiguration.JvmClasspath`属性，具体请参见[部署](#_14-部署)章节，ASP.NET/IIS场景还需要其他的步骤。
+### 16.5.Ignition.Start阻塞
+检查控制台输出。
+
+最常见的原因是拓扑连接失败：
+
+ - 发现部分的配置不正确（请参见[群集配置](/doc/net/Clustering.md#_4-集群配置)）；
+ - `ClientMode`是`true`的，但是没有服务端节点（请参见[客户端和服务端](#_9-客户端和服务端)）。
+
+### 16.6.启动管理器失败: GridManagerAdapter
+检查控制台输出。
+
+通常这是由无效或不兼容的配置引起的：
+
+ - 某些配置属性值无效（超出范围等）；
+ - 某些配置属性与其他集群节点中的值不兼容。尤其是`BinaryConfiguration`中的属性，例如`CompactFooter`、`IdMapper`和`NameMapper`应在所有节点上是相同的。
+
+当搭建混合集群（Java + .NET节点）时，通常会出现后一个问题，因为这些平台上的默认配置是不同的。.NET仅支持`BinaryBasicIdMapper`和`BinaryBasicNameMapper`，因此必须通过以下方式调整Java配置以启用.NET节点的接入：
+```xml
+<property name="binaryConfiguration">
+    <bean class="org.apache.ignite.configuration.BinaryConfiguration">
+        <property name="compactFooter" value="true"/>
+        <property name="idMapper">
+            <bean class="org.apache.ignite.binary.BinaryBasicIdMapper">
+                <constructor-arg value="true"/>
+            </bean>
+        </property>
+        <property name="nameMapper">
+            <bean class="org.apache.ignite.binary.BinaryBasicNameMapper">
+                <constructor-arg value="true"/>
+            </bean>
+        </property>
+    </bean>
+</property>
+```
+### 16.7.无法加载文件或程序集'MyAssembly'或其依赖，系统无法找到指定文件
+远程节点缺失某程序集时会抛出该异常，具体请参见[加载用户程序集](#_6-3-加载用户程序集)。
+### 16.8.堆栈溢出错误，.NET终止
+在Linux平台的.NET Core环境下，当用户代码抛出`NullReferenceException`异常时，就会发生这种情况。其原因是，.NET和Java都使用SIGSEGV来处理某些异常，包括`NullPointerException`和`NullReferenceException`，当JVM与.NET运行在同一进程中时，它将覆盖该处理器，破坏.NET异常处理（具体参见[1](https://github.com/dotnet/coreclr/issues/25945)，[2](https://github.com/dotnet/coreclr/issues/25166)）。
+
+.NET Core 3.0解决了该问题（[#25972](https://github.com/dotnet/coreclr/pull/25972)：将`COMPlus_EnableAlternateStackCheck`环境变量设置为`1`）。
