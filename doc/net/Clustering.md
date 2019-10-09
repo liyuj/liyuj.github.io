@@ -91,3 +91,132 @@ int activeJobs = metrics.CurrentActiveJobs;
 ```csharp
 IClusterNode localNode = ignite.GetCluster().GetLocalNode();
 ```
+## 2.集群组
+`IClusterGroup`用于表示集群节点的逻辑分组。
+
+在Ignite.NET中，所有节点在设计上都是等价的，因此不必按特定顺序启动任何节点，也不必为其分配任何特定角色。不过Ignite允许开发者按需对集群节点进行逻辑分组。例如可能希望仅在远程节点上部署服务，或为某些工作节点分配`worker`角色用于作业的执行。
+::: tip 注意
+注意`ICluster`接口也是一个集群组，其中包括集群中的所有节点。
+:::
+
+可以将作业执行、服务部署、消息传递、事件和其他任务限制为仅在某些集群组中运行。例如下面是仅向远程节点（本地节点除外）广播作业的方法：
+```csharp
+IIgnite ignite = Ignition.Start();
+
+ICluster cluster = ignite.GetCluster();
+
+// Get compute instance which will only execute
+// over remote nodes, i.e. not this node.
+ICompute compute = ignite.GetCompute(cluster.ForRemotes());
+
+// Broadcast to all remote nodes and print the ID of the node
+// on which this closure is executing.
+compute.Broadcast(new MyComputeAction());
+```
+### 2.1.预定义集群组
+可以基于任何谓词创建集群组，为了方便Ignite也附带了一些预定义的集群组。
+
+以下是`ClusterGroup`接口上一些可用的集群组示例：
+
+远程节点：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// Cluster group with remote nodes, i.e. other than this node.
+IClusterGroup remoteGroup = cluster.ForRemotes();
+```
+缓存节点：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// All nodes on which cache with name "myCache" is deployed,
+// either in client or server mode.
+IClusterGroup cacheGroup = cluster.ForCacheNodes("myCache");
+
+// All data nodes responsible for caching data for "myCache".
+IClusterGroup dataGroup = cluster.ForDataNodes("myCache");
+
+// All client nodes that access "myCache".
+IClusterGroup clientGroup = cluster.ForClientNodes("myCache");
+```
+带有节点属性的节点：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// All nodes with attribute "ROLE" equal to "worker".
+IClusterGroup attrGroup = cluster.ForAttribute("ROLE", "worker");
+```
+某主机上的节点：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// Pick a remote node.
+IClusterNode remoteNode = cluster.ForRemotes().GetNode();
+
+// All nodes on the same physical host as the remote node.
+IClusterGroup sameHost = cluster.forHost(remoteNode);
+```
+最老的节点：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// Dynamic cluster group representing the oldest cluster node.
+// Will automatically shift to the next oldest, if the oldest
+// node crashes.
+IClusterGroup oldestNode = cluster.ForOldest();
+```
+本地节点：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// Cluster group with only this (local) node in it.
+IClusterGroup localGroup = cluster.ForLocal();
+
+// Local node.
+IClusterNode localNode = localGroup.GetNode();
+```
+### 2.2.自定义集群组
+可以基于某些谓词定义动态集群组，这样的集群组将始终仅包括符合谓词的节点。
+
+下面是CPU利用率低于50％的节点上的集群组示例，注意该组中的节点将根据其CPU负载随时间变化：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// Nodes with less than 50% CPU load.
+IClusterGroup readyNodes = _grid1.GetCluster().ForPredicate(node => node.GetMetrics().CurrentCpuLoad < 0.5);
+```
+### 2.3.从集群组获取节点
+可以像下面这样获取各种集群组节点：
+```csharp
+IClusterGroup remoteGroup = cluster.ForRemotes();
+
+// All cluster nodes in the group.
+ICollection<IClusterNode> grpNodes = remoteGroup.GetNodes();
+
+// First node in the group (useful for groups with one node).
+IClusterNode node = remoteGroup.GetNode();
+
+// And if you know a node ID, get node by ID.
+Guid myID = ...;
+
+node = remoteGroup.GetNode(myId);
+```
+### 2.4.集群组指标
+Ignite会自动收集有关所有集群节点的指标，更好的是它会自动聚合集群组中所有节点上的指标，并在组中提供适当的平均值，最小值和最大值。
+
+通过`IClusterMetrics`接口可以拿到50多种不同的集群组指标（注意相同的指标也可用于单个集群节点）。
+
+这是获取所有远程节点上的部分指标的示例（包括平均CPU负载和已用堆空间）：
+```csharp
+// Cluster group with remote nodes, i.e. other than this node.
+IClusterGroup remoteGroup = ignite.GetCluster().ForRemotes();
+
+// Cluster group metrics.
+IClusterMetrics metrics = remoteGroup.GetMetrics();
+
+// Get some metric values.
+double cpuLoad = metrics.CurrentCpuLoad;
+long usedHeap = metrics.HeapMemoryUsed;
+int numberOfCores = metrics.TotalCpus;
+int activeJobs = metrics.CurrentActiveJobs;
+```
