@@ -220,3 +220,40 @@ long usedHeap = metrics.HeapMemoryUsed;
 int numberOfCores = metrics.TotalCpus;
 int activeJobs = metrics.CurrentActiveJobs;
 ```
+## 3.领导者选举
+在分布式环境中，有时需要保证始终选择相同的节点，而不管集群拓扑如何变化，这样的节点通常称为**领导者**。
+
+在许多系统中，选举集群领导者通常与数据的一致性有关，并通过收集集群节点的选票来处理。而在Ignite中数据一致性是由数据网格的映射函数（例如[约会哈希](http://en.wikipedia.org/wiki/Rendezvous_hashing)）处理的，因此传统意义上通过选择领导者来确保数据网格之外的数据一致性是不需要的。
+
+不过可能还是希望针对某些任务能有一个*协调器*节点。为此Ignite可以自动始终选择集群中最老或最新的节点。
+
+::: warning 使用服务网格
+注意，对于大多数领导者或类似单例的场景，建议使用**服务网格**功能，因为它可以自动部署各种集群单例服务，并且通常更易于使用。
+:::
+### 3.1.最老的节点
+最老的节点有一个属性，无论何时添加新节点，它都保持不变。最老的节点变更的唯一时点是它离开集群或故障时。
+
+下面是如何获取仅包含最老节点的[集群组](#_2-集群组)的示例：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// Dynamic cluster group representing the oldest cluster node.
+// Will automatically shift to the next oldest, if the oldest
+// node crashes.
+IClusterGroup oldestNode = cluster.ForOldest();
+```
+### 3.2.最新的节点
+最新的节点与最老的节点不同，每当新节点加入集群时都会不断变化。不过有时它仍然很方便，特别是如果仅需要在新加入的节点上执行某些任务时，尤其如此。
+
+下面是如何获取仅包含最新节点的[集群组](#_2-集群组)的示例：
+```csharp
+ICluster cluster = ignite.GetCluster();
+
+// Dynamic cluster group representing the youngest cluster node.
+// Will automatically shift to the previous youngest, if the youngest
+// node crashes.
+IClusterGroup youngestNode = cluster.ForYoungest();
+```
+::: tip 提示
+获取群集组后，就可以将其用于执行任务、部署服务、发送消息等等。
+:::
