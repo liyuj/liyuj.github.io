@@ -255,5 +255,373 @@ ICluster cluster = ignite.GetCluster();
 IClusterGroup youngestNode = cluster.ForYoungest();
 ```
 ::: tip 提示
-获取群集组后，就可以将其用于执行任务、部署服务、发送消息等等。
+获取集群组后，就可以将其用于执行任务、部署服务、发送消息等等。
 :::
+## 4.集群配置
+在Ignite中，节点可以通过`DiscoverySpi`相互发现，其默认实现是使用TCP/IP的`TcpDiscoverySpi`，Ignite中还支持基于组播和静态IP机制的节点发现模式。
+
+### 4.1.基于组播的发现
+`TcpDiscoveryMulticastIpFinder`使用组播来发现网格中的其他节点，并且是默认的IP探测器。除非打算修改默认设置，否则不必指定它。下面是配置此探测器的示例：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    DiscoverySpi = new TcpDiscoverySpi
+    {
+        IpFinder = new TcpDiscoveryMulticastIpFinder
+        {
+            MulticastGroup = "228.10.10.157"
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <discoverySpi type='TcpDiscoverySpi'>
+        <ipFinder type='TcpDiscoveryMulticastIpFinder' multicastGroup='228.10.10.157' />
+    </discoverySpi>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+  ...
+  <property name="discoverySpi">
+    <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+      <property name="ipFinder">
+        <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
+          <property name="multicastGroup" value="228.10.10.157"/>
+        </bean>
+      </property>
+    </bean>
+  </property>
+</bean>
+```
+### 4.2.基于静态IP的发现
+对于禁用了组播的情况，应该使用`TcpDiscoveryStaticIpFinder`（Java中的`TcpDiscoveryVmIpFinder`），它需要事先配置好一个IP地址列表。
+
+只需要提供至少一个远程节点的IP地址，但是通常建议提供2-3个在将来可能会启动的节点的地址。一旦建立了到任意IP地址的连接，Ignite就会自动发现所有其他的节点。
+::: warning 警告
+`TcpDiscoveryStaticIpFinder`默认在非共享模式下使用。如果打算启动服务端节点，则在此模式下，IP地址列表也应包含本地节点的地址，这样就不需要等待其他节点的加入，而是成为第一个节点并正常运行。
+:::
+
+下面是配置此探测器的示例：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    DiscoverySpi = new TcpDiscoverySpi
+    {
+        IpFinder = new TcpDiscoveryStaticIpFinder
+        {
+            Endpoints = {"1.2.3.4", "1.2.3.5:47500..47509" }
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <discoverySpi type='TcpDiscoverySpi'>
+        <ipFinder type='TcpDiscoveryStaticIpFinder'>
+            <endpoints>
+                <string>1.2.3.4</string>
+                <string>1.2.3.5:47500..47509</string>
+            </endpoints>
+        </ipFinder>
+    </discoverySpi>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+  ...
+  <property name="discoverySpi">
+    <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+      <property name="ipFinder">
+        <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+          <property name="addresses">
+            <list>
+              <value>1.2.3.4</value>
+              <value>1.2.3.5:47500..47509</value>
+            </list>
+          </property>
+        </bean>
+      </property>
+    </bean>
+  </property>
+</bean>
+```
+### 4.3.基于组播和静态IP的发现
+可以同时使用基于组播和静态IP的发现。这时除了通过组播接收的地址（如果有）之外，`TcpDiscoveryMulticastIpFinder`还可以与预配置的静态IP地址列表一起使用，就像上述基于静态IP的发现一样。下面是配置示例：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    DiscoverySpi = new TcpDiscoverySpi
+    {
+        IpFinder = new TcpDiscoveryMulticastIpFinder
+        {
+            MulticastGroup = "228.10.10.157",
+            Endpoints = {"1.2.3.4", "1.2.3.5:47500..47509" }
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <discoverySpi type='TcpDiscoverySpi'>
+        <ipFinder type='TcpDiscoveryMulticastIpFinder' multicastGroup='228.10.10.157'>
+            <endpoints>
+                <string>1.2.3.4</string>
+                <string>1.2.3.5:47500..47509</string>
+            </endpoints>
+        </ipFinder>
+    </discoverySpi>
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+  ...
+  <property name="discoverySpi">
+    <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+      <property name="ipFinder">
+        <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
+          <property name="multicastGroup" value="228.10.10.157"/>
+          <property name="addresses">
+            <list>
+              <value>1.2.3.4</value>
+              <value>1.2.3.5:47500..47509</value>
+            </list>
+          </property>
+        </bean>
+      </property>
+    </bean>
+  </property>
+</bean>
+```
+### 4.4.在同一个机器组中隔离Ignite集群
+出于测试目的或其他原因，有时可能需要在同一台主机上启动两个隔离的Ignite集群。
+
+对于`TcpDiscoverySpi`和`TcpCommunicationSpi`，如果不同集群的节点使用非交叉的本地端口范围，这个功能是可以实现的。
+
+假设需要在一台主机上启动两个隔离的集群用于测试，那么第一个集群中的节点，应使用以下`TcpDiscoverySpi`和`TcpCommunicationSpi`配置：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    // Explicitly configure TCP discovery SPI to provide list of initial nodes
+    // from the first cluster.
+    DiscoverySpi = new TcpDiscoverySpi
+    {
+        // Initial local port to listen to.
+        LocalPort = 48500,
+        // Changing local port range. This is an optional action.
+        LocalPortRange = 20,
+        IpFinder = new TcpDiscoveryStaticIpFinder
+        {
+            // Addresses and port range of the nodes from the first cluster.
+            // 127.0.0.1 can be replaced with actual IP addresses or host names.
+            // The port range is optional.
+            Endpoints = new[] {"127.0.0.1:48500..48520"}
+        }
+    },
+    // Explicitly configure TCP communication SPI changing
+    // local port number for the nodes from the first cluster.
+    CommunicationSpi = new TcpCommunicationSpi
+    {
+        LocalPort = 48100
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <!--
+        Explicitly configure TCP discovery SPI to provide list of initial
+        nodes from the second cluster.
+    -->
+    <discoverySpi type='TcpDiscoverySpi' localPort='48500' localPortRange='20'>
+        <ipFinder type='TcpDiscoveryMulticastIpFinder'>
+            <endpoints>
+                <!--
+                    Addresses and port range of the nodes from the second cluster.
+                    127.0.0.1 can be replaced with actual IP addresses or host names. Port range is optional.
+                -->
+                <string>127.0.0.1:48500..48520</string>
+            </endpoints>
+        </ipFinder>
+    </discoverySpi>
+
+    <!--
+        Explicitly configure TCP communication SPI changing local port number
+        for the nodes from the second cluster.
+    -->
+    <communicationSpi type='TcpCommunicationSpi' localPort='48100' />
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+  	...
+    <!--
+ 				Explicitly configure TCP discovery SPI to provide list of
+				initial nodes from the first cluster.
+ 	  -->
+    <property name="discoverySpi">
+        <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+            <!-- Initial local port to listen to. -->
+            <property name="localPort" value="48500"/>
+
+            <!-- Changing local port range. This is an optional action. -->
+            <property name="localPortRange" value="20"/>
+
+            <!-- Setting up IP finder for this cluster -->
+            <property name="ipFinder">
+                <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                    <property name="addresses">
+                        <list>
+                            <!--
+                                Addresses and port range of the nodes from the first
+ 																cluster.
+                                127.0.0.1 can be replaced with actual IP addresses or
+ 																host names. Port range is optional.
+                            -->
+                            <value>127.0.0.1:48500..48520</value>
+                        </list>
+                    </property>
+                </bean>
+            </property>
+        </bean>
+    </property>
+
+    <!--
+        Explicitly configure TCP communication SPI changing local
+ 				port number for the nodes from the first cluster.
+    -->
+    <property name="communicationSpi">
+        <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+            <property name="localPort" value="48100"/>
+        </bean>
+    </property>
+</bean>
+```
+而第二个集群中的节点，配置如下：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    // Explicitly configure TCP discovery SPI to provide list of initial nodes
+    // from the first cluster.
+    DiscoverySpi = new TcpDiscoverySpi
+    {
+        // Initial local port to listen to.
+        LocalPort = 49500,
+        // Changing local port range. This is an optional action.
+        LocalPortRange = 20,
+        IpFinder = new TcpDiscoveryStaticIpFinder
+        {
+            // Addresses and port range of the nodes from the first cluster.
+            // 127.0.0.1 can be replaced with actual IP addresses or host names.
+            // The port range is optional.
+            Endpoints = {"127.0.0.1:49500..49520"}
+        }
+    },
+    // Explicitly configure TCP communication SPI changing
+    // local port number for the nodes from the first cluster.
+    CommunicationSpi = new TcpCommunicationSpi
+    {
+        LocalPort = 49100
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <!--
+        Explicitly configure TCP discovery SPI to provide list of initial
+        nodes from the second cluster.
+    -->
+    <discoverySpi type='TcpDiscoverySpi' localPort='49500' localPortRange='20'>
+        <ipFinder type='TcpDiscoveryMulticastIpFinder'>
+            <endpoints>
+                <!--
+                    Addresses and port range of the nodes from the second cluster.
+                    127.0.0.1 can be replaced with actual IP addresses or host names. Port range is optional.
+                -->
+                <string>127.0.0.1:49500..49520</string>
+            </endpoints>
+        </ipFinder>
+    </discoverySpi>
+
+    <!--
+        Explicitly configure TCP communication SPI changing local port number
+        for the nodes from the second cluster.
+    -->
+    <communicationSpi type='TcpCommunicationSpi' localPort='49100' />
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+    <!--
+        Explicitly configure TCP discovery SPI to provide list of initial
+         nodes from the second cluster.
+    -->
+    <property name="discoverySpi">
+        <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+            <!-- Initial local port to listen to. -->
+            <property name="localPort" value="49500"/>
+
+            <!-- Changing local port range. This is an optional action. -->
+            <property name="localPortRange" value="20"/>
+
+            <!-- Setting up IP finder for this cluster -->
+            <property name="ipFinder">
+                <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                    <property name="addresses">
+                        <list>
+                            <!--
+                                Addresses and port range of the nodes from the second
+ 																cluster.
+                                127.0.0.1 can be replaced with actual IP addresses or
+ 																host names. Port range is optional.
+                            -->
+                            <value>127.0.0.1:49500..49520</value>
+                        </list>
+                    </property>
+                </bean>
+            </property>
+        </bean>
+    </property>
+
+    <!--
+        Explicitly configure TCP communication SPI changing local port number
+        for the nodes from the second cluster.
+    -->
+    <property name="communicationSpi">
+        <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+            <property name="localPort" value="49100"/>
+        </bean>
+    </property>
+</bean>
+```
+从配置中可以看到，它们之间的差别很小，仅SPI和IP探测器的端口号有所不同。
+::: tip 提示
+如果希望来自不同集群的节点能使用组播协议互相发现，则在上面的每个配置中可以将`TcpDiscoveryStaticIpFinder`替换为`TcpDiscoveryMulticastIpFinder`，并为每个集群设置唯一的`TcpDiscoveryMulticastIpFinder.MulticastGroups`。
+:::
+### 4.5.故障检测超时
+故障检测超时用于确定节点在认为无法与其他节点连接之前应等待多长时间，这是根据集群的网络和硬件条件调整发现SPI的故障检测功能的最简单方法。
+::: warning 注意
+超时自动控制诸如`TcpDiscoverySpi`套接字超时、消息确认超时等配置参数，如果显式配置了这些参数中的任何一个，则故障超时配置将被忽略。
+:::
+
+故障检测超时通过`IgniteConfiguration.FailureDetectionTimeout`属性进行配置，默认值是10秒，该值可以使发现SPI在大多数硬件和虚拟环境上都能可靠地工作，但这使故障检测时间变得很长。不过对于稳定的低延迟网络，该参数可以设置为~200毫秒，以便更快地检测故障并对故障做出反应。

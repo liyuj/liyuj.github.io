@@ -1796,7 +1796,7 @@ catch (IgniteException e) {
 
 最常见的原因是拓扑连接失败：
 
- - 发现部分的配置不正确（请参见[群集配置](/doc/net/Clustering.md#_4-集群配置)）；
+ - 发现部分的配置不正确（请参见[集群配置](/doc/net/Clustering.md#_4-集群配置)）；
  - `ClientMode`是`true`的，但是没有服务端节点（请参见[客户端和服务端](#_9-客户端和服务端)）。
 
 ### 16.6.启动管理器失败: GridManagerAdapter
