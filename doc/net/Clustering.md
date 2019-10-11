@@ -625,3 +625,151 @@ Spring XML：
 :::
 
 故障检测超时通过`IgniteConfiguration.FailureDetectionTimeout`属性进行配置，默认值是10秒，该值可以使发现SPI在大多数硬件和虚拟环境上都能可靠地工作，但这使故障检测时间变得很长。不过对于稳定的低延迟网络，该参数可以设置为~200毫秒，以便更快地检测故障并对故障做出反应。
+## 5.网络配置
+`CommunicationSpi`提供了基本的管道用于发送和接收网格消息，以及所有的分布式网格操作，例如任务执行、监控数据交换、分布式事件查询等。Ignite提供了`TcpCommunicationSpi`作为`CommunicationSpi`的默认实现，其使用TCP/IP与其他节点进行通信。
+
+启动时此SPI会尝试监听由`TcpCommunicationSpi.LocalPort`指定的本地端口，如果本地端口被占用，那么SPI将自动增加端口号，直到成功绑定为止，SPI在失败之前将尝试的最大端口数由`TcpCommunicationSpi.LocalPortRange`参数控制。
+
+::: tip 本地端口范围
+当在同一台主机甚至同一台VM上启动多个节点时，端口范围非常方便。这时无需修改任何配置即可启动所有节点。
+:::
+**示例**
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CommunicationSpi = new TcpCommunicationSpi
+    {
+        LocalPort = 4321   // Override local port.
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+  	<!-- Override local port. -->
+    <communicationSpi type='TcpCommunicationSpi' localPort='4321' />
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+  ...
+  <property name="communicationSpi">
+    <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+      <!-- Override local port. -->
+      <property name="localPort" value="4321"/>
+    </bean>
+  </property>
+  ...
+</bean>
+```
+## 6.SSL和TLS
+Ignite.NET支持在所有节点间使用SSL套接字通信，具体可以参见Ignite的文档[SSL和TLS](/doc/java/Security.md#_1-ssl和tls)。
+## 7.远程程序集加载
+### 7.1.概述
+许多Ignite API都涉及远程代码执行，例如将计算任务和函数序列化，然后发送到远程节点并执行。但是远程节点必须加载具有这些功能的.NET程序集（dll文件），以便实例化和反序列化任务实例。
+
+在Ignite的2.1版之前，必须手动加载程序集（使用Apache.Ignite.exe的`-assembly`开关或其他方式）。从2.1版开始引入了自动远程程序集加载，由`IgniteConfiguration.PeerAssemblyLoadingMode`控制。其默认值为`Disabled`，这意味着和之前的行为一致。在集群中的所有节点上，该属性值必须全部相同。还有另一种可用的模式是`CurrentAppDomain`。
+
+### 7.2.CurrentAppDomain模式
+开启`PeerAssemblyLoadingMode.CurrentAppDomain`可以实现集群中其他节点的自动按需程序集请求，将程序集加载到运行Ignite节点的[AppDomain](https://msdn.microsoft.com/en-us/library/system.appdomain.aspx)中。
+
+考虑以下代码：
+```csharp
+// Print Hello World on all cluster nodes.
+ignite.GetCompute().Broadcast(new HelloAction());
+
+class HelloAction : IComputeAction
+{
+  public void Invoke()
+  {
+    Console.WriteLine("Hello World!");
+  }
+}
+```
+ - Ignite序列化`HelloAction`实例并发送到集群中的每个节点；
+ - 远程节点尝试反序列化`HelloAction`，如果当前已加载或引用的程序集中没有此类，则将请求发送到`Broadcast`被调用的节点，然后发送到其他节点（如有必要）；
+ - 程序集文件从其他节点作为字节数组发送，并通过`Assembly.Load(byte[])`方法加载。
+
+**版本控制**
+
+[程序集限定类型名](https://msdn.microsoft.com/en-us/library/system.type.assemblyqualifiedname.aspx)（包括程序集版本）用于解析类型。
+
+如果集群处于运行态，修改`HelloAction`，让其输出一些内容，再修改[AssemblyVersion](https://msdn.microsoft.com/en-us/library/system.reflection.assemblyversionattribute.aspx)，重新编译并运行代码，将部署并执行新版本的程序集。
+
+但是如果不修改`AssemblyVersion`，则Ignite将使用以前加载的现有程序集，因为类型名没有变化。
+
+不同版本的程序集可以共存，老节点可以继续运行旧代码，而新节点可以使用同一类的较新版本执行计算。
+
+`AssemblyVersion`属性可以包含星号（`*`），以在构建时可以自动增量处理：`[assembly: AssemblyVersion("1.0.*")]`。这样就可以保持集群运行，重复修改和运行计算，并且每次都将部署新的程序集版本。
+
+**依赖**
+
+依赖程序集也会自动加载（例如`ComputeAction`从其他程序集调用某些代码时），因此使用很重的框架和库时，要注意单个计算调用可能导致大量程序集的网络传输。
+
+**卸载**
+
+.NET不允许卸载程序集，只能是`AppDomain`作为整体卸载所有的程序集。当前可用的`CurrentAppDomain`模式使用现有的AppDomain，这意味着在当前AppDomain存在时，所有对等部署的程序集将保持加载状态，这可能会导致内存使用增加。
+
+### 7.3.示例
+二进制发行版中有`PeerAssemblyLoadingExample`，具体可以参见源代码。
+
+下面是使用NuGet测试程序集加载的方法：
+
+ - 在Visual Studio中创建一个新的控制台应用；
+ - 安装Ignite.NET NuGet软件包`Install-Package Apache.Ignite`；
+ - 打开`packages\Apache.Ignite.2.1\lib\net40`文件夹；
+ - 向`<igniteConfiguration>`元素添加`peerAssemblyLoadingMode='CurrentAppDomain'`属性；
+ - 运行`Apache.Ignite.exe`（一次或多次），保持进程运行；
+ - 将`AssemblyInfo.cs`中的`AssemblyVersion`值改为`1.0.*`；
+ - 在Visual Studio中修改`Program.cs`，如下所示：
+
+Program.cs：
+```csharp
+using System;
+using Apache.Ignite.Core;
+using Apache.Ignite.Core.Compute;
+using Apache.Ignite.Core.Deployment;
+
+namespace ConsoleApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var cfg = new IgniteConfiguration
+            {
+                PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.CurrentAppDomain
+            };
+
+            using (var ignite = Ignition.Start(cfg))
+            {
+                ignite.GetCompute().Broadcast(new HelloAction());
+            }
+        }
+
+        class HelloAction : IComputeAction
+        {
+            public void Invoke()
+            {
+                Console.WriteLine("Hello, World!");
+            }
+        }
+    }
+}
+```
+Apache.Ignite.exe.config：
+```xml
+<igniteConfiguration peerAssemblyLoadingMode='CurrentAppDomain' />
+```
+AssemblyInfo.cs：
+```
+...
+[assembly: AssemblyVersion("1.0.*")]
+...
+```
+
+ - 运行该项目并观察"Hello，World！"在所有`Apache.Ignite.exe`窗口的控制台输出；
+ - 将"Hello，World！"改为其他的值，然后再次运行该程序，观察每个节点的输出有何不同。
