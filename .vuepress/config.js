@@ -1,6 +1,6 @@
 module.exports = {
     title: 'Apache Ignite中文网',
-    description: '轻量级分布式内存HTAP数据库及计算平台',
+    description: '轻量级分布式内存HTAP数据库及计算平台GridGain中国大陆地区独家合作伙伴',
     dest: "dist",
     head: [
         ['meta', { "http-equiv": 'cache-control', "content": 'no-store,no-cache,must-revalidate' }],
