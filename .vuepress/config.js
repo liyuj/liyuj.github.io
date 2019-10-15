@@ -120,7 +120,8 @@ module.exports = {
                     ],
                     '/doc/net/': [
                         '',
-                        'Clustering'
+                        'Clustering',
+                        'DataGrid'
                     ],
                     '/doc/sql/': [
                         '',

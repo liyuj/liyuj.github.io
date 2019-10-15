@@ -1557,7 +1557,7 @@ IBinarizable：使用`IBinaryWriter.WriteTimestamp`方法。
 如果无法通过`QuerySqlField`修改类来标记字段或无法实现`IBinarizable`，可以使用`IBinarySerializer`方式。具体请参见[序列化](#_11-序列化)。
 :::
 ### 13.4.集合兼容性
-简单类型数组（上表所示）和对象数组都是可互操作的，所有其他集合和数组的默认行为（使用反射式序列化或`IBinaryWriter.WriteObject`）将使用`BinaryFormatter`，Java代码是无法读取的（为了正确支持泛型）。如果要将集合写为可互操作的格式，需要实现`IBinarizable`接口，并使用`IBinaryWriter.WriteCollection`/`IBinaryWriter.WriteDictionary`/`IBinaryReader.ReadCollection`/`IBinaryReader.ReadDictionary`方法。
+简单类型数组（上表所示）和对象数组都是可互操作的，所有其他集合和数组的默认行为（使用反射式序列化或`IBinaryWriter.WriteObject`）将使用`BinaryFormatter`，Java代码是无法读取的（为了正确支持泛型）。如果要将集合写为可互操作的格式，需要实现`IBinarizable`接口，并使用`IBinaryWriter.WriteCollection`或`IBinaryWriter.WriteDictionary`或`IBinaryReader.ReadCollection`或`IBinaryReader.ReadDictionary`方法。
 
 ### 13.5.混合平台集群
 Ignite、Ignite.NET和Ignite.C++节点可以加入同一个集群。
