@@ -221,3 +221,47 @@ var cursor = cache.Query(new TextQuery("Person", "Master Degree"));
 foreach (var cacheEntry in cursor)
     Console.WriteLine(cacheEntry.Value);
 ```
+## 5.持续查询
+持续查询可以监听缓存中数据的变化，启动后就会收到符合查询条件的数据变化的通知。
+
+Ignite通过`ContinuousQuery`类和`ICache.QueryContinuous`方法来支持持续查询，其支持以下内容：
+
+**初始查询**
+
+执行持续查询时，在开始监听更新之前可以执行一个初始查询，初始查询通过`initialQry`参数设置，可以是任何Ignite查询类型，扫描查询、SQL查询或文本查询。
+
+**远程过滤器**
+
+该过滤器在给定键的主节点上执行，并评估是否应将事件传播到监听器。如果过滤器返回`true`，则将通知监听器，否则将跳过该事件。在触发事件的节点上进行过滤可以最大程度地减少不必要的与监听器通知有关的网络流量。远程监听器是通过`ContinuousQuery.Filter`属性进行配置的。
+
+**本地监听器**
+
+只要事件与远程过滤器匹配，它们就会被发送到客户端以通知本地的监听器，本地监听器是通过`ContinuousQuery.Listener`属性进行配置的。
+```csharp
+var cache = ignite.GetOrCreateCache<int, string>("mycache");
+
+// Callback that is called locally when update notifications are received.
+var localListener = new LocalListener();
+
+// Create new continuous query.
+var qry = new ContinuousQuery<int, string>(localListener)
+{
+    // This filter will be evaluated remotely on all nodes.
+    // Entry that pass this filter will be sent to the caller.
+    Filter = new RemoteFilter()
+};
+
+// Optional initial query to select all keys greater than 10.
+var initialQry = new ScanQuery<int, string>(new InitialFilter());
+
+using (var queryHandle = cache.QueryContinuous(qry, initialQry))
+{
+    // Iterate through existing data stored in cache.
+    foreach (var entry in queryHandle.GetInitialQueryCursor())
+        Console.WriteLine("key={0}, val={1}", entry.Key, entry.Value);
+
+    // Add a few more keys and watch a few more query notifications.
+    for (int i = 5; i < 15; i++)
+        cache.Put(i, i.ToString());
+}
+```
