@@ -152,3 +152,72 @@ Console.WriteLine((await asyncVal).Success);
 // Use continuation
 asyncVal.ContinueWith(task => Console.WriteLine(task.Result.Success));
 ```
+## 3.缓存模式
+Ignite.NET也提供了缓存操作的几种不同模式，具体细节可以参见Ignite的[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)文档。
+
+相关配置的示例：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CacheConfiguration = new[]
+    {
+        new CacheConfiguration
+        {
+            Name = "cacheName",
+            CacheMode = CacheMode.Replicated,
+            AtomicWriteOrderMode = CacheAtomicWriteOrderMode.Primary
+        }
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+    <cacheConfiguration>
+        <cacheConfiguration name="cacheName" cacheMode="Replicated" atomicWriteOrderMode="Primary" />
+    </cacheConfiguration>
+</igniteConfiguration>
+```
+## 4.缓存查询
+Ignite.NET提供了非常优雅的查询接口，包括基于谓词的扫描查询、SQL查询和文本查询，对于SQL查询，Ignite支持内存中的索引，所以所有的数据检索都会非常快。如果数据保存在堆外内存，那么索引也会保存在堆外内存。
+### 4.1.主要的抽象
+`ICache`有几种查询方法，所有这些方法都接收某些`QueryBase`类的子类然后返回`IQueryCursor`。
+
+**QueryBase**
+
+`QueryBase`抽象类表示要在分布式缓存上执行的抽象分页查询，可以通过`Query.PageSize`属性设置返回的游标的页面大小。
+
+**IQueryCursor**
+
+`IQueryCursor`表示查询的结果集，并可以透明的逐页迭代。每当开始遍历最后一页时，它将自动在后台请求下一页。对于不需要分页的情况，可以使用`IQueryCursor.GetAll()`方法来获取整个查询结果并将其存储在集合中。
+
+::: tip 关闭游标
+如果调用`QueryCursor.GetAll()`方法，游标将自动关闭。如果要遍历游标，则必须显式调用`Dispose()`或使用`using`关键字，使用`foreach`循环将自动调用`Dispose()`。
+:::
+
+### 4.2.扫描查询
+扫描查询可以基于某些自定义的谓词以分布式形式查询缓存。
+```csharp
+var cache = ignite.GetOrCreateCache<int, Person>("myCache");
+
+// Create query and get a cursor.
+var cursor = cache.Query(new ScanQuery<int, Person>(new QueryFilter()));
+
+// Iterate over results. Using 'foreach' loop will close the cursor automatically.
+foreach (var cacheEntry in cursor)
+    Console.WriteLine(cacheEntry.Value);
+```
+### 4.3.文本查询
+Ignite还支持基于Lucene索引的文本查询。
+```csharp
+var cache = ignite.GetOrCreateCache<int, Person>("myCache");
+
+// Query for all people with "Master Degree" in their resumes.
+var cursor = cache.Query(new TextQuery("Person", "Master Degree"));
+
+// Iterate over results. Using 'foreach' loop will close the cursor automatically.
+foreach (var cacheEntry in cursor)
+    Console.WriteLine(cacheEntry.Value);
+```
