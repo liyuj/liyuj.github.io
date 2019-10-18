@@ -265,3 +265,216 @@ using (var queryHandle = cache.QueryContinuous(qry, initialQry))
         cache.Put(i, i.ToString());
 }
 ```
+## 6.事务
+### 6.1.原子化模式
+Ignite的缓存操作支持两种模式，`事务`模式和`原子`模式。在`事务`模式中，可以将多个缓存操作组合成一个事务，而`原子`模式支持多个原子操作，一次一个。原子化模式是在`CacheAtomicityMode`枚举中定义的。
+
+`事务`模式支持完全兼容ACID的事务，不过如果实际只需要原子语义，那么还是建议使用`原子`模式，因为性能更好。
+
+`原子`模式通过避免事务锁实现了更好的性能，同时仍然提供了数据的原子性和一致性。`原子`模式的另一个不同是批量写入，比如`PutAll(...)`和`RemoveAll(...)`方法，是不会在一个事务中执行的，可能部分失败。如果出现了部分失败，会抛出包含有更新失败的键列表的`CachePartialUpdateException`异常。
+
+原子化模式是通过`CacheConfiguration`进行配置的：
+
+C#：
+```csharp
+var cfg = new IgniteConfiguration
+{
+    CacheConfiguration = new[]
+    {
+        new CacheConfiguration("txCache")
+        {
+            AtomicityMode = CacheAtomicityMode.Transactional
+        }
+    },
+    TransactionConfiguration = new TransactionConfiguration
+    {
+        DefaultTransactionConcurrency = TransactionConcurrency.Optimistic
+    }
+};
+```
+app.config：
+```xml
+<igniteConfiguration>
+  <cacheConfiguration>
+    <cacheConfiguration name="txCache" atomicityMode="Transactional" />
+  </cacheConfiguration>
+  <transactionConfiguration defaultTransactionConcurrency="Optimistic" />
+</igniteConfiguration>
+```
+Spring XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    ...
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
+          	<!-- Set a cache name. -->
+   					<property name="name" value="myCache"/>
+
+            <!-- Set atomicity mode, can be ATOMIC or TRANSACTIONAL.
+								 ATOMIC is default. -->
+    				<property name="atomicityMode" value="TRANSACTIONAL"/>
+            ...
+        </bean>
+    </property>
+
+    <!-- Optional transaction configuration. -->
+    <property name="transactionConfiguration">
+        <bean class="org.apache.ignite.configuration.TransactionConfiguration">
+            <!-- Configure TM lookup here. -->
+        </bean>
+    </property>
+</bean>
+```
+### 6.2.ITransactions
+`ITransactions`接口包含了开始和完成事务、订阅监听器以及获取指标数据等功能。
+::: tip 跨缓存事务
+可以将来自不同缓存的多种操作组合到一个事务中，这意味着可以在一个事务中更新不同类型的缓存，例如`复制`和`分区`模式缓存。
+:::
+::: tip 近缓存事务
+近缓存是完全事务性的，并且当服务端上的数据更改时，它们都会自动更新或失效。
+:::
+通过如下方式可以获得`ITransactions`的实例：
+```csharp
+IIgnite ignite = Ignition.Start();
+
+ITransactions transactions = ignite.GetTransactions();
+```
+下面是执行事务操作的一个示例：
+```csharp
+using (ITransaction tx = transactions.TxStart())
+{
+    var hello = cache.Get(1);
+
+    if (hello != "Hello")
+        cache.Put(1, "Hello");
+
+    cache.Put(2, "World");
+
+    tx.Commit();
+}
+```
+### 6.3.二阶段提交（2PC）
+Ignite在事务中使用了2阶段提交（2PC）的协议，但是只要适用也带有很多一阶段提交的优化。在一个事务中当数据更新时，在调用`commit()`方法之前，Ignite会在本地事务映射中保持事务状态，在这一点，只要需要，数据都会被传输到远程节点。
+
+有关二阶段提交的更多信息，可以参照如下文章：
+
+ - [Apache Ignite事务架构：2阶段提交协议](https://my.oschina.net/liyuj/blog/1626309)
+ - [Apache Ignite事务架构：并发模型和隔离级别](https://my.oschina.net/liyuj/blog/1627248)
+ - [Apache Ignite事务架构：故障和恢复](https://my.oschina.net/liyuj/blog/1791800)
+ - [Apache Ignite事务架构：Ignite持久化的事务处理](https://my.oschina.net/liyuj/blog/1793912)
+ - [Apache Ignite事务架构：第三方持久化的事务处理](https://my.oschina.net/liyuj/blog/1796152)
+
+或者，也可以看下面的[资料](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Key-Value+Transactions+Architecture)，了解事务子系统的内部实现。
+::: tip ACID完整性
+Ignite提供了完整的ACID（原子性、一致性、隔离性和持久性）兼容事务来确保一致性。
+:::
+### 6.4.并发模型和隔离级别
+当原子化模式配置为`事务`时，Ignite对事务支持`乐观`和`悲观`的**并发模型**。并发模型决定了何时获得一个条目级的事务锁-在访问数据时或者在`prepare`阶段。锁定可以防止对一个对象的并发访问。比如，当试图用悲观锁更新一个ToDo列表项时，服务端会在该对象上置一个锁以使其它的事务或者操作无法更新同一个条目，直到提交或者回滚该事务。不管在一个事务中使用那种并发模型，在提交之前都存在事务中的所有条目被锁定的时刻。
+
+**隔离级别**定义了并发事务如何"看"以及处理针对同一个键的操作。Ignite支持`读提交`、`可重复读`、`可序列化`隔离级别。
+并发模型和隔离级别的所有组合都是可以同时使用的。下面是针对Ignite提供的每一个并发-隔离组合的行为和保证的描述。
+### 6.5.悲观事务
+在`悲观`事务中，锁是在第一次读或者写访问期间获得（取决于隔离级别）然后被事务持有直到其被提交或者回滚。该模式中，锁首先在主节点获得然后在准备阶段提升至备份节点。下面的隔离级别可以配置为`悲观`并发模型。
+
+ - `读提交`：数据被无锁地读取并且不会被事务本身缓存。如果缓存配置允许，数据是可能从一个备份节点中读取的。在这个隔离级别中，可以有所谓的非可重复读，因为当在自己的事务中读取数据两次时，一个并发事务可以改变该数据。锁只有在第一次写访问时才会获得（包括`EntryProcessor`调用）。这意味着事务中已经读取的一个条目在该事务提交时可能有一个不同的值，这种情况是不会抛出异常的；
+ - `可重复读`：获得条目锁以及第一次对主节点的读/写访问并获得数据后，就会存储在本地事务映射中。之后对同一数据的所有连续访问都是本地化的，并且返回最后一次读或者被更新的事务值。这意味着没有其它的并发事务可以改变锁定的数据，这样就获得了事务的可重复读；
+ - `可序列化`：在`悲观`模式中，这个隔离级别与`可重复读`是一样的工作方式。
+
+注意，在`悲观`模式中，锁的顺序是很重要的。此外，Ignite可以按照用户提供的顺序依次并且准确地获得锁。
+
+::: warning 性能考量
+设想拓扑中有三个节点（A、B、C），并且在事务中针对键[1, 2, 3, 4, 5, 6]执行一个`putAll`。假定这些键以如下形式映射到节点：{A: 1, 4}, {B: 2, 5}, {C: 3, 6}，因为Ignite在`悲观`模式中无法改变获得锁的顺序，它会产生6次连续地网络往返：[A, B, C, A, B, C]。在键的锁定顺序对于一个事务的语义不重要的情况下，将键按照分区进行分组然后将在一个分区的键一起锁定是明智的。这在一个大的事务中可以显著地降低网络消息的数量。在这个示例中，如果对于一个`putAll`键按照如下的方式排序：[1, 4, 2, 5, 3, 6]，之后只需要3次的连续网络访问。
+:::
+::: danger 拓扑变化约束
+注意，如果至少获得一个悲观事务锁，都不可能改变缓存的拓扑，直到事务被提交或者回滚，因此，不建议长时间地持有事务锁。
+:::
+### 6.6.悲观事务中的死锁检测
+当处理分布式事务时必须要遵守的主要规则是参与一个事务的键的锁，必须按照同样的顺序获得，违反这个规则就可能导致分布式死锁。
+
+Ignite无法避免分布式死锁，而是有一个内建的功能来使调试和解决这个问题更容易。
+
+就像下面的代码片段所示，事务启动时带有超时限制。如果到期，则死锁检测过程将尝试查找可能导致超时的死锁。超时到期后，无论死锁如何，都会抛出异常并将其传播到应用端。不过如果检测到死锁，则异常消息将包含有关死锁的详细信息。
+```csharp
+using (ITransaction tx = ignite.GetTransactions().TxStart(
+	TransactionConcurrency.Pessimistic, TransactionIsolation.ReadCommitted,
+	TimeSpan.FromMilliseconds(300), 0))
+{
+	cache.Put(1, 1);
+
+	cache.Put(2, 1);
+
+	tx.Commit();
+}
+catch (TransactionDeadlockException e)
+{
+	// Write all the exception information, including deadlock details.
+	Console.WriteLine(e.ToString());
+}
+```
+异常消息：
+```
+Deadlock detected:
+
+K1: TX1 holds lock, TX2 waits lock.
+K2: TX2 holds lock, TX1 waits lock.
+
+Transactions:
+
+TX1 [txId=GridCacheVersion [topVer=74949328, time=1463469328421, order=1463469326211, nodeOrder=1], nodeId=ad68354d-07b8-4be5-85bb-f5f2362fbb88, threadId=73]
+TX2 [txId=GridCacheVersion [topVer=74949328, time=1463469328421, order=1463469326210, nodeOrder=1], nodeId=ad68354d-07b8-4be5-85bb-f5f2362fbb88, threadId=74]
+
+Keys:
+
+K1 [key=1, cache=default]
+K2 [key=2, cache=default]
+```
+死锁检测是一个多步过程，依赖于集群中节点的数量、键以及可能导致死锁涉及的事务数，可能需要做很多次迭代。一个死锁检测的发起者是发起事务并且出现`TransactionTimeoutException`错误的那个节点，该节点会检查是否发生了死锁，通过与其它远程节点交换请求/响应，并且准备一个与死锁有关的、由`TransactionDeadlockException`提供的报告，每个这样的消息（请求/响应）都会被称为一个迭代器。
+::: tip 提示
+如果要完全避免死锁，请参见下面的无死锁事务章节。
+:::
+### 6.7.乐观事务
+在乐观事务中，条目锁是在二阶段提交的`准备`阶段从主节点获得的，然后提升至备份节点，该锁在事务提交时被释放。如果用户回滚事务没有试图做提交，是不会获得锁的。下面的隔离级别可以与`乐观`并发模型配置在一起。
+
+ - `读提交`：应该作用于缓存的改变是在源节点上收集的，然后事务提交后生效。事务数据无锁地读取并且不会在事务中缓存。如果缓存配置允许，该数据是可能从备份节点中读取的。在这个隔离级别中，可以有一个所谓的非可重复读，因为在自己的事务中读取数据两次时另一个事务可以修改数据。这个模式组合在第一次读或者写操作后如果条目值被修改是不会做校验的，并且不会抛出异常。
+ - `可重复读`：这个隔离级别的事务的工作方式类似于`乐观` `读提交`的事务，只有一个不同-读取值缓存于源节点并且所有的后续读保证都是本地化的。这个模式组合在第一次读或者写操作后如果条目值被修改是不会做校验的，并且不会抛出异常。
+ - `可序列化`：在第一次读访问之后会存储一个条目的版本，如果Ignite引擎检测到发起事务中的条目只要有一个被修改，Ignite就会在提交阶段放弃该事务，这是在提交阶段对网格内的事务中记载的条目的版本进行内部检查实现的。简而言之，这意味着Ignite如果在一个事务的提交阶段检测到一个冲突，就会放弃这个事务并且抛出`TransactionOptimisticException`异常以及回滚已经做出的任何改变，开发者应该处理这个异常并且重试该事务。
+
+```csharp
+var txs = ignite.GetTransactions();
+
+// Start transaction in optimistic mode with serializable isolation level.
+while (true)
+{
+    using (var tx = txs.txStart(TransactionConcurrency.Optimistic,                                       TransactionIsolation.Serializable))
+    {
+	 			// Modify cache entires as part of this transacation.
+  			....
+
+  			// commit transaction.
+  			tx.Commit();
+
+      	// Transaction succeeded. Leave the while loop.
+      	break;
+    }
+    catch (TransactionOptimisticException e) {
+    		// Transaction has failed. Retry.
+    }
+}
+```
+这里另外一个需要注意的重要的点是，即使一个条目只是简单地读取，一个事务仍然可能失败，因为该条目的值对于发起事务中的逻辑很重要。
+
+注意，对于`读提交`和`可重复读`事务，键的顺序是很重要的，因为这些模式中锁也是按顺序获得的。
+### 6.8.无死锁事务
+对于`乐观`的`可序列化`事务，锁不是按顺序获得的。该模式中键可以按照任何顺序访问，因为事务锁是通过一个额外的检查以并行的方式获得的，这使得Ignite可以避免死锁。
+
+这里需要引入几个概念来描述`可序列化`的事务锁的工作方式。Ignite中的每个事务都会被赋予一个叫做`XidVersion`的可比较的版本号，事务提交时该事务中修改的每个条目都会被赋予一个叫做`EntryVersion`的新的版本号，一个版本号为`XidVersionA`的`乐观可序列化`事务在如下情况下会抛出`TransactionOptimisticException`异常而失败：
+
+ - 有一个进行中的`悲观`的或者非可序列化`乐观`事务在`可序列化`事务中的一个条目上持有了一个锁；
+ - 有另外一个进行中的版本号为`XidVersionB`的`乐观可序列化`事务，在`XidVersionB > XidVersionA`时以及这个事务在`可序列化`事务中的一个条目上持有了一个锁；
+ - 在该`乐观可序列化`事务获得所有必要的锁时，存在在提交之前的版本与当前版本不同的条目；
+
+::: tip 注意
+在一个高并发环境中，乐观锁可能出现高事务失败率，而悲观锁如果锁被事务以一个不同的顺序获得可能导致死锁。
+
+不过在一个同质化的环境中，乐观可序列化锁对于大的事务可能提供更好的性能，因为网络交互的数量只取决于事务相关的节点的数量，而不取决于事务中的键的数量。
+:::

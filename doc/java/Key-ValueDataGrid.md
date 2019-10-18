@@ -1326,14 +1326,14 @@ Ignite在事务中使用了2阶段提交（2PC）的协议，但是只要适用�
 
 或者，也可以看下面的[资料](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Key-Value+Transactions+Architecture)，了解事务子系统的内部实现。
 ::: tip ACID完整性
-Ignite提供了完整的ACID（原子性，一致性，隔离性和持久性）兼容事务来确保一致性。
+Ignite提供了完整的ACID（原子性、一致性、隔离性和持久性）兼容事务来确保一致性。
 :::
 
 #### 8.1.4.死锁检测
 当处理分布式事务时必须要遵守的主要规则是参与一个事务的键的锁，必须按照同样的顺序获得，违反这个规则就可能导致分布式死锁。
 Ignite无法避免分布式死锁，而是有一个内建的功能来使调试和解决这个问题更容易。
 
-就像下面的代码片段所示，一个带有超时时间的事务启动。如果过了超时时间，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。不过如果检测到了一个死锁，返回的`TransactionTimeoutException`的cause会是`TransactionDeadlockException`（至少涉及死锁的一个事务）。
+就像下面的代码片段所示，事务启动时带有超时限制，如果到期，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。不过如果检测到了一个死锁，返回的`TransactionTimeoutException`的触发原因会是`TransactionDeadlockException`（至少涉及死锁的一个事务）。
 ```java
 try (Transaction tx = ignite.transactions().txStart(TransactionConcurrency.PESSIMISTIC,
     TransactionIsolation.READ_COMMITTED, 300, 0)) {
@@ -1383,14 +1383,15 @@ K2 [key=2, cache=default]
 #### 8.1.5.无死锁事务
 对于`乐观`的`可序列化`事务，锁不是按顺序获得的。该模式中键可以按照任何顺序访问，因为事务锁是通过一个额外的检查以并行的方式获得的，这使得Ignite可以避免死锁。
 
-这里需要引入几个概念来描述`可序列化`的事务锁是如何工作的。Ignite中的每个事务都会被赋予一个叫做`XidVersion`的可比较的版本号，事务提交时该事务中修改的每个条目都会被赋予一个叫做`EntryVersion`的新的版本号，一个版本号为`XidVersionA`的`乐观可序列化`事务在如下情况下会抛出`TransactionOptimisticException`异常而失败：
+这里需要引入几个概念来描述`可序列化`的事务锁的工作方式。Ignite中的每个事务都会被赋予一个叫做`XidVersion`的可比较的版本号，事务提交时该事务中修改的每个条目都会被赋予一个叫做`EntryVersion`的新的版本号，一个版本号为`XidVersionA`的`乐观可序列化`事务在如下情况下会抛出`TransactionOptimisticException`异常而失败：
 
  - 有一个进行中的`悲观`的或者非可序列化`乐观`事务在`可序列化`事务中的一个条目上持有了一个锁；
  - 有另外一个进行中的版本号为`XidVersionB`的`乐观可序列化`事务，在`XidVersionB > XidVersionA`时以及这个事务在`可序列化`事务中的一个条目上持有了一个锁；
  - 在该`乐观可序列化`事务获得所有必要的锁时，存在在提交之前的版本与当前版本不同的条目；
 
 ::: tip 注意
-在一个高并发环境中，乐观锁可能导致一个很高的事务失败率。但是悲观锁如果锁被事务以一个不同的顺序获得可能导致死锁。<br>
+在一个高并发环境中，乐观锁可能出现高事务失败率，而悲观锁如果锁被事务以一个不同的顺序获得可能导致死锁。
+
 不过在一个同质化的环境中，乐观可序列化锁对于大的事务可能提供更好的性能，因为网络交互的数量只取决于事务相关的节点的数量，而不取决于事务中的键的数量。
 :::
 

@@ -836,8 +836,9 @@ Ignite在事务中使用了2阶段提交（2PC）的协议，但是只要适用�
  - [Apache Ignite事务架构：第三方持久化的事务处理](https://my.oschina.net/liyuj/blog/1796152)
 
 或者，也可以看下面的[资料](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Key-Value+Transactions+Architecture)，了解事务子系统的内部实现。
-> **ACID完整性**
+::: tip ACID完整性
 Ignite提供了完整的ACID（原子性，一致性，隔离性和持久性）兼容事务来确保一致性。
+:::
 
 ### 8.4.并发模型和隔离级别
 当原子化模式配置为`事务`时，Ignite对事务支持`乐观`和`悲观`的**并发模型**。并发模型决定了何时获得一个条目级的事务锁-在访问数据时或者在`prepare`阶段。锁定可以防止对一个对象的并发访问。比如，当试图用悲观锁更新一个ToDo列表项时，服务端会在该对象上置一个锁以使其它的事务或者操作无法更新同一个条目，直到提交或者回滚该事务。不管在一个事务中使用那种并发模型，在提交之前都存在事务中的所有条目被锁定的时刻。
@@ -899,9 +900,10 @@ while (retries < retryCount) {
 
 ### 8.7.死锁检测
 当处理分布式事务时必须要遵守的主要规则是参与一个事务的键的锁，必须按照同样的顺序获得，违反这个规则就可能导致分布式死锁。
+
 Ignite无法避免分布式死锁，而是有一个内建的功能来使调试和解决这个问题更容易。
 
-就像下面的代码片段所示，一个带有超时时间的事务启动。如果过了超时时间，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。不过如果检测到了一个死锁，返回的`TransactionTimeoutException`的cause会是`TransactionDeadlockException`（至少涉及死锁的一个事务）。
+就像下面的代码片段所示，事务启动时带有超时限制。如果到期，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。不过如果检测到了一个死锁，返回的`TransactionTimeoutException`的触发原因会是`TransactionDeadlockException`（至少涉及死锁的一个事务）。
 ```java
 try (Transaction tx = ignite.transactions().txStart(TransactionConcurrency.PESSIMISTIC,
     TransactionIsolation.READ_COMMITTED, 300, 0)) {
