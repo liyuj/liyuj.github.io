@@ -1133,7 +1133,7 @@ XML：
  - 慢客户端会被服务端节点踢出；
 
 当一个客户端发现它与一个集群断开时，会为自己赋予一个新的节点`id`然后试图与该服务端重新连接。`注意`：这会产生一个副作用，就是当客户端重建连接时本地`ClusterNode`的`id`属性会发生变化，这意味着，如果业务逻辑依赖于这个`id`，就会受到影响。
-当客户端处于一个断开状态并且试图重建与集群的连接过程中时，Ignite API会抛出一个特定的异常：`IgniteClientDisconnectedException`，这个异常提供了一个`future`，当客户端重连成功后它会完成（`IgniteCache`API会抛出`CacheException`，它有一个`IgniteClientDisconnectedException`作为它的cause）。这个`future`也可以通过`IgniteCluster.clientReconnectFuture()`方法获得。
+当客户端处于一个断开状态并且试图重建与集群的连接过程中时，Ignite API会抛出一个特定的异常：`IgniteClientDisconnectedException`，这个异常提供了一个`future`，当客户端重连成功后它会完成（`IgniteCache`API会抛出`CacheException`，它有一个`IgniteClientDisconnectedException`作为它的触发原因）。这个`future`也可以通过`IgniteCluster.clientReconnectFuture()`方法获得。
 
 此外，客户端重连也有一些特定的事件（这些事件是本地化的，也就是说它们只会在客户端节点触发）：
 

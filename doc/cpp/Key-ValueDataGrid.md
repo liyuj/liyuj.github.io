@@ -296,7 +296,7 @@ Ignite提供了完整的ACID（原子性，一致性，隔离性和持久性）�
 
 Ignite无法避免分布式死锁，而是有一个内建的功能来使调试和解决这个问题更容易。
 
-就像下面的代码片段所示，一个带有超时时间的事务启动后，如果过了超时时间，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。不过，如果检测到了一个死锁，返回的`TransactionTimeoutException`的cause会是`TransactionDeadlockException`（至少一个事务涉及死锁），在Ignite C++中，这些错误将作为`IgniteError`进行传播。
+就像下面的代码片段所示，一个带有超时时间的事务启动后，如果过了超时时间，死锁检测过程就会试图查找一个触发这个超时的可能的死锁。当超过超时时间时，会抛出`TransactionTimeoutException`并且像触发`CacheException`那样传播到应用层而不会管死锁。不过，如果检测到了一个死锁，返回的`TransactionTimeoutException`的触发原因会是`TransactionDeadlockException`（至少一个事务涉及死锁），在Ignite C++中，这些错误将作为`IgniteError`进行传播。
 ```cpp
 try {
 	Transaction tx = ignite.GetTransactions().TxStart(

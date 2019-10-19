@@ -478,3 +478,81 @@ while (true)
 
 不过在一个同质化的环境中，乐观可序列化锁对于大的事务可能提供更好的性能，因为网络交互的数量只取决于事务相关的节点的数量，而不取决于事务中的键的数量。
 :::
+## 7.关联并置
+鉴于多数情况是使用`分区`模式缓存数据，因此将数据和计算并置就会显著提升应用的性能和可扩展性。
+
+### 7.1.数据和计算的并置
+是可以将计算映射到数据所在的节点的，这个概念叫做数据和计算的并置，它可以将整个计算单元映射到某个节点。
+
+数据和计算的并置，是通过`ICompute.AffinityRun(...)`和`ICompute.AffinityCall(...)`方法实现的。
+
+下面是将计算与持有指定数据的一些节点并置处理的示例：
+```csharp
+void AffinityRun()
+{
+    using (var ignite = Ignition.Start())
+    {
+        int key = 5;
+
+        ignite.GetCompute().AffinityRun("persons", key, new AffinityAction {Key = key});
+    }
+}
+
+class AffinityAction : IComputeAction
+{
+    [InstanceResource] private readonly IIgnite _ignite;
+
+    public int Key { get; set; }
+
+    public void Invoke()
+    {
+        // When used in AffinityRun, this cache access is local
+        var person = _ignite.GetCache<int, IPerson>("persons").Get(Key);
+
+        Console.WriteLine(person.Name);
+    }
+}
+```
+### 7.2.ICompute和ICacheEntryProcessor
+`ICompute.AffinityRun(...)`和`ICache.Invoke(...)`方法都提供了计算和数据并置的能力。主要区别在于`Invoke(...)`方法是原子化的，并且执行时会持有指定键的锁，不应该从`ICacheEntryProcessor`业务逻辑内访问其他键，因为它可能导致死锁。
+
+而`AffinityRun(...)`和`AffinityCall(...)`则不持有任何锁。例如，在这些方法中开始多个事务或执行缓存查询都是合法的，而不必担心死锁。这时Ignite将自动检测到并置的处理，并将对事务使用轻量级的一阶段提交优化（而不是二阶段提交）。
+## 8.数据加载
+数据加载通常与启动时初始化缓存数据有关。使用标准缓存的`Put(...)`或`PutAll(...)`操作对于加载大量数据来说通常比较低效。
+
+### 8.1.IDataStreamer
+数据流处理器是由`IDataStreamer`API定义的，可用于将大量连续不断的数据注入Ignite缓存。数据流处理器支持可伸缩和容错，并在把数据发送到对应的节点之前，将数据进行分批处理来实现高性能。
+::: tip 提示
+数据流可以随时将大量数据加载到缓存中，包括在启动时进行预加载。
+:::
+
+更多细节请参见[数据流处理器](/doc/net/Streaming.md#_2-数据流处理器)的文档。
+
+### 8.2.ICache.LoadCache()
+将大量数据加载到缓存的另一种方法是通过[ICacheStore.LoadCache()](/doc/net/Persistence.md#_2-3-1-loadcache)方法，该方法甚至无需传递需要加载的键就可以加载缓存数据。
+
+`ICache.LoadCache()`方法将委派给持有该缓存的所有节点上的`ICacheStore.LoadCache()`方法，要仅在本地节点上加载数据，可以使用`ICache.LocalLoadCache()`方法。
+::: tip 注意
+如果是分区缓存，则未映射到该节点的键（无论是主备）将被缓存自动丢弃。
+:::
+
+**分区感知数据加载**
+
+在上述方案中，将在所有节点上执行相同的查询，每个节点都会遍历整个结果集，跳过不属于该节点的键，这不是很高效。
+
+如果将分区ID与每条记录一起存储在数据库中，则可以改善这种情况。可以使用`ICacheAffinity`接口获取任何键的分区ID。
+
+当缓存对象能获取对应的分区ID时，每个节点就可以只查询属于该节点的那些分区数据，为此可以将Ignite实例注入到CacheStore中，并用它来确定属于本地节点的分区。
+## 9.过期策略
+过期策略用于指定缓存数据的过期时间，时间可以从创建、上次访问或修改时间开始计算。
+
+可以通过实现`IExpiryPolicy`接口或使用预定义的`ExpiryPolicy`实现来配置过期策略。
+
+过期策略可以在Spring XML的`CacheConfiguration`中进行配置，此策略将影响缓存内的所有数据。
+
+当然也可以为缓存上的各个操作更改或配置过期策略。
+```csharp
+var cache = cache.WithExpiryPolicy(new ExpiryPolicy(TimeSpan.FromMilliseconds(100),
+                TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100)));
+```
+该策略将影响返回的缓存实例上的每个操作。
