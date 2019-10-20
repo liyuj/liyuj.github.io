@@ -549,10 +549,151 @@ class AffinityAction : IComputeAction
 可以通过实现`IExpiryPolicy`接口或使用预定义的`ExpiryPolicy`实现来配置过期策略。
 
 过期策略可以在Spring XML的`CacheConfiguration`中进行配置，此策略将影响缓存内的所有数据。
-
-当然也可以为缓存上的各个操作更改或配置过期策略。
 ```csharp
 var cache = cache.WithExpiryPolicy(new ExpiryPolicy(TimeSpan.FromMilliseconds(100),
                 TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100)));
 ```
 该策略将影响返回的缓存实例上的每个操作。
+## 10.近缓存
+分区缓存也可以通过近缓存前置，这是一种较小的本地缓存，用于存储最近或访问频率最高的数据。和分区缓存一样，开发者可以控制近缓存的大小及其退出策略。
+
+通过将`NearConfiguration`传入`IIgnite.CreateNearCache(NearConfiguration)`或`IIgnite.GetOrCreateNearCache(NearConfiguration)`方法，可以直接在客户端节点创建近缓存。如果想同时动态创建分布式缓存并为其创建近缓存，可以使用`IIgnite.GetOrCreateCache(CacheConfiguration, NearCacheConfiguration)`方法。
+```csharp
+// Create a near cache configuration.
+var nearCacheCfg = new NearCacheConfiguration
+{
+		// Use LRU eviction policy to automatically evict entries
+		// from near-cache, whenever it reaches 100000 in size.
+    EvictionPolicy = new LruEvictionPolicy
+    {
+        MaxSize = 100000
+    }
+};
+
+// Create a distributed cache on server nodes and
+// a near cache on the local node, named "myCache".
+var cache = ignite.GetOrCreateCache<int, int>(new CacheConfiguration(CacheName), nearCacheCfg);
+```
+在绝大多数场景中，如果使用了Ignite的关联并置，就不应该再使用近缓存了，因为所有数据都已经在本地了。
+
+但是有时是无法将计算发送到远程节点的，对于这种情况，近缓存可以显著提高应用的可伸缩性和整体性能。
+
+::: tip 事务
+近缓存是完全事务化的，并且每当服务端的数据更改时，它们都会自动更新或失效。
+:::
+
+::: tip 服务端节点的近缓存
+当以非并置的方式访问服务端上的分区缓存数据时，也可以通过`CacheConfiguration.NearConfiguration`属性在服务端节点上配置近缓存。
+:::
+### 10.1.配置
+`CacheConfiguration`中对近缓存有意义的大多数可用配置参数都是从服务端配置继承的，例如，如果服务端缓存配置了`ExpiryPolicy`，则近缓存中的数据也会有相同的过期策略。
+
+下表中列出的参数不是从服务端配置继承的，而是通过`NearCacheConfiguration`单独提供的：
+
+|Setter方法|描述|默认值|
+|---|---|---|
+|`EvictionPolicy`|近缓存退出策略|无|
+|`NearStartSize`|近缓存初始缓存大小，用于启动后初始化内部哈希表。|`CacheConfiguration.DefaultStartSize / 4 = 375,000`|
+
+## 11.TransactionScope API
+除了[事务](#_6-事务)中描述的`ITransactions`API，还可以通过标准的`System.Transactions.TransactionScope`API使用Ignite事务。
+```csharp
+using (var ts = new TransactionScope())
+{
+  cache.Put(1, "x");
+  cache.Put(2, "y");
+
+  ts.Complete();
+}
+```
+如果缓存是事务化的，上面的代码会自动调用`ITransactions.TxStart()`和`ITransaction.Commit()`。
+
+如果Ignite事务是由手动启动的，`TransactionScope`会被忽略，不会触发提交和回滚。
+```csharp
+// Assigning a value for the key.
+cache[1] = 0;
+
+using (var tx = transactions.TxStart())
+{
+  // Ignite transaction is started manually, TransactionScope below will not have any effect.
+  using (new TransactionScope())
+  {
+    cache[1] = 2; // The update is enlisted into the outer Ignite transaction.
+  }  // TransactionScope attempts to revert changes, will have no effect on the outer Ignite transaction.
+
+  tx.Commit(); // Committing Ignite transaction.
+}
+
+cache.Get(1); // Returns 2.
+```
+### 11.1.事务隔离
+Ignite有三个隔离模式，而`System.Transactions.IsolationLevel`有更多的模式，下表显示了`System.Transactions.IsolationLevel`和`Apache.Ignite.Core.Transactions.TransactionIsolation`之间的映射关系：
+
+|IsolationLevel|TransactionIsolation|
+|---|---|
+|`Serializable`|`Serializable`|
+|`RepeatableRead`|`RepeatableRead`|
+|`ReadCommitted`|`ReadCommitted`|
+|`ReadUncommitted`|``|
+|`Snapshot`|``|
+|`Chaos`|``|
+
+`TransactionOptions.IsolationLevel`的默认值是`Serializable`。
+```csharp
+using (var ts = new TransactionScope(
+  TransactionScopeOption.Required,
+  new TransactionOptions
+  {
+    IsolationLevel = IsolationLevel.ReadCommitted
+  }))
+{
+  cache[1] = 2;
+  ts.Complete();
+}
+```
+### 11.2.事务并发
+Ignite事务有`TransactionConcurrency`配置（`Pessimistic`和`Optimistic`），而`TransactionScope`API没有这样的概念，因此如果一个Ignite事务由`TransactionScope`启动，它会使用由`IgniteConfiguration.TransactionConfiguration.DefaultTransactionConcurrency`属性配置的`TransactionConcurrency`默认值`Pessimistic`。
+```csharp
+var cfg = new IgniteConfiguration
+{
+  TransactionConfiguration = new TransactionConfiguration
+  {
+    DefaultTransactionConcurrency = TransactionConcurrency.Optimistic
+  }
+};
+
+using (var ignite = Ignition.Start(cfg))
+{
+  using (var ts = new TransactionScope()) // Optimistic, Serializable
+  {
+    cache[1] = 2;
+    ts.Complete();
+  }
+}
+```
+### 11.3.嵌套事务范围
+`TransactionScope`可以嵌套在另一个`TransactionScope`中，不过Ignite不允许一个线程中有多于一个事务，根据`TransactionScopeOption`的配置会有如下的行为：
+
+**TransactionScopeOption.Suppress:**
+
+所有Ignite操作都参与现有的事务（抑制被忽略）。
+
+**TransactionScopeOption.Required:**
+
+所有Ignite操作都参与现有的事务（预期的行为）。
+
+**TransactionScopeOption.RequiresNew:**
+
+所有Ignite操作都参与现有的事务（新事务不会被创建），**Ignite事务会在嵌套的`TransactionScope`块退出时完成**，或者提交或者回滚，此后外部的范围将不起作用。
+
+### 11.4.异步操作
+所有的事务化异步操作都必须在离开`TransactionScope`前完成，否则行为未知，在执行异步操作时，要确认调用了`Wait()`或者`await`。
+```csharp
+using (var ts = new TransactionScope())
+{
+  cache.PutAsync(1, "x").Wait();
+  await cache.PutAsync(2, "y");
+
+  ts.Complete();
+}
+```
