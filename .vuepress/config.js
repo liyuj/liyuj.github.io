@@ -121,7 +121,8 @@ module.exports = {
                     '/doc/net/': [
                         '',
                         'Clustering',
-                        'DataGrid'
+                        'DataGrid',
+                        `Streaming`
                     ],
                     '/doc/sql/': [
                         '',
