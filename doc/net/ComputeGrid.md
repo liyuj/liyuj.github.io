@@ -218,3 +218,90 @@ private class CharCountJob : ComputeJobAdapter<int>
     }
 }
 ```
+## 4.数据和计算的并置
+将计算与数据并置可以最大程度地减少网络内的数据序列化，并可以显著提高应用的性能和可扩展性，因此应尽量将计算与缓存待处理数据的节点并置在一起。
+
+### 4.1.关联Call和Run方法
+`AffinityCall(...)`和`AffinityRun(...)`方法将作业与其要处理的数据所在的节点并置，或者指定缓存名和关联键后，这些方法将尝试定位该键所在的节点，然后在该节点执行作业。
+```csharp
+private void AffinityRun()
+{
+    using (var ignite = Ignition.Start())
+    {
+        var compute = ignite.GetCluster().ForRemotes().GetCompute();
+
+        int key = 5;
+
+        // This closure will execute on the remote node where
+        // data with the 'key' is located.
+        compute.AffinityRun("myCache", key, new ComputeAction {Key = key});
+    }
+}
+
+class ComputeAction : IComputeAction
+{
+    [InstanceResource]
+    private readonly IIgnite ignite;
+
+    public int Key { get; set; }
+
+    public void Invoke()
+    {
+        // Peek is a local memory lookup.
+        string value = ignite.GetCache<int, string>("myCache").LocalPeek(Key);
+
+        Console.WriteLine("Co-located [key={0}, value={1}]", Key, value);
+    }
+}
+```
+## 5.容错
+Ignite.NET支持自动化的作业故障转移，在节点故障时作业将自动转移到其他可用节点以重新执行。不过也可以将任何作业结果都视为失败，比如虽然工作节点仍然在线，但是它可能在CPU、I/O、磁盘空间等方面资源不足，这时可能会导致应用内发生故障，从而触发故障转移。此外，还可以选择将作业故障转移到指定节点，因为不同的应用或同一应用中的不同计算可能会有所不同。
+
+`FailoverSpi`负责选择失败的作业在哪个新节点执行。`FailoverSpi`探测失败的作业以及可以在其上重试作业的所有可用节点的列表，它能保证作业不会被重新映射到失败的同一节点。当`IComputeTask.OnResult(...)`方法返回`ComputeJobResultPolicy.Failover`策略时，也会触发故障转移。Ignite内置了许多可自定义的故障转移SPI实现。
+
+### 5.1.至少一次保证
+只要有一个节点在线，就不会有作业丢失。
+
+Ignite默认会自动对已停止或崩溃的节点上的所有作业进行故障转移。通过实现`IComputeTask.OnResult()`方法，可以自定义故障转移行为，以下示例在作业抛出任何异常时触发故障转移：
+```csharp
+class MyTask : IComputeTask<string, int, int>
+{
+    ...
+
+    public ComputeJobResultPolicy OnResult(IComputeJobResult<int> res, IList<IComputeJobResult<int>> rcvd)
+    {
+        if (res.Exception != null)
+            return ComputeJobResultPolicy.Failover;
+
+        // If there is no exception, wait for all job results.
+        return ComputeJobResultPolicy.Wait;
+    }
+
+    ...
+}
+```
+### 5.2.闭包的故障转移
+闭包的故障转移默认受`ComputeTaskAdapter`控制，如果远程节点故障或拒绝闭包的执行，都会触发。可以使用`ICompute.WithNoFailover()`方法覆盖此默认行为，其会创建一个带有`no-failover`标志的`ICompute`实例，下面是一个示例：
+```csharp
+ICompute compute = ignite.GetCompute().WithNoFailover();
+
+compute.Apply(..., "Some argument");
+```
+### 5.3.AlwaysFailOverSpi
+`AlwaysFailoverSpi`总是将失败的作业路由到另一个节点。注意，首先将尝试将失败的作业路由到未在其上执行过该任务的节点，如果没有这样的节点可用，则将尝试将失败的作业路由到正在执行同一任务其他作业的节点。如果以上尝试均未成功，则该作业将不会故障转移，并且将返回null。
+
+以下配置参数可用于配置`AlwaysFailoverSpi`：
+
+|属性|描述||
+|---|---|---|
+|`maximumFailoverAttempts(int)`|配置将失败的作业路由到其它节点的最大尝试次数|5|
+
+```xml
+<bean id="grid.custom.cfg" class="org.apache.ignite.IgniteConfiguration" singleton="true">
+  ...
+  <bean class="org.apache.ignite.spi.failover.always.AlwaysFailoverSpi">
+    <property name="maximumFailoverAttempts" value="5"/>
+  </bean>
+  ...
+</bean>
+```
