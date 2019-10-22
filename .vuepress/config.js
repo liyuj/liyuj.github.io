@@ -122,7 +122,8 @@ module.exports = {
                         '',
                         'Clustering',
                         'DataGrid',
-                        `Streaming`
+                        `Streaming`,
+                        'ComputeGrid'
                     ],
                     '/doc/sql/': [
                         '',
