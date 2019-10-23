@@ -221,7 +221,7 @@ private class CharCountJob : ComputeJobAdapter<int>
 ## 4.数据和计算的并置
 将计算与数据并置可以最大程度地减少网络内的数据序列化，并可以显著提高应用的性能和可扩展性，因此应尽量将计算与缓存待处理数据的节点并置在一起。
 
-### 4.1.关联Call和Run方法
+### 4.1.AffinityCall和AffinityRun方法
 `AffinityCall(...)`和`AffinityRun(...)`方法将作业与其要处理的数据所在的节点并置，或者指定缓存名和关联键后，这些方法将尝试定位该键所在的节点，然后在该节点执行作业。
 ```csharp
 private void AffinityRun()
