@@ -125,7 +125,9 @@ module.exports = {
                         `Streaming`,
                         'ComputeGrid',
                         'DataStructures',
-                        'Messaging'
+                        'Messaging',
+                        'Events',
+                        'DurableMemory'
                     ],
                     '/doc/sql/': [
                         '',
