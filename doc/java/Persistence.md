@@ -221,18 +221,15 @@ XML：
        <property name="defaultDataRegionConfiguration">
          <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
            <property name="persistenceEnabled" value="true"/>
-
-           <property name="walPath" value="/wal/path"/>
-
-           <property name="walArchivePath" value="/wal/path"/>
          </bean>
        </property>
+    	 <property name="walPath" value="/wal/path"/>
 
+       <property name="walArchivePath" value="/wal/path"/>
      </bean>
    </property>
 
   <!-- Additional setting. -->
-
 </bean>
 ```
 Java：

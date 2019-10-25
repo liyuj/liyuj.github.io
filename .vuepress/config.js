@@ -124,7 +124,8 @@ module.exports = {
                         'DataGrid',
                         `Streaming`,
                         'ComputeGrid',
-                        'DataStructures'
+                        'DataStructures',
+                        'Messaging'
                     ],
                     '/doc/sql/': [
                         '',
