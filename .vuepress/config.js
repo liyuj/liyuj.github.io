@@ -127,7 +127,8 @@ module.exports = {
                         'DataStructures',
                         'Messaging',
                         'Events',
-                        'DurableMemory'
+                        'DurableMemory',
+                        `Persistence`
                     ],
                     '/doc/sql/': [
                         '',
