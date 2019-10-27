@@ -128,7 +128,8 @@ module.exports = {
                         'Messaging',
                         'Events',
                         'DurableMemory',
-                        `Persistence`
+                        `Persistence`,
+                        'ThirdPartyIntegrations'
                     ],
                     '/doc/sql/': [
                         '',
