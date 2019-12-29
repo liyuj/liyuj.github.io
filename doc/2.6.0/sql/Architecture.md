@@ -185,7 +185,7 @@ query.setLazy(true);
 ```
 jdbc:ignite:thin://192.168.0.15?lazy=true
 ```
-### 5.5.查询并行化
+### 5.5.查询并行度
 SQL查询在每个涉及的节点上，默认是以单线程模式执行的，这种方式对于使用索引返回一个小的结果集的查询是一种优化，比如：
 ```sql
 select * from Person where p.id = ?
@@ -194,9 +194,9 @@ select * from Person where p.id = ?
 ```sql
 select SUM(salary) from Person
 ```
-通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用`CREATE TABLE`生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
+通过`CacheConfiguration.queryParallelism`属性可以配置查询的并行度，这个参数定义了在单一节点中执行查询时使用的线程数。使用`CREATE TABLE`生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
 
-如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行化配置。
+如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行度配置。
 > **注意**
 当前，这个属性影响特定缓存上的所有查询，可以加速很重的OLAP查询，但是会减慢其它的简单查询，这个行为在未来的版本中会改进。
 

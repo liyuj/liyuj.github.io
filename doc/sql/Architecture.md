@@ -236,7 +236,7 @@ Ignite在索引本身中部分包含索引值，以优化查询和数据更新�
 ::: warning 注意
 每个长度固定的列（如long）有1个字节的常量开销，每个`VARCHAR`列有2个字节的常量开销，在指定内联大小时应该考虑这些开销。还要注意的是，由于ignite将字符串编码为`UTF-8`，所以有些字符使用的字节数超过了1。
 :::
-### 5.7.查询并行化
+### 5.7.查询并行度
 SQL查询在每个涉及的节点上，默认是以单线程模式执行的，这种方式对于使用索引返回一个小的结果集的查询是一种优化，比如：
 ```sql
 select * from Person where p.id = ?
@@ -245,9 +245,9 @@ select * from Person where p.id = ?
 ```sql
 select SUM(salary) from Person
 ```
-通过`CacheConfiguration.queryParallelism`属性可以控制查询的并行化，这个参数定义了在单一节点中执行查询时使用的线程数。使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
+通过`CacheConfiguration.queryParallelism`属性可以配置查询的并行度，这个参数定义了在单一节点中执行查询时使用的线程数。使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)生成SQL模式以及底层缓存时，使用一个已配置好的`CacheConfiguration`模板，也可以对这个参数进行调整。
 
-如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行化配置。
+如果查询包含`JOIN`，那么所有相关的缓存都应该有相同的并行度配置。
 
 ::: warning 注意
 当前，这个属性影响特定缓存上的所有查询，可以加速很重的OLAP查询，但是会减慢其它的简单查询，这个行为在未来的版本中会改进。

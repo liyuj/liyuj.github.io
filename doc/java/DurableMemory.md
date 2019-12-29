@@ -360,7 +360,7 @@ Ignite在三种场景中使用退出策略：
 
 ![](https://files.readme.io/b2e3443-Off-heap_memory_eviction.png)
 
-堆外内存的退出默认是关闭的，这意味着内存使用量会一直增长直到达到限值。如果要开启退出，需要在配置的`DataRegionConfiguration`部分指定页面退出模式，注意堆外内存溢出是[内存区](/doc/java/DurableMemory.md#_3-2-内存区)级的,如果不使用内存区，那么需要给默认的内存区显式地增加参数来配置退出。
+堆外内存的退出默认是关闭的，这意味着内存使用量会一直增长直到达到限值。如果要开启退出，需要在配置的`DataRegionConfiguration`部分指定页面退出模式，注意堆外内存退出是[内存区](/doc/java/DurableMemory.md#_3-2-内存区)级的,如果不使用内存区，那么需要给默认的内存区显式地增加参数来配置退出。
 
 默认情况下，当某个内存区的内存消耗量达到90%时，退出就开始了，如果希望更早或者更晚地发起退出，可以配置`DataRegionConfiguration.setEvictionThreshold(...)`参数。
 
