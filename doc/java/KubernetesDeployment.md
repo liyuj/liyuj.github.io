@@ -131,8 +131,8 @@ ignite-cluster-3454482164-r20f8   1/1       Running   0          58s
 ignite-cluster-3454482164-vf8kh   1/1       Running   0          58s
 ignite-cluster-3454482164-w0xtx   1/1       Running   0          34m
 ```
-#### 2.1.5.在Microsoft Azone环境中部署
-参照[Microsoft Azone环境部署](https://dzone.com/articles/deploying-apache-ignite-in-kubernetes-on-microsoft)相关章节。
+#### 2.1.5.在Microsoft Azure环境中部署
+参照[Microsoft Azure环境部署](https://dzone.com/articles/deploying-apache-ignite-in-kubernetes-on-microsoft)相关章节。
 #### 2.1.6.在Amazon AWS环境中部署
 参照[AWS环境部署](https://www.gridgain.com/resources/blog/kubernetes-and-apacher-ignitetm-deployment-aws)相关内容。
 #### 2.1.7.在OpenShift环境中部署
@@ -759,14 +759,14 @@ spec:
 |`setMasterUrl(String)`|配置Kubernetes API服务器的主机名。|`https://kubernetes.default.svc.cluster.local:443`|
 |`setAccountToken(String)`|配置服务令牌文件的路径。|`/var/run/secrets/kubernetes.io/serviceaccount/token`|
 
-## 3.Microsoft Azone部署
-### 3.1.Azone Kubernetes服务部署
-第一步是配置Azone Kubernetes服务（AKS）集群，具体可以看下面的资料：
+## 3.Microsoft Azure部署
+### 3.1.Azure Kubernetes服务部署
+第一步是配置Azure Kubernetes服务（AKS）集群，具体可以看下面的资料：
 
- - [通过Azone门户部署AKS集群](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
- - [通过Azone命令行部署AKS集群](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
+ - [通过Azure门户部署AKS集群](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
+ - [通过Azure命令行部署AKS集群](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
 
-本文中会讲解如何使用Azone门户进行AKS部署。
+本文中会讲解如何使用Azure门户进行AKS部署。
 
 **AKS配置**
 
@@ -788,13 +788,13 @@ spec:
 
 ![](https://files.readme.io/f5bc018-Screen_Shot_2018-06-28_at_2.52.01_PM.png)
 
-之后转到`Monitoring`配置页，建议打开监控，这样可以在Azone门户中获取集群的状态：
+之后转到`Monitoring`配置页，建议打开监控，这样可以在Azure门户中获取集群的状态：
 
 ![](https://files.readme.io/f46f1f8-Screen_Shot_2018-06-28_at_2.55.06_PM.png)
 
 下一页中，可以配置应用的标签，然后点击`Review + create`按钮，再次检查配置参数之后，点击`Create`按钮。
 
-转到`All Resources` -> `IgniteCluster`，Azone部署集群需要点时间：
+转到`All Resources` -> `IgniteCluster`，Azure部署集群需要点时间：
 
 ![](https://files.readme.io/6e31786-Screen_Shot_2018-06-28_at_3.00.06_PM.png)
 
@@ -802,9 +802,9 @@ spec:
 
 Kubernetes仪表盘是一个有助于从本地或者其它环境监控Kubernetes的简单工具。
 
-如果要使用仪表盘，需要安装Azone CLI，如果未安装，可以参照这个[文档](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)。
+如果要使用仪表盘，需要安装Azure CLI，如果未安装，可以参照这个[文档](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)。
 
-Azone CLI安装完成之后，按照下面的步骤操作：
+Azure CLI安装完成之后，按照下面的步骤操作：
 
 首先，通过下面的命令获取集群的凭据：
 ```bash
@@ -829,7 +829,7 @@ az aks browse --resource-group IgniteCluster --name IgniteCluster
 
 ![](https://files.readme.io/c08ab74-Screen_Shot_2018-06-28_at_3.19.27_PM.png)
 ### 3.2.Ignite集群部署
-要在Azone Kubernetes服务中部署Ignite集群，需要至少3步：
+要在Azure Kubernetes服务中部署Ignite集群，需要至少3步：
 
  - 配置RBAC授权；
  - 在Kubernetes中部署用于Ignite节点自动发现的Ignite服务，同时它也会作为外部应用的负载平衡器；
@@ -861,7 +861,7 @@ kubectl create -f ignite-role-binding.yaml
 
 ![](https://files.readme.io/f515543-Screen_Shot_2018-06-28_at_3.49.31_PM.png)
 
-通过选择`Namespace`->`ignite`，在Kubernetes仪表盘中切换当前命名空间到`ignite`。还有，通过下面的命令，也可以通过Azone CLI切换命名空间：
+通过选择`Namespace`->`ignite`，在Kubernetes仪表盘中切换当前命名空间到`ignite`。还有，通过下面的命令，也可以通过Azure CLI切换命名空间：
 ```bash
 kubectl config set-context $(kubectl config current-context) --namespace=ignite
 ```
