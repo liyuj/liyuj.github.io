@@ -1,0 +1,47 @@
+# 网络对Ignite集群性能的负面影响
+内存访问比磁盘I/O快得多，以至于许多人希望仅通过从部署的分布式内存集群中读取数据就可以获得惊人的性能提升。但是不要忽略应用是通过网络与集群节点互联的事实，并且如果大量数据通过网络连续传输，会迅速抵消内存访问性能高的优势。
+
+换句话说，使用Ignite提供的合适数据访问模式，可以消除网络延迟的影响。本文中将通过Ignite的API，查看减轻网络的压力后应用性能的变化趋势。最终目标是能够部署可水平扩展的Ignite集群，其可以充分利用分布在所有主机上的RAM和CPU资源，并且尽可能小地受到网络的影响。
+## 做一个简单的测试
+为了简单起见，假设Ignite集群中存储了大量的记录，而应用需要计算整个数据集的最高温度和最长距离。下面将比较3个API，以显示最大限度地降低了网络利用率后的性能变化趋势，包括单独的键-值操作、批量键-值读取和并置计算。
+
+这个测试笔记本电脑就可以做。因此下面的测试环境为2.7GHz的双核Intel Core i5 CPU和8GB 1867MHz的DDR3内存，该主机上部署了2个节点的Ignite集群，内存中数据量为20万条。这两个节点和应用之间通过本地网络端口进行通信，并争夺RAM和CPU资源。如果在真正的分布式环境中运行相同的测试，则比较的API之间的差异将更加值得注意。
+## 通过大量的键-值调用来消耗网络资源
+第一个测试从键-值API调用开始，它会从2个节点一个个地拉取所有的记录，这可以通过Ignite的标准API`cache.get(key)`实现：
+```java
+for (int i = 0; i < RECORDS_CNT; i++) {
+    SampleRecord record = recordsCache.get(i);
+
+    if (record.getDistance() > longestDistance)
+        longestDistance = record.getDistance();
+
+    if (record.getTemperature() > highestTemp)
+        highestTemp = record.getTemperature();
+  }
+```
+应用读取了所有的20万条记录并进行了相同或更多的网络往返，可以看到应用花费了大约35秒来完成计算。如果为类似的计算选择了这种数据访问方法，则由于大量的网络往返，其实将数据保存在内存中，和保存在磁盘相比并没有太大的区别。
+## 通过减少网络往返次数来加快速度
+本次测试的第一个明显的优化是减少两个Ignite服务端节点与应用之间的网络往返次数。Ignite有批量查询数据的键-值API`cache.getAll(keys)`，以下代码段显示了如何通过该API完成测试：
+```java
+Collection<SampleRecord> records = recordsCache.getAll(keys).values();
+
+Iterator<SampleRecord> recordsIterator = records.iterator();
+
+while (recordsIterator.hasNext()) {
+
+}
+```
+使用这种方法，测试在约5秒内完成，与之前使用的单个键-值调用相比，速度快了7倍。该应用仍然从服务端节点读取所有20万条记录，但是它是在几次网络往返中完成的。Ignite的`cache.getAll(keys)`操作实现了该优化，即在传递主键时，Ignite首先将键映射到存储该数据的服务端节点，然后接入该节点批量读取数据。
+## 通过并置计算消除网络影响
+最后看看如果不再从服务端节点向应用中拉取20万条数据会发生什么。使用Ignite的计算API，可以将计算包装到Ignite的计算任务中，该任务将在服务端节点的本地数据集上执行，应用仅从服务端接收结果，而不再提取实际数据，因此几乎没有网络开销：
+```java
+Collection<Object[]> resultsFromServers = compute.broadcast(new IgniteCallable<Object[]>() {
+
+    @Override public Object[] call() throws Exception {
+
+    }
+}
+```
+这种基于并置计算的方法在大约1秒钟内完成，这比前述基于`cache.getAll(keys)`的解决方案快5倍，比执行单个键-值调用的性能高35倍。另外如果将更多的数据加载到集群中，则基于计算的方法将保持线性扩展，而基于`cache.getAll(keys)`的方法速度将减慢。
+## 是不是一定要使用并置计算？
+该测试的目的是表明，对于Ignite，由于应用和集群是通过网络连接在一起的，因此应用的性能可能会因访问分布式数据集的方式不同而有很大差异，并不是说不要使用键-值API而仅使用并置计算。如果应用的需求是读取单个记录并将其返回给最终用户或关联两个数据集，则还是要使用键-值调用API或SQL查询。如果逻辑更加复杂或数据密集，则建议使用计算API来消除或减少网络流量。总之，请了解Ignite提供的API，并选择在特定场景中性能最高的操作方式。
