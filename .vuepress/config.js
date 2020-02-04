@@ -25,9 +25,10 @@ module.exports = {
         '/doc/2.6.0/': {}
     },
     evergreen: true,
-    plugins: ['@dovyp/vuepress-plugin-clipboard-copy'],
+    plugins: ['@dovyp/vuepress-plugin-clipboard-copy','@vuepress/back-to-top','@vuepress/nprogress'],
     themeConfig: {
         lastUpdated: '最后更新时间：',
+        smoothScroll: true,
         search: false,
         serviceWorker: {
             updatePopup: {
