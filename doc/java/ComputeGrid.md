@@ -1233,8 +1233,8 @@ Ignite直接支持如下的`DeploymentSpi`实现：
  - UriDeploymentSpi
  - LocalDeploymentSpi
 
-::: tip 注意
-SPI的方法不要直接使用。SPI提供了子系统的内部视图以及由Ignite内部使用。在很少的情况下可能需要访问这个SPI的特定实现，可以通过`Ignite.configuration()`方法来获得这个SPI的一个实例，来检查它的配置属性或者调用其它的非SPI方法。再次注意从获得的实例中调用接口的方法可能导致未定义的行为而且明确不会得到支持。
+::: warning 注意
+SPI的方法不要直接使用。SPI提供了子系统的内部视图，由Ignite内部使用，需要访问这个SPI的某个实现的场景很少。可以通过`Ignite.configuration()`方法来获得这个SPI的一个实例，来检查它的配置属性或者调用其它的非SPI方法。再次注意从获得的实例中调用该接口的方法可能导致无法预期的行为，因此Ignite明确不会为此提供支持。
 :::
 
 ### 11.2.UriDeploymentSpi
