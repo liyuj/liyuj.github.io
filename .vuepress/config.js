@@ -5,11 +5,9 @@ module.exports = {
     head: [
         ['meta', { "http-equiv": 'cache-control', "content": 'no-store,no-cache,must-revalidate' }],
         ['meta', { "http-equiv": 'expires', "content": '0' }],
-        ['link', {
-            rel: 'shortcut icon',
-            type: "image/x-icon",
-            href: `https://ignite.apache.org/favicon.ico`
-        }],
+        ['link', {rel: 'stylesheet',href: `css/plugin.css`}],
+        ['link', {rel: 'stylesheet',href: `css/style.css`}],
+        ['link', {rel: 'shortcut icon',type: "image/x-icon",href: `https://ignite.apache.org/favicon.ico`}],
         ['script', {
             src: 'https://hm.baidu.com/hm.js?03f40be28ff9a31fd798fd6b9dac0946'
         }]
@@ -78,13 +76,14 @@ module.exports = {
                     link: 'https://my.oschina.net/liyuj'
                 },
                 {
-                    text: 'Confluent平台',
-                    link: '/confluent/'
-                },
-                {
                     text: '历史版本',
                     link: 'https://www.zybuluo.com/liyuj/note/230739'
-                }
+                },
+                {
+                    text: '服务内容',
+                    link: '/Service'
+                },
+
                 ],
                 sidebar: {
                     '/doc/java/': [
