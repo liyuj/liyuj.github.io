@@ -43,7 +43,7 @@
 			<!-- Hero box -->
 			<div class="col-md-3 col-sm-6">
 				<div class="hero-box box-one">
-					<span class="ti-layout-media-center-alt"></span>
+					<span class="fa fa-hand-grab-o"></span>
 					<h3>以内存为中心</h3>
 					<p>强大的以内存为中心的架构，可以提供更高的性能，作为缓存可为已有的各种类型应用加速</p>
 				</div>
@@ -51,7 +51,7 @@
 			<!-- Hero box -->
 			<div class="col-md-3 col-sm-6">
 				<div class="hero-box box-two">
-					<span class="ti-ruler-pencil"></span>
+					<span class="fa fa-hand-pointer-o"></span>
 					<h3>独特功能优势</h3>
 					<p>支持原生持久化的分布式内存数据库、事务化的键-值API、分布式计算框架、易于与各种技术集成、支持机器学习等</p>
 				</div>
@@ -59,14 +59,14 @@
 			<!-- Hero box -->
 			<div class="col-md-3 col-sm-6">
 				<div class="hero-box box-three">
-					<span class="ti-video-camera"></span>
+					<span class="fa fa-hand-peace-o"></span>
 					<h3>全套解决方案</h3>
 					<p>作为全功能的分布式架构解决方案，功能强大，开发容易，帮助客户简化技术堆栈</p>
 				</div>
 			</div>
 			<div class="col-md-3 col-sm-6">
 				<div class="hero-box box-four">
-					<span class="ti-video-camera"></span>
+					<span class="fa fa-hand-paper-o"></span>
 					<h3>综合成本低廉</h3>
 					<p>解决大型企业的各种系统面临的复杂问题，对已有系统无需做大的调整甚至推倒重来，综合成本低</p>
 				</div>
@@ -87,7 +87,7 @@
 			<div class="working-boxs">
 				<div class="col-md-3 col-sm-6 col-xs-12">
 					<div class="working-box">
-					   <span class="ti-clipboard"></span>
+					   <span class="fa fa-automobile"></span>
 					   <h3>实时业务场景</h3>
 					   <h4>RDBMS缓存和实时分析</h4>
 					   <div class="hexagon"> 01 </div>
@@ -96,7 +96,7 @@
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12">
 					<div class="working-box">
-					   <span class="ti-alarm-clock"></span>
+					   <span class="fa fa-train"></span>
 					   <h3>离线业务场景</h3>
 					   <h4>分析性业务和存储过程替代</h4>
 					   <div class="hexagon"> 02 </div>
@@ -106,16 +106,16 @@
 
 				<div class="col-md-3 col-sm-6 col-xs-12">
 					<div class="working-box">
-					   <span class="ti-ruler-alt-2"></span>
+					   <span class="fa fa-plane"></span>
 					   <h3>独立大数据平台</h3>
 					   <h4>分布式内存数据库</h4>
 					   <div class="hexagon"> 03 </div>
-					   <p>Ignite可以独立搭建大数据平台，开启持久化后可作为独立分布式数据库，对数据进行整合后，可以对外提供各种各样的服务，比如海量数据的高速查询服务、对数据进行分析后的增值服务、甚至机器学习等；软件开发商也可以基于Ignite进行行业解决方案开发</p>
+					   <p>Ignite可以独立搭建大数据平台，开启持久化可作为独立分布式数据库，对数据进行整合后，可以对外提供各种各样的服务，比如海量数据的高速查询服务、对数据进行分析后的增值服务、甚至机器学习等；软件开发商也可以基于Ignite进行行业解决方案开发</p>
 				   </div>
 				</div>
 				<div class="col-md-3 col-sm-6 col-xs-12">
 					<div class="working-box">
-					   <span class="ti-package"></span>
+					   <span class="fa fa-rocket"></span>
 					   <h3>业务整合场景</h3>
 					   <h4>分布式应用开发框架</h4>
 					   <div class="hexagon"> 04 </div>
@@ -127,7 +127,7 @@
 	</div>
 </div>
 <!-- Footer area starts -->
-<footer id="footer" class="footer-area section-big">
+<footer id="footer" class="footer-area">
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12 text-center">

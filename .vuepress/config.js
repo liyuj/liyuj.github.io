@@ -7,6 +7,7 @@ module.exports = {
         ['meta', { "http-equiv": 'expires', "content": '0' }],
         ['link', {rel: 'stylesheet',href: `css/plugin.css`}],
         ['link', {rel: 'stylesheet',href: `css/style.css`}],
+        ['link', {rel: 'stylesheet',href: `css/font-awesome.min.css`}],
         ['link', {rel: 'shortcut icon',type: "image/x-icon",href: `https://ignite.apache.org/favicon.ico`}],
         ['script', {
             src: 'https://hm.baidu.com/hm.js?03f40be28ff9a31fd798fd6b9dac0946'

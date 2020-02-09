@@ -16,7 +16,7 @@
 			<!-- Hero box -->
 			<div class="col-md-4 col-sm-6">
 				<div class="hero-box box-one">
-					<span class="ti-layout-media-center-alt"></span>
+					<span class="fa fa-battery-1"></span>
 					<h3>付费会员制服务群</h3>
 					<p>Ignite功能讲解/答疑、指导POC、问题处理指引，当日问题当日内不定期回复</p>
 				</div>
@@ -25,14 +25,14 @@
 			<!-- Hero box -->
 			<div class="col-md-4 col-sm-6">
 				<div class="hero-box box-two">
-					<span class="ti-ruler-pencil"></span>
+					<span class="fa fa-battery-2"></span>
 					<h3>远程技术支持服务</h3>
 					<p>远程培训、协助POC、架构设计规划和评审、协助解决具体的测试/生产问题、系统性能和扩展性优化等个性化需求，预约时间即时响应</p>
 				</div>
 			</div>
 			<div class="col-md-4 col-sm-6">
 				<div class="hero-box box-three">
-					<span class="ti-video-camera"></span>
+					<span class="fa fa-battery-4"></span>
 					<h3>驻场技术支持服务</h3>
 					<p>提供现场培训、原型开发等各种个性化需求，最高响应速度</p>
 				</div>
@@ -41,7 +41,7 @@
 	</div>
 </section>
 <!-- Footer area starts -->
-<footer id="footer" class="footer-area section-big">
+<footer id="footer" class="footer-area">
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12 text-center">
