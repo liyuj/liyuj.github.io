@@ -16,7 +16,7 @@
 				<div class="col-md-5 col-sm-6">
 					<div class="about-content">
 						<h5>关于Apache Ignite</h5>
-						<h3 style="font-size:24px;">Apache Ignite是一个基于内存的集成化企业级分布式架构解决方案，面向数据密集型应用，比传统技术具有更高的性能，其在一个统一的平台中整合了如下技术：</h3>
+						<h3 style="font-size:24px;">Apache Ignite是一套基于内存的集成化企业级分布式架构解决方案，面向数据密集型应用，比传统技术具有更高的性能，其在一个统一的平台中整合了如下技术：</h3>
 							<ul style="color:red">
                                  <li>支持标准SQL的分布式内存键-值数据网格</li>
                                  <li>分布式事务支持</li>
@@ -127,15 +127,31 @@
 	</div>
 </div>
 <!-- Footer area starts -->
-<footer id="footer" class="footer-area">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12 text-center">
-				<p>Copyright &copy; 2020</p>
+	<footer id="footer" class="footer-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 text-center">
+					<p>Copyright &copy; 2020</p>
+				</div>
 			</div>
 		</div>
-	</div>
-</footer>
+	</footer>
+	<div class="right-pale">
+		<div class="right-content">
+			<div class="bbox tell-box">
+			<button class="btn btn-circle btn-success right-tell"><i class="fa fa-lg fa-phone"></i></button>
+			<p class="tell-hide">
+				18624049226
+			</p>
+			</div>
+			<div class="bbox weixin-box">
+			<button class="btn btn-circle btn-success right-weixin"><i class="fa fa-weixin"></i></button>
+			<p class="tell-hide" style="padding:10px;">
+				<img src="/img/weixin.jpg">
+			</p>
+			</div>
+		</div>
+		</div>
   </div>
 </template>
 <script>
