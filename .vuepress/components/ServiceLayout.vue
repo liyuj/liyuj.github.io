@@ -2,7 +2,7 @@
   <div class="theme-container" :class="pageClasses">
    <Navbar/>
 
-   <section id="services" class="hero-box-area section-big">
+   <section id="services" class="hero-box-area section-big" style="padding-bottom:10px">
 	<div class="container">
 
 		<div class="row">

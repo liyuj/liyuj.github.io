@@ -1508,8 +1508,8 @@ fieldset {
     background-position: left top;
     position: relative;
     overflow: hidden;
-    padding-bottom: 80px;
-    margin-top: -80px;
+    padding-bottom: 10px;
+    margin-top: 10px;
 }
 
 .footer-title:before {
