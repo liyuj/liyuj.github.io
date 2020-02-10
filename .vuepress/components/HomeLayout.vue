@@ -9,7 +9,7 @@
          </div>
       </div>
    </section>
-   <script>document.getElementById("slider").style.height=(document.documentElement.clientHeight) +"px";</script>
+   <script>document.getElementById('slider').style.height=(document.documentElement.clientHeight) +'px';</script>
 	<section id="aboutus" class="aboutus-area section-small">
 		<div class="container">
 			<div class="row">
