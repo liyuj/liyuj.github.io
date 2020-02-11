@@ -4,7 +4,6 @@
 
    <section id="services" class="hero-box-area section-big" style="padding-bottom:10px">
 	<div class="container">
-
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<div class="section-title">
@@ -13,28 +12,50 @@
 			</div>
 		</div>
 		<div class="row">
+			<div class="col-md-3 col-sm-6">
+				<div class="hero-box">
+					<span class="fa fa-battery-0"></span>
+					<h3>免费技术交流群</h3>
+					<p>Ignite产品资讯、功能介绍、组织民间交流等</p>
+				</div>
+			</div>
 			<!-- Hero box -->
-			<div class="col-md-4 col-sm-6">
-				<div class="hero-box box-one">
+			<div class="col-md-3 col-sm-6">
+				<div class="hero-box">
 					<span class="fa fa-battery-1"></span>
 					<h3>付费会员制服务群</h3>
-					<p>Ignite功能讲解/答疑、指导POC、问题处理指引，当日问题当日内不定期回复</p>
+					<p>Ignite功能讲解/答疑、指导POC/应用开发、问题处理指引，当日问题当日内不定期回复</p>
 				</div>
 			</div>
-
 			<!-- Hero box -->
-			<div class="col-md-4 col-sm-6">
-				<div class="hero-box box-two">
+			<div class="col-md-3 col-sm-6">
+				<div class="hero-box">
 					<span class="fa fa-battery-2"></span>
 					<h3>远程技术支持服务</h3>
-					<p>远程培训、协助POC、架构设计规划和评审、协助解决具体的测试/生产问题、系统性能和扩展性优化等个性化需求，预约时间即时响应</p>
+					<p>初始客户调查、Ignite专题介绍/远程培训、协助POC、架构设计规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等个性化需求，预约时间即时响应</p>
 				</div>
 			</div>
-			<div class="col-md-4 col-sm-6">
-				<div class="hero-box box-three">
+			<div class="col-md-3 col-sm-6">
+				<div class="hero-box">
 					<span class="fa fa-battery-4"></span>
 					<h3>驻场技术支持服务</h3>
-					<p>提供现场培训、原型开发等各种个性化需求，最高响应速度</p>
+					<p>现场解决客户的各种个性化需求/问题，最高响应速度</p>
+				</div>
+			</div>
+		</div>
+		<div class="right-pale">
+			<div class="right-content">
+				<div class="bbox tell-box">
+				<button class="btn btn-circle btn-success right-tell"><i class="fa fa-lg fa-phone"></i></button>
+				<p class="tell-hide">
+					18624049226
+				</p>
+				</div>
+				<div class="bbox weixin-box">
+				<button class="btn btn-circle btn-success right-weixin"><i class="fa fa-weixin"></i></button>
+				<p class="tell-hide" style="padding:10px;">
+					<img src="/img/weixin.jpg">
+				</p>
 				</div>
 			</div>
 		</div>

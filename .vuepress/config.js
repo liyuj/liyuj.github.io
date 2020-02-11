@@ -1,5 +1,5 @@
 module.exports = {
-    title: 'Apache Ignite中文网',
+    title: 'Apache Ignite技术服务网',
     description: '轻量级分布式内存HTAP数据库及计算平台GridGain中国大陆地区独家合作伙伴',
     dest: "dist",
     head: [
