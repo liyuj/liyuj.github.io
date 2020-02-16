@@ -45,6 +45,10 @@ module.exports = {
                     link: '/'
                 },
                 {
+                    text: '服务内容',
+                    link: '/Service'
+                },
+                {
                     text: 'Java',
                     link: '/doc/java/'
                 },
@@ -79,13 +83,7 @@ module.exports = {
                 {
                     text: '历史版本',
                     link: 'https://www.zybuluo.com/liyuj/note/230739'
-                },
-                {
-                    text: '服务内容',
-                    link: '/Service'
-                },
-
-                ],
+                }],
                 sidebar: {
                     '/doc/java/': [
                         '',
