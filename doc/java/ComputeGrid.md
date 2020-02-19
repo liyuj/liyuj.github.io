@@ -1417,7 +1417,7 @@ ignite.compute().broadcast(new IgniteCallable<Object>() {
 :::
 
 ### 12.2.SchedulerFuture
-`IgniteScheduler.scheduleLocal()`方法返回`SchedulerFuture`，它有一组有用的方法来监控调度的执行以及获得结果。要取消周期性的执行，也可以使用这个future。
+`IgniteScheduler.scheduleLocal()`方法返回`SchedulerFuture`，它有一组有用的方法来监控调度的执行以及获得结果，通过它也可以取消周期性的执行。
 ```java
 SchedulerFuture<?> fut = ignite.scheduler().scheduleLocal(new Runnable() {
     @Override public void run() {

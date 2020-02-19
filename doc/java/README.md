@@ -1106,7 +1106,7 @@ XML：
  - 慢客户端会被服务端节点踢出；
 
 当一个客户端发现它与一个集群断开时，会为自己赋予一个新的节点`id`然后试图与该服务端重新连接。`注意`：这会产生一个副作用，就是当客户端重建连接时本地`ClusterNode`的`id`属性会发生变化，这意味着，如果业务逻辑依赖于这个`id`，就会受到影响。
-当客户端处于一个断开状态并且试图重建与集群的连接过程中时，Ignite API会抛出一个特定的异常：`IgniteClientDisconnectedException`，这个异常提供了一个`future`，当客户端重连成功后它会完成（`IgniteCache`API会抛出`CacheException`，它有一个`IgniteClientDisconnectedException`作为它的触发原因）。这个`future`也可以通过`IgniteCluster.clientReconnectFuture()`方法获得。
+当客户端处于一个断开状态并且试图重建与集群的连接过程中时，Ignite API会抛出一个特定的异常：`IgniteClientDisconnectedException`，这个异常提供了一个`Future`，当客户端重连成功后它会完成（`IgniteCache`API会抛出`CacheException`，它有一个`IgniteClientDisconnectedException`作为它的触发原因）。这个`Future`也可以通过`IgniteCluster.clientReconnectFuture()`方法获得。
 
 此外，客户端重连也有一些特定的事件（这些事件是本地化的，也就是说它们只会在客户端节点触发）：
 
@@ -1860,7 +1860,7 @@ bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
 |异常|描述|要采取的动作|运行时异常|
 |---|---|---|---|
 |`IgniteException`|此异常表示网格中存在错误。|操作失败，从方法退出。|是|
-|`IgniteClientDisconnectedException`|当客户端节点与集群断开连接时，Ignite API（缓存操作、计算API和数据结构操作）会抛出此异常。|在`future`中等待并重试。|是|
+|`IgniteClientDisconnectedException`|当客户端节点与集群断开连接时，Ignite API（缓存操作、计算API和数据结构操作）会抛出此异常。|在`Future`中等待并重试。|是|
 |`IgniteAuthenticationException`|当节点身份验证失败或安全身份验证失败时，会抛出此异常。|操作失败，从方法退出。|否|
 |`IgniteClientException`|缓存操作会抛出此异常。|根据异常消息确定下一步的动作。|是|
 |`IgniteDeploymentException`|当Ignite API（计算网格相关）未能在节点上部署作业或任务时，会抛出此异常。|操作失败，从方法退出。|是|
@@ -1868,9 +1868,9 @@ bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
 |`IgniteSpiException`|SPI引发的异常，如`CollisionSpi`、`LoadBalancingSpi`、<br>`TcpDiscoveryIpFinder`、`FailoverSpi`、`UriDeploymentSpi`等。|操作失败，从方法退出。|是|
 |`IgniteSQLException`|SQL查询处理失败会抛出此异常，该异常会包含相关规范定义的[错误代码](https://static.javadoc.io/org.apache.ignite/ignite-core/2.5.0/org/apache/ignite/internal/processors/cache/query/IgniteQueryErrorCode.html)。|操作失败，从方法退出。|是|
 |`IgniteAccessControlException`|认证/授权失败时会抛出此异常。|操作失败，从方法退出。|否|
-|`IgniteCacheRestartingException`|如果缓存正在重启，Ignite的缓存API会抛出此异常。|在`future`中等待并重试。|是|
-|`IgniteFutureTimeoutException`|当`future`的计算超时时，会抛出此异常。|要么增加超时限制要么方法退出。|是|
-|`IgniteFutureCancelledException`|当`future`的计算因为被取消而无法获得结果时，会抛出此异常。|可进行重试。|是|
+|`IgniteCacheRestartingException`|如果缓存正在重启，Ignite的缓存API会抛出此异常。|在`Future`中等待并重试。|是|
+|`IgniteFutureTimeoutException`|当`Future`的计算超时时，会抛出此异常。|要么增加超时限制要么方法退出。|是|
+|`IgniteFutureCancelledException`|当`Future`的计算因为被取消而无法获得结果时，会抛出此异常。|可进行重试。|是|
 |`IgniteIllegalStateException`|此异常表示Ignite实例对于请求的操作处于无效状态。|操作失败，从方法退出。|是|
 |`IgniteNeedReconnectException`|此异常显示节点应尝试重新连接到集群。|可进行重试。|否|
 |`IgniteDataIntegrityViolationException`|如果发现数据完整性冲突，会抛出此异常。|操作失败，从方法退出。|是|
@@ -1878,7 +1878,7 @@ bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
 |`IgniteTxOptimisticCheckedException`|当事务以乐观方式失败时，会抛出此异常。|可进行重试|否|
 |`IgniteTxRollbackCheckedException`|当事务自动回滚时，会抛出此异常。|可进行重试。|否|
 |`IgniteTxTimeoutCheckedException`|当事务超时时，会抛出此异常。|可进行重试。|否|
-|`ClusterTopologyException`|当集群拓扑发生错误（比如节点故障）时会抛出此异常（针对计算和事件API）。|在`future`中等待并重试。|是|
+|`ClusterTopologyException`|当集群拓扑发生错误（比如节点故障）时会抛出此异常（针对计算和事件API）。|在`Future`中等待并重试。|是|
 
 ## 14.FAQ
 
