@@ -49,7 +49,7 @@ IgniteCache<Integer, String> cache = ignite.cache("myCache");
 
 **动态缓存**
 
-也可以动态地创建缓存的一个实例，这时，Ignite会在所有的符合条件的集群成员中创建和部署该缓存。一个动态缓存启动后，它也会自动的部署到新加入的符合条件的节点上。
+也可以动态地创建缓存实例，这时Ignite会在所有的符合条件的集群节点中创建和部署该缓存。动态缓存启动后，它也会自动部署到新加入的符合条件的节点上。
 ```java
 Ignite ignite = Ignition.ignite();
 
@@ -60,10 +60,10 @@ cfg.setAtomicityMode(TRANSACTIONAL);
 
 // Create cache with given name, if it does not exist.
 IgniteCache<Integer, String> cache = ignite.getOrCreateCache(cfg);
-```yu
+```
 
 ::: tip XML配置
-在任意的缓存节点上定义的基于Spring的XML配置的所有缓存同时会自动地在所有的集群节点上创建和部署（不需要在每个集群节点上指定同样的配置）。
+在缓存节点上定义的基于Spring的XML配置的所有缓存同时也会自动地在所有的集群节点上创建和部署（不需要在每个集群节点上指定同样的配置）。
 :::
 
 ### 2.3.基本操作
