@@ -5,7 +5,7 @@
       <div class="container">
          <div class="intro-text clearfix">
             <h2 style="font-size:40px;">轻量级分布式内存HTAP数据库及计算平台</h2>
-            <h3>中国大陆地区唯一Ignite技术服务商，GridGain中国大陆地区独家合作伙伴</h3>
+            <h3>中国大陆唯一Ignite技术咨询/服务商，GridGain中国大陆地区独家合作伙伴</h3>
          </div>
       </div>
    </section>

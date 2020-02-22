@@ -5,13 +5,11 @@ module.exports = {
     head: [
         ['meta', { "http-equiv": 'cache-control', "content": 'no-store,no-cache,must-revalidate' }],
         ['meta', { "http-equiv": 'expires', "content": '0' }],
-        ['link', {rel: 'stylesheet',href: `css/plugin.css`}],
-        ['link', {rel: 'stylesheet',href: `css/style.css`}],
-        ['link', {rel: 'stylesheet',href: `css/font-awesome.min.css`}],
+        ['link', {rel: 'stylesheet',href: `/css/plugin.css`}],
+        ['link', {rel: 'stylesheet',href: `/css/style.css`}],
+        ['link', {rel: 'stylesheet',href: `/css/font-awesome.min.css`}],
         ['link', {rel: 'shortcut icon',type: "image/x-icon",href: `https://ignite.apache.org/favicon.ico`}],
-        ['script', {
-            src: 'https://hm.baidu.com/hm.js?54969acf92b23913f6e3e80d91177927'
-        }]
+        ['script', {src: 'https://hm.baidu.com/hm.js?54969acf92b23913f6e3e80d91177927'}]
     ],
     markdown: {
         lineNumbers: true,
