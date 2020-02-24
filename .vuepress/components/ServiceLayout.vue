@@ -33,7 +33,7 @@
 			<div class="col-md-3 col-sm-6">
 				<div class="hero-box">
 					<span class="fa fa-battery-2"></span>
-					<h3>远程技术咨询服务</h3>
+					<h3>远程咨询顾问服务</h3>
 					<h4>面向企业</h4>
 					<p>初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等，预约时间即时响应</p>
 				</div>
@@ -41,7 +41,7 @@
 			<div class="col-md-3 col-sm-6">
 				<div class="hero-box">
 					<span class="fa fa-battery-4"></span>
-					<h3>驻场技术咨询服务</h3>
+					<h3>驻场咨询顾问服务</h3>
 					<h4>面向企业</h4>
 					<p>现场解决客户的各种个性化需求/问题，随时响应</p>
 				</div>
