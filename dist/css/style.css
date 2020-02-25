@@ -169,17 +169,6 @@ fieldset {
     margin-bottom: 50px;
     position: relative;
 }
-
-.contact-title:before,
-.section-title:before {
-    position: absolute;
-    content: "";
-    width: 3px;
-    height: 40px;
-    top: -77%;
-    background-color: rgb(255, 101, 165);
-}
-
 .section-title h2 {
     margin-top: 0;
     line-height: 38px;

@@ -49,16 +49,6 @@
 		</div>
 	</div>
 </section>
-<!-- Footer area starts -->
-<footer id="footer" class="footer-area">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12 text-center">
-				<p>Copyright &copy; 2020</p>
-			</div>
-		</div>
-	</div>
-</footer>
 	<div class="right-pale">
 		<div class="right-content">
 			<div class="bbox tell-box">

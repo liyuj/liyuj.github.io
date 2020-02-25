@@ -5,7 +5,7 @@
       <div class="container">
          <div class="intro-text clearfix">
             <h2 style="font-size:40px;">轻量级分布式内存HTAP数据库及计算平台</h2>
-            <h3>中国大陆唯一Ignite技术咨询/服务商，GridGain中国大陆地区独家合作伙伴</h3>
+            <h3>全功能分布式内存架构解决方案，中国唯一Ignite技术咨询/服务商</h3>
          </div>
       </div>
    </section>
@@ -131,7 +131,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12 text-center">
-					<p>Copyright &copy; 2020</p>
+					<p>Copyright &copy; 2019-2020 沈阳开源技术咨询服务有限公司 <a href="http://www.beian.miit.gov.cn/" target="_blank" style="color: #000000;">辽ICP备20001956号</a></p>
 				</div>
 			</div>
 		</div>
