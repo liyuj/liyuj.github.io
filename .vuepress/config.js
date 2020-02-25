@@ -8,8 +8,8 @@ module.exports = {
         ['link', {rel: 'stylesheet',href: `/css/plugin.css`}],
         ['link', {rel: 'stylesheet',href: `/css/style.css`}],
         ['link', {rel: 'stylesheet',href: `/css/font-awesome.min.css`}],
-        ['link', {rel: 'shortcut icon',type: "image/x-icon",href: `https://ignite.apache.org/favicon.ico`}],
-        ['script', {src: 'https://hm.baidu.com/hm.js?54969acf92b23913f6e3e80d91177927'}]
+        ['link', {rel: 'shortcut icon',type: "image/x-icon",href: `/favicon.ico`}],
+        ['script', {src: 'https://hm.baidu.com/hm.js?9d04fe7543c80b1f04c5f9571193ac90'}]
     ],
     markdown: {
         lineNumbers: true,
