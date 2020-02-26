@@ -1,3 +1,4 @@
 ---
 layout: HomeLayout
+sidebar: false
 ---

@@ -1,3 +1,4 @@
 ---
 layout: ServiceLayout
+sidebar: false
 ---
