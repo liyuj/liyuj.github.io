@@ -44,7 +44,7 @@ module.exports = {
                     link: '/'
                 },
                 {
-                    text: '服务内容',
+                    text: '服务&报价',
                     link: '/Service'
                 },
                 {

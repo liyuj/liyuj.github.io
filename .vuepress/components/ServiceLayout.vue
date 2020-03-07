@@ -14,53 +14,89 @@
         <slot name="sidebar-bottom" />
       </template>
     </Sidebar>
-	   <section id="services" class="hero-box-area section-big" style="padding-bottom:10px;padding-top:100px">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12 text-center" style="height:50px">
-				<div class="section-title">
-					<h2 style="font-size:36px">服务内容</h2>
+
+     <section id="clients">
+	<!-- CONTAINER FLUID -->
+	<div class="container-fluid text-center">
+		<h3 class="headline scroll-animated-from-bottom">What Clients say about us.</h3>
+		<!-- CLIENT FEEDBACK -->
+		<div class="client-feedback">
+			<!-- CLIENT FEEDBACK ITEM -->
+			<div class="client-feedback-item row">
+				<!-- COLUMN -->
+				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
+          <span class="fa fa-battery-0" style="font-size:36px;margin:20px"></span>
+					<h3 style="font-size:18px;margin:0 0 10px 0">免费开发者交流群</h3>
+          <h4>面向开发者</h4>
 				</div>
+				<!-- /COLUMN -->
+				<!-- COLUMN -->
+				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
+          <h4>服务内容：</h4>
+					开发者间交流平台，Ignite/GridGain产品资讯、功能介绍，不保证响应
+          <h4>服务报价：</h4>免费
+				</div>
+				<!-- /COLUMN -->
 			</div>
+      <div class="col-sm-12" style="border-top:1px dashed #777"></div>
+			<!-- /CLIENT FEEDBACK ITEM -->
+			<!-- CLIENT FEEDBACK ITEM -->
+			<div class="client-feedback-item row">
+				<!-- COLUMN -->
+				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
+          <span class="fa fa-battery-1" style="font-size:36px;margin:20px"></span>
+					<h3 style="font-size:18px;margin:0 0 10px 0">付费开发者服务群</h3>
+          <h4>面向开发者</h4>
+				</div>
+				<!-- /COLUMN -->
+				<!-- COLUMN -->
+				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
+					<h4>服务内容：</h4>Ignite功能讲解/答疑、指导POC/应用开发、问题处理指引，当日问题当日内不定期响应<br>
+          <h4>服务报价：</h4>100元/半月/人，150元/月/人，300元/季/人，500元/半年/人
+				</div>
+				<!-- /COLUMN -->
+			</div>
+      <div class="col-sm-12" style="border-top:2px dashed #777"></div>
+			<!-- /CLIENT FEEDBACK ITEM -->
+			<!-- CLIENT FEEDBACK ITEM -->
+			<div class="client-feedback-item row">
+				<!-- COLUMN -->
+				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
+          <span class="fa fa-battery-2" style="font-size:36px;margin:20px"></span>
+					<h3 style="font-size:18px;margin:0 0 10px 0">远程咨询顾问服务</h3>
+          <h4>面向企业</h4>
+				</div>
+				<!-- /COLUMN -->
+				<!-- COLUMN -->
+				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
+					<h4>服务内容：</h4>初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等，预约时间即时响应
+          <h4>服务报价：</h4>500元/2小时(最小计价单位)，1000元/天，3000元/周，5000元/半月，8000元/月，2万元/季，4万元/半年，8万元/年
+				</div>
+				<!-- /COLUMN -->
+			</div>
+      <div class="col-sm-12" style="border-top:3px dashed #777"></div>
+      <div class="client-feedback-item row">
+				<!-- COLUMN -->
+				<div class="col-sm-3 text-center scroll-animated-from-bottom" style="color:red">
+          <span class="fa fa-battery-4" style="font-size:36px;margin:20px"></span>
+					<h3 style="font-size:18px;margin:0 0 10px 0">驻场咨询顾问服务</h3>
+          <h4>面向企业</h4>
+				</div>
+				<!-- /COLUMN -->
+				<!-- COLUMN -->
+				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
+					<h4>服务内容：</h4>现场解决客户的各种个性化需求/问题，随时响应
+          <h4>服务报价：</h4>3000元/核准日，工作日程内非工作日800元/天，长期服务可议价
+				</div>
+				<!-- /COLUMN -->
+			</div>
+			<!-- /CLIENT FEEDBACK ITEM -->
 		</div>
-		<div class="row">
-			<div class="col-md-3 col-sm-6">
-				<div class="hero-box">
-					<span class="fa fa-battery-0"></span>
-					<h3>免费开发者交流群</h3>
-					<h4>面向开发者</h4>
-					<p>开发者间交流平台，Ignite/GridGain产品资讯、功能介绍，不保证响应</p>
-				</div>
-			</div>
-			<!-- Hero box -->
-			<div class="col-md-3 col-sm-6">
-				<div class="hero-box">
-					<span class="fa fa-battery-1"></span>
-					<h3>付费开发者服务群</h3>
-					<h4>面向开发者</h4>
-					<p>Ignite功能讲解/答疑、指导POC/应用开发、问题处理指引，当日问题当日内不定期响应</p>
-				</div>
-			</div>
-			<!-- Hero box -->
-			<div class="col-md-3 col-sm-6">
-				<div class="hero-box">
-					<span class="fa fa-battery-2"></span>
-					<h3>远程咨询顾问服务</h3>
-					<h4>面向企业</h4>
-					<p>初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等，预约时间即时响应</p>
-				</div>
-			</div>
-			<div class="col-md-3 col-sm-6">
-				<div class="hero-box">
-					<span class="fa fa-battery-4"></span>
-					<h3>驻场咨询顾问服务</h3>
-					<h4>面向企业</h4>
-					<p>现场解决客户的各种个性化需求/问题，随时响应</p>
-				</div>
-			</div>
-		</div>
+		<!-- /CLIENT FEEDBACK -->
 	</div>
+	<!-- /CONTAINER FLUID -->
 </section>
+
 	<div class="right-pale">
 		<div class="right-content">
 			<div class="bbox tell-box">
