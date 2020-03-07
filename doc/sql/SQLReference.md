@@ -2880,7 +2880,7 @@ ROLLBACK [TRANSACTION]
 :::
 
 ### 12.1.描述
-`BEGIN`、`COMMIT`和`ROLLBACK`命令可用于处理SQL的事务，事务是一组有序的SQL操作，通过`BEGIN`语句开始，以`COMMIT`结束，事务内的操作要么全部成功，要么全部失败。
+`BEGIN`、`COMMIT`和`ROLLBACK`命令可用于处理[SQL事务](/doc/sql/Architecture.md#_7-sql事务)，事务是一组有序的SQL操作，通过`BEGIN`语句开始，以`COMMIT`结束，事务内的操作要么全部成功，要么全部失败。
 
 `ROLLBACK [TRANSACTION]`语句会撤销上次`COMMIT`或者`ROLLBACK`命令之后的所有更新。
 ### 12.2.示例
