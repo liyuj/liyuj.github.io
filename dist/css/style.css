@@ -1734,3 +1734,36 @@ fieldset {
     border-radius: 0.25rem;
     transition: color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s, border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s, -webkit-box-shadow 0.15s ease-in-out 0s;
 }
+
+
+
+#clients .client-feedback
+{
+    padding-top: 2rem;
+}
+
+#clients .client-feedback .client-feedback-item
+{
+    margin-bottom: 10px;
+}
+
+#clients .client-feedback .client-feedback-item:last-child
+{
+    margin-bottom: 0;
+}
+
+@media (max-width:768px)
+{
+    #clients .client-feedback .client-feedback-item img
+    {
+        margin: 0 auto 3rem auto;
+    }
+
+    #clients .client-feedback .client-feedback-item .text-left
+    {
+        text-align: center;
+    }
+}
+.text-center {
+    text-align: center;
+  }

@@ -86,7 +86,7 @@
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
 					<h4>服务内容：</h4>现场解决客户的各种个性化需求/问题，随时响应
-          <h4>服务报价：</h4>3000元/核准日，工作日程内非工作日800元/天，长期服务可议价
+          <h4>服务报价：</h4>3000元/核算日，工作日程内非工作日800元/天，长期服务可议价
 				</div>
 				<!-- /COLUMN -->
 			</div>
