@@ -24,7 +24,6 @@
 			<!-- CLIENT FEEDBACK ITEM -->
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
-<<<<<<< HEAD
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
           <span class="fa fa-battery-0" style="font-size:36px;margin:20px"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">免费开发者交流群</h3>
@@ -36,17 +35,6 @@
           <h4>服务内容：</h4>
 					开发者间交流平台，Ignite/GridGain产品资讯、功能介绍，不保证响应
           <h4>服务报价：</h4>免费
-=======
-				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red;border-right:1px dashed #777">
-          <span class="fa fa-battery-0" style="font-size:24px;margin:10px"></span>
-					<h3 style="font-size:18px;margin:0 0 10px 0">免费开发者交流群</h3>
-				</div>
-				<!-- /COLUMN -->
-				<!-- COLUMN -->
-				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px">
-					<strong>服务内容：</strong>开发者间交流平台，Ignite/GridGain产品资讯、功能介绍，不保证响应<br>
-          <strong>服务报价：</strong>免费
->>>>>>> 6a80a3b00b9896fa378caf7735f8dfa364783f8a
 				</div>
 				<!-- /COLUMN -->
 			</div>
@@ -56,25 +44,15 @@
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
-<<<<<<< HEAD
           <span class="fa fa-battery-1" style="font-size:36px;margin:20px"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">付费开发者服务群</h3>
           <h4>面向开发者</h4>
-=======
-          <span class="fa fa-battery-1" style="font-size:24px;margin:10px"></span>
-					<h3 style="font-size:18px;margin:0 0 10px 0">付费开发者服务群</h3>
->>>>>>> 6a80a3b00b9896fa378caf7735f8dfa364783f8a
 				</div>
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
-<<<<<<< HEAD
 					<h4>服务内容：</h4>Ignite功能讲解/答疑、指导POC/应用开发、问题处理指引，当日问题当日内不定期响应<br>
           <h4>服务报价：</h4>100元/半月/人，150元/月/人，300元/季/人，500元/半年/人
-=======
-					<strong>服务内容：</strong>Ignite功能讲解/答疑、指导POC/应用开发、问题处理指引，当日问题当日内不定期响应<br>
-          <strong>服务报价：</strong>100元/半月（14天）/人，150元/月/人，300元/季/人，500元/半年/人
->>>>>>> 6a80a3b00b9896fa378caf7735f8dfa364783f8a
 				</div>
 				<!-- /COLUMN -->
 			</div>
@@ -109,7 +87,7 @@
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
 					<h4>服务内容：</h4>现场解决客户的各种个性化需求/问题，随时响应
-          <h4>服务报价：</h4>3000元/核算日，工作日程内非工作日800元/天，长期服务可议价
+          <h4>服务报价：</h4>3000元/核算日，工作日程内非工作日800元/日
 				</div>
 				<!-- /COLUMN -->
 			</div>
