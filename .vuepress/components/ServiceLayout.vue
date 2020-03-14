@@ -51,8 +51,8 @@
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
-					<h4>服务内容：</h4>Ignite功能讲解/答疑、指导POC/应用开发、问题处理指引，当日问题当日内不定期响应<br>
-          <h4>服务报价：</h4>100元/半月/人，150元/月/人，300元/季/人，500元/半年/人
+					<h4>服务内容：</h4>Ignite功能讲解/答疑、指导POC/应用开发/架构设计、问题处理指引，当日问题当日内不定期响应<br>
+          <h4>服务报价：</h4>70元/周/人，100元/半月/人，150元/月/人，300元/季/人，500元/半年/人
 				</div>
 				<!-- /COLUMN -->
 			</div>
@@ -87,7 +87,7 @@
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
 					<h4>服务内容：</h4>现场解决客户的各种个性化需求/问题，随时响应
-          <h4>服务报价：</h4>3000元/核算日，工作日程内非工作日800元/日
+          <h4>服务报价：</h4>4000元/核算日
 				</div>
 				<!-- /COLUMN -->
 			</div>
