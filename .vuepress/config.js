@@ -20,7 +20,8 @@ module.exports = {
     },
     locales: {
         '/': {},
-        '/doc/2.6.0/': {}
+        '/doc/2.6.0/': {},
+        '/doc/2.7.0/':{}
     },
     evergreen: true,
     plugins: ['@dovyp/vuepress-plugin-clipboard-copy','@vuepress/back-to-top','@vuepress/nprogress'],
@@ -38,7 +39,7 @@ module.exports = {
         locales: {
             '/': {
                 selectText: '最新版本',
-                label: '2.7.0',
+                label: '2.8.0',
                 nav: [{
                     text: '首页',
                     link: '/'
@@ -165,20 +166,129 @@ module.exports = {
                         'ControlScript',
                         'Informatica'
                     ],
-                    '/doc/gridgain/': [
-                        '',
-                        'OracleGoldenGateIntegration',
-                        'KafkaConnector',
-                        'SecurityAndAudit',
-                        'DataCenterReplication'
-                    ],
-                    '/confluent/': [
-                        '',
-                        'Kafka-ConvertersSerialization',
-                        'Kafka-ErrorHandlingDeadLetterQueues',
-                        'Kafka-ConnectImprovementsIn-2-3'
-                    ],
                     '/': [
+                        ''
+                    ]
+                }
+            },
+            '/doc/2.7.0':{
+                selectText: '2.7.0',
+                label: '2.7.0',
+                nav: [{
+                    text: '首页',
+                    link: '/doc/2.7.0/'
+                },
+                {
+                    text: 'Java',
+                    link: '/doc/2.7.0/java/'
+                },
+                {
+                    text: 'C++',
+                    link: '/doc/2.7.0/cpp/'
+                },
+                {
+                    text: 'C#/.NET',
+                    link: '/doc/2.7.0/net/'
+                },
+                {
+                    text: 'SQL',
+                    link: '/doc/2.7.0/sql/'
+                },
+                {
+                    text: '集成',
+                    link: '/doc/2.7.0/integration/'
+                },
+                {
+                    text: 'Ignite&Spark',
+                    link: '/doc/2.7.0/spark/'
+                },
+                {
+                    text: '工具',
+                    link: '/doc/2.7.0/tools/'
+                }],
+                sidebar: {
+                    '/doc/2.7.0/java/': [
+                        '',
+                        'Clustering',
+                        'Key-ValueDataGrid',
+                        'DataLoadingStreaming',
+                        'DistributedDataStructures',
+                        'ComputeGrid',
+                        'ServiceGrid',
+                        'MessagingEvents',
+                        'DurableMemory',
+                        'Persistence',
+                        'MachineLearning',
+                        'DeepLearning',
+                        'ThinClients',
+                        'PlatformsProtocols',
+                        'Plugins',
+                        'Security',
+                        'Deployment',
+                        'KubernetesDeployment',
+                        'TestsAndBenchmarking',
+                        'Metrics',
+                        'ProductionReadiness'
+                    ],
+                    '/doc/2.7.0/cpp/': [
+                        '',
+                        'Clustering',
+                        'Key-ValueDataGrid',
+                        'DistributedSQL',
+                        'ComputeGrid',
+                        'DurableMemory',
+                        'Persistence'
+                    ],
+                    '/doc/2.7.0/net/': [
+                        '',
+                        'Clustering',
+                        'DataGrid',
+                        `Streaming`,
+                        'ComputeGrid',
+                        'DataStructures',
+                        'Messaging',
+                        'Events',
+                        'DurableMemory',
+                        `Persistence`,
+                        'ThirdPartyIntegrations'
+                    ],
+                    '/doc/2.7.0/sql/': [
+                        '',
+                        'SQLReference',
+                        'Architecture',
+                        'JDBC',
+                        'ODBC',
+                        'ToolsAndAnalytics',
+                        'JavaDeveloperGuide',
+                        'PHPDeveloperGuide',
+                        'ManagementMonitoring',
+                        'SqlKeyValue'
+                    ],
+                    '/doc/2.7.0/integration/': [
+                        '',
+                        'Clustering',
+                        'WebSessionClustering',
+                        'OSGiSupport',
+                        'Spring',
+                        'CassandraIntegration',
+                        'StreamingIntegrations',
+                        'Hibernate',
+                        'MyBatis'
+                    ],
+                    '/doc/2.7.0/spark/': [
+                        '',
+                        'In-MemoryFileSystem',
+                        'HadoopAccelerator',
+                        'IgniteForSpark'
+                    ],
+                    '/doc/2.7.0/tools/': [
+                        '',
+                        'IgniteWebConsoleAbilities',
+                        'VisorManagementConsole',
+                        'ControlScript',
+                        'Informatica'
+                    ],
+                    '/doc/2.7.0/': [
                         ''
                     ]
                 }
@@ -209,12 +319,7 @@ module.exports = {
                 {
                     text: '工具',
                     link: '/doc/2.6.0/tools/'
-                },
-                {
-                    text: '博客',
-                    link: 'https://my.oschina.net/liyuj'
-                }
-                ],
+                }],
                 sidebar: {
                     '/doc/2.6.0/java/': [
                         '',
