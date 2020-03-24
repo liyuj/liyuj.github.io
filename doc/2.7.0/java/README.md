@@ -1513,7 +1513,46 @@ Ignite直接支持如下的映射器实现：
 如果使用Java、.Net或者C++，默认是不需要任何配置的，只有当需要平台协同、名字转换复杂的情况下，才需要配置映射器。
 ## 11.日志
 Ignite支持各种日志库和框架，可以直接使用[Log4j](https://logging.apache.org/log4j/2.x/)、[Log4j2](https://logging.apache.org/log4j/2.x/)、[JCL](https://commons.apache.org/proper/commons-logging/guide.html)和[SLF4J](https://www.slf4j.org/manual.html)，本文会描述如何使用它们。
-### 11.1.Log4j
+### 11.1.通用配置
+Ignite节点启动之后，会在控制台中输出启动信息，包括了配置的日志库信息。每个日志库都有自己的配置参数，需要分别进行配置。除了库特有的配置，还有一些系统属性可以对日志进行调整，如下表所示：
+
+|系统属性|描述|默认值|
+|---|---|---|
+|`IGNITE_LOG_INSTANCE_NAME`|如果该属性存在，Ignite会在日志消息中包含实例名|未配置|
+|`IGNITE_QUIET`|配置为`false`可以禁用静默模式，启用详细模式，其会输出更多的信息|true|
+|`IGNITE_LOG_DIR`|该属性会指定Ignite日志的输出目录|$IGNITE_HOME/work/log|
+|`IGNITE_DUMP_THREADS_ON_FAILURE`|如果配置为`true`，在捕获严重错误时会在日志中输出线程堆栈信息|true|
+
+### 11.2.默认日志
+Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/config/java.util.logging.properties`配置文件进行配置，然后将日志写入`$IGNITE_HOME/work/log`文件夹，要修改这个日志目录，需要使用`IGNITE_LOG_DIR`环境变量。
+
+另外，Ignite启动于*静默*模式，会阻止`INFO`和`DEBUG`日志的输出。要关闭*静默*模式，可以使用`-DIGNITE_QUIET=false`系统属性。注意*静默*模式的所有信息都是输出到标准输出（STDOUT）的。
+::: warning 默认日志目录
+如果是在Java应用内启动Ignite，日志目录为`$IGNITE_HOME/work`，默认为`/tmp/ignite/work/log/`，不过要注意将日志目录配置为一个更可靠的位置。
+:::
+::: warning 如果使用jul-to-slf4j桥，要确保配置正确
+如果使用了`jul-to-slf4j`桥，需要特别关注下Ignite中的JUL日志级别。如果在`org.apache`上配置了`DEBUG`级别，那么最终的日志级别会为`INFO`。这意味着在生成日志时会产生十倍的负载，然后在通过桥时被丢弃。JUL默认级别为`INFO`，在`org.apache.ignite.logger.java.JavaLogger#isDebugEnabled`中设置一个断点，会显示JUL子系统是否在生成调试级别日志。
+:::
+::: tip 注意
+通过[LoggingMXBean](https://docs.oracle.com/javase/8/docs/api/java/util/logging/LoggingMXBean.html)，可以在运行时对默认的日志记录器进行重新配置。
+:::
+基本日志配置：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+
+  <!-- uncomment the following section to set, e.g., log4j as the logging library to be used-->
+  <!--property name="gridLogger">
+    <bean class="org.apache.ignite.logger.log4j.Log4JLogger">
+      <constructor-arg type="java.lang.String" value="log4j.xml"/>
+    </bean>
+  </property-->
+
+   <!-- how frequently Ignite will output basic node metrics into the log-->
+  <property name="metricsLogFrequency" value="#{60 * 10 * 1000}"/>
+
+</bean>
+```
+### 11.3.Log4j
 如果在启动独立集群节点时要使用Log4j模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1554,7 +1593,10 @@ Ignite ignite = Ignition.start(cfg);
 ignite.log().info("Info Message Logged!");
 ```
 在上面的配置中，`log4j.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
-### 11.2.Log4j2
+::: tip 注意
+Log4j支持运行时配置，即配置文件的修改无需应用重启即可生效。
+:::
+### 11.4.Log4j2
 如果在启动独立集群节点时要使用Log4j2模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j2`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1595,7 +1637,10 @@ Ignite ignite = Ignition.start(cfg);
 ignite.log().info("Info Message Logged!");
 ```
 在上面的配置中，`log4j2.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
-### 11.3.JCL
+::: tip 注意
+Log4j2支持运行时配置，即配置文件的修改无需应用重启即可生效。
+:::
+### 11.5.JCL
 如果在启动独立集群节点时要使用JCL模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-jcl`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1615,11 +1660,6 @@ XML：
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="gridLogger">
     <bean class="org.apache.ignite.logger.jcl.JclLogger">
-      <constructor-arg type="org.apache.commons.logging.Log">
-        <bean class="org.apache.commons.logging.impl.Log4JLogger">
-          <constructor-arg type="java.lang.String" value="log4j.xml"/>
-        </bean>
-      </constructor-arg>
     </bean>
   </property>
   <!-- Other Ignite configurations -->
@@ -1630,8 +1670,7 @@ Java：
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
-IgniteLogger log = new JclLogger(new
-  org.apache.commons.logging.impl.Log4JLogger("log4j.xml"));
+IgniteLogger log = new JclLogger();
 
 cfg.setGridLogger(log);
 
@@ -1640,7 +1679,10 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
-### 11.4.SLF4J
+::: tip 注意
+注意JCL只是简单地将日志消息转发给底层的日志系统，这需要正确的配置，具体请参见[JCL官方文档](https://commons.apache.org/proper/commons-logging/guide.html#Configuration)。比如要使用Log4j，类路径中需要添加必要的库文件。
+:::
+### 11.6.SLF4J
 如果在启动独立集群节点时要使用SLF4J模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-slf4j`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1661,8 +1703,9 @@ XML：
   <property name="gridLogger">
     <bean class="org.apache.ignite.logger.slf4j.Slf4jLogger"/>
   </property>
+
   <!-- Other Ignite configurations -->
-  ...
+
 </bean>
 ```
 Java：
@@ -1679,14 +1722,24 @@ Ignite ignite = Ignition.start(cfg);
 ignite.log().info("Info Message Logged!");
 ```
 要了解更多的信息，可以看[SLF4J手册](https://www.slf4j.org/docs.html)。
-### 11.5.默认日志
-Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/config/java.util.logging.properties`配置文件进行配置，然后将日志写入`$IGNITE_HOME/work/log`文件夹，要修改这个日志目录，需要使用`IGNITE_LOG_DIR`环境变量。
+### 11.7.日志配置示例
+下面的步骤可以引导开发者进行日志的配置，这可以覆盖大多数的场景。
 
-另外，Ignite启动于*quiet*模式，会阻止`INFO`和`DEBUG`日志的输出。要关闭*quiet*模式，可以使用`-DIGNITE_QUIET=false`系统属性。注意，*quiet*模式的所有信息都是输出到标准输出（STDOUT）的。
+ 1. 使用Log4j或者Log4j2作为日志框架，具体可以看上面章节的介绍；
+ 2. 如果使用了默认的配置文件（`ignite-log4j.xml`或`ignite-log4j2.xml`），需要取消`CONSOLE`Appender的注释；
+ 3. 在日志配置文件中，指定日志文件的路径，默认值为`${IGNITE_HOME}/work/log/ignite.log`；
+ 4. Ignite以详细日志模式启动：
+   - 如果使用的是`ignite.sh`，指定`-v`选项；
+   - 如果通过Java代码启动，使用`IGNITE_QUIET=false`系统变量。
 
-::: warning 如果使用jul-to-slf4j桥，要确保配置正确
-如果使用了`jul-to-slf4j`桥，需要特别关注下Ignite中的JUL日志级别。如果在org.apache上配置了`DEBUG`级别，那么最终的日志级别会为`INFO`。这意味着在生成日志时会产生十倍的负载，然后在通过桥时被丢弃。JUL默认级别为`INFO`，在`org.apache.ignite.logger.java.JavaLogger#isDebugEnabled`中设置一个断点，会发现JUL子系统会生成`DEBUG`级别的日志。
-:::
+### 11.8.日志管理提示
+日志在故障排除和查找错误方面起着重要作用。
+
+以下是一些关于如何管理日志文件的一般提示：
+
+ - 不要将日志文件存储在`/tmp`文件夹中，每次重启服务器时都会清除此文件夹；
+ - 确保存储日志文件的磁盘上有足够的可用空间；
+ - 定期存档旧日志文件以节省存储空间。
 
 ## 12.RPM和DEB包安装
 ### 12.1.概述

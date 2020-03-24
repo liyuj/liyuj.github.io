@@ -132,7 +132,7 @@ IgniteCluster cluster = ignite.cluster();
 
 // All nodes on which cache with name "myCache" is deployed,
 // either in client or server mode.
-ClusterGroup cacheGroup = cluster.forCache("myCache");
+ClusterGroup cacheGroup = cluster.forCacheNodes("myCache");
 
 // All data nodes responsible for caching data for "myCache".
 ClusterGroup dataGroup = cluster.forDataNodes("myCache");
@@ -227,7 +227,9 @@ Ignite ignite = Ignition.start(cfg);
 ```
 
 ::: tip 注意
-启动时，所有的环境变量和系统属性都会自动地注册为节点属性。<br>
+启动时，所有的环境变量和系统属性都会自动地注册为节点属性。
+:::
+::: tip 注意
 节点属性是通过`ClusterNode.attribute("propertyName")`属性获得的。
 :::
 
@@ -301,8 +303,8 @@ int activeJobs = metrics.getCurrentActiveJobs();
 
 不过可能还是希望有一个`协调员`节点来处理某些任务，为了这个，Ignite允许在集群中自动地选择最老的或者最新的节点。
 
-::: tip 使用服务网格
-注意对于大多数`领导者`或者`类单例`用例中，建议使用`服务网格`功能，它可以自动地部署各个`集群单例服务`，而且更易于使用。
+::: warning 使用服务网格
+注意对于大多数`领导者`或者`类单例`场景中，建议使用`服务网格`功能，它可以自动地部署各种[集群单例服务](/doc/java/ServiceGrid.md#_3-集群单例)，而且更易于使用。
 :::
 
 ### 4.2.最老的节点
@@ -318,7 +320,7 @@ IgniteCluster cluster = ignite.cluster();
 ClusterGroup oldestNode = cluster.forOldest();
 ```
 ### 4.3.最新的节点
-最新的节点，与最老的节点不同，每当新节点加入集群时都会不断发生变化，不过有时它也会变得很灵活，尤其是如果希望只在最新的节点上执行一些任务时。
+最新的节点，与最老的节点不同，每当新节点加入集群时都会不断发生变化，不过有时也很有用，尤其是如果希望只在最新的节点上执行一些任务时。
 
 下面的例子显示了如何选择一个集群组，它只包含了最新的节点。
 ```java
@@ -513,7 +515,7 @@ Ignition.start(cfg);
 #### 5.1.5.在同一个机器组中隔离Ignite集群
 Ignite可以在同一组机器中启动两个隔离的集群，对于`TcpDiscoverySpi`和`TcpCommunicationSpi`，不同集群的节点使用不交叉的本地端口范围就可以了。
 
-为了测试，假设需要在一台机器上启动两个互相隔离的集群，那么对于第一个集群的节点，需要使用如下的`TcpDiscoverySpi`和`TcpCommunicationSpi`配置：
+假设为了测试需要在一台机器上启动两个互相隔离的集群，那么对于第一个集群的节点，需要使用如下的`TcpDiscoverySpi`和`TcpCommunicationSpi`配置：
 
 XML：
 ```xml
@@ -687,14 +689,21 @@ Ignition.start(cfg);
 从配置中可以看到，它们的差别是很小的 - 只是SPI的端口号和IP探测器不同。
 
 ::: tip 注意
-如果希望不同集群的节点之间可以互相探测到，可以使用组播协议然后将`TcpDiscoveryVmIpFinder`替换为`TcpDiscoveryMulticastIpFinder`并且在上面的每个配置中设置唯一的`TcpDiscoveryMulticastIpFinder.multicastGroups`。
+如果希望不同集群的节点之间可以互相探测到，可以使用组播协议然后将`TcpDiscoveryVmIpFinder`替换为`TcpDiscoveryMulticastIpFinder`，并且在上面的每个配置中设置唯一的`TcpDiscoveryMulticastIpFinder.multicastGroups`。
 :::
 
-::: tip Ignite持久化的文件位置
-如果隔离的集群使用了Ignite持久化，那么在文件系统中每个集群会将持久化文件保存在不同的路径中。通过`DataStorageConfiguration`中的`setStoragePath(...)`、`setWalPath(...)`、`setWalArchivePath(...)`方法可以针对每个单独的集群进行修改。
+::: warning Ignite持久化的文件位置
+如果隔离的集群使用了Ignite[持久化](/doc/java/Persistence.md)，那么在文件系统中每个集群应该将持久化文件保存在不同的路径中。通过`DataStorageConfiguration`中的`setStoragePath(...)`、`setWalPath(...)`、`setWalArchivePath(...)`方法可以针对每个单独的集群进行修改。
 :::
-
-#### 5.1.6.JDBC探测器
+#### 5.1.6.Apache JClouds IP探测器
+具体请参见[JClouds发现](/doc/integration/Clustering.md#_3-jclouds发现)。
+#### 5.1.7.Amazon S3 IP探测器
+具体请参见[Amazon AWS发现](/doc/integration/Clustering.md#_1-amazon-aws发现)。
+#### 5.1.8.Amazon ELB IP探测器
+具体请参见[Amazon AWS发现](/doc/integration/Clustering.md#_1-amazon-aws发现)。
+#### 5.1.9.Google云存储IP探测器
+具体请参见[Google计算发现](/doc/integration/Clustering.md#_2-google计算发现)。
+#### 5.1.10.JDBC探测器
 可以用数据库作为通用共享存储来保存初始的IP地址，通过这个探测器这些节点会在启动时将IP地址写入数据库，这是通过`TcpDiscoveryJdbcIpFinder`实现的。
 
 XML：
@@ -738,7 +747,7 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-#### 5.1.7.基于共享文件系统探测器
+#### 5.1.11.基于共享文件系统探测器
 一个共享文件系统可以用于节点IP地址的存储，节点会在启动时将它们的IP地址写入文件系统，这样的行为是由`TcpDiscoverySharedFsIpFinder`支持的。
 
 XML：
@@ -776,8 +785,15 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-#### 5.1.8.基于ZooKeeper的发现
-如果使用[ZooKeeper ](https://zookeeper.apache.org/)来整合分布式环境，也可以利用它进行Ignite节点的发现，这是通过`TcpDiscoveryZooKeeperIpFinder`实现的（注意需要启用`ignite-zookeeper`模块）。
+#### 5.1.12.Kubernetes IP探测器
+具体请参见[Kubernetes IP探测器](/doc/java/KubernetesDeployment.md#_2-5-kubernetes-ip探测器)。
+#### 5.1.13.ZooKeeper IP探测器
+如果使用[ZooKeeper](https://zookeeper.apache.org/)来整合分布式环境，那么有两种使用方式：
+
+ - 将其作为整体发现组件的基础，具体参见下面的[](#_5-2-zookeeper发现)；
+ - 将其作为IP探测器，本章节会描述这个场景。
+
+要配置ZooKeeper IP探测器，是通过`TcpDiscoveryZooKeeperIpFinder`实现的（注意需要启用`ignite-zookeeper`模块）。
 
 XML：
 ```xml
@@ -813,19 +829,19 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-#### 5.1.9.故障检测超时
+#### 5.1.14.故障检测超时
 故障检测超时用于确定一个集群节点在与远程节点连接失败时可以等待多长时间。
 
 集群中的每个节点都是与其它节点连接在一起的，在发现SPI这个层级，NodeA会向NodeB发送心跳消息（还有其它在集群内传输的系统消息），如果后者在`failureDetectionTimeout`指定的时间范围内没有反馈，那么NodeB会被从集群中踢出。
 
 根据集群的硬件和网络条件，这个超时时间是调整发现SPI的故障检测功能的最简单的方式。
 
-::: warning 注意
+::: warning 警告
 这些`TcpDiscoverySpi`的超时配置参数是自动控制的，比如套接字超时，消息确认超时以及其它的，如果显式地设置了这些参数中的任意一个，故障超时设置都会被忽略掉。
 :::
 
-关于故障检测超时的配置，对于服务端节点是通过`IgniteConfiguration.setFailureDetectionTimeout(long)`方法配置的，对于客户端节点是通过`IgniteConfiguration.setClientFailureDetectionTimeout(long)`方法配置的。关于默认值，服务端节点为10秒，客户端节点为30秒，这个时间可以使发现SPI在大多数的私有和虚拟化环境下可靠地工作，但是对于一个稳定的低延迟网络来说，这个参数设置成大约200毫秒会更有助于快速地进行故障的检测和响应。
-#### 5.1.10.配置
+关于故障检测超时的配置，对于服务端节点是通过`IgniteConfiguration.setFailureDetectionTimeout(long)`方法配置的，对于客户端节点是通过`IgniteConfiguration.setClientFailureDetectionTimeout(long)`方法配置的。关于默认值，服务端节点为10秒，客户端节点为30秒，这个时间可以使发现SPI在大多数的本地和虚拟化环境下可靠地工作，但是对于一个稳定的低延迟网络来说，这个参数设置成大约200毫秒会更有助于快速地进行故障的检测和响应。
+#### 5.1.15.配置
 下面的配置参数可以对`TcpDiscoverySpi`进行可选的配置，在`TcpDiscoverySpi`的javadoc中还可以看到完整的配置参数列表：
 
 |setter方法|描述|默认值|
@@ -961,7 +977,7 @@ syncLimit=5
 要避免这种情况发生，`sessionTimeout`要比`tickTime * syncLimit`大。
 ## 6.零部署
 ### 6.1.概述
-计算所需的闭包和任务可能是任意自定义的类，也包括匿名类。Ignite中，远程节点会自动感知这些类，不需要显式地将任何jar文件部署或者移动到任何远程节点上。
+计算所需的闭包和任务可能是任意自定义的类，也包括匿名类。Ignite中，远程节点会自动感知这些类，不需要显式地将任何jar文件部署或者移动到任何远程节点上。注意这不适用于缓存的键和值，只针对计算类。
 ### 6.2.对等类加载
 这个行为是通过对等类加载（P2P类加载）实现的，它是Ignite中的一个特别的**分布式类加载器**，实现了节点间的字节码交换。当对等类加载启用时，不需要在网格内的每个节点上手工地部署Java或者Scala代码，也不需要每次在发生变化时重新部署。
 
@@ -997,8 +1013,8 @@ Ignite ignite = Ignition.start(cfg);
 ```
 对等类加载的工作步骤如下：
 
- 1. Ignite会检查类是否在本地CLASSPATH中有效（是否在系统启动时加载），如果有效，就会被返回。这时不会发生从对等节点加载类的行为。
- 2. 如果类本地不可用，会向发起节点发送一个提供类定义的请求，发起节点会发送类字节码定义然后类会在工作节点上加载。这个每个类只会发生一次，即一旦一个节点上一个类定义被加载了，它就不会再次加载了。
+ 1. Ignite会检查类是否在本地CLASSPATH中可用（是否在系统启动时加载），如果有效，就会被返回，这时不会发生从对等节点加载类的行为。
+ 2. 如果类在本地不可用，会向发起节点发送一个提供类定义的请求，发起节点会发送类字节码定义然后在工作节点上加载。这个过程每个类只会发生一次，即一旦一个节点上一个类定义被加载了，它就不会再次加载了。
 
 ::: tip 第三方库
 当使用对等类加载时，会发现可能从对等节点加载库，还可能本地类路径就已经存在库。建议在每个节点的类路径里包含所有的第三方库，这可以通过将jar文件复制到Ignite的`libs`文件夹实现，这样就可以避免每次只改变了一行代码然后还需要向远程节点上传输若干M的第三方库文件。
@@ -1014,7 +1030,7 @@ Ignite ignite = Ignition.start(cfg);
 
 在主节点，同一个类加载器部署的类，还会在工作节点远程共享同一个类加载器。不过从不同主节点部署的任务不会在工作节点共享同一个类加载器，这对于开发很有用，这时不同的开发者可以工作于同一个类的不同版本上。
 
-自从`@UserResource`注解删除后，PRIVATE和ISOLATED部署模式就没有不同了。这两个常量都因为后向兼容的原因保留了，并且这两个之一可能在未来的大版本中被删除。
+自从`@UserResource`注解删除后，PRIVATE和ISOLATED部署模式之间就没有不同了。这两个常量都因为后向兼容的原因保留了，并且这两个之一可能在未来的大版本中被删除。
 
 这个模式中，当主节点离开集群时，类会卸载。
 
@@ -1110,6 +1126,9 @@ Ignition.start(cfg);
 
 ::: tip 本地端口范围
 当在一台机器上甚至是在同一个JVM上启动多个网格节点时，端口范围会非常方便，这样所有的节点都会启动而不用一个个地进行单独的配置。
+:::
+::: tip IPv4和IPv6
+Ignite尝试支持IPv4和IPv6，但这有时会导致集群分离的问题。一个可能的解决方案（除非明确需要IPv6）是通过`-Djava.net.preferIPv4Stack=true`JVM参数将Ignite限制为IPv4。
 :::
 
 ### 8.2.配置

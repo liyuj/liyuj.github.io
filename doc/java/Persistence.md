@@ -7,16 +7,16 @@ Ignite的原生持久化会在磁盘上存储一个数据的超集，以及根�
 
 另外值得一提的是，和纯内存的使用场景一样，当打开持久化时，每个独立的节点只会持久化数据的一个子集，不管是主还是备节点，都是只包括节点所属的分区的数据，总的来说，整个集群包括了完整的数据集。
 
-Ignite的原生持久化有如下的特性：
+Ignite的原生持久化有如下的特性，其与第三方数据库有很大的不同，可用作Ignite持久化层的替代：
 
  - SQL查询会在囊括内存和磁盘的完整数据集上执行，这就意味着Ignite可以被用作一个以内存为中心的分布式SQL数据库；
  - 不需要在内存中保存所有的数据和索引，Ignite的持久化允许在磁盘上存储一个数据的超集，然后只在内存中保存频繁访问的数据的子集；
- - 集群即时重启，如果整个集群宕掉，那么是不需要通过从持久化预加载数据来对内存进行预热的，只要所有的节点都可以互相访问了，集群就具有了完整的功能；
+ - 集群即时重启，如果整个集群故障，那么是不需要通过从持久化预加载数据来对内存进行预热的，只要所有的节点都可以互相访问了，集群就具有了完整的功能；
  - 数据和索引在内存和磁盘上以类似的格式存储，这有助于避免在内存和磁盘之间移动数据时进行昂贵的转换；
  - 通过加入第三方的解决方案，可以具有创建集群的完整以及增量快照的功能。
 
-### 1.2.使用
-要开启Ignite的原生持久化，需要给集群的配置传递一个`DataStorageConfiguration`的实例：
+### 1.2.开启持久化存储
+要开启Ignite的原生持久化，需要给集群的节点配置传递一个`DataStorageConfiguration`的实例：
 
 XML：
 ```xml
@@ -52,11 +52,18 @@ cfg.setDataStorageConfiguration(storageCfg);
 ```
 持久化开启之后，所有的数据和索引都会存储在所有集群节点的内存和磁盘上，下图描述了在单独的集群节点的文件系统层看到的持久化结构：
 ::: tip 每个数据区和每个缓存的持久化
-Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[内存区](/doc/2.6.0/java/DurableMemory.md#_3-2-内存区)。
+Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[内存区](/doc/java/DurableMemory.md#_3-2-内存区)。
 :::
 
 ![](https://files.readme.io/74a2aac-persistent_store_structure_final.png)
 
+::: tip 字段类型变更后集群无法启动
+在开发应用时可能需要修改自定义对象字段的类型。例如假设对象A的字段类型`A.range`为`int`类型，然后决定将`A.range`的类型修改为`long`类型。之后会发现集群或应用将无法重启，因为Ignite不支持字段/列类型的更改。
+
+这时如果还在开发阶段，可以进入文件系统并删除Ignite工作目录中的以下目录：`marshaller/`、`db/`和`wal/`（如果调整了位置，`db`和`wal`可能位于其他地方）。
+
+但是如果是生产环境，则不要修改字段类型，而是在对象模型中添加一个新字段并删除旧字段，这个操作是支持的。同时`ALTER TABLE`命令可用于在运行时添加新列或删除现有列。
+:::
 首先，节点中的每个缓存都要有一个唯一的目录，从上图可知，可以看到至少两个缓存（Cache_A和Cache_B），由节点来维护它们的数据和索引。
 
 其次，对于节点的每个分区，不管是主还是备，Ignite的原生持久化都会在文件系统中创建一个专用文件。比如，对上面的节点来说，它负责分区1,10到564，索引是每个缓存一个文件。
@@ -64,33 +71,81 @@ Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具�
 如果Cache_A和Cache_B属于同一个缓存组，那么这些缓存共享的分区文件会放在一个目录中。
 :::
 
-最后，和预写日志活动有关的文件和目录，下面还会介绍。
-::: tip 集群激活
-注意如果开启了Ignite持久化，集群默认是未激活的，无法进行任何的CRUD操作。用户需要手工激活集群，后面会介绍如何进行操作。
+最后，和预写日志活动有关的文件和目录，在[预写日志](#_2-预写日志-wal)和[检查点](#_3-检查点)中还会介绍。
+::: warning 集群激活
+注意如果开启了Ignite持久化，集群默认是未激活的，无法进行任何的CRUD操作。用户需要手工激活集群，在[这里](#_5-基线拓扑)介绍了如何对集群进行激活。
 :::
+### 1.3.配置持久化存储路径
+启用持久化之后，节点就会在`{IGNITE_WORK_DIR}/db`目录中存储用户的数据、索引和WAL文件，该目录称为存储目录。通过配置`DataStorageConfiguration`的`storagePath`属性可以修改存储目录。
 
-上述的文件层次默认是在一个名为`${IGNITE_HOME}/work/db`的目录中进行维护的，要改变存储和WAL文件的默认位置，可以使用`DataStorageConfiguration`中对应的`setStoragePath(...)`、`setWalPath(...)`和`setWalArchivePath(...)`方法。
+每个节点都会在存储目录下维护一个子目录树，来存储缓存数据、WAL文件和WAL存档文件。
 
-如果一台主机启动了若干个节点，那么每个节点进程都会在一个预定义的唯一子目录中，比如`${IGNITE_HOME}/work/db/node{IDX}-{UUID}`，有自己的持久化文件，这里`IDX`和`UUID`参数都是Ignite在节点启动时自动计算的（[这里](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-SubfoldersGeneration)有详细描述）。如果在持久化层次结构中已经有了若干`node{IDX}-{UUID}`子目录，那么它们是按照节点先入先出的顺序进行赋值的。如果希望某节点即使重启也有专用目录和专用的数据分区，需要在集群范围配置唯一的`IgniteConfiguration.setConsistentId`，这个唯一ID会在`node{IDX}-{UUID}`字符串中映射到`UUID`。
-::: tip 一台主机隔离集群中的节点
-Ignite可以在一台主机上隔离多个集群，每个集群都要在文件系统的不同目录下存储持久化文件，这时可以通过`DataStorageConfiguration`的`setStoragePath(...)`、`setStoragePath(...)`、`setWalArchivePath(...)`方法来重新定义每个集群的相应的路径。
+|子目录名|描述|
+|---|---|
+|`{WORK_DIR}/db/{nodeId}`|该目录中包括了缓存的数据和索引|
+|`{WORK_DIR}/db/wal/{nodeId}`|该目录中包括了WAL文件|
+|`{WORK_DIR}/db/wal/archive/{nodeId}`|该目录中包括了WAL存档文件|
+
+这里的`nodeId`要么是节点的唯一性ID（如果在节点配置中定义）要么是[自动生成的节点ID](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-SubfoldersGeneration)，它用于确保节点目录的唯一性。如果多个节点共享同一工作目录，则它们将使用不同的子目录。
+
+如果工作目录包含多个节点的持久化文件（存在多个具有不同`nodeId`的`{nodeId}`子目录），则该节点将选择第一个未使用的子目录。为了确保节点即使重启也始终使用特定的子目录，即指定数据分区，需要在节点配置中将`IgniteConfiguration.setConsistentId`设置为集群范围内的唯一值。
+
+修改存储目录的代码如下所示：
+
+XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="dataStorageConfiguration">
+        <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+            <property name="defaultDataRegionConfiguration">
+                <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                    <property name="persistenceEnabled" value="true"/>
+                </bean>
+            </property>
+            <property name="storagePath" value="/opt/storage"/>
+        </bean>
+    </property>
+</bean>
+```
+Java：
+```java
+IgniteConfiguration cfg = new IgniteConfiguration();
+//data storage configuration
+DataStorageConfiguration storageCfg = new DataStorageConfiguration();
+
+storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
+
+storageCfg.setStoragePath("/opt/storage");
+
+cfg.setDataStorageConfiguration(storageCfg);
+
+Ignite ignite = Ignition.start(cfg);
+```
+::: warning 确保持久化文件不存储于临时文件夹
+部分系统中，默认的位置可能位于`/temp`文件夹，这可能导致在重启节点进程时操作系统删除持久化文件，为了避免这种情况需要注意：
+
+ - 不要禁用Ignite的`WARN`日志级别，如果持久化文件写入临时文件夹，会输出一个警告；
+ - 使用`DataStorageConfiguration`的API，比如`setStoragePath(...)`、`setWalPath(...)`和`setWalArchivePath(...)`修改持久化文件的位置；
+ - 将`igniteWorkDir`指向非临时文件夹（`IgniteConfiguration#igniteWorkDir`）。
 :::
-
-### 1.3.事务保证
+::: warning 一台主机隔离集群中的节点
+Ignite可以在一台主机上隔离多个集群，这时每个集群都要在文件系统的不同目录下存储持久化文件，这时可以通过`DataStorageConfiguration`的`setStoragePath(...)`、`setWalPath(...)`、`setWalArchivePath(...)`方法来重新定义每个集群的相应路径。
+:::
+### 1.4.事务保证
 Ignite的原生持久化是一个兼容ACID的分布式存储，每个事务性更新都会首先被添加到WAL。更新会被赋予一个唯一的ID，这意味着集群在故障或者重启时总是会恢复到最近的成功提交的事务或者原子性更新。
-### 1.4.SQL支持
+### 1.5.SQL支持
 Ignite的原生持久化可以将Ignite作为一个分布式的SQL数据库。
 
 在集群中执行SQL查询时是不需要在内存中保存所有的数据的，Ignite会在内存和磁盘上的所有数据中执行。另外，在集群重启后将所有的数据都预加载到内存中也是一个选择，这时当集群启动运行时，就可以执行SQL查询了。
-### 1.5.Ignite持久化内部
+### 1.6.Ignite持久化内部
 本文档提供了Ignite持久化的一个高层视图，如果想了解更多的技术细节，可以看下面的文档：
 
  - [Ignite原生持久化设计](https://cwiki.apache.org/confluence/display/IGNITE/Persistent+Store+Overview)
  - [Ignite原生持久化架构](https://cwiki.apache.org/confluence/display/IGNITE/Persistent+Store+Architecture)
 
-### 1.6.性能提示
+### 1.7.性能提示
 在[固化内存调优](/doc/java/ProductionReadiness.md#_4-固化内存调优)章节中有关于性能方面的建议。
-### 1.7.示例
+### 1.8.示例
 要了解Ignite的原生持久化在实践中的应用，可以看Github中的这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/persistentstore)。
 ## 2.预写日志(WAL)
 ### 2.1.概述
@@ -98,7 +153,7 @@ Ignite的持久化会为节点的每个分区创建和维护一个专有文件�
 
 WAL的目的是为单个节点或者整个集群故障的场景提供一种恢复机制。值得一提的是，集群可以根据WAL的内容在故障或者重启时随时恢复到最近成功提交的事务。
 
-整个WAL会被拆分为若干个文件，叫做段，它是按顺序进行填充的。当第一个段满了之后，它的内容会被复制到WAL存档（具体可以看下面的`WAL存档`章节），在第一个段的复制过程中，第二个段会被视为激活的WAL文件，然后接收由应用发送过来的更新请求。默认会创建和使用10个这样的段，这个数值可以通过`DataStorageConfiguration.walSegments`进行修改。
+整个WAL会被拆分为若干个文件，叫做段，它是按顺序进行填充的。当第一个段满了之后，它的内容会被复制到WAL存档（具体可以看下面的[WAL存档](#_2-4-wal存档)章节），在第一个段的复制过程中，第二个段会被视为激活的WAL文件，然后接收由应用发送过来的更新请求。默认会创建和使用10个这样的段，这个数值可以通过`DataStorageConfiguration.walSegments`进行修改。
 
 每个更新在写入WAL文件之前会被写入缓冲区，这个缓冲区的大小由`DataStorageConfiguration.walBuffSize`属性定义。如果开启了内存映射文件，WAL缓冲区大小默认等于WAL段大小，如果禁用了内存映射文件，WAL缓冲区大小为WAL段大小的四分之一。注意内存映射文件默认是开启的，它可以通过`IGNITE_WAL_MMAP`系统属性进行调整，这个属性可以通过JVM参数传入，比如：`-DIGNITE_WAL_MMAP=false`。
 ### 2.2.WAL模式
@@ -164,19 +219,63 @@ WAL是Ignite持久化的一个基本组件，会在集群故障时保证持久�
 如果使用SQL，可以使用[ALTER TABLE](/doc/sql/SQLReference.md#_2-1-alter-table)命令打开/关闭WAL。
 
 ::: danger 注意
-如果禁用了WAL并重新启动节点，则将从该节点上的持久化存储中删除所有数据，这是因为如果没有WAL，在节点故障或重新启动时无法保证数据的一致性。
+如果禁用了WAL并重新启动节点，则将从该节点上的持久化存储中删除所有数据，这是因为如果没有WAL，在节点故障或重启时无法保证数据的一致性。
 :::
 ### 2.4.WAL存档
 WAL存档用于保存故障后恢复节点所需的WAL段。存档中保存的段的数量应确保所有段的总大小不超过WAL存档的既定大小。
 
-WAL存档的大小可以通过`DataStorageConfiguration.maxWalArchiveSize`属性进行配置，如果该属性在配置中未指定，存档的大小定义为4倍于[检查点缓冲区](/doc/java/ProductionReadiness.md#_4-2-6-检查点缓冲区大小)的大小。
+WAL存档的最大大小可以通过`DataStorageConfiguration.maxWalArchiveSize`属性进行配置，默认值为1GB。
 
+::: tip WAL存档的优缺点
+优点：WAL存档有助于在新节点加入集群或旧节点在短暂停机后重新接入时加快数据再平衡。
+缺点：WAL存档会导致性能下降。
+:::
 ::: warning 注意
 将WAL存档大小配置为小于默认值可能影响性能，用于生产之前需要进行测试。
 :::
-### 2.5.WAL存档调整
+### 2.5.WAL记录压缩
+如[设计文档](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-WAL)中所述，在确认用户操作之前，代表数据更新的物理和逻辑记录已写入WAL文件，Ignite可以先将WAL记录压缩到内存中，然后再写入磁盘以节省空间。
+
+WAL记录压缩要求引入`ignite-compress`模块。如果使用的是二进制包，需要将`IGNITE_HOME/libs/optional/ignite-compress`目录复制到`IGNITE_HOME/libs/`。如果使用Maven，则应将`ignite-compress`依赖项添加到pom.xml中。
+
+WAL记录压缩默认是禁用的，如果要启用，需要在数据存储配置中设置压缩算法和压缩级别：
+
+XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+
+    <property name="dataStorageConfiguration">
+        <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+            <property name="defaultDataRegionConfiguration">
+                <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                    <property name="persistenceEnabled" value="true"/>
+                </bean>
+            </property>
+            <property name="walPageCompression" value="LZ4"/>
+            <property name="walPageCompressionLevel" value="10"/>
+        </bean>
+    </property>
+
+</bean>
+```
+Java：
+```java
+IgniteConfiguration cfg = new IgniteConfiguration();
+
+DataStorageConfiguration dsCfg = new DataStorageConfiguration();
+dsCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
+
+//wal page compression parameters
+    ddddddsCfg.setWalPageCompression(DiskPageCompression.LZ4);
+dsCfg.setWalPageCompressionLevel(8);
+
+cfg.setDataStorageConfiguration(dsCfg);
+Ignite ignite = Ignition.start(cfg);
+```
+支持的压缩算法在[这里](https://ignite.apache.org/releases/2.8.0/javadoc/org/apache/ignite/configuration/DiskPageCompression.html)有列出。
+### 2.6.WAL存档调整
 下面是一些关于如何通过调整WAL存档参数来调整空间占用和集群性能的提示。
-#### 2.5.1.WAL存档压缩
+#### 2.6.1.WAL存档压缩
 可以启用WAL存档压缩以减少WAL存档占用的空间。默认情况下，WAL存档包含最后20个检查点的段（这个数字是可配置的）。如果启用压缩，则所有比第1个检查点旧的存档段都将压缩为zip格式。在需要这些段的时候（例如，为了在节点之间进行数据再平衡），它们将被解压缩为原始格式。
 
 要启用WAL存档压缩，请将`DataStorageConfiguration.walCompactionEnabled`属性设置为`true`。还可以指定压缩级别（`1`表示最快的速度，`9`表示最佳的压缩）。
@@ -206,7 +305,7 @@ dsCfg.setDefaultDataRegionConfiguration(regCfg);
 
 dsCfg.setWalCompactionEnabled(true);
 ```
-#### 2.5.2.禁用WAL存档
+#### 2.6.2.禁用WAL存档
 有时可能想要禁用WAL存档，比如减少与将WAL段复制到存档文件有关的开销，当Ignite将数据写入WAL段的速度快于将段复制到存档文件的速度时，这样做就有用，因为这样会导致I/O瓶颈，从而冻结节点的操作，如果遇到了这样的问题，就可以尝试关闭WAL存档。
 
 要关闭存档，可以将WAL路径和WAL存档路径配置为同一个值，这时Ignite就不会将段复制到存档文件，而是按顺序循环地覆盖激活段。

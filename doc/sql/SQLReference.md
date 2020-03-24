@@ -705,6 +705,18 @@ INSERT INTO City(ID, Name, CountryCode, District, Population) VALUES (5,'Amsterd
 
 ![](https://files.readme.io/580d1a2-streaming.png)
 
+### 4.3.KILL QUERY
+`KILL QUERY`命令用于取消正在运行的查询。
+
+```sql
+KILL QUERY {ASYNC} '<query_id>'
+```
+**描述**
+
+`ASYNC`是一个可选参数，可以立即返回而无需等待取消完成，`query_id`可以通过[SQL QUERIES](/doc/java/Metrics.md#_4-12-sql_queries)视图进行检索。
+
+通过`KILL QUERY`命令取消查询后，所有相关节点上运行的该查询都将被取消。
+
 ## 5.聚合函数
 ### 5.1.AVG
 ```sql

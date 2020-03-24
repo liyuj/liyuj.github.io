@@ -20,14 +20,13 @@ module.exports = {
     },
     locales: {
         '/': {},
-        '/doc/2.6.0/': {},
-        '/doc/2.7.0/':{}
+        '/doc/2.7.0/':{},
+        '/doc/2.6.0/': {}
     },
     evergreen: true,
     plugins: ['@dovyp/vuepress-plugin-clipboard-copy','@vuepress/back-to-top','@vuepress/nprogress'],
     themeConfig: {
         lastUpdated: '最后更新时间：',
-        smoothScroll: true,
         search: false,
         serviceWorker: {
             updatePopup: {
@@ -171,7 +170,7 @@ module.exports = {
                     ]
                 }
             },
-            '/doc/2.7.0':{
+            '/doc/2.7.0/':{
                 selectText: '2.7.0',
                 label: '2.7.0',
                 nav: [{

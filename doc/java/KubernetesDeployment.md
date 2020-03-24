@@ -189,41 +189,49 @@ spec:
 要开启Kubernetes环境下Ignite节点的自动发现，需要在`IgniteConfiguration`中启用`TcpDiscoveryKubernetesIpFinder`，下面会创建一个名为`example-kube-persistence.xml`的配置文件，然后像下面这样定义相关的配置：
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/util
-        http://www.springframework.org/schema/util/spring-util.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd         http://www.springframework.org/schema/util         http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="workDirectory" value="/persistence/work"/>
+        <!-- Enabling Apache Ignite Persistent Store. -->
+        <property name="dataStorageConfiguration">
+            <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+                <property name="defaultDataRegionConfiguration">
+                    <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                        <property name="persistenceEnabled" value="true"/>
+                    </bean>
+                </property>
+                <!--
+                   Sets a path to the root directory where data and indexes are
+                   to be persisted. It's assumed the directory is on a dedicated disk.
+                -->
+                <property name="storagePath" value="/persistence"/>
+                <!--
+                    Sets a path to the directory where WAL is stored.
+                    It's assumed the directory is on a dedicated disk.
+                -->
+                <property name="walPath" value="/wal"/>
+                <!--
+                    Sets a path to the directory where WAL archive is stored.
+                    It's assumed the directory is on the same drive with the WAL files.
+                -->
+                <property name="walArchivePath" value="/wal/archive"/>
+            </bean>
+        </property>
 
-<bean class="org.apache.ignite.configuration.IgniteConfiguration">
- <!-- Enabling Apache Ignite Persistent Store. -->
-  <property name="dataStorageConfiguration">
-    <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
-      <property name="defaultDataRegionConfiguration">
-        <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
-          <property name="persistenceEnabled" value="true"/>
-        </bean>
-       </property>
-     </bean>
-   </property>
-
- <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
-<property name="discoverySpi">
-  <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
-    <property name="ipFinder">
-    <!--
-     Enables Kubernetes IP finder and setting custom namespace name.
-     -->
-      <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder">
-        <property name="namespace" value="ignite"/>
-      </bean>
-    </property>
-  </bean>
-</property>
-</bean>
+        <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <!--
+                    Enables Kubernetes IP finder and setting custom namespace name.
+                    -->
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder">
+                        <property name="namespace" value="ignite"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
 </beans>
 ```
 该配置开启了Ignite的原生持久化，确保数据能够保存在磁盘上。
@@ -1164,13 +1172,13 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
 
 ## 5.AWS EKS部署
 ### 5.1.Amazon Web Services EKS部署
-遵循Amazon Kubernetes弹性容器服务的相关指南：
+注意必须遵循Amazon Kubernetes弹性容器服务(Amazon EKS)的相关指南：
 
  - [Amazon EKS入门](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 
 在本文档中，将使用AWS EKS控制台和AWS CLI进行EKS部署。还将使用`EU (Ireland) (eu-west-1)`区域。密钥对也是必需的，最好将其准备好以后使用。可以使用AWS EC2创建此密钥对。
 
-**要求**
+**Amazon EKS要求**
 
 创建完AWS账户之后，按照[Amazon EKS入门](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)的说明进行操作：
 

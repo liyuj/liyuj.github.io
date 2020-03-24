@@ -5,46 +5,86 @@ Ignite对部署没有要求，可以非常容易地部署到私有主机或者�
 ![](https://files.readme.io/8a65d4a-ignite-deploy.png)
 
 ## 2.Docker部署
-Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器，Docker会自动下载Ignite发布版，将代码部署进Ignite以及配置节点，它还可以自动启动配置好的Ignite节点，这样的集成方式，使得通过简单地重启Ignite的Docker容器就可以部署新的代码。
-### 2.1.启动Ignite Docker容器
-要运行Docker容器，需要拉取然后启动一个Docker镜像，默认会下载最新的版本，但是在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到一个完整的清单。
+Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器，Docker会自动下载Ignite二进制包，将用户的库文件部署进Ignite以及配置节点，它还可以自动启动配置好的Ignite节点，这样的集成方式，使得通过简单地重启Ignite的Docker容器就可以部署新的代码。
 
-可以使用如下的命令拉取Ignite docker镜像：
-```bash
+要运行一个Docker容器，需要拉取和启动一个Docker镜像，默认会下载最新的版本，在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到完整的标签列表。
+### 2.1.下载Ignite的Docker镜像
+使用下面的命令，可以拉取Ignite的Docker镜像：
+```shell
 # Pull latest version.
 sudo docker pull apacheignite/ignite
 
-# Pull ignite version {ignite-version}
+# Pull a specific Ignite version {ignite-version}
 sudo docker pull apacheignite/ignite:{ignite-version}
 ```
-可以使用`docker run`来运行Ignite docker容器：
-```bash
+### 2.2.以内存集群模式运行Ignite的Docker镜像
+使用下面的命令可以运行Ignite的Docker镜像：
+```shell
 # Run latest version.
-sudo docker run -it --net=host
--e "CONFIG_URI=$CONFIG_URI"
-[-e "OPTION_LIBS=$OPTION_LIBS"]
-[-e "JVM_OPTS=$JVM_OPTS"]
-...
+sudo docker run -it --net=host \
+-e "CONFIG_URI=$CONFIG_URI" \
+-e "OPTION_LIBS=$OPTION_LIBS" \
+-e "JVM_OPTS=$JVM_OPTS" \
 apacheignite/ignite
 
-# Run ignite version {ignite-version}
-sudo docker run -it --net=host
--e "CONFIG_URI=$CONFIG_URI"
-[-e "OPTION_LIBS=$OPTION_LIBS"]
-[-e "JVM_OPTS=$JVM_OPTS"]
-...
+# Run a specific Ignite version
+sudo docker run -it --net=host \
+-e "CONFIG_URI=$CONFIG_URI" \
+-e "OPTION_LIBS=$OPTION_LIBS" \
+-e "JVM_OPTS=$JVM_OPTS" \
 apacheignite/ignite:{ignite-version}
 ```
 下面的配置参数在docker容器中可以通过环境变量进行传递：
 
 |名称|描述|默认|示例|
 |---|---|---|---|
-|`CONFIG_URI`|Ignite配置文件的URL（也可以相对于类路径的META-INF文件夹），下载的配置文件会保存于./ignite-config.xml|无|https://raw.githubusercontent.com/apache/ignite/ master/examples/config/example-cache.xml|
+|`CONFIG_URI`|Ignite配置文件的URL（也可以相对于类路径的META-INF文件夹），下载的配置文件会保存于`./ignite-config.xml`|无|[https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-cache.xml](https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-cache.xml)|
 |`OPTION_LIBS`|会被包含在类路径中的可选库|`ignite-log4j, ignite-spring,ignite-indexing`|`ignite-aws,ignite-aop`|
 |`JVM_OPTS`|通过docker命令传递给ignite实例的环境变量。|无|`-Xms1g -Xmx1g -server -XX:+AggressiveOpts -XX:MaxPermSize=256m`|
 |`EXTERNAL_LIBS`|库文件URL列表|无|`http://central.maven.org/maven2/io/undertow/undertow-servlet/1.3.10.Final/undertow-servlet-1.3.10.Final.jar,http://central.maven.org/maven2/io/undertow/undertow-build-config/1.0.0.Beta24/undertow-build-config-1.0.0.Beta24.jar`|
 
-### 2.2.示例
+### 2.3.以持久化集群模式运行Ignite的Docker镜像
+如果要使用Ignite的[持久化](/doc/java/Persistence.md)，Ignite会将用户的数据保存在容器文件系统的默认工作目录（`{IGNITE_HOME}/work`）下，如果重启容器，该目录会被清空，要避免这个问题，可以这样做：
+
+ - 使用一个持久化卷来保存数据；
+ - 加载一个本地目录。
+
+下面会详细描述这两个选项：
+
+**使用持久化卷**
+
+使用下面的命令可以创建一个持久化卷：
+```shell
+sudo docker volume create persistence-volume
+```
+在运行Ignite的Docker镜像时，可以将该卷加载到一个特定的目录中，这个目录需要传入Ignite，这可以通过两种方式实现：
+
+ - 使用`IGNITE_WORK_DIR`系统属性；
+ - 在节点的配置文件中。
+
+下面的命令会启动Ignite的Docker镜像，然后通过系统属性将工作目录传给Ignite：
+```shell
+docker run -d \
+  -v persistence-volume:/persistence \
+  -e IGNITE_WORK_DIR=/persistence \
+  apacheignite/ignite
+
+```
+如果希望通过XML配置文件或者编程的方式配置工作目录，可以通过配置`IgniteConfiguration.workDirectory`属性实现，一定要注意该属性的值要与上面的`docker run`命令的`-v`参数值相一致。
+
+**使用本地目录**
+
+如果不创建卷，也可以将一个本地目录加载到运行Ignite镜像的容器中，然后使用这个目录存储持久化数据。当使用相同的命令重启容器时，Ignite会加载已有的数据。
+```shell
+mkdir ignite_work_dir
+docker run -d \
+  -v ${PWD}/ignite_work_dir:/persistence \
+  -e IGNITE_WORK_DIR=/persistence \
+  apacheignite/ignite
+```
+`-v`参数会在容器的`/persistence`目录下加载一个本地目录，`-e IGNITE_WORK_DIR=/persistence`选项会通知Ignite将这个目录作为工作目录。
+
+### 2.4.示例
 要启动Ignite的docker容器，可以使用如下的命令：
 ```bash
 sudo docker run -it --net=host -e "CONFIG_URI=https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-cache.xml" apacheignite/ignite
@@ -54,44 +94,17 @@ sudo docker run -it --net=host -e "CONFIG_URI=https://raw.githubusercontent.com/
 ![](https://files.readme.io/ryYtMcSCuGiyVcXN1GCw_dock_git_repo.png)
 
 ## 3.AWS部署
-Ignite的AMI（Amazon机器镜像）可以通过AWS的EC2管理控制台配置一个简单的Ignite集群，通过AMI进行安装，可以快速地部署一个Ignite集群。
+Ignite的AMI（Amazon机器镜像）可以通过AWS的EC2管理控制台快速配置和部署一个简单的Ignite集群。
 ### 3.1.Amazon EC2部署
 
  - 点击下表的链接选择必要的区域：
-<table>
-<tr>
-<td>
-区域
-</td>
-<td>
-镜像
-</td>
-</tr>
-<tr>
-<td>
-US-WEST
-</td>
-<td>
-<a href="https://console.aws.amazon.com/ec2/home?region=us-west-1#launchAmi=ami-9cdbb3fc">ami-9cdbb3fc</a>
-</td>
-</tr>
-<tr>
-<td>
-US-EAST
-</td>
-<td>
-<a href="https://console.aws.amazon.com/ec2/home?region=us-east-1#launchAmi=ami-ce82caa4">ami-ce82caa4</a>
-</td>
-</tr>
-<tr>
-<td>
-EU-CENTRAL
-</td>
-<td>
-<a href="https://console.aws.amazon.com/ec2/home?region=eu-central-1#launchAmi=ami-191b0775">ami-191b0775</a>
-</td>
-</tr>
-</table>
+
+|区域|镜像|
+|---|---|
+|`US-WEST`|[ami-9cdbb3fc](https://console.aws.amazon.com/ec2/home?region=us-west-1#launchAmi=ami-9cdbb3fc)|
+|`US-EAST`|[ami-ce82caa4](https://console.aws.amazon.com/ec2/home?region=us-east-1#launchAmi=ami-ce82caa4)|
+|`EU-CENTRAL`|[ami-191b0775](https://console.aws.amazon.com/ec2/home?region=eu-central-1#launchAmi=ami-191b0775)|
+
 或者，也可以使用`Apache Ignite`关键字在`Community AMIs`中搜索镜像：
 
 ![](https://files.readme.io/faf5b14-search.png)
@@ -132,7 +145,7 @@ sudo docker logs -f CONTAINER_ID
 sudo docker exec -it container_id /bin/bash
 ```
 ## 4.Google计算部署
-Ignite的镜像可以通过Google计算控制台配置一个简单的Ignite集群，通过镜像进行安装，可以快速地部署一个Ignite集群。
+Ignite的镜像可以通过Google计算控制台快速配置和部署一个简单的Ignite集群。
 ### 4.1.Google计算部署
 
  - 要导入[Ignite镜像](https://storage.googleapis.com/ignite-media/ignite-google-image.tar.gz)，执行如下的命令：
@@ -199,7 +212,7 @@ Apache Mesos是一个集群管理器，它提供了一个通用运行环境以�
 要运行Ignite Mesos框架需要配置好的正在运行的Apache Mesos集群，如果需要如何Apache Mesos集群的信息，请参照：[https://docs.mesosphere.com/getting-started/datacenter/install/](https://docs.mesosphere.com/getting-started/datacenter/install/)。
 
 ::: warning 注意
-确保主节点和从节点监听正确的IP地址，否则无法保证Mesos集群能正常工作。
+确保主节点和从节点监听正确的IP地址，否则无法保证Mesos集群工作正常。
 :::
 
 **通过Marathon运行框架**
@@ -217,7 +230,7 @@ Apache Mesos是一个集群管理器，它提供了一个通用运行环境以�
   "mem": 2048,
   "ports": [0],
   "uris": [
-    "http://host/ignite-mesos-<ignite-version>-jar-with-dependencies.jar"
+    "http://host/ignite-mesos-<ignite-version>.jar"
   ],
   "env": {
     "IGNITE_NODE_COUNT": "4",
@@ -228,7 +241,7 @@ Apache Mesos是一个集群管理器，它提供了一个通用运行环境以�
     "MESOS_USER" : "userAAAAA",
     "MESOS_ROLE" :  "role1"
   },
-  "cmd": "java -jar ignite-mesos-<ignite-version>-jar-with-dependencies.jar"
+  "cmd": "java -jar ignite-mesos-<ignite-version>.jar"
 }
 ```
 角色名必须是有效的目录名，因此如下的格式非法：
@@ -248,19 +261,19 @@ curl -X POST -H "Content-type: application/json" --data-binary @marathon.json ht
 ![](https://files.readme.io/sTIbAfcdScKoDCSAJ6Q5_marathon.png)
  - 打开Mesos控制台`http://<master-ip>:5050`，如果一切正常那么任务的名字类似`Ignite node N`，状态是`RUNNING`。在本示例中，N=4，可以看示例中的`marathon.json`文件-"IGNITE_NODE_COUNT": "4"；
 ![](https://files.readme.io/WSZ5mvnqQzy0dsUeq9WQ_mesos.png)
- - Mesos允许通过浏览器获得任务的日志，要查看Ignition的日志可以点击`Active Tasks`表格中的`Sandbox`；
+ - Mesos支持通过浏览器获得任务的日志，要查看Ignition的日志可以点击`Active Tasks`表格中的`Sandbox`；
 ![](https://files.readme.io/qUqG485tRtKS50JCp7yn_mesos_sandbox.png)
  - 点击`stdout`获取标准输出日志，`stderr`获取标准错误日志；
 ![](https://files.readme.io/Ch5VkVm1Q5qGvrGEYF4k_mesos_sandbox_stdout.png)
 **通过jar文件运行框架**
  - 下载Ignite包然后打开`libs\optional\ignite-mesos\`文件夹；
  - 使用如下命令运行框架：
-```
-java -jar ignite-mesos-<ignite-version>-jar-with-dependencies.jar
+```shell
+java -jar ignite-mesos-<ignite-version>.jar
 ```
 或者：
-```
-java -jar ignite-mesos-<ignite-version>-jar-with-dependencies.jar properties.prop
+```shell
+java -jar ignite-mesos-<ignite-version>.jar properties.prop
 ```
 其中`properties.prop`是一个属性文件，如果不提供配置文件那么框架会试图占用Mesos集群的所有资源，下面是一个例子：
 ```properties
@@ -275,7 +288,7 @@ IGNITE_MEMORY_PER_NODE=4096
 # The version ignite which will be run on nodes.
 IGNITE_VERSION=1.7.0
 ```
- - 为了确保Apache Mesos框架部署正确，可以这么做-打开Mesos控制台` http://<marathon-ip>:5050`，如果一切正常，名字类似`Ignite node N`的任务状态应该是`Running`。在本示例中N=1，可以看示例中的`properties.prop `文件-"IGNITE_NODE_COUNT": "1"；
+ - 为了确保Apache Mesos框架部署正确，可以打开Mesos控制台`http://<marathon-ip>:5050`，如果一切正常，名字类似`Ignite node N`的任务状态应该是`Running`。在本示例中N=1，可以看示例中的`properties.prop`文件-"IGNITE_NODE_COUNT": "1"；
 ![](https://files.readme.io/eEmfch9cQcSQiM27gSqT_Mesos_console.png)
  - Mesos可以通过浏览器获得任务的日志，要查看Ignition的日志，可以点击`Sandbox`；
 ![](https://files.readme.io/s6fvlxNcQz66nhq8e9zH_Sandbox.png)
@@ -316,9 +329,9 @@ Yarn是一个资源管理器，它提供了一个包括所有必要资源的通�
 要了解Yarn的信息，请参照[http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html)。
 
 ### 6.2.Ignite Yarn应用
-部署Apache Ignite集群的典型步骤是下载Ignite的发行版，修改配置文件以及启动节点。与Yarn的集成可以避免这些操作，Ignite Yarn应用可以极大的简化集群的部署，它由如下组件组成：
+部署Apache Ignite集群的典型步骤是下载Ignite的二进制包，修改配置文件以及启动节点。与Yarn的集成可以避免这些操作，Ignite Yarn应用可以极大的简化集群的部署，它由如下组件组成：
 
- - 下载Ignite发行版，将必要的资源放入HDFS，创建启动任务的必要的上下文，启动`ApplicationMaster`进程；
+ - 下载Ignite二进制包，将必要的资源放入HDFS，创建启动任务的必要的上下文，启动`ApplicationMaster`进程；
  - `Application master`：注册成功之后组件就会开始处理从资源管理器到使用资源的Ignite节点的资源请求，`Application master`会维护Ignite集群所需的所有资源水平（CPU，内存等）；
  - `Container`：在从节点上运行Ignite节点的实体；
 
@@ -340,13 +353,19 @@ IGNITE_MEMORY_PER_NODE=2048
 
 # The version of Ignite which will be run on nodes.
 IGNITE_VERSION=2.3.0
+
+# URL where Ignite distribution can be downloaded from
+IGNITE_URL=http://mirror.linux-ia64.org/apache/ignite/2.7.0/apache-ignite-2.7.0-bin.zip
+
+# You can also provide a path to unzipped Ignite distribution instead of the URL
+# IGNITE_PATH=/ignite/apache-ignite-2.7.0-bin
 ```
 
  - 运行应用；
 ```bash
 yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar cluster.properties
 ```
- - 为了确保应用正确部署，可以这样做：打开Yarn控制台`http://<hostname>:8088/cluster`，看名字为`Ignition`的应用是否工作正常；
+ - 为了确保应用正确部署，可以打开Yarn控制台`http://<hostname>:8088/cluster`，看名字为`Ignition`的应用是否工作正常；
 ![](https://files.readme.io/ISnxYZaaSyWC3Z6VP54H_AllApp.png)
  - 可以从浏览器获得日志，要查看日志可以点击任意容器的`Logs`；
 ![](https://files.readme.io/y0U5GlGoTUeSl3qc8iMQ_ContainerLogs.png)
@@ -359,7 +378,7 @@ yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar clu
 |名称|描述|默认值|示例|
 |---|---|---|---|
 |`IGNITE_XML_CONFIG`|指向Apache Ignite配置文件的HDFS路径|无|/opt/ignite/ignite-config.xml|
-|`IGNITE_WORK_DIR`|用于保存Ignition发行版的目录|./ignite-release|/opt/ignite/|
+|`IGNITE_WORKING_DIR`|用于保存Ignition发行版的目录|./ignite-release|/opt/ignite/|
 |`IGNITE_RELEASES_DIR`|保存Ignite发行版的HDFS路径|/ignite/releases/|/ignite-rel/|
 |`IGNITE_USERS_LIBS`|要添加到CLASSPATH的库文件的HDFS路径|无|/opt/libs/|
 |`IGNITE_MEMORY_PER_NODE`|每个Ignite节点占用的内存的大小（M），这个是Java堆的大小，包括了堆内缓存（如果使用了堆内缓存）。|2048|1024|
@@ -368,7 +387,8 @@ yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar clu
 |`IGNITE_NODE_COUNT`|集群节点的数量|3|10|
 |`IGNITE_RUN_CPU_PER_NODE`|每个Ignite节点的CPU核数|2|4|
 |`IGNITE_VERSION`|节点上运行的Ignite版本|latest|1.0.5|
-|`IGNITE_PATH`|到Ignite构建的hdfs路径，当yarn集群运行在内网无法访问互联网时，这个属性很有用。|无|/ignite/apache-ignite-fabric-1.7.0-bin.zip|
+|`IGNITE_PATH`|到Ignite二进制包的HDFS路径，当YARN集群运行在内网无法访问互联网时，这个属性很有用。|无|/ignite/apache-ignite-fabric-1.7.0-bin.zip|
+|`IGNITE_URL`|用于下载Ignite二进制包的地址，对于2.7版本，IGNITE_PATH或者IGNITE_URL是必须要有的|无|`http://mirror.linux-ia64.org/apache/ignite/2.7.0/apache-ignite-2.7.0-bin.zip`|
 |`IGNITE_JVM_OPTS`|JVM参数|无|-XX:+PrintGC|
 
 ## 7.VMWare部署

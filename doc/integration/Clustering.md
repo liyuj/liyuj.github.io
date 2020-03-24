@@ -166,7 +166,7 @@ cfg.setDiscoverySpi(spi);
 Ignition.start(cfg);
 ```
 
-## 3.JCloud发现
+## 3.JClouds发现
 ### 3.1.概述
 云平台上的节点发现通常认为很有挑战性。因为JCloud，和其它大部分的虚拟环境一样，有如下的限制：
 
