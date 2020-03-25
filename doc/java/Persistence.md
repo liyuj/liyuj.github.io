@@ -276,9 +276,9 @@ Ignite ignite = Ignition.start(cfg);
 ### 2.6.WAL存档调整
 下面是一些关于如何通过调整WAL存档参数来调整空间占用和集群性能的提示。
 #### 2.6.1.WAL存档压缩
-可以启用WAL存档压缩以减少WAL存档占用的空间。默认情况下，WAL存档包含最后20个检查点的段（这个数字是可配置的）。如果启用压缩，则所有比第1个检查点旧的存档段都将压缩为zip格式。在需要这些段的时候（例如，为了在节点之间进行数据再平衡），它们将被解压缩为原始格式。
+可以启用WAL存档压缩以减少WAL存档占用的空间。启用压缩后Ignite将从所有存档的旧检查点段中删除物理记录，并以ZIP格式压缩。如果需要这些段（例如，为了在节点之间再平衡数据），它们会被解压缩为原始格式。
 
-要启用WAL存档压缩，请将`DataStorageConfiguration.walCompactionEnabled`属性设置为`true`。还可以指定压缩级别（`1`表示最快的速度，`9`表示最佳的压缩）。
+要启用WAL存档压缩，请将`DataStorageConfiguration.walCompactionEnabled`属性设置为`true`，还可以指定压缩级别（`1`表示最快的速度，`9`表示最佳的压缩）。
 
 XML:
 ```xml
@@ -308,7 +308,7 @@ dsCfg.setWalCompactionEnabled(true);
 #### 2.6.2.禁用WAL存档
 有时可能想要禁用WAL存档，比如减少与将WAL段复制到存档文件有关的开销，当Ignite将数据写入WAL段的速度快于将段复制到存档文件的速度时，这样做就有用，因为这样会导致I/O瓶颈，从而冻结节点的操作，如果遇到了这样的问题，就可以尝试关闭WAL存档。
 
-要关闭存档，可以将WAL路径和WAL存档路径配置为同一个值，这时Ignite就不会将段复制到存档文件，而是按顺序循环地覆盖激活段。
+要关闭存档，可以将WAL路径和WAL存档路径配置为同一个值，这时Ignite就不会将段复制到存档文件，而是只是在WAL文件夹中创建新的段。根据[WAL存档大小](#_2-4-wal存档)设置，旧段将随着WAL的增长而删除。
 
 XML：
 ```xml
@@ -322,13 +322,14 @@ XML：
            <property name="persistenceEnabled" value="true"/>
          </bean>
        </property>
-    	 <property name="walPath" value="/wal/path"/>
+       <property name="walPath" value="/wal/path"/>
 
        <property name="walArchivePath" value="/wal/path"/>
      </bean>
    </property>
 
   <!-- Additional setting. -->
+
 </bean>
 ```
 Java：
@@ -347,11 +348,11 @@ dsCfg.setWalArchivePath(walAbsPath);
 ```
 ## 3.检查点
 ### 3.1.概述
-由于[WAL](https://apacheignite.readme.io/docs/write-ahead-log)文件会一直增长，并且通过WAL从头到尾地恢复集群会花费大量的时间。为了解决这个问题，Ignite引入了一个检查点过程。
+由于[WAL](#_2-预写日志-wal)文件会一直增长，而且通过WAL从头到尾地恢复集群会花费大量的时间。为了解决这个问题，Ignite引入了一个检查点过程。
 
 **检查点**是一个将脏页面从内存复制到磁盘上的分区文件的过程，脏页面是指页面已经在内存中进行了更新但是还没有写入对应的分区文件（只是添加到了WAL中）。
 
-这个过程有助于通过在磁盘上保持页面的最新状态而高效地利用磁盘空间，并且允许在WAL档案中删除过时的WAL段（文件）。
+这个过程通过在磁盘上保持页面的最新状态而节省更多的磁盘空间，并且可以在WAL存档中删除过时的WAL段（文件）。
 ### 3.2.工作方式
 下图显示的是一个简单的更新操作的执行过程：
 
@@ -364,7 +365,7 @@ dsCfg.setWalArchivePath(walAbsPath);
 
 ## 4.第三方存储
 ### 4.1.概述
-Ignite可以做为已有的第三方数据库之上的一个缓存层（数据网格），包括RDBMS、Apache Cassandra，该模式可以对底层数据库进行加速。Ignite对于在任何RDBMS和[Cassandra](/doc/integration/CassandraIntegration.md#_1-ignite和apache-cassandra)中进行数据库记录的读写，提供了直接的支持，而对于其它NoSQL数据库的通读和通写功能，则没有现成的实现，不过Ignite提供了API，可以实现自定义的CacheStore。
+Ignite可以做为已有的第三方数据库之上的一个缓存层（内存数据网格），包括RDBMS、Apache Cassandra，该模式可以对底层数据库进行加速。Ignite对于在任何RDBMS和[Cassandra](/doc/integration/CassandraIntegration.md#_1-ignite和apache-cassandra)中进行数据库记录的读写，提供了直接的支持，而对于其它NoSQL数据库的[通读和通写](#_4-2-通读和通写)功能，则没有现成的实现，不过Ignite提供了API，可以实现[自定义的CacheStore](#_4-7-自定义cachestore)。
 
 JCache规范提供了[javax.cache.integration.CacheLoader](https://ignite.apache.org/jcache/1.0.0/javadoc/javax/cache/integration/CacheLoader.html)和[javax.cache.integration.CacheWriter](https://ignite.apache.org/jcache/1.0.0/javadoc/javax/cache/integration/CacheWriter.html)API，它们分别用于底层持久化存储的`通读`和`通写`（比如RDBMS中的Oracle或者MySQL，以及NoSQL数据库中的MongoDB或者CouchDB）。除了键-值操作，Ignite还支持INSERT、UPDATE和MERGE操作的通写，但是SELECT查询是无法读取第三方数据库的数据的。
 
@@ -386,7 +387,13 @@ JCache规范提供了[javax.cache.integration.CacheLoader](https://ignite.apache
 ### 4.3.后写缓存
 在一个简单的通写模式中每个缓存的put和remove操作都会涉及一个持久化存储的请求，因此整个缓存更新的持续时间可能是相对比较长的。另外，密集的缓存更新频率也会导致非常高的存储负载。
 
-对于这种情况，Ignite提供了一个选项来执行异步化的持久化存储更新，也叫做**后写**，这个方式的主要概念是累加更新操作然后作为一个批量操作异步化地刷入持久化存储中。真实的数据持久化可以被基于时间的事件触发（数据输入的最大时间受到队列的限制），也可以被队列的大小触发（当队列大小达到一个限值），或者通过两者的组合触发，这时任何事件都会触发刷新。
+对于这种情况，Ignite提供了一个选项来执行异步化的持久化存储更新，也叫做**后写**，这个方式的主要概念是累加更新操作然后作为一个批量操作异步刷入持久化存储。
+
+::: tip 性能和一致性
+启用后写缓存可以通过异步更新来提高性能，但这可能会导致一致性下降，因为某些更新可能由于节点故障或崩溃而丢失。
+:::
+
+真实的数据持久化可以被基于时间的事件触发（数据输入的最大时间受到队列的限制），也可以被队列的大小触发（当队列大小达到一个限值），或者通过两者的组合触发，这时任何事件都会触发刷新。
 
 ::: tip 更新顺序
 对于后写的方式只有数据的最后一次更新会被写入底层存储。如果键为key1的缓存数据分别依次地更新为值value1、value2和value3，那么只有(key1,value3)对这一个存储请求会被传播到持久化存储。
@@ -409,7 +416,7 @@ JCache规范提供了[javax.cache.integration.CacheLoader](https://ignite.apache
 |`setWriteBehindFlushThreadCount(int)`|执行缓存刷新的线程数|1|
 |`setWriteBehindBatchSize(int)`|后写缓存存储操作的操作数最大值|512|
 
-`CacheStore`接口可以在`IgniteConfiguration`上通过一个工厂进行设置，就和`CacheLoader`和`CacheWriter`同样的方式。
+`CacheStore`接口可以在`CacheConfiguration`上通过一个工厂进行设置，和`CacheLoader`和`CacheWriter`是同样的方式。
 
 ::: warning 注意
 对于分布式缓存的配置，`Factory`应该是可序列化的。
@@ -462,7 +469,7 @@ Ignite可以和任意RDBMS集成，将数据加载进Ignite缓存，然后执行
 
 在Ignite的XML配置文件（或者通过代码）中，可以**手动**地开启JDBC的POJO存储，需要做的是：
 
- 1. 下载使用的数据库的JDBC驱动，然后将其放入应用的类路径中；
+ 1. 下载实际数据库的JDBC驱动，然后将其放入应用的类路径中；
  2. 通过初始化`CacheJdbcPojoStoreFactory`，配置`CacheConfiguration`的`cacheStoreFactory`属性，需要提供的属性如下：
 
   - `dataSourceBean`：数据库连接凭据，url、用户名、密码等；
@@ -847,7 +854,7 @@ public class Person implements Serializable {
 ### 4.6.NoSQL集成
 Ignite可以与NoSQL数据库（比如Cassandra）集成。具体请参阅[Cassandra集成](/doc/integration/CassandraIntegration.md#_1-ignite和apache-cassandra)的相关文档，以了解如何将Cassandra用作Ignite持久化存储。对于其它NoSQL数据库，Ignite不提供任何现成的实现，开发者可以实现自己的`CacheStore`。
 
-注意，虽然Ignite支持分布式事务，但如果将NoSQL数据库用作Ignite的持久层，Ignite也不会使其具有事务性。除非，NoSQL数据库直接支持事务。比如，在Ignite缓存上执行的事务不会传播到Cassandra。
+注意，虽然Ignite支持分布式事务，但如果将NoSQL数据库用作Ignite的持久层，Ignite也不会使其具有事务性。除非NoSQL数据库直接支持事务。比如，在Ignite缓存上执行的事务不会传播到Cassandra。
 ### 4.7.自定义CacheStore
 开发者还可以实现自己的`CacheStore`。`CacheStore`接口允许从底层数据存储中写入和读取数据。除了标准的JCache加载和存储方法外，它还引入了事务结束边界和从数据库批量加载缓存的能力。
 
@@ -877,7 +884,7 @@ Ignite可以与NoSQL数据库（比如Cassandra）集成。具体请参阅[Cassa
 
 Ignite有一个存储会话的概念，它可以跨越不止一个`CacheStore`操作，会话对于事务非常有用。
 
-对于`原子化`的缓存，`sessionEnd()`方法会在每个`CacheStore`方法完成之后被调用，对于`事务化`的缓存，不管是在底层持久化存储进行提交或者回滚多个操作，`sessionEnd()`方法都会在每个事务结束后被调用。
+对于`ATOMIC`模式的缓存，`sessionEnd()`方法会在每个`CacheStore`方法完成之后被调用。对于`TRANSACTIONAL`模式的缓存，不管在底层持久化存储提交还是回滚多少个操作，`sessionEnd()`方法都会在每个事务结束后被调用。
 
 ::: tip 注意
 `CacheStoreAdapater`提供了`sessionEnd()`方法的默认的空实现。
@@ -1210,7 +1217,7 @@ public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
 ### 4.8.原生持久化和第三方持久化一起使用
 从2.4版本开始，在一个集群中，Ignite支持原生持久化和第三方持久化的共存，如果启用了第三方持久化，Ignite会尽力保证两者之间的一致性。
 
-但是，当使用事务且在事务提交期间，如果一个分区对应的所有节点故障（或者整个集群故障），数据可能会不一致。根据时间节点，第三方持久化和原生持久化的事务状态可能有所不同。
+但是，当使用事务且在事务提交期间，如果负责一个分区的所有节点故障（或者整个集群故障），数据可能会不一致。根据时间节点，第三方持久化和原生持久化的事务状态可能有所不同。
 
 ::: danger 警告
 Ignite无法保证原生持久化和第三方持久化之间的严格一致性，因为目前的`CacheStore`接口还不支持二阶段提交协议。
@@ -1282,9 +1289,41 @@ https://[host]:[port]/ignite?cmd=activate
 ```
 有关如何通过REST API来对集群进行激活/冻结的更新信息，可以看这个[文档](/doc/java/PlatformsProtocols.md#_2-3-40-activate)。
 
+**集群冻结**
+
+::: danger 警告
+冻结将释放所有集群节点上的所有内存资源，包括应用的数据，并禁用公共集群API。如果内存中的缓存没有通过[持久化存储](#_1-ignite持久化)进行备份，则将丢失数据，后续就需要重新加载这些缓存。
+:::
+要冻结集群，可以使用下面的方法：
+
+Java：
+```java
+// Connect to the cluster.
+Ignite ignite = Ignition.start();
+
+// Deactivate the cluster.
+ignite.cluster().active(false);
+```
+Unix：
+```shell
+## Run this command from your `$IGNITE_HOME` folder
+bin/control.sh --deactivate
+```
+Windows：
+```batch
+## Run this command from your `$IGNITE_HOME` folder
+bin\control.bat --deactivate
+```
+REST：
+```
+## Replace [host] and [port] with actual values.
+
+https://[host]:[port]/ignite?cmd=deactivate
+```
+
 **通过代码配置基线拓扑**
 
-如上所述，手工激活集群之后基线拓扑就会自动初始化，使用`IgniteCluster.activate()`方法，可以通过代码对集群进行激活，然后可以使用`IgniteCluster.setBaseLineTopogy()`对已有的基线拓扑进行调整，注意，必须激活集群之后才能调用这个方法。
+如上所述，手工激活集群之后基线拓扑就会自动初始化，使用`IgniteCluster.activate()`方法，可以通过代码对集群进行激活，然后可以使用`IgniteCluster.setBaseLineTopogy()`对已有的基线拓扑进行调整，注意**必须**激活集群之后才能调用这个方法。
 
 将所有的服务端节点配置为基线拓扑：
 ```java
@@ -1439,9 +1478,59 @@ Ignite提供了`control.sh|bat`脚本，位于`$IGNITE_HOME/bin`文件夹，它�
 
 **使用第三方工具进行激活**
 
-要激活集群以及配置基线拓扑，还可以使用这个[第三方工具](https://docs.gridgain.com/docs/baseline-topology)。
-### 5.4.使用场景
-设计基线拓扑的目的是避免不必要的分区重新分配和数据的再平衡。这意味着，相对于特定事件（比如节点加入或者离开集群），决定什么时候对基线拓扑进行调整（会触发数据再平衡），变成了IT管理员的职责。如上所述，这可以通过`control.sh|bat`命令手工完成，也可以通过一些外部的自动化工具实现（比如一个检查运行Ignite节点的主机健康状态的系统，会从基线拓扑中移除不稳定或者故障的节点）。
+要激活集群以及配置基线拓扑，还可以使用这个[第三方工具](https://www.gridgain.com/docs/web-console/latest/baseline-topology)。
+### 5.4.基线拓扑自动调整
+如果不想手动调整基线拓扑，还可以让集群自动调整基线拓扑。此功能称为基线拓扑自动调整。启用后集群将监控其服务端节点的状态，并在集群拓扑稳定一段可配置的时间后自动设置当前拓扑的基线。
+
+当集群中的节点集发生变更时，将发生以下情况：
+
+ - Ignite会等待一个可配置的时间（默认为5分钟）；
+ - 如果在此期间拓扑中没有其他变更，则Ignite会将基线拓扑设置为当前节点集；
+ - 如果在此期间节点集发生更改，则会更新超时时间。
+
+这些节点集的每个变更都会重置自动调整的超时时间。当超时过期且当前节点集与基线拓扑不同（例如存在新节点或一些旧节点离开）时，Ignite将更改基线拓扑以匹配当前节点集，这也会触发[数据再平衡](/doc/java/Key-ValueDataGrid.md#_10-数据再平衡)。
+
+自动调整超时时间使得用户可以在节点由于临时性网络问题而短时间断开连接或希望快速重启节点时避免数据再平衡。如果希望节点集的临时变更不更改基线拓扑，则可以将超时设置为更高的值。
+
+只有当集群处于激活状态时，基线拓扑才会自动调整。
+
+此功能默认是禁用的，可以使用控制脚本开启该功能，还可以通过编程方式启用该功能。
+
+Shell：
+```shell
+control.sh --baseline auto_adjust enable timeout 30000
+```
+Java：
+```java
+Ignite ignite = Ignition.start();
+
+ignite.cluster().baselineAutoAdjustEnabled(true);
+
+ignite.cluster().baselineAutoAdjustTimeout(30000);
+```
+这个命令开启了自动调整功能并且配置超时时间为30s。
+
+如果要禁用该功能，可以使用下面的命令：
+
+Shell：
+```shell
+control.sh --baseline auto_adjust disable
+```
+Java：
+```java
+Ignite ignite = Ignition.start();
+
+ignite.cluster().baselineAutoAdjustEnabled(false);
+```
+### 5.5.集群激活/冻结事件
+集群激活/冻结时，Ignite会产生对应的事件：
+
+ - [EVT_CLUSTER_ACTIVATED](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/events/EventType.html#EVT_CLUSTER_ACTIVATED)
+ - [EVT_CLUSTER_DEACTIVATED](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/events/EventType.html#EVT_CLUSTER_DEACTIVATED)
+
+通过监听这些事件可以获得集群激活/冻结的通知，关于如何配置事件监听器，可以参见[本地和远程事件](/doc/java/MessagingEvents.md#_2-本地和远程事件)。
+### 5.6.使用场景
+设计基线拓扑的目的是避免不必要的分区重新分配和数据的再平衡。这意味着相对于特定事件（比如节点加入或者离开集群），决定什么时候对基线拓扑进行调整（会触发数据再平衡），变成了运维人员的职责。如上所述，这可以通过`control.sh|bat`命令手工完成，也可以通过一些外部的自动化工具实现（比如一个检查运行Ignite节点的主机健康状态的系统，会从基线拓扑中移除不稳定或者故障的节点）。
 
 ::: tip 再平衡和非基线服务端节点
 只存储在内存中（或内存中和第三方持久化）中的数据再平衡会自动触发，不需要任何人工干预。
@@ -1558,8 +1647,8 @@ Ignite提供了`control.sh|bat`脚本，位于`$IGNITE_HOME/bin`文件夹，它�
 
 **非基线节点删除和故障处理**
 
-不添加到基线拓扑的服务端节点不需要IT管理员的额外干预来触发数据再平衡。由于这些节点只在内存（或内存和第三方数据库）中存储数据，所以再平衡会自动触发。
-### 5.5.编程方式触发再平衡
+不添加到基线拓扑的服务端节点不需要运维人员的额外干预来触发数据再平衡。由于这些节点只在内存（或内存和第三方数据库）中存储数据，所以再平衡会自动触发。
+### 5.7.编程方式触发再平衡
 如前述的`节点重启`和`节点删除`章节所述，基线拓扑可能会在一个较长的时间段内维持复制因子（副本数量）的降低，因此如果预期下线时间足够长，就需要从基线拓扑中删除该节点，然后触发再平衡以避免可能的数据丢失，因为其它节点上存储的主备数据可能丢失。
 
 从基线拓扑中手动删除节点之后，就可以触发再平衡以及恢复复制因子。通过`control.sh`脚本以及监控工具，可以自动地执行删除操作，另外，使用如下的模板代码，也可以通过编程方式触发再平衡：
@@ -1622,12 +1711,12 @@ public class BaselineWatcher {
 ```
 ## 6.交换空间
 ### 6.1.概述
-如果使用纯内存存储，随着数据量的大小逐步达到物理内存大小，可能导致内存溢出。要避免这种情况的发生，可能的想法包括开启原生的持久化或者使用第三方的持久化。但是，如果不想使用原生或者第三方的持久化，还可以开启交换，这时，Ignite会将内存中的数据移动到磁盘上的交换空间，注意Ignite不会提供自己的交换空间实现，而是利用了操作系统（OS）提供的交换功能。
+如果使用纯内存存储，随着数据量的大小逐步达到物理内存大小，可能导致内存溢出。要避免这种情况的发生，可能的想法包括开启原生的持久化或者使用第三方的持久化。但是，如果不想使用原生或者第三方的持久化，还可以开启交换，这时Ignite会将内存中的数据移动到磁盘上的交换空间，注意Ignite不会提供自己的交换空间实现，而是利用了操作系统（OS）提供的交换功能。
 
-打开交换空间之后，Ignite会将数据存储在内存映射文件（MMF）中，操作系统会根据内存使用情况，将其内容交换到磁盘，但是这时数据访问的性能会下降，另外，还没有数据持久性保证，这意味着交换空间中的数据只在节点在线期间才可用。一旦节点停止，所有数据都会丢失。因此，应该使用交换空间作为内存的扩展，以便留出足够的时间向集群中添加更多的节点，以便数据重新分布并避免集群未及时扩容导致内存溢出的错误（OOM）发生。
+打开交换空间之后，Ignite会将数据存储在内存映射文件（MMF）中，操作系统会根据内存使用情况，将其内容交换到磁盘，但是这时数据访问的性能会下降。另外，还没有数据持久性保证，这意味着交换空间中的数据只在节点在线期间才可用。一旦存在交换空间的节点停止，所有数据都会丢失。因此，应该使用交换空间作为内存的扩展，以便留出足够的时间向集群中添加更多的节点，以便数据重新分布并避免集群未及时扩容导致内存溢出的错误（OOM）发生。
 
 ::: tip 注意
-建议使用Ignite的原生持久化，它容量超过了RAM并且保留了持久性。
+建议使用Ignite的[原生持久化](#_1-ignite持久化)，它容量超过了RAM并且保留了持久性。
 :::
 ### 6.2.配置
 数据区的`maxSize`定义了区域的整体最大值，如果数据量达到了`maxSize`，然后既没有使用原生持久化，也没有使用第三方数据库，那么可能会抛出内存溢出异常。使用交换可以避免这种情况的发生，这时：

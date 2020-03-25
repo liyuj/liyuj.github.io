@@ -70,8 +70,7 @@
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
 					<h4>服务内容：</h4>初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等，预约时间即时响应
-          <h4>服务报价：</h4>500元/2小时(最小计价单位)，1000元/天，3000元/周，5000元/半月，8000元/月，2万元/季，4万元/半年，8万元/年
-
+          <h4>服务报价：</h4>免费初始交流/2小时内，3000元/周，5000元/半月，8000元/月，2万元/季，4万元/半年，8万元/年
 				</div>
 				<!-- /COLUMN -->
 			</div>
@@ -87,7 +86,7 @@
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
 					<h4>服务内容：</h4>现场解决客户的各种个性化需求/问题，随时响应
-          <h4>服务报价：</h4>4000元/核算日
+          <h4>服务报价：</h4>3000元/核算日
 				</div>
 				<!-- /COLUMN -->
 			</div>

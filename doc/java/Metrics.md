@@ -74,7 +74,7 @@ for (DataRegionMetrics metrics : regionsMetrics) {
     System.out.println(">>> Memory Region Name: " + metrics.getName());
     System.out.println(">>> Allocation Rate: " + metrics.getAllocationRate());
     System.out.println(">>> Fill Factor: " + metrics.getPagesFillFactor());
-    System.out.println(">>> Allocated Size: " + metrics.getTotalAllocationSize());
+    System.out.println(">>> Allocated Size: " + metrics.getTotalAllocatedPages());
     System.out.println(">>> Physical Memory Size: " + metrics.getPhysicalMemorySize());
 }
 ```
@@ -208,9 +208,7 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
 
 `CacheMetrics`接口有各种指标，比如：缓存处理的put和get操作的总数，平均put和get时间，退出总数量，当前后写缓存存储缓冲区大小，以及更多。
 ### 2.1.启用缓存指标
-要启用缓存指标，可以将希望收集指标缓存的`CacheConfiguration.setStatisticsEnabled(boolean)`配置为`true`。
-
-下面以名为`test-cache`的缓存为例：
+要启用缓存指标，可以将希望收集指标的缓存的`CacheConfiguration.setStatisticsEnabled(boolean)`配置为`true`，下面以名为`test-cache`的缓存为例：
 
 XML：
 ```xml
@@ -220,7 +218,7 @@ XML：
       <bean class="org.apache.ignite.configuration.CacheConfiguration">
         <property name="name" value="test-cache"/>
 
-        <!-- Enabling statistics for this specific cache. -->
+        <!-- Enable statistics for the cache. -->
         <property name="statisticsEnabled" value="true"/>
       </bean>
     </list>
@@ -233,10 +231,10 @@ IgniteConfiguration cfg = new IgniteConfiguration();
 
 CacheConfiguration cacheCfg = new CacheConfiguration("test-cache");
 
-// Enabling the metrics for the cache.
+// Enable statistics for the cache.
 cacheCfg.setStatisticsEnabled(true);
 
-// Starting the node.
+// Start the node.
 Ignition.start(cfg);
 ```
 ### 2.2.获取缓存指标
@@ -268,6 +266,7 @@ System.out.println("Avg get time: " + cm.getAverageGetTime());
 要了解如何计算缓存的大小，可以参阅[内存使用量计算](#_1-3-内存使用量计算)。
 
 ## 3.指标体系
+
 ## 4.系统视图
 2.8版本引入了新的系统视图子系统，主要目标是使用户能够通过几个独立的可插拔的导出器查看Ignite内部实体的状态。
 
