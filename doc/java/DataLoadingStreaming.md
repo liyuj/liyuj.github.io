@@ -1,6 +1,6 @@
 # 数据注入和流处理
 ## 1.数据注入和流处理
-Ignite数据加载和流处理功能可以以可扩展以及容错的方式处理持续不断的数据流或者在集群中预加载初始数据。在一个中等规模的集群中，数据注入Ignite或者预加载数据的速度可以很高，甚至轻易地达到每秒处理百万级的事件。
+Ignite数据加载和流处理功能可以以可扩展以及容错的方式将大量或者持续/流式数据注入集群。在一个中等规模的集群中，数据注入Ignite的速度可以轻易地达到每秒百万级。
 
 **数据加载**
 
@@ -9,7 +9,7 @@ Ignite数据加载和流处理功能可以以可扩展以及容错的方式处�
 **工作方式**
 
  1. 客户端节点通过Ignite数据流处理器向Ignite缓存中注入有限的或者持续的数据流；
- 2. 数据在Ignite数据节点间自动分区，每个节点持有均等的数据量；
+ 2. 数据在Ignite数据节点间自动分区，并在数据节点间均匀分布；
  3. 数据流可以在Ignite数据节点上以并置的方式直接并行处理；
  4. 客户端也可以在数据流上执行并发的SQL查询。
 
@@ -25,35 +25,35 @@ Ignite数据加载和流处理功能可以以可扩展以及容错的方式处�
 
 **与已有的流处理技术集成**
 
-Ignite可以与各种主要的流处理技术和kuaig进行集成，比如Kafka、Camel、Storm或者JMS，从而为基于Ignite的架构带来更强大的流处理功能。
+Ignite可以与各种主要的流处理技术和框架集成，比如Kafka、Camel、Storm或者JMS，从而为基于Ignite的架构带来更强大的流处理功能。
 ## 2.数据加载
+Ignite提供了若干种技术，用于从第三方数据库或者其他的数据源进行初始化数据加载。
 ### 2.1.概述
-用标准的缓存`put(...)`和`putAll(...)`操作加载大量的数据通常是比较低效的。Ignite提供了`IgniteDataStreamer`API来与主要的流技术集成，还有`CacheStore`API，它们有助于以一个更高效的方式将大量数据注入Ignite缓存。
+用标准的缓存`put(...)`和`putAll(...)`操作加载大量的数据通常是比较低效的。Ignite提供了`IgniteDataStreamer`API来与主要的流技术集成，还有`IgniteCache`API，它们有助于以一个更高效的方式将大量数据注入Ignite缓存。
 ### 2.2.IgniteDataStreamer
-数据流处理器是通过`IgniteDataStreamer`API定义的，它可以将大量的连续数据注入Ignite缓存。数据流处理器以可扩展和容错的方式在数据被发送到集群节点之前通过把批量数据放在一起以获得高性能。
+数据流处理器是通过`IgniteDataStreamer`API定义的，它可以将大量的连续数据注入Ignite缓存。数据流处理器以可扩展和容错的方式在数据被发送到集群节点之前通过把数据形成批次来获得高性能。
 
 ::: tip 注意
-数据流处理器可以用于任何时候将大量数据载入缓存，包括启动时的预加载。
+数据流处理器可以随时用于大量数据加载，包括启动时的预加载。
 :::
 
-想了解更多信息请参照[数据流处理器](#_5-3-数据流处理器)。
+想了解更多信息请参照[数据流处理器](#_3-数据流处理器)。
 
 ### 2.3.IgniteCache.loadCache()
 如果数据由第三方数据库持久化，Ignite需要将数据从磁盘上预加载到内存中，应用才能使用SQL等更高级的功能。
 ::: tip Ignite原生持久化
-Ignite的原生持久化不需要在重启时将数据预热到内存，因此，与IgniteCache.loadCache()有关的加载技术和这种类型的持久化存储没什么关系。
+Ignite的原生持久化不需要在重启时将数据预热到内存，集群会直接处理磁盘上的数据，因此基于`IgniteCache.loadCache()`的加载技术和原生持久化无关。
 :::
 
-要从比如关系数据库这样的第三方存储中预加载大量的数据可以使用`CacheStore.loadCache()`方法，它可以在不传入要加载的所有键的情况下进行缓存的数据加载。
+要从比如关系数据库这样的第三方存储中预加载数据可以使用`IgniteCache.loadCache()`方法，它可以在不传入要加载的所有键的情况下进行缓存的数据加载。
 
-在所有保存该缓存的每一个集群节点上`IgniteCache.loadCache()`方法会委托给`CacheStore.loadCache()`方法，如果只想在本地节点上加载，可以用`IgniteCache.localLoadCache()`方法。
-
+在每个节点上`IgniteCache.loadCache()`方法都会委托给`CacheStore.loadCache()`方法，如果只想在本地节点上加载，可以用`IgniteCache.localLoadCache()`方法。
 ::: tip 注意
-对于分区缓存以及像关系数据库这样的第三方存储，如果键没有映射到某个节点，不管是主节点还是备份节点，都会被自动忽略。
-这与Ignite持久化存储无关，因为每个节点只会存储属于它的数据。
+对于分区缓存以及像关系数据库这样的第三方存储，如果键没有映射到某个节点，不管是主还是备，都会被自动丢弃。
+这与Ignite持久化存储无关，因为每个节点只会存储属于自己的数据。
 :::
 
-下面是一个第三方存储的`CacheStore.loadCache()`实现的示例，对于`CacheStore`的完整例子，可以参照[第三方存储](/doc/java/Persistence.md#_4-第三方存储)章节。
+下面是如何使用第三方存储的`CacheStore.loadCache()`实现的示例，对于`CacheStore`的完整示例，可以参照[第三方存储](/doc/java/Persistence.md#_4-第三方存储)章节。
 ```java
 public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 	...
@@ -91,7 +91,7 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 ```
 **分区感知的数据加载**
 
-在上面描述的**第三方存储**场景中同样的查询会在所有节点上执行，每个节点会迭代所有的结果集，忽略掉不属于该节点的所有键，效率不是很高。如果数据库中的每条记录都保存分区ID，这个情况会有所改善。可以通过`org.apache.ignite.cache.affinity.Affinity`接口来获得要存储在缓存中的任何键的分区ID。
+如上所述，同样的查询会在所有节点上执行，因为每个节点都会迭代所有的结果集，忽略掉不属于自己的数据，效率不是很高。如果数据库中的每条记录都保存分区ID，这个情况会有所改善。可以通过`org.apache.ignite.cache.affinity.Affinity`接口来获得要存储在缓存中的任何数据的分区ID。
 
 下面的代码片段可以获得每个要存储在缓存中的`Person`对象的分区ID。
 ```java
@@ -109,9 +109,9 @@ for (int personId = 0; personId < PERSONS_CNT; personId++) {
     cache.put(personId, person);
 }
 ```
-当Person对象知道自己的分区ID，每个节点就可以只查询属于自己所属分区的数据。要做到这一点，可以将一个Ignite实例注入到自己的CacheStore，然后用它来确定本地节点所属的分区。
+当`Person`对象能够分区感知，每个节点就可以只查询属于自己所属分区的数据。要做到这一点，可以将一个Ignite实例注入CacheStore，然后用它来确定本地节点所属的分区。
 
-下面的代码片段演示了用`Affinity`来只加载本地分区的数据，注意例子代码是单线程的，不过它可以通过分区ID高效地并行化。
+下面的代码片段演示了用`Affinity`来只加载本地分区的数据，注意示例代码是单线程的，不过它可以通过分区ID高效地并行化。
 ```java
 public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   // Will be automatically injected.
@@ -150,21 +150,19 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
       throw new CacheLoaderException("Failed to load values from cache store.", e);
     }
   }
-
   ...
 }
 ```
 ::: warning 注意
 注意键和分区的映射依赖于affinity函数中配置的分区数量(参照`org.apache.ignite.cache.affinity.AffinityFunction`)。如果affinity函数配置改变，数据库中存储的分区ID必须相应地更新。
 :::
-
 ::: tip 性能改进
-为了保证一致性和持久性，Ignite的原生持久化支持**预写日志**，预写日志默认是开启的。但是这会影响数据预加载的性能，因此建议在数据预加载时禁用WAL，加载完成启用WAL，具体可以看WAL的Java API文档，以及SQL的ALTER TABLE文档。
+为了维护一致性和持久性，Ignite的原生持久化支持**预写日志**，预写日志默认是开启的。不过这会影响数据预加载的性能，因此建议在数据预加载时禁用WAL，加载完成启用WAL，具体可以看[WAL](/doc/java/Persistence.md#_2-预写日志-wal)的Java API文档，以及SQL的[ALTER TABLE](/doc/sql/SQLReference.md#_2-1-alter-table)文档。
 :::
 
 ## 3.数据流处理器
 ### 3.1.概述
-数据流处理器是通过`IgniteDataStreamer`API定义的，用于将大量的持续数据流注入Ignite缓存。数据流处理器以可扩展以及容错的方式，为将所有的数据流注入Ignite提供了**至少一次保证**。
+数据流处理器是通过`IgniteDataStreamer`API定义的，用于将大量的持续数据流注入Ignite缓存。数据流处理器以可扩展和容错的方式，为所有注入Ignite的流式数据提供**至少一次保证**。
 
 数据流处理器不参与事务。
 ### 3.2.IgniteDataStreamer
@@ -172,8 +170,8 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 
 高速加载是通过如下技术获得的：
 
- - 映射到同一个集群节点上的数据条目会作为一个批次保存在缓冲区中；
- - 多个缓冲区可以同时共处；
+ - 映射到同一个集群节点上的数据会作为一个批次保存在缓冲区中；
+ - 多个缓冲区可以同时共存；
  - 为了避免内存溢出，数据流处理器有一个缓冲区的最大数，它们可以并行的处理；
 
 要将数据加入数据流处理器，调用`IgniteDataStreamer.addData(...)`方法即可。
@@ -187,7 +185,7 @@ try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCac
 ```
 **允许覆写**
 
-数据流处理器默认不会覆写已有的数据，这意味着如果遇到一个缓存内已有的条目，它会忽略这个条目。这是一个最有效的以及高性能的模式，因为数据流处理器不需要在后台考虑数据的版本。
+数据流处理器默认不会覆写已有的数据，这意味着如果遇到一个缓存内已有的数据，它会跳过该数据。这是最有效且高性能的模式，因为数据流处理器不需要在后台考虑数据的版本。
 
 如果预想到数据在数据流缓存中可能存在以及希望覆写它，设置`IgniteDataStreamer.allowOverwrite(true)`即可。
 
@@ -271,15 +269,15 @@ try (IgniteDataStreamer<String, Long> stmr = ignite.dataStreamer(stmCache.getNam
 注意，根本不会更新`marketData`缓存，它一直是空的，只是直接在数据将要存储的集群节点上简单利用了market数据的并置处理能力。
 ```java
 CacheConfiguration<String, Double> mrktDataCfg = new CacheConfiguration<>("marketData");
-CacheConfiguration<String, Double> instCfg = new CacheConfiguration<>("instruments");
+CacheConfiguration<String, Instrument> instCfg = new CacheConfiguration<>("instCache");
 
 // Cache for market data ticks streamed into the system.
 IgniteCache<String, Double> mrktData = ignite.getOrCreateCache(mrktDataCfg);
 
 // Cache for financial instruments.
-IgniteCache<String, Double> instCache = ignite.getOrCreateCache(instCfg);
+IgniteCache<String, Instrument> instCache = ignite.getOrCreateCache(instCfg);
 
-try (IgniteDataStreamer<String, Integer> mktStmr = ignite.dataStreamer("marketData")) {
+try (IgniteDataStreamer<String, Double> mktStmr = ignite.dataStreamer("marketData")) {
   // Note that we do not populate 'marketData' cache (it remains empty).
   // Instead we update the 'instruments' cache based on the latest market price.
   mktStmr.receiver(StreamVisitor.from((cache, e) -> {
