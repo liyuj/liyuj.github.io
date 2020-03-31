@@ -107,11 +107,11 @@ NuGet是将Ignite.NET包含到项目中最便捷的方法，具体可以在软�
 ::: tip 更新NuGet软件包
 当要更新到新版本的Ignite.NET时，一定要清理`bin`文件夹并且重新构建，以更新Libs文件夹。
 :::
-**二进制发行版**
+**二进制包**
 
-二进制发行版包含了Ignite、Ignite.NET和Ignite.C++，可选的Java包，示例代码以及其他的内容。
+二进制包包含了Ignite、Ignite.NET和Ignite.C++，可选的Java包，示例代码以及其他的内容。
 
- - 从如下[地址](https://ignite.apache.org/download.cgi#binaries)下载二进制发行版；
+ - 从如下[地址](https://ignite.apache.org/download.cgi#binaries)下载二进制包；
  - 将压缩包解压到系统中某个安装文件夹中。
 
 运行示例：
@@ -121,7 +121,7 @@ NuGet是将Ignite.NET包含到项目中最便捷的方法，具体可以在软�
  - 可选：通过`Apache.Ignite.exe -configFileName=platforms\dotnet\examples\Apache.Ignite.Examples\App.config -assembly=[path_to_Apache.Ignite.ExamplesDll.dll]`启动一个独立的节点；
  - 使用`F5`或者`Ctrl-F5`运行示例。
 
-**源代码发行版**
+**源代码构建**
 
 Ignite.NET基于Ignite，需要首先构建Java源代码，具体请参见[这里](/doc/java/#_3-入门)。
 
@@ -150,7 +150,7 @@ platforms\dotnet\bin\Apache.Ignite.exe
 
  - 创建一个新的控制台应用项目；
  - 使用NuGet时：安装Apache Ignite.NET NuGet软件包；
- - 使用完整发行版时：添加对platform\dotnet\bin\Apache.Ignite.Core.dll的引用。
+ - 使用完整二进制包时：添加对platform\dotnet\bin\Apache.Ignite.Core.dll的引用。
 
 ```csharp
 static void Compute()
@@ -299,9 +299,9 @@ namespace IgniteTest
 
 **运行示例**
 
-[二进制发行版](https://ignite.apache.org/download.cgi#binaries)中包含了.NET Core的示例：
+[二进制包](https://ignite.apache.org/download.cgi#binaries)中包含了.NET Core的示例：
 
- - 从[这里](https://ignite.apache.org/download.cgi#binaries)下载二进制发行版然后解压；
+ - 从[这里](https://ignite.apache.org/download.cgi#binaries)下载二进制包然后解压；
  - `cd platforms/dotnet/examples/dotnetcore`；
  - `dotnet run`。
 
@@ -382,7 +382,7 @@ Ignition.Start(new IgniteConfiguration
 ### 5.2.app.config和web.config
 `Ignition.StartFromApplicationConfiguration`方法会从`app.config`或`web.config`文件的`Apache.Ignite.Core.IgniteConfigurationSection`中读取配置。
 
-在二进制发行版的`Apache.Ignite.Core.dll`旁边，以及`Apache.Ignite.Schema`NuGet包中，可以找到`IgniteConfigurationSection.xsd`架构文件。在配置文件中编辑`IgniteConfigurationSection`时，将其包含在项目中并且构建动作为`None`，可以在Visual Studio中启用IntelliSense。
+在二进制包的`Apache.Ignite.Core.dll`旁边，以及`Apache.Ignite.Schema`NuGet包中，可以找到`IgniteConfigurationSection.xsd`架构文件。在配置文件中编辑`IgniteConfigurationSection`时，将其包含在项目中并且构建动作为`None`，可以在Visual Studio中启用IntelliSense。
 
 ::: tip 提示
 要将`IgniteConfigurationSection.xsd`架构文件添加到Visual Studio项目中，可以转到`Projects`菜单，然后单击`Add Existing Item...`菜单项，之后找到`IgniteConfigurationSection.xsd`并且选中。
@@ -1058,7 +1058,7 @@ Spring XML：
 当新节点加入拓扑时，现有节点会放弃某些键的主备数据所有权，并转给新的节点，以使数据在整个网格中始终保持均衡。这可能需要额外的资源并影响缓存性能，要解决此可能的问题，需要考虑调整以下参数：
 
  - 配置适合自己网络的再平衡批次大小。默认值为512KB，这意味着默认的再平衡消息约为512KB，不过可以根据网络性能将此值设置为更高或更低；
- - 配置再平衡限流以释放CPU。如果数据集很大并且有很多消息要发送，则CPU或网络可能会被过度消耗，这可能会持续降低应用的性能。这时应该启用数据再平衡限流，这有助于调整再平衡消息之间的等待时间，以确保再平衡过程不会对性能造成任何负面影响。注意在再平衡过程中，应用将继续正常运行；
+ - 配置再平衡节流以释放CPU。如果数据集很大并且有很多消息要发送，则CPU或网络可能会被过度消耗，这可能会持续降低应用的性能。这时应该启用数据再平衡节流，这有助于调整再平衡消息之间的等待时间，以确保再平衡过程不会对性能造成任何负面影响。注意在再平衡过程中，应用将继续正常运行；
  - 配置再平衡线程池大小。与上一点相反，有时可能需要通过使用更多的CPU内核来加快再平衡，这可以通过增加再平衡线程池中的线程数来实现（池中默认只有2个线程）。
 
 以下是在缓存配置中配置所有上述参数的示例：
@@ -1603,7 +1603,7 @@ if not exist "$(TargetDir)Libs" md "$(TargetDir)Libs"
 xcopy /s /y "$(SolutionDir)packages\Apache.Ignite.1.6.0\Libs\*.*" "$(TargetDir)Libs"
 ```
 ### 14.3.自定义部署
-Jar文件位于发行版的`libs`文件夹和NuGet包中。
+Jar文件位于二进制包的`libs`文件夹和NuGet包中。
 
 Ignite.NET必需的最小Jar集合是：
 

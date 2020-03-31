@@ -481,8 +481,8 @@ spark.sparkContext.addJar(MAVEN_HOME + "/com/h2database/h2/1.4.195/h2-1.4.195.ja
 
 为了测试，需要一个Spark主节点以及至少一个Spark工作节点，通常Spark主节点和Spark工作节点是不同的机器，但是为了测试可以在启动主节点的同一台机器上启动工作节点。
 
-1. 下载和解压Spark二进制发行版到所有节点的同一个位置（将其设为`SPARK_HOME`）；
-2. 下载和解压Ignite二进制发行版到所有节点的同一个位置（将其设为`IGNITE_HOME`）；
+1. 下载和解压Spark二进制包到所有节点的同一个位置（将其设为`SPARK_HOME`）；
+2. 下载和解压Ignite二进制包到所有节点的同一个位置（将其设为`IGNITE_HOME`）；
 3. 转到`$SPARK_HOME`然后执行如下的命令：
 ```bash
 sbin/start-master.sh

@@ -379,7 +379,7 @@ Ignition.start(cfg);
 通常当应用访问磁盘上的数据时，操作系统拿到数据后会将其写入一个文件缓冲区缓存，写操作也是同样，操作系统首先将数据写入缓存，然后才会传输到磁盘，要消除这个过程，可以打开直接IO，这时数据会忽略文件缓冲区缓存，直接从磁盘进行读写。
 Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中的脏页面写入磁盘，建议将直接IO插件用于写密集型或者混合式负载环境中。
 注意，无法为WAL文件直接开启直接I/O，但是开启直接I/O可以为WAL文件带来一点好处，就是WAL数据不会在操作系统的缓冲区缓存中存储过长时间，它会在下一次页面缓存扫描中被刷新（依赖于WAL模式），然后从页面缓存中删除。
-要启用直接I/O插件，需要将`ignite-direct-io-2.4.0.jar`和`jna-4.5.0.jar`加入应用的类路径，这些jar文件位于Ignite发行版的`libs/optional/ignite-direct-io`文件夹。另外，如果运行于独立模式，可以在运行`ignite.{sh|bat}`脚本前，将`ignite-direct-io`文件夹复制到`libs`文件夹中。
+要启用直接I/O插件，需要将`ignite-direct-io-2.4.0.jar`和`jna-4.5.0.jar`加入应用的类路径，这些jar文件位于Ignite二进制包的`libs/optional/ignite-direct-io`文件夹。另外，如果运行于独立模式，可以在运行`ignite.{sh|bat}`脚本前，将`ignite-direct-io`文件夹复制到`libs`文件夹中。
 要禁用直接I/O，可以将`IGNITE_DIRECT_IO_ENABLED`系统属性配置为`false`。
 相关的[Wiki页面](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-DirectI/O)有更多的细节。
 

@@ -266,9 +266,439 @@ System.out.println("Avg get time: " + cm.getAverageGetTime());
 要了解如何计算缓存的大小，可以参阅[内存使用量计算](#_1-3-内存使用量计算)。
 
 ## 3.指标体系
+Ignite的2.8.0版本引入了新的指标子系统，它使用户能够使用几个独立的、可插拔的指标导出器，用于和不同的第三方监控工具集成。
+
+下面是启用导出器的方法：
+
+Java配置：
+```java
+IgniteConfiguration cfg = new IgniteConfiguration();
+
+cfg.setMetricExporterSpi(
+  new JmxMetricExporterSpi(),
+  new SqlViewMetricExporterSpi());
+```
+Spring配置文件：
+```xml
+<bean class="org.apache.ignite.IgniteConfiguration">
+    ...
+    <property name="metricExporterSpi">
+        <list>
+            <bean class="org.apache.ignite.spi.metric.jmx.JmxMetricExporterSpi"/>
+        </list>
+    </property>
+    ...
+</bean>
+```
+所有指标都合并到指标注册表中。每个指标注册表都表示一些Ignite实体、进程或子系统，例如缓存、缓存组、事务处理器等。有关更多详细信息，请参见下面的`实体`章节，如果未指定其他指标，则指标值是本地节点的。
+
+对用户来说，以下导出器是直接可用的：
+
+ - `org.apache.ignite.spi.metric.jmx.JmxMetricExporterSpi`
+ - `org.apache.ignite.spi.metric.sql.SqlViewMetricExporterSpi`
+ - `org.apache.ignite.spi.metric.opencensus.OpenCensusMetricExporterSpi`
+ - `org.apache.ignite.spi.metric.log.LogExporterSpi`
+
+如果需要通过其他协议进行集成，可以考虑创建`org.apache.ignite.spi.metric.MetricExporterSpi`的自定义实现。
+### 3.1.导出器
+::: tip 注意
+导出器是在节点启动过程中配置的，无法在运行时修改。
+:::
+**JMX**
+
+导出器中的每个指标注册表都是一个独立的JMX bean，注册表中的每个指标，都会以JMX bean中的一个属性表示。
+
+*配置属性*
+
+ - `filter`：过滤不希望导出的指标注册表的谓词。
+
+**SQL视图**
+
+将所有的指标导出为一个SQL系统视图，视图名为`SYS.METRICS`。
+
+*列*
+
+ - `NAME`：指标名；
+ - `VALUE`：指标值；
+ - `DESCRIPTION`：指标描述
+
+*配置属性*
+
+ - `filter`：过滤不希望导出的指标注册表的谓词。
+
+**日志**
+
+每隔一段时间将所有的指标信息输出到Ignite的日志文件，日志级别为INFO，输出格式为`{metric_full_name}={metric_value}`。
+
+*配置属性*
+
+ - `filter`：过滤不希望导出的指标注册表的谓词；
+ - `period`：触发指标信息输出的时间间隔（毫秒）。
+
+**OpenCensus**
+
+这是一个Ignite与[OpenCensus](https://opencensus.io/)库集成的导出器，它会每隔一段时间将Ignite的指标信息输出到`MeasureMap`。
+
+::: tip 注意
+ 1. 如果要使用OpenCensus集成，需要引入`ignite-opencensus`包；
+ 2. 另外，需要配置OpenCensus的StatsCollector，来支持将指标输出到特定的系统，具体可以看[这个示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/opencensus/OpenCensusMetricsExporterExample.java)，还有OpenCensus的文档。
+:::
+
+*配置属性*
+
+ - `filter`：过滤不希望导出的指标注册表的谓词；
+ - `period`：触发指标信息输出的时间间隔（毫秒）；
+ - `sendInstanceName`：如果开启，在每个指标上会添加Ignite实例名的标签；
+ - `sendNodeId`：如果开启，在每个指标上会添加Ignite节点ID的标签；
+ - `sendConsistentId`：如果开启，在每个指标上会添加Ignite节点的唯一性ID的标签；
+
+### 3.2.指标管理
+下面的指标管理操作由`org.apache.ignite.mxbean.MetricsMXBean`实现：
+
+ - `resetMetrics`：将指标的当前值重置为默认值；
+ - `configureHitrate`：更改命中率时间间隔；
+ - `configureHistogram`：更改直方图范围。
+
+配置在节点重启后仍然有效，`configureHitrate`并且`configureHistogram`操作的影响是集群范围的。
+
+### 3.3.指标类型
+
+ - **指标，度量**：提供一些数值的简单指标，比如特定缓存执行的put操作统计；
+ - **命中率指标**：显示最近T毫秒内某些事件统计的指标，其中T是命中率时间间隔，时间间隔可以动态配置。比如最后一秒写入的数据页数；
+ - **直方图**：统计确定某些界限的事件的度量，边界可以动态配置。比如处理速度超过[100毫秒、250毫秒、500毫秒、更慢的请求]的请求计数。在JMX导出器中的直方图指标导出：每个直方图指标的间隔都作为单独的JMX bean属性导出，该属性的名称为`{mname}_{low_bound}_{high_bound}`。
+
+   - `mname`：指标名称；
+   - `low_bound`：边界的开始，第一个界限为0；
+   - `high_bound`：边界的结尾，inf为最后一个界限。
+
+边界为[10,100]的指标名称示例：
+
+ - `histogram_0_10`：小于10；
+ - `histogram_10_100`：10至100；
+ - `histogram_100_inf`：超过100。
+
+### 3.4.实体
+
+ - **指标**：提供通过固定算法更新的值的命名实体，当前值存储在指标中，并在运行时由Ignite内部代码更新。比如特定缓存的put操作统计，自节点启动以来已写入页面的统计等；
+ - **度量**：提供通过固定算法计算的值的命名实体，当前值未存储，按需计算；
+ - **指标注册表**：指标的命名集，指标在注册表中做了逻辑分组，以描述某个实体或子系统的所有方面；
+ - **指标导出器**：可以通过某些特定协议导出指标的Ignite SPI（`MetricExporterSPI`）实现。导出器通过`IgniteConfiguration#setMetricExporterSpi`配置，可以配置多个导出器，也可以提供自定义导出器。
+
+### 3.5.指标命名
+完整的指标名由两部分组成：注册表名和指标名，用点作为分隔符。
+
+指标完整名示例：
+
+ - `cache.my-cache.puts`：指标名包含`cache.my-cache`注册表中`my-cache`的put操作；
+ - `cache.my-other-cache.puts`：指标名包含`cache.my-other-cache`注册表中`my-other-cache`的put操作。
+
+#### 3.5.1.cache.{cache_name}.{near}
+该注册表包含了缓存的指标信息。
+
+该注册表名包括了缓存名。
+
+如果注册表表示近缓存，则添加`near`后缀。
+
+示例：
+
+ - `cache.default`：默认缓存的注册表；
+ - `cache.my-cache.near`：名为`my-cache`的近缓存的注册表。
+
+|名称|类型|描述|
+|---|---|---|
+|`CacheEvictions`|long|缓存的退出的总数|
+|`CacheGets`|long|缓存的读取总数|
+|`CacheHits`|long|缓存的命中总数|
+|`CacheMisses`|long|缓存的未命中总数|
+|`CachePuts`|long|缓存的写入总数|
+|`CacheRemovals`|long|缓存的删除总数|
+|`CacheTxCommits`|long|缓存的事务提交总数|
+|`CacheTxRollbacks`|long|缓存的事务回滚总数|
+|`CommitTime`|histogram|提交时间(纳秒)|
+|`CommitTimeTotal`|long|提交时间总数(纳秒)|
+|`EntryProcessorHits`|long|缓存中存在的键调用总数|
+|`EntryProcessorInvokeTimeNanos`|long|缓存调用总数（纳秒）|
+|`EntryProcessorMaxInvocationTime`|long|到目前为止的最大缓存调用执行时间|
+|`EntryProcessorMinInvocationTime`|long|到目前为止的最小缓存调用执行时间|
+|`EntryProcessorMisses`|long|缓存中不存在的键调用总数|
+|`EntryProcessorPuts`|long|触发更新的缓存调用总数|
+|`EntryProcessorReadOnlyInvocations`|long|不触发更新的缓存调用总数|
+|`EntryProcessorRemovals`|long|触发删除的缓存调用总数|
+|`EstimatedRebalancingKeys`|long|预估的再平衡键数量|
+|`GetTime`|histogram|读取时间（纳秒）|
+|`GetTimeTotal`|long|缓存读取总时间（纳秒）|
+|`IsIndexRebuildInProgress`|boolean|如果索引在重建过程中则为true|
+|`OffHeapEvictions`|long|堆外内存退出总量|
+|`OffHeapGets`|long|堆外内存读取请求总数|
+|`OffHeapHits`|long|堆外内存读取请求命中总数|
+|`OffHeapMisses`|long|堆外内存读取请求未命中总数|
+|`OffHeapPuts`|long|堆外内存写入请求总数|
+|`OffHeapRemovals`|long|堆外内存删除总数|
+|`PutTime`|histogram|写入时间（纳秒）|
+|`PutTimeTotal`|long|缓存写入总时间（纳秒）|
+|`QueryCompleted`|long|查询完成数|
+|`QueryExecuted`|long|查询执行数|
+|`QueryFailed`|long|查询失败数|
+|`QueryMaximumTime`|long|查询最长执行时间|
+|`QueryMinimalTime`|long|查询最短执行时间|
+|`QuerySumTime`|long|查询总时间|
+|`RebalanceClearingPartitionsLeft`|long|再平衡实际开始前需要清理的分区数|
+|`RebalanceStartTime`|long|再平衡开始时间|
+|`RebalancedKeys`|long|已经再平衡的键数量|
+|`RebalancingBytesRate`|long|预估的再平衡速度（字节）|
+|`RebalancingKeysRate`|long|预估的再平衡速度（键数量）|
+|`RemoveTime`|histogram|删除时间（纳秒）|
+|`RemoveTimeTotal`|long|缓存删除总时间（纳秒）|
+|`RollbackTime`|histogram|回滚时间（纳秒）|
+|`RollbackTimeTotal`|long|回滚总时间（纳秒）|
+|`TotalRebalancedBytes`|long|以再平衡字节数|
+
+#### 3.5.2.cacheGroups.{group_name}
+该注册表包含了缓存组的指标信息。
+
+该注册表名包括了缓存组名。
+
+示例：
+
+ - `cacheGroups.my-group`：名为`my-group`的缓存组的注册表。
+
+|名称|类型|描述|
+|---|---|---|
+|`AffinityPartitionsAssignmentMap`|java.util.Collections$EmptyMap|映射分区分配哈希表|
+|`Caches`|java.util.ArrayList|缓存列表|
+|`IndexBuildCountPartitionsLeft`|long|完成索引创建或重建所需处理的分区数|
+|`LocalNodeMovingPartitionsCount`|Integer|该缓存组在本地节点上状态为MOVING的分区数|
+|`LocalNodeOwningPartitionsCount`|Integer|该缓存组在本地节点上状态为OWNING的分区数|
+|`LocalNodeRentingEntriesCount`|long|该缓存组在本地节点上的状态为RENTING的分区中要退出的数据量|
+|`LocalNodeRentingPartitionsCount`|Integer|该缓存组在本地节点上的状态为RENTING的分区数|
+|`MaximumNumberOfPartitionCopies`|Integer|该缓存组中的所有分区的最大分区副本数|
+|`MinimumNumberOfPartitionCopies`|Integer|该缓存组中的所有分区的最小分区副本数|
+|`MovingPartitionsAllocationMap`|java.util.Collections$EmptyMap|集群中状态为MOVING的分区的分配哈希表|
+|`OwningPartitionsAllocationMap`|java.util.Collections$EmptyMap|集群中状态为OWNING的分区的分配哈希表|
+|`PartitionIds`|java.util.ArrayList|本地分区ID列表|
+|`SparseStorageSize`|long|组分配的存储空间，针对可能的稀疏性进行了调整（字节）|
+|`StorageSize`|long|为缓存组分配的存储空间（字节）|
+|`TotalAllocatedPages`|long|为缓存组分配的页面总数|
+|`TotalAllocatedSize`|long|为缓存组分配的内存总大小（字节）|
+
+#### 3.5.3.pme
+该注册表包含了分区映射交换过程的指标信息。
+
+|名称|类型|描述|
+|---|---|---|
+|`CacheOperationsBlockedDuration`|long|当前的PME过程缓存操作阻塞时间（毫秒）|
+|`CacheOperationsBlockedDurationHistogram`|histogram|当前的PME过程缓存操作阻塞直方图（毫秒）|
+|`Duration`|long|当前的PME持续时间（毫秒）|
+|`DurationHistogram`|histogram|当前的PME持续直方图（毫秒）|
+
+#### 3.5.4.io.statistics.cacheGroups.{group_name}
+该注册表包含了缓存组的IO统计信息。
+
+该注册表名包括了缓存名。
+
+示例：
+
+ - `io.statistics.cacheGroups.my-group`：名为`my-group`的缓存组的注册表。
+
+|名称|类型|描述|
+|---|---|---|
+|`LOGICAL_READS`|long|逻辑读数量|
+|`PHYSICAL_READS`|long|物理读数量|
+|`grpId`|Integer|组ID|
+|`name`|String|索引名|
+|`startTime`|long|统计数据收集开始时间|
+
+#### 3.5.5.io.statistics.sortedIndexes.{cache_name}.{index_name}
+该注册表包含了有序索引的IO统计信息。
+
+该注册表名包括了缓存名和索引名。
+
+示例：
+
+ - `io.statistics.sortedIndexes.my-cache.NAME_IDX`：名为`my-cache`的缓存及其名为`NAME_IDX`的索引的注册表。
+
+|名称|类型|描述|
+|---|---|---|
+|`LOGICAL_READS_INNER`|long|内部树节点的逻辑读取数|
+|`LOGICAL_READS_LEAF`|long|末端树节点的逻辑读取数|
+|`PHYSICAL_READS_INNER`|long|内部树节点的物理读取数|
+|`PHYSICAL_READS_LEAF`|long|末端树节点的物理读取数|
+|`indexName`|String|索引名|
+|`name`|String|缓存名|
+|`startTime`|long|统计数据收集开始时间|
+
+#### 3.5.6.io.statistics.hashIndexes.{cache_name}.{index_name}
+该注册表包含了哈希索引的IO统计信息。
+
+该注册表名包括了缓存名和索引名。
+
+示例：
+
+ - `io.statistics.hashIndexes.my-cache.HASH_IDX`：名为`my-cache`的缓存及其名为`HASH_IDX`的索引的注册表。
+
+|名称|类型|描述|
+|---|---|---|
+|`LOGICAL_READS_INNER`|long|内部树节点的逻辑读取数|
+|`LOGICAL_READS_LEAF`|long|末端树节点的逻辑读取数|
+|`PHYSICAL_READS_INNER`|long|内部树节点的物理读取数|
+|`PHYSICAL_READS_LEAF`|long|末端树节点的物理读取数|
+|`indexName`|String|索引名|
+|`name`|String|缓存名|
+|`startTime`|long|统计数据收集开始时间|
+
+#### 3.5.7.io.communication
+该注册表包含了和通信有关的IO统计信息。
+
+|名称|类型|描述|
+|---|---|---|
+|`OutboundMessagesQueueSize`|Integer|出站消息队列大小|
+|`SentMessagesCount`|Integer|发送消息数量|
+|`SentBytesCount`|long|发送字节数|
+|`ReceivedBytesCount`|long|接收字节数|
+|`ReceivedMessagesCount`|Integer|接收消息数量|
+
+#### 3.5.8.io.dataregion.{data_region_name}
+该注册表包含了和数据区有关的指标信息。
+
+该注册表名包括了数据区名。
+
+示例：
+
+ - `io.dataregion.my-region`：名为`my-region`的数据区。
+
+|名称|类型|描述|
+|---|---|---|
+|`AllocationRate`|long|rateTimeInternal期间的平均分配率（每秒页面数）|
+|`CheckpointBufferSize`|long|检查点缓冲区大小（字节）|
+|`DirtyPages`|long|内存中还没有同步到持久化存储的页面数|
+|`EmptyDataPages`|long|计算数据区中的空页面数，它只计算可重用的完全空闲的页面（比如包含在空闲列表的可重用桶中的页面）|
+|`EvictionRate`|long|退出率（每秒页面数）|
+|`LargeEntriesPagesCount`|long|完全被超过页面大小的大条目占用的页面数|
+|`OffHeapSize`|long|堆外内存大小（字节）|
+|`OffheapUsedSize`|long|堆外内存已使用大小（字节）|
+|`PagesFillFactor`|double|已用空间的百分比|
+|`PagesRead`|long|上次重启以来的页面读取数|
+|`PagesReplaceAge`|long|内存中的页面被持久化存储中的页面替换的平均期限（毫秒）|
+|`PagesReplaceRate`|long|内存中的页面被持久化存储中的页面替换的速率（每秒页面数）|
+|`PagesReplaced`|long|从上次重启以来的页面替换数|
+|`PagesWritten`|long|从上次重启以来的页面写入数|
+|`PhysicalMemoryPages`|long|物理内存中驻留的页面数|
+|`PhysicalMemorySize`|long|加载到内存中的页面总大小（字节）|
+|`TotalAllocatedPages`|long|分配的页面总数|
+|`TotalAllocatedSize`|long|数据区中分配的页面总大小（字节）|
+|`TotalThrottlingTime`|long|节流线程总时间（毫秒），Ignite会限制在检查点执行过程中生成脏页面的线程|
+|`UsedCheckpointBufferSize`|long|已使用的检查点缓冲区大小（字节）|
+
+#### 3.5.9.io.datastorage
+该注册表包含了和数据存储有关的指标信息。
+
+|名称|类型|描述|
+|---|---|---|
+|`CheckpointTotalTime`|long|检查点总时间|
+|`LastCheckpointCopiedOnWritePagesNumber`|long|上次检查点过程复制到临时检查点缓冲区的页面数|
+|`LastCheckpointDataPagesNumber`|long|上次检查点过程的数据页面写入数|
+|`LastCheckpointDuration`|long|上次检查点过程的持续时间（毫秒）|
+|`LastCheckpointFsyncDuration`|long|上次检查点过程的同步阶段的持续时间（毫秒）|
+|`LastCheckpointLockWaitDuration`|long|上次检查点过程的锁等待时间|
+|`LastCheckpointMarkDuration`|long|上次检查点过程的标记时间|
+|`LastCheckpointPagesWriteDuration`|long|上次检查点过程的页面写入时间|
+|`LastCheckpointTotalPagesNumber`|long|上次检查点过程的页面写入总数|
+|`SparseStorageSize`|long|为可能的稀疏性而调整的已分配存储空间（字节）|
+|`StorageSize`|long|分配的存储空间（字节）|
+|`WalArchiveSegments`|Integer|当前WAL存档中的WAL段数量|
+|`WalBuffPollSpinsRate`|long|WAL缓冲区轮询在上一个时间间隔内的自旋数|
+|`WalFsyncTimeDuration`|long|FSYNC模式持续时间|
+|`WalFsyncTimeNum`|long|FSYNC模式总数量|
+|`WalLastRollOverTime`|long|上一次WAL段翻转时间|
+|`WalLoggingRate`|long|上一个时间间隔内WAL记录的每秒平均写入量|
+|`WalTotalSize`|long|WAL文件存储总大小（字节）|
+|`WalWritingRate`|long|上一个时间间隔内WAL的每秒平均写入字节数|
+
+#### 3.5.10.sys
+该注册表包含了和JVM和CPU等有关的系统指标信息。
+
+|名称|类型|描述|
+|---|---|---|
+|`CpuLoad`|double|CPU负载|
+|`CurrentThreadCpuTime`|long|ThreadMXBean#getCurrentThreadCpuTime()|
+|`CurrentThreadUserTime`|long|ThreadMXBean#getCurrentThreadUserTime()|
+|`DaemonThreadCount`|Integer|ThreadMXBean#getDaemonThreadCount()|
+|`GcCpuLoad`|double|GC的CPU负载|
+|`PeakThreadCount`|Integer|ThreadMXBean#getPeakThreadCount()|
+|`SystemLoadAverage`|java.lang.Double|OperatingSystemMXBean#getSystemLoadAverage()|
+|`ThreadCount`|Integer|ThreadMXBean#getThreadCount()|
+|`TotalExecutedTasks`|long|已执行任务总数|
+|`TotalStartedThreadCount`|long|ThreadMXBean#getTotalStartedThreadCount()|
+|`UpTime`|long|RuntimeMxBean#getUptime()|
+|`memory.heap.committed`|long|MemoryUsage#getHeapMemoryUsage()#getCommitted()|
+|`memory.heap.init`|long|MemoryUsage#getHeapMemoryUsage()#getInit()|
+|`memory.heap.max`|long|MemoryUsage#getHeapMemoryUsage()#getMax()|
+|`memory.heap.used`|long|MemoryUsage#getHeapMemoryUsage()#getUsed()|
+|`memory.nonheap.committed`|long|MemoryUsage#getNonHeapMemoryUsage()#getCommitted()|
+|`memory.nonheap.init`|long|MemoryUsage#getNonHeapMemoryUsage()#getInit()|
+|`memory.nonheap.max`|long|MemoryUsage#getNonHeapMemoryUsage()#getMax()|
+|`memory.nonheap.used`|long|MemoryUsage#getNonHeapMemoryUsage()#getUsed()|
+
+#### 3.5.11.tx
+该注册表包含了和事务有关的指标信息。
+
+|名称|类型|描述|
+|---|---|---|
+|`AllOwnerTransactions`|java.util.HashMap|本地节点持有的事务哈希表|
+|`LockedKeysNumber`|long|当前节点锁定的键数量|
+|`OwnerTransactionsNumber`|long|当前节点发起的正在运行的事务数|
+|`TransactionsHoldingLockNumber`|long|至少锁定一个键的正在运行的事务数|
+|`LastCommitTime`|long|上次提交时间|
+|`nodeSystemTimeHistogram`|histogram|以直方图表示的节点事务系统时间|
+|`nodeUserTimeHistogram`|histogram|以直方图表示的节点事务用户时间|
+|`LastRollbackTime`|long|上次回滚时间|
+|`totalNodeSystemTime`|long|节点的事务系统总时间|
+|`totalNodeUserTime`|long|节点的事务用户总时间|
+|`txCommits`|Integer|提交事务数|
+|`txRollbacks`|Integer|回滚事务数|
+
+#### 3.5.12.compute.jobs
+该注册表包含了和计算作业有关的指标信息。
+
+|名称|类型|描述|
+|---|---|---|
+|`Active`|long|当前正在执行的作业数|
+|`Canceled`|long|当前正在运行的已取消作业数|
+|`ExecutionTime`|long|作业执行总时间|
+|`Finished`|long|已完成作业数|
+|`Rejected`|long|在最近的冲突解决操作之后被拒绝的作业数|
+|`Started`|long|已启动作业数|
+|`Waiting`|long|当前等待执行的作业数|
+|`WaitingTime`|long|作业花在等待上的总时间|
+
+#### 3.5.13.threadPools.{thread_pool_name}
+该注册表包含了和线程池有关的指标信息。
+
+该注册表名包含了线程池名。
+
+示例：
+
+ - `threadPools.StripedExecutor`：名为StripedExecutor的线程池
+
+|名称|类型|描述|
+|---|---|---|
+|`ActiveCount`|long|正在执行任务的线程的近似数量|
+|`CompletedTaskCount`|long|已完成执行的任务近似总数|
+|`CorePoolSize`|long|核心线程数|
+|`KeepAliveTime`|long|线程保持活动时间，即超过核心线程池大小的线程在被终止之前可能保持空闲的时间|
+|`LargestPoolSize`|long|线程池中的并发最大线程数|
+|`MaximumPoolSize`|long|最大允许线程数|
+|`PoolSize`|long|线程池当前线程数|
+|`QueueSize`|long|当前执行队列大小|
+|`RejectedExecutionHandlerClass`|String|当前拒绝处理器类名|
+|`Shutdown`|boolean|如果该执行器已关闭则为true|
+|`TaskCount`|long|已计划执行的任务近似总数|
+|`Terminated`|boolean|如果关闭后所有任务都已完成则为true|
+|`Terminating`|long|如果终止但尚未终止则为true|
+|`ThreadFactoryClass`|String|用于创建新线程的线程工厂类名|
 
 ## 4.系统视图
-2.8版本引入了新的系统视图子系统，主要目标是使用户能够通过几个独立的可插拔的导出器查看Ignite内部实体的状态。
+2.8.0版本引入了新的系统视图子系统，主要目标是使用户能够通过几个独立的可插拔的导出器查看Ignite内部实体的状态。
 
 传统的RDBMS用户都熟悉系统视图的概念，Ignite系统视图提供了与RDBMS系统视图相同的方式。主要区别是，只要实现了相应协议的导出器，均可访问Ignite系统视图，目前是直接支持SQL和JMX。
 

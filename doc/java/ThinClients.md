@@ -3618,7 +3618,7 @@ npm link
 npm link apache-ignite-client #linking examples (optional)
 ```
 #### 4.1.3.运行示例
-为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)。
+为了方便入门，这里使用的是随着每个Ignite版本发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)。
 
 1.运行Ignite的服务端：
 
@@ -4361,7 +4361,7 @@ $ pip install pyignite
 ```
 **运行一个示例**
 
-安装完`pyignite`之后，为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/python/examples)。
+安装完`pyignite`之后，为了方便入门，这里使用的是随着每个Ignite版本发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/python/examples)。
 
 1.运行Ignite的服务端：
 
@@ -5382,7 +5382,7 @@ require_once "<local_ignite_path>/vendor/autoload.php";
 ```
 **运行一个示例**
 
-安装完PHP瘦客户端后，为了方便入门，这里使用的是随着每个Ignite发行版发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/php/examples)。
+安装完PHP瘦客户端后，为了方便入门，这里使用的是随着每个Ignite版本发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/php/examples)。
 
 1.运行Ignite的服务端：
 

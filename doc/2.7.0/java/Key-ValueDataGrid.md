@@ -224,7 +224,7 @@ IgniteCache igniteCache = (IgniteCache) cache;
 
 `分区丢失策略`：当某些分区由于与之对应的主或备节点故障而丢失时，可以配置缓存的工作方式。
 
-`主节点和备份副本`：在`分区`模式中，数据的主键归属的节点被称为主节点，对于缓存的数据，可以可选地配置任意数量的备份节点。
+`主备副本`：在`分区`模式中，数据的主键归属的节点被称为主节点，对于缓存的数据，可以可选地配置任意数量的备份节点。
 
 `缓存组`：可以在单个缓存组中对缓存进行配置，这样可以共享各种内部结构，从而提高拓扑事件的处理能力以及减少总体内存的使用。
 
@@ -379,7 +379,7 @@ ignite.resetLostPartitions(Arrays.asList("cache1", "cache2"));
 // check that there are no more lost partitions
 boolean lostPartiion = cache.lostPartitions().isEmpty()
 ```
-### 3.3.主节点和备份副本
+### 3.3.主备副本
 #### 3.3.1.概述
 在`分区`模式下，数据的主键归属的节点叫做这些主键的主节点，对于缓存的数据，也可以可选地配置任意多个备份节点。如果副本数量大于0，那么Ignite会自动地为每个独立的键赋予备份节点，比如，如果副本数量为1，那么数据网格内缓存的每个键都会有2个备份，一主一备。
 
@@ -425,7 +425,7 @@ cfg.setCacheConfiguration(cacheCfg);
 Ignition.start(cfg);
 ```
 #### 3.3.3.同步和异步备份
-`CacheWriteSynchronizationMode`枚举可以用来配置主节点和备份部分的同步和异步更新。写同步模式告诉Ignite在完成写或者提交之前客户端节点是否要等待来自远程节点的响应。
+`CacheWriteSynchronizationMode`枚举可以用来配置主备之间同步和异步更新。写同步模式告诉Ignite在完成写或者提交之前客户端节点是否要等待来自远程节点的响应。
 
 同步写模式可以设置为下面的三种之一：
 
@@ -1009,7 +1009,7 @@ qry.setLocalListener(names -> {
 
 一旦客户端确认一个事件已经收到，主节点和备份节点会从它们的备份队列中删除该事件的记录。
 ### 6.3.示例
-关于描述持续查询如何使用的完整示例，已经随着Ignite的发行版一起发布，名为`CacheContinuousQueryExample`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryExample.java)上也有。
+关于描述持续查询如何使用的完整示例，已经随着Ignite的二进制包一起发布，名为`CacheContinuousQueryExample`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryExample.java)上也有。
 ## 7.关联并置
 数据和计算以及数据和数据的并置可以显著地提升应用的性能和可扩展性。
 ### 7.1.数据与数据的并置
@@ -1195,7 +1195,7 @@ cfg.setCacheConfiguration(cacheCfg);
 
 有时将一个分区的主备副本放在不同的机架上也是很有用的。这时，可以为每个节点赋予一个特别的属性然后在`RendezvousAffinityFunction`上使用`AffinityBackupFilter`属性来排除同一个机架中被分配用于备份副本的若干节点。
 
-此外，可以用`ClusterNodeAttributeAffinityBackupFilter`创建`AffinityBackupFilter`，该`AffinityBackupFilter`根据节点对某些环境变量（例如`AVAILABILITY_ZONE`）的值来分离主节点和备份副本。有关如何配置此属性的更多信息，请参考`ClusterNodeAttributeAffinityBackupFilter.java`类的[javadoc](https://ignite.apache.org/releases/latest/javadoc/index.html)。
+此外，可以用`ClusterNodeAttributeAffinityBackupFilter`创建`AffinityBackupFilter`，该`AffinityBackupFilter`根据节点对某些环境变量（例如`AVAILABILITY_ZONE`）的值来分离主备副本。有关如何配置此属性的更多信息，请参考`ClusterNodeAttributeAffinityBackupFilter.java`类的[javadoc](https://ignite.apache.org/releases/latest/javadoc/index.html)。
 
 ### 7.5.关联键映射器
 `CacheAffinityKeyMapper`是一个可插拔的API，负责为一个缓存键获取关联键。通常缓存键本身就用于关联键，不过为了与其它的缓存键并置，有时改变一个缓存键的关联是很重要的。
@@ -1786,7 +1786,7 @@ Ignition.start(cfg);
 在内部，系统线程池广泛用于和缓存有关的所有操作（put，get等），SQL引擎和其它模块，因此将`IgniteConfiguration.setRebalanceThreadPoolSize`设置为一个很大的值会显著提高再平衡的性能，但是会影响应用的性能。
 :::
 
-### 10.4.再平衡消息限流
+### 10.4.再平衡消息节流
 当再平衡器将数据从一个节点传输到另一个节点时，它会将整个数据集拆分为多个批次然后将每一个批次作为一个单独的消息进行发送。如果数据集很大那么就会有很多的消息要发送，CPU和网络就会过度的消耗，这时在再平衡消息之间进行等待是合理的，以使由于再平衡过程导致的性能下降冲击最小化。这个时间间隔可以通过`CacheConfiguration`的`rebalanceThrottle`属性进行控制，它的默认值是0，意味着在消息之间没有暂停，注意单个消息的大小也可以通过`rebalanceBatchSize`属性进行设置(默认值是512K)。
 
 比如，如果希望再平衡器间隔100ms每个消息发送2MB数据，需要提供如下的配置：
@@ -1831,7 +1831,7 @@ Ignition.start(cfg);
 |`setRebalanceMode`|分布式缓存的再平衡模式，细节可以参照再平衡模式章节|ASYNC|
 |`setRebalanceDelay`|当节点加入或者离开（故障）集群时，再平衡应该自动启动的延迟时间（毫秒），如果打算在节点离开集群后重启节点，再平衡也应该推迟，如果打算在同时启动多个节点，或者一个个启动节点的过程中，不进行再平衡，也可以推迟，只到所有节点都启动完成再进行。|0，无延迟|
 |`setRebalanceBatchSize`|单个再平衡消息的大小（byte），再平衡算法会在发送数据之前将每个节点的整个数据集拆分成多个批次。|512K|
-|`setRebalanceThrottle`|可以看上面的[再平衡消息限流](#_3-10-4-再平衡消息限流)章节。|0，无间隔|
+|`setRebalanceThrottle`|可以看上面的[再平衡消息节流](#_3-10-4-再平衡消息节流)章节。|0，无间隔|
 |`setRebalanceOrder`|要完成的再平衡的顺序，只有同步和异步再平衡模式的缓存才可以将再平衡顺序设置为非0值，具有更小值的缓存再平衡会被首先完成，再平衡默认是无序的|0|
 |`setRebalanceBatchesPrefetchCount`|为了达到更好的性能，数据提供者节点会在再平衡开始时提供不止一个批次然后在下一个请求时提供一个新的批次。这个方法会设置再平衡开始时数据提供者节点产生的批次的数量|2|
 |`setRebalanceTimeout`|节点间正在交换的等待再平衡消息的超时时间|10秒|

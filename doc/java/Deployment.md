@@ -203,7 +203,7 @@ Apache Mesos是一个集群管理器，它提供了一个通用运行环境以�
 要了解Apache Mesos的更多信息，请参照：[http://mesos.apache.org/](http://mesos.apache.org/)
 
 ### 5.2.Ignite Mesos框架
-常规部署Apache Ignite集群需要下载Apache Ignite发行版，修改配置参数以及启动节点。Apache Ignite Mesos框架由`调度器`和`任务`组成，可以极大地简化集群的部署。
+常规部署Apache Ignite集群需要下载Apache Ignite二进制包，修改配置参数以及启动节点。Apache Ignite Mesos框架由`调度器`和`任务`组成，可以极大地简化集群的部署。
 
  - `调度器`：调度器启动时将自己在Mesos主节点上注册，注册成功之后调度器就会开始处理从Mesos主节点到使用资源的Ignite节点的资源请求，调度器会维护Ignite集群所需（并且可用）的所有资源水平（CPU，内存等）；
  - `任务`：在Mesos从节点上启动Ignite节点。
@@ -310,7 +310,7 @@ IGNITE_VERSION=1.7.0
 |`IGNITE_MIN_CPU_PER_NODE`|要运行Ignite节点所需的CPU核数的最小值|1|4|
 |`IGNITE_MIN_MEMORY_PER_NODE`|要运行Ignite节点所需的内存的最小值（M）|256|1024|
 |`IGNITE_VERSION`|节点要运行的Ignite的版本|latest|1.6.0|
-|`IGNITE_WORK_DIR`|保存Ignite发行版的|ignite-release|/opt/ignite/|
+|`IGNITE_WORK_DIR`|保存Ignite二进制包的目录|ignite-release|/opt/ignite/|
 |`IGNITE_XML_CONFIG`|Apache Ignite配置文件的路径|无|/opt/ignite/ignite-config.xml|
 |`IGNITE_CONFIG_XML_URL`|Apache Ignite配置文件的URL|无|https://example.com/default-config.xml|
 |`IGNITE_USERS_LIBS`|要添加到类路径的库文件的路径|无|/opt/libs/|
@@ -378,8 +378,8 @@ yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar clu
 |名称|描述|默认值|示例|
 |---|---|---|---|
 |`IGNITE_XML_CONFIG`|指向Apache Ignite配置文件的HDFS路径|无|/opt/ignite/ignite-config.xml|
-|`IGNITE_WORKING_DIR`|用于保存Ignition发行版的目录|./ignite-release|/opt/ignite/|
-|`IGNITE_RELEASES_DIR`|保存Ignite发行版的HDFS路径|/ignite/releases/|/ignite-rel/|
+|`IGNITE_WORKING_DIR`|用于保存Ignite二进制包的目录|./ignite-release|/opt/ignite/|
+|`IGNITE_RELEASES_DIR`|保存Ignite二进制包的HDFS路径|/ignite/releases/|/ignite-rel/|
 |`IGNITE_USERS_LIBS`|要添加到CLASSPATH的库文件的HDFS路径|无|/opt/libs/|
 |`IGNITE_MEMORY_PER_NODE`|每个Ignite节点占用的内存的大小（M），这个是Java堆的大小，包括了堆内缓存（如果使用了堆内缓存）。|2048|1024|
 |`IGNITE_MEMORY_OVERHEAD_PER_NODE`|所有数据区必要的内存量，包括用于处理JVM本身的负载、用于存储数据的节点，都需要调整，不仅仅是计算。YARN用于容器运行Ignite节点的必要内存量是IGNITE_MEMORY_PER_NODE和IGNITE_MEMORY_OVERHEAD_PER_NODE之和。|IGNITE_MEMORY_PER_NODE * 0.10，最小值384|17408|

@@ -955,9 +955,9 @@ Ignite的Cassandra模块提供了一组负载测试，它可以模拟Ignite和Ca
 这种类型的度量有助于更好地理解系统的可度量性。
 
 ### 5.1.构建负载测试
-Cassandra模块的负载测试是作为模块测试源代码的一部分提供的，因此首先需要从源代码构建Ignite发行版。
+Cassandra模块的负载测试是作为模块测试源代码的一部分提供的，因此首先需要从源代码构建Ignite二进制包。
 
-从源代码构建Ignite发行版之后，会发现在Cassandra模块目录下有`target/tests-package`目录以及`target/ignite-cassandra-tests-<version>.zip`，它是这个目录的zip压缩包。测试包包含了马上就可以用的Ignite Cassandra模块的负载测试应用，它的结构如下：
+从源代码构建Ignite二进制包之后，会发现在Cassandra模块目录下有`target/tests-package`目录以及`target/ignite-cassandra-tests-<version>.zip`，它是这个目录的zip压缩包。测试包包含了马上就可以用的Ignite Cassandra模块的负载测试应用，它的结构如下：
 
  - **bootstrap**：目录包括了AWS部署框架的引导脚本；
  - **lib**：目录包括了Ignite和Cassandra通信所有必要的**jar**文件，如果要为自定义的键/值类运行负载测试，需要为它们创建单独的**jar**文件然后把它放在这个目录下（下一章会详细描述）；

@@ -199,7 +199,7 @@ cp $HADOOP_HOME/etc/hadoop/mapred-site.xml .
   ...
 </configuration>
 ```
-作为替代，也可以使用Ignite发行版自带的配置文件，位于`$IGNITE_HOME/config/hadoop`目录。
+作为替代，也可以使用Ignite二进制包自带的配置文件，位于`$IGNITE_HOME/config/hadoop`目录。
 ### 3.3.使用Ignite Hadoop加速器
 到这一步安装已经完成然后就可以启动运行作业或者处理IGFS了。
 
@@ -324,7 +324,7 @@ cp /usr/hdp/current/hadoop-client/etc/mapred-site.xml .
   ...
 </configuration>
 ```
-作为替代，也可以使用Ignite发行版自带的配置文件，位于`$IGNITE_HOME/config/hadoop`目录。
+作为替代，也可以使用Ignite二进制包自带的配置文件，位于`$IGNITE_HOME/config/hadoop`目录。
 ### 4.3.使用Ignite Hadoop加速器
 到这一步安装已经完成然后就可以启动运行作业或者处理IGFS了。
 
@@ -447,7 +447,7 @@ cp /usr/hdp/current/hadoop-client/etc/mapred-site.xml .
   ...
 </configuration>
 ```
-作为替代，也可以使用Ignite发行版自带的配置文件，位于`$IGNITE_HOME/config/hadoop`目录。
+作为替代，也可以使用Ignite二进制包自带的配置文件，位于`$IGNITE_HOME/config/hadoop`目录。
 ### 5.3.使用Ignite Hadoop加速器
 到这一步安装已经完成然后就可以启动运行作业或者处理IGFS了。
 

@@ -51,7 +51,7 @@ Ignite的机器学习能够对节点的故障容错。这意味着如果在学�
 *算法*：Ignite的机器学习支持使用分区化的数据集自定义预处理，同时也有默认的预处理器。
 
 ### 1.3.入门
-机器学习入门的最快方式是构建和运行示例代码，学习它的输出和代码，机器学习的的示例代码位于Ignite发行版的`examples`文件夹中。
+机器学习入门的最快方式是构建和运行示例代码，学习它的输出和代码，机器学习的的示例代码位于Ignite二进制包的`examples`文件夹中。
 
 下面是相关的步骤：
 
@@ -77,7 +77,7 @@ Ignite的机器学习能够对节点的故障容错。这意味着如果在学�
 
 Ignite机器学习最新版的jar包已经上传到Maven仓库，如果需要获取该jar包然后部署到特定的环境中，那么要么从Maven仓库中进行下载，或者从源代码进行构建，如果要从源代码进行构建，按照如下步骤进行操作：
 
- - 下载Ignite最新发行版的源代码；
+ - 下载Ignite最新版本的源代码；
  - 清空Maven的本地仓库（这个是避免旧版本的可能影响）；
  - 从工程的根目录构建并安装Ignite；
 ```bash
@@ -149,7 +149,7 @@ LinearRegressionModel mdl = trainer.fit(
 double prediction = mdl.apply(preprocessor.apply(coordinates));
 ```
 ### 2.3.示例
-要了解归一化预处理器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/NormalizationExample.java)，该示例也会随着每个Ignite发行版进行发布。
+要了解归一化预处理器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/preprocessing/NormalizationExample.java)，该示例也会随着每个Ignite版本进行发布。
 ### 2.4.二值化预处理器
 二值化是将数值特征阈值化为二元（0/1）特征的过程。大于阈值的特征值被二值化为1.0，等于或小于阈值的值被二值化为0.0。
 
@@ -348,7 +348,7 @@ int numerOfRows = dataset.compute(
 dataset.close();
 ```
 ### 3.3.示例
-要了解分区化的数据集在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/dataset/AlgorithmSpecificDatasetExample.java)，该实例也会随着每个Ignite发行版进行发布。
+要了解分区化的数据集在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/dataset/AlgorithmSpecificDatasetExample.java)，该示例也会随着每个Ignite版本进行发布。
 ## 4.线性回归
 ### 4.1.概述
 Ignite支持普通最小二乘线性回归算法，这是最基本也是最强大的机器学习算法之一，本文会说明该算法的工作方式以及Ignite是如何实现的。
@@ -466,7 +466,7 @@ LinearRegressionModel mdl = trainer.fit(
 double prediction = mdl.apply(coordinates);
 ```
 ### 4.4.示例
-要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/regression/linear)，该实例也会随着每个Ignite发行版进行发布。
+要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/regression/linear)，该示例也会随着每个Ignite版本进行发布。
 ## 5.K-均值聚类
 在Ignite的机器学习组件中，提供了一个K-均值聚类算法的实现。
 ### 5.1.模型
@@ -509,7 +509,7 @@ KMeansModel knnMdl = trainer.fit(
 );
 ```
 ### 5.3.示例
-要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/clustering)，该实例也会随着每个Ignite发行版进行发布。
+要了解线性回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/clustering)，该示例也会随着每个Ignite版本进行发布。
 
 训练数据集是鸢尾花数据集的一个子集（具有标签1和标签2，它们是线性可分离的两类数据集），可以从[UCL机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
 ## 6.遗传算法
@@ -872,7 +872,7 @@ MultilayerPerceptron mlp = trainer.fit(
 Matrix prediction = mlp.apply(coordinates);
 ```
 ### 7.4.示例
-要了解多层感知在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/nn/MLPTrainerExample.java)，该实例也会随着每个Ignite发行版进行发布。
+要了解多层感知在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/nn/MLPTrainerExample.java)，该示例也会随着每个Ignite版本进行发布。
 ## 8.决策树
 ### 8.1.概述
 决策树是监督学习中一个简单而强大的模型。其主要思想是将特征空间分割成区域，每个区域中的值变化不大。一个区域中的值变化的度量被称为区域的纯度。
@@ -983,7 +983,7 @@ DecisionTreeNode mdl = trainer.fit(
 double prediction = mdl.apply(x);
 ```
 ### 8.4.示例
-要了解决策树在实践中是如何使用的，可以看这个[分类示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeClassificationTrainerExample.java)和[回归示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeRegressionTrainerExample.java)，这些实例也会随着每个Ignite发行版进行发布。
+要了解决策树在实践中是如何使用的，可以看这个[分类示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeClassificationTrainerExample.java)和[回归示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/DecisionTreeRegressionTrainerExample.java)，这些示例也会随着每个Ignite版本进行发布。
 ## 9.k-NN分类
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
@@ -1019,7 +1019,7 @@ KNNClassificationModel knnMdl = trainer.fit(
 double prediction = knnMdl.apply(vectorizedData);
 ```
 ### 9.2.示例
-要了解k-NN分类在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/classification)，该实例也会随着每个Ignite发行版进行发布。
+要了解k-NN分类在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/classification)，该示例也会随着每个Ignite版本进行发布。
 
 训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
 ## 10.k-NN回归
@@ -1055,7 +1055,7 @@ KNNRegressionModel knnMdl = (KNNRegressionModel) trainer.fit(
 double prediction = knnMdl.apply(vectorizedData);
 ```
 ### 10.2.示例
-要了解k-NN回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/regression)，该实例也会随着每个Ignite发行版进行发布。
+要了解k-NN回归在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/regression)，该示例也会随着每个Ignite版本进行发布。
 
 训练数据集是可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载的鸢尾花数据集。
 ## 11.SVM二元分类
@@ -1110,7 +1110,7 @@ SVMLinearBinaryClassificationModel mdl = trainer.fit(
 );
 ```
 ### 11.3.示例
-要了解SVM线性分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/binary/SVMBinaryClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
+要了解SVM线性分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/binary/SVMBinaryClassificationExample.java)，该示例也会随着每个Ignite版本进行发布。
 
 训练数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载，其是鸢尾花数据集的子集（具有标签1和标签2的分类，它们是线性可分离的两类数据集）。
 ## 12.SVM多类分类
@@ -1149,7 +1149,7 @@ SVMLinearMultiClassClassificationModel mdl = trainer.fit(
 );
 ```
 ### 12.3.示例
-要了解SVM线性多类分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/multiclass/SVMMultiClassClassificationExample.java)，该实例也会随着每个Ignite发行版进行发布。
+要了解SVM线性多类分类器在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/svm/multiclass/SVMMultiClassClassificationExample.java)，该示例也会随着每个Ignite版本进行发布。
 
 预处理的分类数据集可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)加载。
 
@@ -1180,7 +1180,7 @@ double[] scores = scoreCalculator.score(
 ```
 在本例中，指定了训练器和指标作为参数，之后传递了常规的训练参数，比如Ignite实例的引用、缓存、特征和标签的提取器，最后指定了折叠的数量。此方法返回一个数组，该数组包含训练集的所有可能拆分的指标。
 ### 13.3.示例
-如果要了解交叉验证在实践中如何使用，可以尝试每个Ignite发布版以及GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/selection/cv/CrossValidationExample.java)程序，以及机器学习教程的[第8个步骤](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/tutorial)。
+如果要了解交叉验证在实践中如何使用，可以尝试每个Ignite二进制包以及GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/selection/cv/CrossValidationExample.java)程序，以及机器学习教程的[第8个步骤](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/ml/tutorial)。
 
 ## 14.逻辑回归
 ### 14.1.二元分类
@@ -1243,7 +1243,7 @@ LogisticRegressionModel mdl = trainer.fit(
 ```
 所有属性将针对每对一对所有`LogRegressionMultiClassTrainer`进行传播。
 ### 14.5.示例
-要了解`LogRegressionMultiClassModel`在实践中是如何使用的，请尝试这个GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/regression/logistic/multiclass/LogRegressionMultiClassClassificationExample.java)，它也会随着每个Ignite发行版一起发布。预处理的Glass数据集来自[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/Glass+Identification)。
+要了解`LogRegressionMultiClassModel`在实践中是如何使用的，请尝试这个GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/regression/logistic/multiclass/LogRegressionMultiClassClassificationExample.java)，它也会随着每个Ignite版本一起发布。预处理的Glass数据集来自[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/Glass+Identification)。
 
 ## 15.随机森林
 ### 15.1.概述
@@ -1295,7 +1295,7 @@ ModelsComposition rf = trainer.fit(
 );
 ```
 ### 15.4.示例
-要了解如何在实践中使用随机森林分类器，可以尝试这个GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/randomforest/RandomForestClassificationExample.java)，它也会随着每个Ignite发行版一起发布。在这个例子中，使用了一个葡萄酒识别数据集，该数据集和数据的描述可从[UCI机器学习存储库](https://archive.ics.uci.edu/ml/datasets/wine)获得。
+要了解如何在实践中使用随机森林分类器，可以尝试这个GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/randomforest/RandomForestClassificationExample.java)，它也会随着每个Ignite版本一起发布。在这个例子中，使用了一个葡萄酒识别数据集，该数据集和数据的描述可从[UCI机器学习存储库](https://archive.ics.uci.edu/ml/datasets/wine)获得。
 ## 16.梯度增强
 ### 16.1.概述
 梯度增强是一种产生弱预测模型[集合形式](https://en.wikipedia.org/wiki/Ensemble_learning)预测模型的机器学习算法。梯度增强算法试图解决函数空间中每个函数都是模型的学习样本的最小化误差问题。这个组合中的每个模型都试图预测特征空间中点的误差梯度，并且这些预测将用一些权重求和以建模答案。该算法可用于回归和分类问题。更多信息可以参阅[维基百科](https://en.wikipedia.org/wiki/Gradient_boosting)。
@@ -1344,7 +1344,7 @@ GDBModel mdl = trainer.fit(
 );
 ```
 ### 16.4.示例
-要了解在实践中如何使用`GDB`分类器，可以尝试GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/boosting/GDBOnTreesClassificationTrainerExample.java)，它也会随着每个Ignite发行版一起发布。
+要了解在实践中如何使用`GDB`分类器，可以尝试GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/boosting/GDBOnTreesClassificationTrainerExample.java)，它也会随着每个Ignite版本一起发布。
 ## 17.模型更新
 ### 17.1.概述
 Ignite机器学习中的模型更新接口使用之前训练过的模型的状态，支持在新数据上对已培训模型的重新学习。此接口表示为`DatasetTrainer`类，它以已学习过的模型作为第一个参数重复训练：
@@ -1441,4 +1441,4 @@ NNClassificationModel knnMdl = trainer.fit(
  .withStrategy(NNStrategy.WEIGHTED);
 ```
 ### 18.4.示例
-要了解`ANNClassificationModel`在实践中是如何使用的，可以尝试GitHub上的这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/ANNClassificationExample.java)，它也会随着每个Ignite发行版一起发布。训练数据集是鸢尾花数据集，可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)获取。
+要了解`ANNClassificationModel`在实践中是如何使用的，可以尝试GitHub上的这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/knn/ANNClassificationExample.java)，它也会随着每个Ignite版本一起发布。训练数据集是鸢尾花数据集，可以从[UCI机器学习库](https://archive.ics.uci.edu/ml/datasets/iris)获取。

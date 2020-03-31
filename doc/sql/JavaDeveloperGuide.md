@@ -70,7 +70,7 @@ cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
            " values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
 ### 1.3.示例
-Ignite的发布版包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
+Ignite的二进制包包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
 ## 2.模式和索引
 ### 2.1.概述
 不管是通过[注解](#_7-2-2-基于注解的配置)或者通过[QueryEntity](#_7-2-3-基于queryentity的配置)的方式，表和索引建立之后，它们所属的模式名为`CacheConfiguration`对象中配置的缓存名，也可以使用`CacheConfiguration.setSqlSchema`方法进行修改。

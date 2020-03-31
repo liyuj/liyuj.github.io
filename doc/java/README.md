@@ -104,7 +104,7 @@ Apache Ignite官方在如下环境中进行了测试：
 
 ### 3.3.启动第一个Ignite集群
 
-**使用二进制发行版**
+**使用二进制包**
 
 可以从下面的步骤开始：
 
@@ -184,7 +184,7 @@ Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于S
 关于如何包含个别的ignite maven模块的更多信息，可以参考[Maven设置](#_1-4-maven配置)章节。
 :::
 
-每个发布版中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
+每个二进制包中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
 
 ### 3.5.第一个SQL应用
 下面会创建两张表及其索引，分别为`City`表和`Person`表，分别表示居住在城市中的人，并且城市中会有很多的人，通过WITH子句然后指定`affinityKey=city_id`，可以将人对象和其居住的城市对象并置在一起。
@@ -1560,7 +1560,7 @@ Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/c
 </bean>
 ```
 ### 11.3.Log4j
-如果在启动独立集群节点时要使用Log4j模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用Log4j模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml
@@ -1604,7 +1604,7 @@ ignite.log().info("Info Message Logged!");
 Log4j支持运行时配置，即配置文件的修改无需应用重启即可生效。
 :::
 ### 11.4.Log4j2
-如果在启动独立集群节点时要使用Log4j2模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j2`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用Log4j2模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j2`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml
@@ -1648,7 +1648,7 @@ ignite.log().info("Info Message Logged!");
 Log4j2支持运行时配置，即配置文件的修改无需应用重启即可生效。
 :::
 ### 11.5.JCL
-如果在启动独立集群节点时要使用JCL模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-jcl`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用JCL模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-jcl`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml
@@ -1690,7 +1690,7 @@ ignite.log().info("Info Message Logged!");
 注意JCL只是简单地将日志消息转发给底层的日志系统，这需要正确的配置，具体请参见[JCL官方文档](https://commons.apache.org/proper/commons-logging/guide.html#Configuration)。比如要使用Log4j，类路径中需要添加必要的库文件。
 :::
 ### 11.6.SLF4J
-如果在启动独立集群节点时要使用SLF4J模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-slf4j`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用SLF4J模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-slf4j`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml

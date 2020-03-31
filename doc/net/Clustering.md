@@ -714,7 +714,7 @@ class HelloAction : IComputeAction
 .NET不允许卸载程序集，只能是`AppDomain`作为整体卸载所有的程序集。当前可用的`CurrentAppDomain`模式使用现有的AppDomain，这意味着在当前AppDomain存在时，所有对等部署的程序集将保持加载状态，这可能会导致内存使用增加。
 
 ### 7.3.示例
-二进制发行版中有`PeerAssemblyLoadingExample`，具体可以参见源代码。
+二进制包中有`PeerAssemblyLoadingExample`，具体可以参见源代码。
 
 下面是使用NuGet测试程序集加载的方法：
 

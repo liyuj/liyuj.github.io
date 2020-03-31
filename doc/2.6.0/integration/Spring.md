@@ -293,4 +293,4 @@ System.out.println("\n>>> Top Person with surname 'Smith': " +
 		topPerson.getValue());
 ```
 ### 2.6.示例
-[GitHub](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/springdata)上有完整的示例，也可以在Ignite发行版的`examples`文件夹中找到。
+[GitHub](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/springdata)上有完整的示例，也可以在Ignite二进制包的`examples`文件夹中找到。

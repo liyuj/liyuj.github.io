@@ -289,7 +289,7 @@ fileSystemCfg.setSecondarFileSystem(hadoopFileSystem);
 ```
 在Ignite节点启动过程中，Ignite默认不会在类路径中包含Hadoop的库文件，如果决定使用`HDFS`作为一个二级文件系统，那么需要提前按照如下步骤进行操作：
 
- 1. 使用Ignite发行版的`Apache Ignite Hadoop Accelerator`版本（如果自行构建发行版可以使用-Dignite.edition=hadoop）；
+ 1. 使用Ignite的`Apache Ignite Hadoop Accelerator`版本（如果自行构建发行版可以使用-Dignite.edition=hadoop）；
  2. 如果使用Apache的Hadoop发行版，启动一个Ignite节点之前需要设置HADOOP_HOME环境变量。如果使用其它的Hadoop发行版（HDP, Cloudera, BigTop等），一定确保`/etc/default/hadoop`文件存在并且有适当的内容。
 
 作为一个选择，可以在Ignite节点类路径中手工添加必要的Hadoop依赖，这些依赖的groupId是`org.apache.hadoop`，它们已经在`modules/hadoop/pom.xml`文件中列出，当前，它们是：

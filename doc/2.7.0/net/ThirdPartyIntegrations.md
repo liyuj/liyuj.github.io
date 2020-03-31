@@ -3,7 +3,7 @@
 Ignite缓存可用作ASP.NET的输出缓存，这对于在Web服务器之间共享输出缓存尤其有效。
 
 ### 1.1.安装
-**二进制发行版**：添加对`Apache.Ignite.AspNet.dll`的引用；
+**二进制包**：添加对`Apache.Ignite.AspNet.dll`的引用；
 **NuGet**：`Install-Package Apache.Ignite.AspNet`。
 
 ### 1.2.配置：自动启动Ignite
@@ -59,7 +59,7 @@ Ignite.NET实现了一个会话状态存储，其会将会话数据存储在Igni
 :::
 
 ### 2.1.安装
-**二进制发行版**：添加对`Apache.Ignite.AspNet.dll`的引用；
+**二进制包**：添加对`Apache.Ignite.AspNet.dll`的引用；
 **NuGet**：`Install-Package Apache.Ignite.AspNet`。
 
 ### 2.2.配置
@@ -101,7 +101,7 @@ Entity Framework像大多数其他ORM一样，可以在多个层级上使用缓�
 Ignite.NET提供了EF6的二级缓存解决方案。该方案将数据存储在分布式Ignite缓存中，尤其适用于多个应用服务器通过Entity Framework访问单个SQL数据库的场景，缓存的数据在集群的所有主机之间共享。
 
 ### 3.1.安装
-**二进制发行版**：添加对`Apache.Ignite.EntityFramework.dll`的引用；
+**二进制包**：添加对`Apache.Ignite.EntityFramework.dll`的引用；
 **NuGet**：`Install-Package Apache.Ignite.EntityFramework`。
 
 ### 3.2.配置

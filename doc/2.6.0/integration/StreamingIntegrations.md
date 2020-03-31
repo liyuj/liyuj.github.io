@@ -522,7 +522,7 @@ IgniteSink是一个Flume接收器，它会从相对应的Flume通道中提取事
  - 通过实现EventTransformer接口创建一个转换器；
  - 在${FLUME_HOME}中的plugins.d目录下创建`ignite`子目录，如果plugins.d目录不存在，创建它；
  - 构建前述的转换器并且拷贝到`${FLUME_HOME}/plugins.d/ignite/lib`目录；
- - 从Ignite发行版中拷贝其它的Ignite相关的jar包到`${FLUME_HOME}/plugins.d/ignite/libext`，如下所示；
+ - 从Ignite二进制包中拷贝其它的Ignite相关的jar包到`${FLUME_HOME}/plugins.d/ignite/libext`，如下所示；
 ```
 plugins.d/
 `-- ignite

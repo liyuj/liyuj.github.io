@@ -560,4 +560,4 @@ for (int32_t i = 0; i < 15; ++i)
 
 一旦客户端确认一个事件已经收到，主节点和备份节点会从它们的备份队列中删除该事件的记录。
 ### 6.3.示例
-Ignite的发行版附带一个有关持续查询用法的完整示例，名为`continuous_query_example.cpp`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/modules/platforms/cpp/examples/continuous-query-example/src/continuous_query_example.cpp)上也有。
+Ignite的二进制包附带一个有关持续查询用法的完整示例，名为`continuous_query_example.cpp`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/modules/platforms/cpp/examples/continuous-query-example/src/continuous_query_example.cpp)上也有。

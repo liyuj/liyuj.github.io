@@ -4,7 +4,7 @@ Ignite为主要的语言和技术，以原生库的形式提供了一套API，�
 ## 2.REST API
 Ignite提供了一个HTTP REST客户端，可以以REST的方式通过HTTP或者HTTPS协议与集群进行通信。REST API可以用于执行不同的操作，比如对缓存进行读/写，执行任务，获取各种指标等等。
 ### 2.1.入门
-要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在发布版中，这意味着将其从`IGNITE_HOME\libs\optional\`拷贝到`IGNITE_HOME\libs`中。
+要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在二进制包中，这意味着将其从`IGNITE_HOME\libs\optional\`拷贝到`IGNITE_HOME\libs`中。
 不需要显式地进行配置，连接器就会自动启动，然后监听`8080`端口，可以通过`curl`检测其是否工作正常。
 ```bash
 curl http://localhost:8080/ignite?cmd=version

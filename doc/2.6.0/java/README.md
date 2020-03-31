@@ -87,7 +87,7 @@ Apache Ignite官方在如下环境中进行的测试：
 
 ### 3.2.启动第一个Ignite集群
 
-**二进制发行版**
+**二进制包**
 
 可以从下面的步骤开始：
 
@@ -96,7 +96,7 @@ Apache Ignite官方在如下环境中进行的测试：
  - （可选）配置`IGNITE_HOME`环境变量，指向安装文件夹，确保路径不以`/`结尾。
 
 > **其它的安装选项**
-除了二进制发行版，Ignite还支持源代码安装、docker、云镜像以及RPM格式，具体可以看下面的说明。
+除了二进制包，Ignite还支持源代码安装、docker、云镜像以及RPM格式，具体可以看下面的说明。
 在应用中，建议使用maven，后面会介绍。
 
 下一步，使用默认的命令行接口可以启动第一个Ignite集群，还可以加上自定义的配置文件，可以启动任意多个节点，它们之间会自动发现。
@@ -164,7 +164,7 @@ Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于S
 关于如何包含个别的ignite maven模块的更多信息，可以参考[Maven设置](#_1-4-maven配置)章节。
 :::
 
-每个发布版中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
+每个二进制包中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
 
 ### 3.4.第一个SQL应用
 下面会创建两张表及其索引，分别为`City`表和`Person`表，分别表示居住在城市中的人，并且城市中会有很多的人，通过WITH子句然后指定`affinityKey=city_id`，可以将人对象和其居住的城市对象并置在一起。
@@ -754,7 +754,7 @@ public class ServiceGridExample {
 ### 3.8.集群管理和监控
 查看数据网格的数据、以及执行其它的管理和监控操作的最简单方式是使用`Ignite Web控制台`，还有就是使用Ignite的`Visor命令行`工具。
 ### 3.9.其它的安装方式
-除了二进制发布版以及Maven组件，要安装Ignite，还可以使用Docker、云镜像、使用DEB或者RPM包、从源代码编译等。
+除了二进制包以及Maven组件，安装Ignite还可以使用Docker、云镜像、使用DEB或者RPM包、从源代码编译等。
 
 **Docker和云镜像**
 
@@ -1525,7 +1525,7 @@ Ignite直接支持如下的映射器实现：
 ## 11.日志
 Ignite支持各种日志库和框架，可以直接使用[Log4j](https://logging.apache.org/log4j/2.x/)、[Log4j2](https://logging.apache.org/log4j/2.x/)、[JCL](https://commons.apache.org/proper/commons-logging/guide.html)和[SLF4J](https://www.slf4j.org/manual.html)，本文会描述如何使用它们。
 ### 11.1.Log4j
-如果在启动独立集群节点时要使用Log4j模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用Log4j模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml
@@ -1566,7 +1566,7 @@ ignite.log().info("Info Message Logged!");
 ```
 在上面的配置中，`log4j.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
 ### 11.2.Log4j2
-如果在启动独立集群节点时要使用Log4j2模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j2`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用Log4j2模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j2`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml
@@ -1607,7 +1607,7 @@ ignite.log().info("Info Message Logged!");
 ```
 在上面的配置中，`log4j2.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
 ### 11.3.JCL
-如果在启动独立集群节点时要使用JCL模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-jcl`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用JCL模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-jcl`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml
@@ -1652,7 +1652,7 @@ Ignite ignite = Ignition.start(cfg);
 ignite.log().info("Info Message Logged!");
 ```
 ### 11.4.SLF4J
-如果在启动独立集群节点时要使用SLF4J模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-slf4j`文件夹移动到Ignite发行版的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
+如果在启动独立集群节点时要使用SLF4J模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-slf4j`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
 ```xml

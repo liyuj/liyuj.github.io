@@ -268,7 +268,7 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-## 4.主节点和备份副本
+## 4.主备副本
 ### 4.1.概述
 在`分区`模式下，赋予键的节点叫做这些键的主节点，对于缓存的数据，也可以有选择地配置任意多个备份节点。如果副本数量大于0，那么Ignite会自动地为每个独立的键赋予备份节点，比如，如果副本数量为1，那么数据网格内缓存的每个键都会有2个备份，一主一备。
 
@@ -313,7 +313,7 @@ cfg.setCacheConfiguration(cacheCfg);
 Ignition.start(cfg);
 ```
 ### 4.3.同步和异步备份
-`CacheWriteSynchronizationMode`枚举可以用来配置主节点和备份部分的同步和异步更新。同步写模式告诉Ignite在完成写或者提交之前客户端节点是否要等待来自远程节点的响应。
+`CacheWriteSynchronizationMode`枚举可以用来配置主备之间的同步和异步更新。同步写模式告诉Ignite在完成写或者提交之前客户端节点是否要等待来自远程节点的响应。
 
 同步写模式可以设置为下面的三种之一：
 
@@ -730,7 +730,7 @@ qry.setLocalListener(names -> {
 
 一旦客户端确认一个事件已经收到，主节点和备份节点会从它们的备份队列中删除该事件的记录。
 ### 7.3.示例
-关于描述持续查询如何使用的完整示例，已经随着Ignite的发行版一起发布，名为`CacheContinuousQueryExample`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryExample.java)上也有。
+关于描述持续查询如何使用的完整示例，已经随着Ignite的二进制包一起发布，名为`CacheContinuousQueryExample`，相关的代码在[GitHub](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/datagrid/CacheContinuousQueryExample.java)上也有。
 ## 8.事务
 ### 8.1.原子化模式
 Ignite支持两种类型的缓存操作，*事务性*和*原子性*，在`事务性`模式中可以在一个事务中组合多个缓存操作，而`原子性`模式支持多个原子性操作，一次一个。
@@ -1391,8 +1391,8 @@ Ignition.start(cfg);
 
 > 在内部，系统线程池广泛用于和缓存有关的所有操作（put，get等），SQL引擎和其它模块，因此将`IgniteConfiguration.setRebalanceThreadPoolSize`设置为一个很大的值会显著提高再平衡的性能，但是会影响应用的性能。
 
-### 12.4.再平衡消息限流
-当再平衡器将数据从一个节点传输到另一个节点时，它会将整个数据集拆分为多个批次然后将每一个批次作为一个单独的消息进行发送。如果数据集很大，那么就会有很多的消息要发送，CPU和网络就会过度的消耗，这时在再平衡消息之间进行等待是合理的，以使由于再平衡过程导致的性能下降冲击最小化。这个时间间隔可以通过`CacheConfiguration`的`rebalanceThrottle`属性进行限流，它的默认值是0，意味着在消息之间没有暂停，注意单个消息的大小也可以通过`rebalanceBatchSize`属性进行设置(默认值是512K)。
+### 12.4.再平衡消息节流
+当再平衡器将数据从一个节点传输到另一个节点时，它会将整个数据集拆分为多个批次然后将每一个批次作为一个单独的消息进行发送。如果数据集很大，那么就会有很多的消息要发送，CPU和网络就会过度的消耗，这时在再平衡消息之间进行等待是合理的，以使由于再平衡过程导致的性能下降冲击最小化。这个时间间隔可以通过`CacheConfiguration`的`rebalanceThrottle`属性进行节流，它的默认值是0，意味着在消息之间没有暂停，注意单个消息的大小也可以通过`rebalanceBatchSize`属性进行设置(默认值是512K)。
 
 比如，如果希望再平衡器间隔100ms每个消息发送2MB数据，需要提供如下的配置：
 
@@ -1436,7 +1436,7 @@ Ignition.start(cfg);
 |`setRebalanceMode`|分布式缓存的再平衡模式，细节可以参照再平衡模式章节|ASYNC|
 |`setRebalanceDelay`|当节点加入或者离开（故障）集群时，再平衡应该自动启动的延迟时间（毫秒），如果打算在节点离开集群后重启节点，再平衡也应该推迟，如果打算在同时启动多个节点，或者一个个启动节点的过程中，不进行再平衡，也可以推迟，只到所有节点都启动完成再进行。|0，无延迟|
 |`setRebalanceBatchSize`|单个再平衡消息的大小（byte），再平衡算法会在发送数据之前将每个节点的整个数据集拆分成多个批次。|512K|
-|`setRebalanceThrottle`|可以看上面的[再平衡消息限流](#_3-12-4-再平衡消息限流)章节。|0，无间隔|
+|`setRebalanceThrottle`|可以看上面的[再平衡消息节流](#_3-12-4-再平衡消息节流)章节。|0，无间隔|
 |`setRebalanceOrder`|要完成的再平衡的顺序，只有同步和异步再平衡模式的缓存才可以将再平衡顺序设置为非0值，具有更小值的缓存再平衡会被首先完成，再平衡默认是无序的|0|
 |`setRebalanceBatchesPrefetchCount`|为了达到更好的性能，数据提供者节点会在再平衡开始时提供不止一个批次然后在下一个请求时提供一个新的批次。这个方法会设置再平衡开始时数据提供者节点产生的批次的数量|2|
 |`setRebalanceTimeout`|节点间正在交换的等待再平衡消息的超时时间|10秒|

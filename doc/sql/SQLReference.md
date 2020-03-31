@@ -637,7 +637,7 @@ INTO tablename (columnName, columnName, ...) FORMAT CSV
 COPY FROM '/path/to/local/file.csv' INTO city (
   ID, Name, CountryCode, District, Population) FORMAT CSV
 ```
-在上面的命令中，需要将`/path/to/local/file.csv`替换为CSV文件的实际路径，比如，可以使用最新的Ignite发行版中自带的`city.csv`，该文件位于`[IGNITE_HOME]/examples/src/main/resources/sql/`目录。
+在上面的命令中，需要将`/path/to/local/file.csv`替换为CSV文件的实际路径，比如，可以使用最新的Ignite二进制包中自带的`city.csv`，该文件位于`[IGNITE_HOME]/examples/src/main/resources/sql/`目录。
 ### 4.2.SET STREAMING
 将文件内容流化，批量地导入SQL表。
 ```sql
@@ -697,7 +697,7 @@ INSERT INTO City(ID, Name, CountryCode, District, Population) VALUES (5,'Amsterd
 
 **示例**
 
-作为示例，可以使用最新的Ignite发行版自带的`world.sql`文件，该文件位于`[IGNITE_HOME]/examples/sql/`目录。可以执行SQLLine的`run`命令，如下：
+作为示例，可以使用最新的Ignite二进制包自带的`world.sql`文件，该文件位于`[IGNITE_HOME]/examples/sql/`目录。可以执行SQLLine的`run`命令，如下：
 ```bash
 !run /apache_ignite_version/examples/sql/world.sql
 ```

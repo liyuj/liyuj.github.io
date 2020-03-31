@@ -150,7 +150,7 @@ Ignite除了支持标准ANSI-99标准的SQL查询，支持基本数据类型或�
 
 空间信息的查询功能，以及对应的可用的函数和操作符，是在[SQL的简单特性规范](http://www.opengeospatial.org/docs/is/)中定义的，目前，Ignite通过[JTS Topology Suite](http://tsusiatsoftware.net/jts/main.html)的使用，支持规范的交叉操作。
 ### 4.2.引入Ignite空间库
-Ignite的空间库(`ignite-geospatial`)依赖于[JTS](http://tsusiatsoftware.net/jts/main.html)，它是LGPL许可证，不同于Apache的许可证，因此`ignite-geospatial`并没有包含在Ignite的发布版中。
+Ignite的空间库(`ignite-geospatial`)依赖于[JTS](http://tsusiatsoftware.net/jts/main.html)，它是LGPL许可证，不同于Apache的许可证，因此`ignite-geospatial`并没有包含在Ignite的二进制包中。
 
 因为这个原因，`ignite-geospatial`的二进制库版本位于如下的Maven仓库中：
 ```xml

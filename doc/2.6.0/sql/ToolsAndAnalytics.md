@@ -377,7 +377,7 @@ jdbc:ignite://localhost:11211/words
 ### 5.4.使用Ignite解释器
 **启动Ignite集群**
 
-在使用Zeppelin之前需要启动Ignite集群，下载[Ignite发行版](http://ignite.apache.org/download.cgi#binaries)然后解压压缩包：
+在使用Zeppelin之前需要启动Ignite集群，下载[Ignite二进制包](http://ignite.apache.org/download.cgi#binaries)然后解压压缩包：
 ```bash
 unzip apache-ignite-fabric-{version}-bin.zip -d <dest_dir>
 ```

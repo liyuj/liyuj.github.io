@@ -473,7 +473,7 @@ Ignite可以和任意RDBMS集成，将数据加载进Ignite缓存，然后执行
  2. 通过初始化`CacheJdbcPojoStoreFactory`，配置`CacheConfiguration`的`cacheStoreFactory`属性，需要提供的属性如下：
 
   - `dataSourceBean`：数据库连接凭据，url、用户名、密码等；
-  - `dialect`：兼容于数据库的方言，Ignite为如下的数据库提供直接支持：MySQL、Oracle、H2、SQL Server和DB2。这些方言位于Ignite发行版的`org.apache.ignite.cache.store.jdbc.dialect`包中；
+  - `dialect`：兼容于数据库的方言，Ignite为如下的数据库提供直接支持：MySQL、Oracle、H2、SQL Server和DB2。这些方言位于Ignite的`org.apache.ignite.cache.store.jdbc.dialect`包中；
   - `types`：这个属性用于定义数据库表和相对应的POJO之间的映射（具体可以看下面的示例）；
 
 配置完之后，就可以通过`IgniteCache.loadCache()`方法将数据从数据库中加载进对应的Ignite缓存。

@@ -55,7 +55,7 @@ Ignite提供了一个`./control.sh`命令行脚本，它可以监控和控制集
 最后，一致性检查命令可以用作集群健康检查工具的一部分。
 下面会更详细地描述一些使用场景：
 **分区校验和验证**
-即使主节点和备份节点之间的更新计数器和大小相等，也可能会出现主节点和备份节点因某些严重故障而出现差异的情况。`./control.sh`工具中的`idle_verify`命令会计算和比较整个集群的分区哈希值，然后如果有不同会进行报告。它可以指定一个需要验证的缓存列表，比如：
+即使主备之间的更新计数器和大小相等，也可能会出现主备之间因某些严重故障而出现差异的情况。`./control.sh`工具中的`idle_verify`命令会计算和比较整个集群的分区哈希值，然后如果有不同会进行报告。它可以指定一个需要验证的缓存列表，比如：
 ```bash
 # Checks partitions of all caches that their partitions actually contain same data.
 ./control.sh --cache idle_verify
