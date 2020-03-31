@@ -524,7 +524,7 @@ private static class TaskSessionAttributesTask extends ComputeTaskSplitAdapter<O
   }
 }
 ```
-## 5.节点局部状态共享
+## 5.节点内状态共享
 ### 5.1.概述
 通常来说在不同的计算作业或者不同的部署服务之间共享状态是很有用的，为此Ignite在每个节点上提供了一个共享并发**node-local-map**。
 ```java
