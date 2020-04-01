@@ -115,7 +115,7 @@ IgniteEvents evts = ignite.events();
 
 **本地事件**
 
-`localListen(...)`方法只在本地节点上针对指定事件注册事件监听器。
+如果希望在本地节点监听事件，需要通过`IgniteConfiguration`的`setLocalEventListeners(...)`方法配置本地事件监听器，还可以使用`IgniteEvents`的`localListen(...)`方法，但是要注意`localListen(...)`方法调用前的事件会错过。
 
 **远程事件**
 
@@ -245,7 +245,7 @@ IgnitePredicate<CacheEvent> rmtLsnr = new IgnitePredicate<CacheEvent>() {
 // that have the specified cache running.
 // Send notifications in batches of 10.
 ignite.events(ignite.cluster().forCacheNodes("cacheName")).remoteListen(
-    10 /*batch size*/, 0 /*time intervals*/, false, null, rmtLsnr, EVTS_CACHE);
+		10 /*batch size*/, 0 /*time intervals*/, false, null, rmtLsnr, EVTS_CACHE);
 
 // Generate cache events.
 for (int i = 0; i < 20; i++)

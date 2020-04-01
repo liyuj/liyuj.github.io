@@ -7,7 +7,7 @@ Ignite提供了一个HTTP REST客户端，可以以REST的方式通过HTTP或者
 要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在二进制包中，这意味着将其从`IGNITE_HOME/libs/optional/`拷贝到`IGNITE_HOME/libs`中。
 
 不需要显式地进行配置，连接器就会自动启动，然后监听`8080`端口，可以通过`curl`检测其是否工作正常。
-```bash
+```shell
 curl 'http://localhost:8080/ignite?cmd=version'
 ```
 请求参数可以通过URL传递，也可以通过表单的POST提交方式传递：
@@ -17,20 +17,22 @@ curl 'http://localhost:8080/ignite?cmd=put&cacheName=myCache' -X POST -H 'Conten
 **安全**
 
 通过REST协议，可以与集群建立安全的连接，怎么做呢，首先要通过`IgniteConfiguration.setAuthenticationEnabled(true)`方法开启集群的认证功能，注意目前只有开启持久化时认证功能才可用。
-
-服务端开启认证之后，就可以在REST连接串中提供`user=[user]&password=[password]`参数进行用户认证了，成功之后会生成一个会话令牌，该令牌可以在该会话有效期内的任意命令中使用。
+::: tip 开启认证
+Ignite节点的[认证](/doc/java/Security.md#_2-高级安全)可以通过`IgniteConfiguration.setAuthenticationEnabled(true)`方法开启，目前，只有开启Ignite的原生持久化之后才支持认证，这个限制未来的版本可能会放宽。
+:::
+服务端开启认证之后，就可以在REST连接串中提供`ignite.login=[user]&ignite.password=[password]`参数进行用户认证了，成功之后会生成一个会话令牌，该令牌可以在该会话的任意命令中使用。
 
 请求认证有两种方式：
 
-1.使用带有`user=[user]&password=[password]`参数的`authenticate`命令：
+1.使用带有`ignite.login=[user]&ignite.password=[password]`参数的`authenticate`命令：
 ```
-https://[host]:[port]/ignite?cmd=authenticate&user=[user]&password=[password]
+https://[host]:[port]/ignite?cmd=authenticate&ignite.login=[user]&ignite.password=[password]
 ```
-2.在任意REST命令的连接串中，加上`user=[user]&password=[password]`参数，下面使用`version`命令举例：
+2.在任意REST命令的连接串中，加上`ignite.login=[user]&ignite.password=[password]`参数，下面使用`version`命令举例：
 ```
- http://[host]:[port]/ignite?cmd=version&user=[user]&password=[password]
+  http://[host]:[port]/ignite?cmd=version&ignite.login=[user]&ignite.password=[password]
 ```
-上面的例子中，需要将`[host]`, `[port]`, `[user]`和`[password]`替换为实际值。
+上面的例子中，需要将`[host]`、`[port]`、`[user]`和`[password]`替换为实际值。
 
 在浏览器中执行上面的字符串都会返回一个会话令牌，大概向下面这样：
 ```json
@@ -999,6 +1001,7 @@ http://host:port/ignite?cmd=node&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-7
 |attr|boolean|是|如果为true，返回值会包含属性信息|true|
 |ip|string|是|如果传递了id参数该参数是可选的。返回值包含了指定IP对应的节点信息|192.168.0.1|
 |id|string|是|如果传递了ip参数该参数为可选的。返回值包含了指定节点id对应的节点信息|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+|caches|boolean|是|如果配置为`true`，`node`返回的缓存信息会包括：缓存名、缓存模式和SQL模式。如果配置为`false`，`node`命令的返回结果不包含任何缓存信息，默认值为`true`。|true|
 
 **响应示例**
 ```json
@@ -1040,7 +1043,7 @@ http://host:port/ignite?cmd=top&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70
 |attr|boolean|是|如果为true，返回值会包含属性信息|true|
 |ip|string|是|如果传递了id参数该参数是可选的。返回值包含了指定IP对应的节点信息|192.168.0.1|
 |id|string|是|如果传递了ip参数该参数为可选的。返回值包含了指定节点id对应的节点信息|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
+|caches|boolean|是|如果配置为`true`，`top`返回的缓存信息会包括：缓存名、缓存模式和SQL模式。如果配置为`false`，`top`命令的返回结果不包含任何缓存信息，默认值为`true`。|true|
 **响应示例**
 ```json
 {

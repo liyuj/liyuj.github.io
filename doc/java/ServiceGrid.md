@@ -24,11 +24,11 @@ Ignite可以控制每个集群节点应该部署多少个服务的实例，可�
  - 对于访问远程部署的分布式服务创建服务代理
 
 ::: tip 注意
-可以访问`8.2.服务示例`章节来获得有关服务部署和访问服务的API信息。
+可以访问[服务示例](#_2-服务示例)章节来获得有关服务部署和访问服务的API信息。
 :::
 
-::: tip 注意
-注意，默认情况下，所有的集群节点的类路径中都包含服务类是必须的，服务网格是不支持对等类加载的，下面的服务部署章节会描述如何克服这个约束。
+::: warning 注意
+注意，所有的集群节点的类路径中默认都应包含服务类，服务网格是不支持[对等类加载](/doc/java/Clustering.md#_6-零部署)的，下面的[服务部署](#_1-5-部署管理)章节会描述如何克服这个默认约束。
 :::
 
 ### 1.2.IgniteServices
@@ -93,7 +93,7 @@ IgniteServices services = ignite.services();
 // Deploying the service.
 services.deploy(cfg);
 ```
-::: tip 注意
+::: warning 注意
 确保节点过滤器的类位于每个节点的类路径中，不管服务是否要部署到那个节点上，否则会得到一个`ClassNotFoundException`。
 另一方面，原则上在集群的整个生命周期中，是可以只将服务的实现类添加到可能待部署的节点的类路径中的。
 :::
@@ -132,10 +132,46 @@ IgniteServices services = ignite.services();
 services.deploy(cfg);
 ```
 使用上述示例的配置部署服务后，Ignite会确保将服务部署到名为`orgCache`的缓存中犍为`123`所在的主节点上。
-### 1.6.服务卸载
-Ignite在所有的节点上存储已部署服务的描述符，如前述，如果一个服务部署在节点的子集上，停止所有这些节点也不会卸载服务，只要满足节点过滤器的节点有一个有备份，服务都会以同样的配置重启。
+### 1.6.服务更新（重新部署）
+如果在集群中有一个服务，然后希望不停止集群更新服务，基本的过程如下：
 
-如果要对服务的配置进行修改，就需要显式地卸载它然后重新部署新的配置，使用`IgniteServices#cancel`或者`IgniteServices#cancelAll`方法可以进行卸载。
+ 1. 在服务类所在的仓库中更新jar文件（[UriDeploymentSpi](/doc/java/ComputeGrid.md#_11-2-urideploymentspi)中的uriList属性指向的位置）；
+ 2. 调用`services().cancel()`方法停止服务；
+ 3. 重新部署服务。
+
+**示例配置**
+
+下面是`UriDeployment`配置的示例，注意一下`uriList`属性：
+```java
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="deploymentSpi">
+        <bean class="org.apache.ignite.spi.deployment.uri.UriDeploymentSpi">
+            <property name="uriList">
+                <list>
+                    <value>file:///Users/ExampleUser/Code/gridgain/playground/service/repository/</value>
+                </list>
+            </property>
+            <property name="temporaryDirectoryPath" value="/Users/ExampleUser/.ignite/deployments/"/>
+        </bean>
+    </property>
+
+    <!-- Other configuration -->
+</bean>
+```
+重新部署服务的示例：
+```java
+try (Ignite ignite = Ignition.start("config/ignite.xml")) {
+    String srvcName = "test-service";
+    ignite.services().cancel(srvcName);
+    ignite.services().deployNodeSingleton(srvcName, new TestService());
+}
+```
+### 1.7.服务卸载
+Ignite在所有的节点上存储已部署服务的描述符，如前述，如果一个服务部署在节点的子集上，停止所有这些节点也不会卸载服务，只要满足节点过滤器的节点有一个有备份且在线，服务都会以同样的配置重启。
+
+要使用更新后的资源或者实现重新部署服务（比如更新jar文件），可以参见上面的[服务更新](#_1-6-服务更新（重新部署）)。
+
+如果要卸载服务，可以使用`IgniteServices#cancel`或者`IgniteServices#cancelAll`方法。
 ```java
 // Getting instance of Ignite Service Grid.
 IgniteServices services = ignite.services();
