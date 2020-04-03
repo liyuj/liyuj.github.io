@@ -27,7 +27,7 @@ Ignite的二进制客户端协议使用小端字节顺序。
 
 **数据对象**
 
-用户数据，比如缓存的键和值，是以Ignite的二进制对象表示的，一个数据对象可以是标准类型（预定义），也可以是复杂对象，具体可以看[数据格式](#_19-2-2-数据格式)的相关章节。
+业务数据，比如缓存的键和值，是以Ignite的[二进制对象](/doc/java/README.md#_10-二进制编组器)表示的，一个数据对象可以是标准类型（预定义），也可以是复杂对象，具体可以看[数据格式](#_2-2-数据格式)的相关章节。
 #### 2.1.3.消息格式
 所有消息的请求和响应，包括握手，都以`int`类型消息长度开始（不包括开始的4个字节），后面是消息体。
 
@@ -1090,9 +1090,9 @@ private static String readString(DataInputStream in) throws IOException {
 }
 ```
 ### 2.3.键-值查询
-本章节会描述可以对缓存进行的键值操作，该键值操作等同于Ignite原生的缓存操作，具体可以看[IgniteCache](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html)的文档，每个操作都会有一个[头信息](#_19-2-1-3-消息格式)及与该操作对应的数据。
+本章节会描述可以对缓存进行的键值操作，该键值操作等同于Ignite原生的缓存操作，具体可以看[IgniteCache](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html)的文档，每个操作都会有一个[头信息](#_2-1-3-消息格式)及与该操作对应的数据。
 
-在[数据格式](#_19-2-2-数据格式)章节，可以参阅可用的数据类型和数据格式规范的清单。
+在[数据格式](#_2-2-数据格式)章节，可以参阅可用的数据类型和数据格式规范的清单。
 
 #### 2.3.1.操作代码
 与Ignite服务端节点成功握手后，客户端可以通过发送带有特定操作代码的请求（参见下面的请求/响应结构）来开始执行各种键值操作：
@@ -1121,7 +1121,7 @@ private static String readString(DataInputStream in) throws IOException {
 |`OP_CACHE_REMOVE_ALL`|1019|
 |`OP_CACHE_GET_SIZE`|1020|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 
 #### 2.3.2.OP_CACHE_GET
 通过键从缓存获得值，如果不存在则返回`null`。
@@ -2126,7 +2126,7 @@ int statusCode = readIntLittleEndian(in);
 |`OP_QUERY_SCAN_CURSOR_GET_PAGE`|2001|
 |`OP_RESOURCE_CLOSE`|0|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 #### 2.4.2.OP_QUERY_SQL
 在集群存储的数据中执行SQL查询，查询会返回所有的结果集（键值对）。
 
@@ -2563,7 +2563,7 @@ readResponseHeader(in);
 |`OP_GET_BINARY_TYPE`|3002|
 |`OP_PUT_BINARY_TYPE`|3003|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 
 #### 2.5.2.OP_GET_BINARY_TYPE_NAME
 通过ID取得和平台相关的完整二进制类型名，比如，.NET和Java都可以映射相同的类型`Foo`，但是在.NET中类型是`Apache.Ignite.Foo`，而在Java中是`org.apache.ignite.Foo`。
@@ -2828,7 +2828,7 @@ readResponseHeader(in);
 |`OP_CACHE_GET_CONFIGURATION`|1055|
 |`OP_CACHE_DESTROY`|1056|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 
 #### 2.6.2.OP_CACHE_CREATE_WITH_NAME
 通过给定的名字创建缓存，如果缓存的名字中有`*`，则可以应用一个缓存模板，如果给定名字的缓存已经存在，则会抛出异常。
@@ -3236,7 +3236,7 @@ readResponseHeader(in);
 ## 3.Java瘦客户端
 ### 3.1.Java瘦客户端
 #### 3.1.1.概述
-Java瘦客户端将[二进制客户端协议](#_19-2-二进制客户端协议)暴露给Java开发者。
+Java瘦客户端将[二进制客户端协议](#_2-二进制客户端协议)暴露给Java开发者。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 
@@ -3394,12 +3394,11 @@ Ignite不支持服务器端的瘦客户端故障转移。在客户端连接到�
 配置多个服务端以启用故障转移机制：
 ```java
 try (IgniteClient client = Ignition.startClient(
-  new IgniteClientConfiguration()
+  new ClientConfiguration()
   .setAddresses("127.0.0.1:1080", "127.0.0.1:1081", "127.0.0.1:1082")
 )) {
   ...
-}
-catch (IgniteUnavailableException ex) {
+} catch (ClientConnectionException ex) {
     // All the servers are unavailable
 }
 ```
@@ -3409,12 +3408,14 @@ catch (IgniteUnavailableException ex) {
 ```java
 Query<Cache.Entry<Integer, Person>> qry = new ScanQuery<Integer, Person>((i, p) -> p.getName().contains("Smith")).setPageSize(1000);
 
-for (Query<Cache.Entry<Integer, Person>> qry : queries) {
-  try (QueryCursor<Cache.Entry<Integer, Person>> cur = cache.query(qry)) {
-    for (Cache.Entry<Integer, Person> entry : cur) {
-      // Handle the entry ...
+
+try (QueryCursor<Cache.Entry<Integer, Person>> cur = cache.query(qry)) {
+   for (Cache.Entry<Integer, Person> entry : cur) {
+     // Handle the entry ...
+   }
+}
 ```
-正如API章节所解释的，扫描和SQL SELECT查询是按页检索数据。如果客户端连接的服务端在迭代条目时停机，客户端将从头进行重试。这使得上面的代码会处理已经处理过的条目。
+扫描和SQL SELECT查询是按页检索数据。如果客户端连接的服务端在迭代条目时停机，客户端将从头进行重试。这使得上面的代码会处理已经处理过的条目。
 
 解决这个问题有两种方法：
 
@@ -3482,19 +3483,64 @@ for (Query<Cache.Entry<Integer, Person>> qry : queries) {
     for (Cache.Entry<Integer, Person> entry : cur) {
       // Handle the entry ...
 ```
+#### 3.3.3.客户端事务
+Java瘦客户端支持键-值事务，该Transactions API与Ignite原生客户端中的[事务](/doc/java/Key-ValueDataGrid.md#_8-1-2-ignitetransactions)API类似。
+
+事务只可以在`AtomicityMode.TRANSACTIONAL`[原子化模式](/doc/java/Key-ValueDataGrid.md#_8-1-1-原子化模式)的缓存中执行。
+
+**事务的执行**
+
+从`IgniteClient`实例中拿到`ClientTransactions`对象，`ClientTransactions`使用`txStart(...)`方法开始事务，它会返回一个`ClientTransaction`对象。
+
+使用`ClientTransaction`可以提交或者回滚事务。
+```java
+ClientCache<Integer, String> cache = client.cache("my_transactional_cache");
+
+ClientTransactions tx = client.transactions();
+
+try (ClientTransaction t = tx.txStart()) {
+    cache.put(1, "new value");
+
+    t.commit();
+}
+```
+**事务的配置**
+
+客户端事务可以有不同的[并发模型和隔离级别](/doc/java/Key-ValueDataGrid.md#_8-2-并发模型和隔离级别)，和执行超时时间，这些都可以在整体/每个事务层级进行配置。
+
+客户端配置对象可以为客户端接口启动的所有事务配置默认的并发模型和隔离级别和超时时间。
+```java
+ ClientConfiguration cfg = new ClientConfiguration();
+ cfg.setAddresses("localhost:10800");
+
+cfg.setTransactionConfiguration(new ClientTransactionConfiguration()
+       .setDefaultTxTimeout(10000)
+       .setDefaultTxConcurrency(TransactionConcurrency.OPTIMISTIC)
+       .setDefaultTxIsolation(TransactionIsolation.REPEATABLE_READ));
+
+IgniteClient client = Ignition.startClient(cfg);
+```
+还可以为某一个事务单独指定并发模型和隔离级别以及超时时间，这时这些单独指定的值会覆盖默认的全局配置。
+```java
+ClientTransactions tx = client.transactions();
+
+try (ClientTransaction t = tx.txStart(TransactionConcurrency.OPTIMISTIC, TransactionIsolation.REPEATABLE_READ)) {
+    cache.put(1, "new value");
+    t.commit();
+}
+```
 ### 3.4.SQL
 SQL查询共有2种：
 
- - **数据定义语言语句**：用来管理缓存和索引；
- - **数据维护语言语句**：用来管理数据。
+ - **数据定义语言语句**：用来管理缓存和索引，具体可以参见[数据定义语言](/doc/sql/SQLReference.md#_2-数据定义语言（ddl）)；
+ - **数据操作语言语句**：用来管理数据，具体请参见[数据操作语言](/doc/sql/SQLReference.md#_3-数据操作语言（dml）)。
 
 可以通过如下的方式使用瘦客户端的SQL API：
 
- - `IgniteClient#query(SqlFieldsQuery).getAll()`：执行非SELECT语句（DDL和DML）；
- - `IgniteClient#query(SqlFieldsQuery)`：执行SELECT语句以及获取字段的子集；
- - `IgniteCache#query(SqlQuery)`：执行SELECT语句，获取整个对象并且将结果集反序列化为Java类型实例。
+ - `IgniteClient#query(SqlFieldsQuery).getAll()`：执行非SELECT语句（DDL或DML）；
+ - `IgniteClient#query(SqlFieldsQuery)`：执行SELECT语句以及获取字段的子集。
 
-和扫描查询一样，SELECT查询也是按页返回结果集，这样每次只有一个页面的数据加载到客户端的内存。
+SELECT查询是按页返回结果集，这样每次只有一个页面的数据加载到客户端的内存。
 ```java
 client.query(
     new SqlFieldsQuery(String.format(
@@ -3517,7 +3563,7 @@ Object cachedName = client.query(
 assertEquals(val.getName(), cachedName);
 ```
 ### 3.5.二进制类型
-瘦客户端完全支持[二进制编组器](/doc/java/#_1-10-二进制编组器)章节中描述的二进制对象API。
+瘦客户端完全支持[二进制编组器](/doc/java/#_10-二进制编组器)章节中描述的二进制对象API。
 
 使用`CacheClient#withKeepBinary()`将缓存切换到二进制模式，然后直接处理Ignite的二进制对象，可以避免序列化/反序列化。
 
@@ -3557,6 +3603,7 @@ clientCfg
 
 try (IgniteClient client = Ignition.startClient(clientCfg)) {
 	...
+}
 ```
 #### 3.6.2.认证
 如果服务端开启认证，那么用户必须提供凭据。
@@ -3579,11 +3626,11 @@ catch (ClientAuthenticationException e) {
 确保[服务端的认证](/doc/java/Security.md#_2-高级安全)已开启，并且在凭据存储中配置了客户端凭据。
 :::
 #### 3.6.3.授权
-目前，Ignite本身还不支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这个](https://docs.gridgain.com/docs/security-and-audit)。
+目前，Ignite本身还不直接支持授权，但是提供了授权的机制，允许开发者自定义授权的插件，或者从第三方厂家处获取插件，比如[这里](https://www.gridgain.com/docs/latest/administrators-guide/security)。
 ## 4.Node.js瘦客户端
 ### 4.1.Node.js瘦客户端
 #### 4.1.1.概述
-这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
@@ -3717,7 +3764,7 @@ const igniteClientConfiguration = new IgniteClientConfiguration('127.0.0.1:10800
 
 只有在`CONNECTED`状态下，才能与Ignite集群进行交互。
 
-如果客户端意外地断开连接，它会自动跳转到`CONNECTING`状态，并尝试使用`故障转移重连算法`重新连接。如果无法重连到所提供列表中的所有端点，则客户端将跳转到`DISCONNECTED`状态。
+如果客户端断开连接，它会自动跳转到`CONNECTING`状态，并尝试使用`故障转移重连算法`重新连接。如果无法重连到所提供列表中的所有端点，则客户端将跳转到`DISCONNECTED`状态。
 
 应用程序随时都可以调用`disconnect`方法将客户端强制跳转到`DISCONNECTED`状态。
 
@@ -3844,7 +3891,7 @@ getExistingCache();
 
 如果没有为某些字段显式指定Ignite类型，客户端将尝试在JavaScript类型和Ignite对象类型之间进行自动默认映射。
 
-有关类型和映射的更多详细信息，请参见[数据类型](#_19-4-2-5-数据类型)部分。
+有关类型和映射的更多详细信息，请参见[数据类型](#_4-2-5-数据类型)部分。
 ```javascript
 const IgniteClient = require('apache-ignite-client');
 const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
@@ -3904,7 +3951,7 @@ Ignite和JavaScript类型之间的默认映射说明在[这里](https://rawgit.c
 #### 4.2.6.支持的API
 客户端API的规范在[这里](https://rawgit.com/apache/ignite/master/modules/platforms/nodejs/api_spec/index.html)。
 
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - `OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作是不支持的；
  - `OP_QUERY_SCAN`操作的过滤器对象是不支持的，`OP_QUERY_SCAN`操作本身是支持的；
@@ -4047,7 +4094,7 @@ async function performSqlQuery() {
         await cache.putAll([
             new CacheEntry(1, { 'name' : 'John Doe', 'salary' : 1000 }),
             new CacheEntry(2, { 'name' : 'Jane Roe', 'salary' : 2000 }),
-            new CacheEntry(2, { 'name' : 'Mary Major', 'salary' : 1500 })]);
+            new CacheEntry(3, { 'name' : 'Mary Major', 'salary' : 1500 })]);
 
         // create and configure sql query
         const sqlQuery = new SqlQuery('Person', 'salary > ? and salary <= ?').
@@ -4124,7 +4171,7 @@ async function performSqlFieldsQuery() {
 performSqlFieldsQuery();
 ```
 ### 4.5.二进制类型
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - `OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作是不支持的；
  - `OP_QUERY_SCAN`操作的过滤器对象是不支持的，`OP_QUERY_SCAN`操作本身是支持的；
@@ -4342,7 +4389,7 @@ authTlsExample.start();
 ## 5.Python瘦客户端
 ### 5.1.Python瘦客户端
 #### 5.1.1.概述
-Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进制客户端协议](#_2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
@@ -4359,6 +4406,9 @@ Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进�
 ```bash
 $ pip install pyignite
 ```
+::: warning 注意
+在MacOS平台上，需要使用`pip3 install pyignite`命令来完成安装。
+:::
 **运行一个示例**
 
 安装完`pyignite`之后，为了方便入门，这里使用的是随着每个Ignite版本发布的一个现成的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/python/examples)。
@@ -4546,7 +4596,11 @@ Ignite使用一个复杂的可序列化数据类型系统来存储和检索用�
 |Enum|tuple|EnumObject|
 |Binaryenum|tuple|BinaryEnumObject|
 
-**基础类型数组**
+::: tip 时间戳精度
+Python为时间戳使用微秒精度，但Ignite使用纳秒精度，这导致预期结果之间的不匹配。当将时间戳发送给Ignite时，要确保返回日期时间和代表纳秒的三位整数增量值（4字节整数，范围是0-999），示例：`cache_put(client, cache, 'my_key', (datetime(year=1998, month=4, day=6, hour=18, minute=30), 500), value_hint=TimestampObject)`
+:::
+
+**基本类型数组**
 
 |Ignite二进制数据类型|Python类型或类|解析器/构造函数类|
 |---|---|---|
@@ -4720,7 +4774,7 @@ my_cache.remove([
     ('a', CharObject),  # a key of type CharObject
 ])
 ```
-参见[数据类型](#_19-5-2-4-数据类型)章节，可以了解可用作类型提示的所有解析器/构造函数类列表。
+参见[数据类型](#_5-2-4-数据类型)章节，可以了解可用作类型提示的所有解析器/构造函数类列表。
 #### 5.3.2.扫描查询
 缓存的`scan()`查询方法可以逐元素获取缓存的全部内容。
 
@@ -5288,11 +5342,9 @@ Ignite服务端必须配置为保护二进制协议端口，服务端配置过�
 
  1. 使用Java的[keytool](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html)创建密钥存储和信任存储。创建信任存储时，可能需要客户端X.509证书。还需要导出服务端X.509证书以包含在客户端信任链中；
  2. 根据本文档：[保护节点之间的连接](/doc/java/Security.md#_1-1-保护节点间的连接)，打开Ignite集群的`SSLContextFactory`；
- 3. 通知Ignite使用[ClientConnectorConfiguration](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/configuration/ClientConnectorConfiguration.html)的配置在其瘦客户端端口上加密数据。如果只想加密连接，而不是验证客户端的证书，请将`sslClientAuth`属性设置为`false`。不过，还是需要在步骤1中设置信任存储。
+ 3. 通知Ignite使用[ClientConnectorConfiguration](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/configuration/ClientConnectorConfiguration.html)的配置在其瘦客户端端口上加密数据。如果只想加密连接，而不验证客户端的证书，需要将`sslClientAuth`属性设置为`false`。不过还是需要在步骤1中设置信任库。
 
-客户端SSL设置的总结在[这里](https://apache-ignite-binary-protocol-client.readthedocs.io/en/latest/source/pyignite.client.html#pyignite.client.Client)。
-
-要在没有证书验证的情况下使用SSL加密，只需将`use_ssl`配置为`true`：
+要在没有证书验证的情况下使用SSL加密，需要使用`use_ssl`参数：
 ```python
 from pyignite import Client
 
@@ -5327,7 +5379,7 @@ client.connect('ignite-example.com', 10800)
 #### 5.6.2.密码认证
 要进行身份验证，必须在Ignite的XML配置文件中将`authenticationEnabled`属性设置为`true`，并启用持久化，具体请参见[认证](/doc/java/Security.md#_2-1-认证)中的相关内容。
 
-请注意，不鼓励通过开放通道发送凭据，因为它们很容易被拦截。提供凭据会自动从客户端打开SSL。强烈建议保护到Ignite服务端的连接，如[SSL/TLS](#_19-5-6-1-ssl/tls)示例中所述，以便使用密码验证。
+注意，不鼓励通过开放通道发送凭据，因为它们很容易被拦截。提供凭据会自动从客户端打开SSL。强烈建议保护到Ignite服务端的连接，如[SSL/TLS](#_5-6-1-ssl-tls)示例中所述，以便使用密码验证。
 
 然后只需向`Client`构造函数提供用户名和密码参数即可：
 ```python
@@ -5336,7 +5388,7 @@ from pyignite import Client
 client = Client(username='ignite', password='ignite')
 client.connect('ignite-example.com', 10800)
 ```
-如果仍然不希望保护连接，可以在创建`Client`对象时显式禁用SSL，尽管会出现警告：
+如果希望即使出现警告也不使用安全的连接，需要在创建客户端对象时显式禁用SSL：
 ```python
 client = Client(username='ignite', password='ignite', use_ssl=False)
 ```
@@ -5344,7 +5396,7 @@ client = Client(username='ignite', password='ignite', use_ssl=False)
 ## 6.PHP瘦客户端
 ### 6.1.PHP瘦客户端
 #### 6.1.1.概述
-这个瘦客户端使得PHP应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+这个瘦客户端使得PHP应用可以通过[二进制客户端协议](#_2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
@@ -5356,16 +5408,6 @@ client = Client(username='ignite', password='ignite', use_ssl=False)
  - [PHP多字节字符串扩展](http://php.net/manual/en/mbstring.installation.php)，根据PHP的配置，可能需要额外地安装/配置这个扩展；
  - [最新版本](https://ignite.apache.org/download.cgi)的Ignite。
 
-**从PHP包仓库进行安装**
-
-在应用的根目录执行：
-```bash
-composer require apache/apache-ignite-client
-```
-如果要在应用中使用这个客户端，源代码中需要包含Composer生成的`vendor/autoload.php`文件，比如：
-```
-require_once __DIR__ . '/vendor/autoload.php';
-```
 **从源代码进行安装**
 
  1. 克隆或者下载Ignite的仓库到`local_ignite_path`；
@@ -5619,7 +5661,7 @@ setCacheKeyValueTypes();
 #### 6.2.6.支持的API
 客户端API规范可以在[这里](https://rawgit.com/nobitlost/ignite/ignite-7783-docs/modules/platforms/php/api_docs/html/index.html)找到。
 
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - 不支持`OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作；
  - 不支持`OP_QUERY_SCAN`操作的过滤器对象，但是`OP_QUERY_SCAN`操作本身是支持的；
@@ -5839,7 +5881,7 @@ function performSqlFieldsQuery(): void
 performSqlFieldsQuery();
 ```
 ### 6.5.二进制对象
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - 不支持`OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作；
  - 不支持`OP_QUERY_SCAN`操作的过滤器对象，但是`OP_QUERY_SCAN`操作本身是支持的；

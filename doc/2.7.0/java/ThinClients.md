@@ -27,7 +27,7 @@ Ignite的二进制客户端协议使用小端字节顺序。
 
 **数据对象**
 
-用户数据，比如缓存的键和值，是以Ignite的二进制对象表示的，一个数据对象可以是标准类型（预定义），也可以是复杂对象，具体可以看[数据格式](#_19-2-2-数据格式)的相关章节。
+用户数据，比如缓存的键和值，是以Ignite的二进制对象表示的，一个数据对象可以是标准类型（预定义），也可以是复杂对象，具体可以看[数据格式](#_2-2-数据格式)的相关章节。
 #### 2.1.3.消息格式
 所有消息的请求和响应，包括握手，都以`int`类型消息长度开始（不包括开始的4个字节），后面是消息体。
 
@@ -1090,9 +1090,9 @@ private static String readString(DataInputStream in) throws IOException {
 }
 ```
 ### 2.3.键-值查询
-本章节会描述可以对缓存进行的键值操作，该键值操作等同于Ignite原生的缓存操作，具体可以看[IgniteCache](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html)的文档，每个操作都会有一个[头信息](#_19-2-1-3-消息格式)及与该操作对应的数据。
+本章节会描述可以对缓存进行的键值操作，该键值操作等同于Ignite原生的缓存操作，具体可以看[IgniteCache](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html)的文档，每个操作都会有一个[头信息](#_2-1-3-消息格式)及与该操作对应的数据。
 
-在[数据格式](#_19-2-2-数据格式)章节，可以参阅可用的数据类型和数据格式规范的清单。
+在[数据格式](#_2-2-数据格式)章节，可以参阅可用的数据类型和数据格式规范的清单。
 
 #### 2.3.1.操作代码
 与Ignite服务端节点成功握手后，客户端可以通过发送带有特定操作代码的请求（参见下面的请求/响应结构）来开始执行各种键值操作：
@@ -1121,7 +1121,7 @@ private static String readString(DataInputStream in) throws IOException {
 |`OP_CACHE_REMOVE_ALL`|1019|
 |`OP_CACHE_GET_SIZE`|1020|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 
 #### 2.3.2.OP_CACHE_GET
 通过键从缓存获得值，如果不存在则返回`null`。
@@ -2126,7 +2126,7 @@ int statusCode = readIntLittleEndian(in);
 |`OP_QUERY_SCAN_CURSOR_GET_PAGE`|2001|
 |`OP_RESOURCE_CLOSE`|0|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 #### 2.4.2.OP_QUERY_SQL
 在集群存储的数据中执行SQL查询，查询会返回所有的结果集（键值对）。
 
@@ -2563,7 +2563,7 @@ readResponseHeader(in);
 |`OP_GET_BINARY_TYPE`|3002|
 |`OP_PUT_BINARY_TYPE`|3003|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 
 #### 2.5.2.OP_GET_BINARY_TYPE_NAME
 通过ID取得和平台相关的完整二进制类型名，比如，.NET和Java都可以映射相同的类型`Foo`，但是在.NET中类型是`Apache.Ignite.Foo`，而在Java中是`org.apache.ignite.Foo`。
@@ -2828,7 +2828,7 @@ readResponseHeader(in);
 |`OP_CACHE_GET_CONFIGURATION`|1055|
 |`OP_CACHE_DESTROY`|1056|
 
-注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_19-2-1-3-消息格式)的相关内容。
+注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 
 #### 2.6.2.OP_CACHE_CREATE_WITH_NAME
 通过给定的名字创建缓存，如果缓存的名字中有`*`，则可以应用一个缓存模板，如果给定名字的缓存已经存在，则会抛出异常。
@@ -3236,7 +3236,7 @@ readResponseHeader(in);
 ## 3.Java瘦客户端
 ### 3.1.Java瘦客户端
 #### 3.1.1.概述
-Java瘦客户端将[二进制客户端协议](#_19-2-二进制客户端协议)暴露给Java开发者。
+Java瘦客户端将[二进制客户端协议](#_2-二进制客户端协议)暴露给Java开发者。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。它所做的只是简单地建立一个与标准Ignite节点的Socket连接，并通过该节点执行所有操作。
 
@@ -3583,7 +3583,7 @@ catch (ClientAuthenticationException e) {
 ## 4.Node.js瘦客户端
 ### 4.1.Node.js瘦客户端
 #### 4.1.1.概述
-这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+这个瘦客户端使得Node.js应用可以通过[二进制客户端协议](#_2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
@@ -3844,7 +3844,7 @@ getExistingCache();
 
 如果没有为某些字段显式指定Ignite类型，客户端将尝试在JavaScript类型和Ignite对象类型之间进行自动默认映射。
 
-有关类型和映射的更多详细信息，请参见[数据类型](#_19-4-2-5-数据类型)部分。
+有关类型和映射的更多详细信息，请参见[数据类型](#_4-2-5-数据类型)部分。
 ```javascript
 const IgniteClient = require('apache-ignite-client');
 const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
@@ -3904,7 +3904,7 @@ Ignite和JavaScript类型之间的默认映射说明在[这里](https://rawgit.c
 #### 4.2.6.支持的API
 客户端API的规范在[这里](https://rawgit.com/apache/ignite/master/modules/platforms/nodejs/api_spec/index.html)。
 
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - `OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作是不支持的；
  - `OP_QUERY_SCAN`操作的过滤器对象是不支持的，`OP_QUERY_SCAN`操作本身是支持的；
@@ -4124,7 +4124,7 @@ async function performSqlFieldsQuery() {
 performSqlFieldsQuery();
 ```
 ### 4.5.二进制类型
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - `OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作是不支持的；
  - `OP_QUERY_SCAN`操作的过滤器对象是不支持的，`OP_QUERY_SCAN`操作本身是支持的；
@@ -4342,7 +4342,7 @@ authTlsExample.start();
 ## 5.Python瘦客户端
 ### 5.1.Python瘦客户端
 #### 5.1.1.概述
-Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+Python瘦客户端（缩写为**pyignite**）可以使Python应用通过[二进制客户端协议](#_2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
@@ -4720,7 +4720,7 @@ my_cache.remove([
     ('a', CharObject),  # a key of type CharObject
 ])
 ```
-参见[数据类型](#_19-5-2-4-数据类型)章节，可以了解可用作类型提示的所有解析器/构造函数类列表。
+参见[数据类型](#_5-2-4-数据类型)章节，可以了解可用作类型提示的所有解析器/构造函数类列表。
 #### 5.3.2.扫描查询
 缓存的`scan()`查询方法可以逐元素获取缓存的全部内容。
 
@@ -5327,7 +5327,7 @@ client.connect('ignite-example.com', 10800)
 #### 5.6.2.密码认证
 要进行身份验证，必须在Ignite的XML配置文件中将`authenticationEnabled`属性设置为`true`，并启用持久化，具体请参见[认证](/doc/2.7.0/java/Security.md#_2-1-认证)中的相关内容。
 
-请注意，不鼓励通过开放通道发送凭据，因为它们很容易被拦截。提供凭据会自动从客户端打开SSL。强烈建议保护到Ignite服务端的连接，如[SSL/TLS](#_19-5-6-1-ssl/tls)示例中所述，以便使用密码验证。
+请注意，不鼓励通过开放通道发送凭据，因为它们很容易被拦截。提供凭据会自动从客户端打开SSL。强烈建议保护到Ignite服务端的连接，如[SSL/TLS](#_5-6-1-ssl-tls)示例中所述，以便使用密码验证。
 
 然后只需向`Client`构造函数提供用户名和密码参数即可：
 ```python
@@ -5344,7 +5344,7 @@ client = Client(username='ignite', password='ignite', use_ssl=False)
 ## 6.PHP瘦客户端
 ### 6.1.PHP瘦客户端
 #### 6.1.1.概述
-这个瘦客户端使得PHP应用可以通过[二进制客户端协议](#_19-2-二进制客户端协议)与Ignite集群进行交互。
+这个瘦客户端使得PHP应用可以通过[二进制客户端协议](#_2-二进制客户端协议)与Ignite集群进行交互。
 
 瘦客户端是一个轻量级的Ignite客户端，通过标准的Socket连接接入集群，它不会启动一个JVM进程（不需要Java），不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算网格的计算。
 
@@ -5619,7 +5619,7 @@ setCacheKeyValueTypes();
 #### 6.2.6.支持的API
 客户端API规范可以在[这里](https://rawgit.com/nobitlost/ignite/ignite-7783-docs/modules/platforms/php/api_docs/html/index.html)找到。
 
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - 不支持`OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作；
  - 不支持`OP_QUERY_SCAN`操作的过滤器对象，但是`OP_QUERY_SCAN`操作本身是支持的；
@@ -5839,7 +5839,7 @@ function performSqlFieldsQuery(): void
 performSqlFieldsQuery();
 ```
 ### 6.5.二进制对象
-除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_19-2-二进制客户端协议)中的所有操作和类型：
+除了下面不适用的特性之外，客户端支持[二进制客户端协议](#_2-二进制客户端协议)中的所有操作和类型：
 
  - 不支持`OP_REGISTER_BINARY_TYPE_NAME`和`OP_GET_BINARY_TYPE_NAME`操作；
  - 不支持`OP_QUERY_SCAN`操作的过滤器对象，但是`OP_QUERY_SCAN`操作本身是支持的；
