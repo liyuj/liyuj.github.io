@@ -96,7 +96,6 @@ module.exports = {
                         'DurableMemory',
                         'Persistence',
                         'MachineLearning',
-                        'DeepLearning',
                         'ThinClients',
                         'PlatformsProtocols',
                         'Plugins',

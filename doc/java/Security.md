@@ -88,7 +88,13 @@ factory.setProtocol("TLS");
 
 igniteCfg.setSslContextFactory(factory);
 ```
-### 1.3.配置
+### 1.3.升级证书
+如果使用的是TLS/SSL，并且证书即将过期，则可以在不关闭集群的情况下安装新证书。
+
+如果可以使用现有信任库读取新证书，则可以一个个地停止集群节点，然后再启动就会使用新的证书。
+
+否则，首先必须将信任库一个个地推送到所有节点，过渡期间，它将同时信任新证书和旧证书。
+### 1.4.配置
 下面的配置参数可以通过`SslContextFactory`进行配置：
 
 |setter方法|描述|默认值|
@@ -105,7 +111,10 @@ igniteCfg.setSslContextFactory(factory);
 
 ## 2.高级安全
 ### 2.1.认证
-通过在服务端开启认证和提供用户凭据来保护集群。目前，只有**打开持久化**才会支持认证，这个限制未来可能放宽。
+可以通过在服务端开启认证以及在客户端提供用户凭据来保护集群。目前，只有**打开持久化**才会支持认证，这个限制未来可能放宽。
+::: 注意
+这个认证机制只适用于瘦客户端/JDBC/ODBC连接。
+:::
 
 **开启认证**
 
@@ -157,7 +166,7 @@ cfg.setAuthenticationEnabled(true);
 
 打开认证之后，Ignite会在集群第一次启动时创建名为`ignite`的超级用户，密码为`ignite`。目前，无法对超级用户改名，也无法将它的权限授予其它用户，但是，可以使用Ignite支持的[DDL语句](/doc/sql/SQLReference.md#_2-数据定义语言（ddl）)，对用户进行[创建](/doc/sql/SQLReference.md#_2-6-create-user)、[修改](/doc/sql/SQLReference.md#_2-7-alter-user)和[删除](/doc/sql/SQLReference.md#_2-8-drop-user)，注意，只有超级用户才能创建新的用户。
 ### 2.2.授权
-Ignite还无法方便地提供授权功能，但是对于这样的高级安全特性，可以通过自定义插件的形式，实现`GridSecurityProcessor`接口，或者也可以使用一个第三方的[实现](https://docs.gridgain.com/docs/security-and-audit)。
+Ignite还无法直接提供授权功能，但是对于这样的高级安全特性，可以实现`GridSecurityProcessor`接口，然后将其作为[自定义插件](/doc/java/Plugins.md)的一部分，或者也可以使用一个第三方的[实现](https://www.gridgain.com/docs/latest/administrators-guide/security)。
 ## 3.数据反序列化安全性
 如果攻击者找到办法可以将恶意代码植入集群节点的类路径中，那么数据的序列化是会受到影响的，解决这个问题的常规做法是保护对集群的访问，并且将访问权限授予有限的人群。
 
@@ -219,9 +228,9 @@ Ignite从2.7版本开始，引入了透明数据加密（TDE），使得开发�
 
 如果开启了表/缓存级加密，Ignite会生成一个密钥（叫做*缓存加密密钥*），然后使用这个密钥来对缓存的数据进行加密/解密。缓存加密密钥由系统缓存持有，并且用户无法访问。如果该密钥需要发送到其它节点或者保存到磁盘（节点停止），它会使用用户提供的密钥（主密钥）进行加密。
 
-主密钥必须要每个服务端节点上通过配置进行指定。
+每个服务端节点中的配置都要指定相同的主密钥，为了保证这一点，一种方法是将JKS文件从一个节点复制到其他节点。如果尝试使用不同的密钥启用TDE，则具有不同密钥的节点将无法加入集群（摘要不同，该节点会被拒绝）。
 
-Ignite使用的是JDK提供的加密算法，`AES/CBC/PKCS5Padding`用于WAL记录的加密，`AES/CBC/NoPadding`用于内存页面的加密，要了解更多实现的细节，可以看[KeystoreEncryptionSpi](https://github.com/apache/ignite/blob/master/modules/core/src/main/java/org/apache/ignite/spi/encryption/keystore/KeystoreEncryptionSpi.java)。
+Ignite使用的是JDK提供的加密算法，`AES/CBC/PKCS5Padding`用于WAL记录的加密，`AES/CBC/NoPadding`用于加密磁盘上的数据页面，要了解更多实现的细节，可以看[KeystoreEncryptionSpi](https://github.com/apache/ignite/blob/master/modules/core/src/main/java/org/apache/ignite/spi/encryption/keystore/KeystoreEncryptionSpi.java)。
 ### 4.2.配置
 要开启集群的加密功能，需要在每个服务端节点的配置中提供一个主密钥，配置示例如下：
 

@@ -98,35 +98,11 @@ XML：
     ...
 </bean>
 ```
-### 3.3.关闭备份
-如果使用了`分区`缓存，而且数据丢失并不是关键（比如，当有一个备份缓存存储时），可以考虑禁用`分区`缓存的备份。当备份启用时，缓存引擎会为每个条目维护一个远程拷贝，这需要网络交换，因此是耗时的。要禁用备份，可以使用如下的配置：
-
-XML：
-```xml
-<bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ...
-    <property name="cacheConfiguration">
-        <bean class="org.apache.ignite.configuration.CacheConfiguration">
-            ...
-            <!-- Set cache mode. -->
-            <property name="cacheMode" value="PARTITIONED"/>
-            <!-- Set number of backups to 0-->
-            <property name="backups" value="0"/>
-            ...
-        </bean>
-    </property>
-</bean>
-```
-
-::: warning 可能的数据丢失
-如果没有启用`分区`缓存的备份，会丢失缓存在故障节点的所有数据，这对于缓存临时数据或者数据可以通过某种方式重建可能是可以接受的。禁用备份之前一定要确认对于应用来说丢失数据不是严重问题。
-:::
-
-### 3.4.固化内存调优
-固化内存调优以及原生持久化，请参考相关的[内存配置](/doc/java/DurableMemory.md#_3-内存配置)以及下面的[固化内存调优](#_11-4-固化内存调优)章节。
-### 3.5.调整数据再平衡
+### 3.3.固化内存调优
+固化内存调优以及原生持久化，请参考相关的[内存配置](/doc/java/DurableMemory.md#_3-内存配置)以及下面的[固化内存调优](#_4-固化内存调优)章节。
+### 3.4.调整数据再平衡
 根据具体的业务场景，为数据再平衡调整合理的[再平衡线程池](/doc/java/Key-ValueDataGrid.md#_10-3-再平衡线程池调节)和[再平衡消息](/doc/java/Key-ValueDataGrid.md#_10-4-再平衡消息节流)参数。
-### 3.6.配置线程池
+### 3.5.配置线程池
 Ignite使用了一组线程池，它们的大小默认由`max(8, CPU总核数)`确定，这个默认值适用于大多数场景，从而减少了上下文切换以及更高效地利用CPU缓存。但是，如果因为I/O阻塞或者其它的原因，只要希望也可以增加特定线程池的大小，下面是一个如何配置线程池的例子:
 
 XML:
@@ -141,14 +117,63 @@ XML:
     ...
 </bean>
 ```
-### 3.7.使用并置的计算
+### 3.6.使用并置的计算
 Ignite可以在内存内执行MapReduce计算。不过通常很多计算都会使用缓存在远程节点上的一些数据，大多数情况下从远程节点加载那些数据是很昂贵的而将计算发送到数据所在的节点就要便宜得多。最简单的实现方式就是使用`IgniteCompute.affinityRun()`方法或者`@CacheAffinityMapped`注解，也有其它的方式， 包括`Affinity.mapKeysToNodes()`方法。并置计算的概念和相关的代码示例，请参见[关联并置](/doc/java/Key-ValueDataGrid.md#_7-关联并置)章节。
-### 3.8.使用数据流处理器
+### 3.7.使用数据流处理器
 如果需要往缓存中加载大量的数据，可以使用`IgniteDataStreamer`来实现，数据流处理器在将数据发送到远程节点之前会将数据正确地形成批次然后会正确地控制发生在每个节点的并发操作的数量来避免颠簸。通常它会比一堆单线程的操作有十倍的性能提升。可以在[数据加载](/doc/java/DataLoadingStreaming.md#_2-数据加载)章节看到更详细的描述和样例。
-### 3.9.批量处理消息
+### 3.8.批量处理消息
 如果能发送10个比较大的作业而不是100个小些的作业，那么应该选择发送大些的作业，这会降低网络上传输作业的数量以及显著地提升性能。类似的对于缓存条目也是一样，应该尽可能使用持有键值集合的API方法，而不是一个一个地传递。
-### 3.10.调整垃圾收集
-请参考[调整垃圾收集](#_11-5-垃圾回收调优)章节的内容。
+### 3.9.调整垃圾收集
+请参考[调整垃圾收集](#_5-垃圾回收调优)章节的内容。
+### 3.10.文件描述符
+**系统级文件描述符限制**
+对于大规模的服务端应用，当运行大量的线程访问网格时，可能最终在客户端和服务端节点上打开大量的文件，因此建议增加默认值到默认的最大值。
+
+错误的文件描述符设置会影响应用的稳定性和性能，为此，需要设置`系统级文件描述符限制`和`进程级文件描述符限制`，以root用户分别按照如下步骤操作：
+
+ - 修改**/etc/sysctl.conf**文件的如下行：
+```
+fs.file-max = 300000
+```
+ - 执行如下命令使改变生效：
+```bash
+/sbin/sysctl -p
+```
+验证这个设置可以用：
+```bash
+cat /proc/sys/fs/file-max
+```
+或者也可以执行下面的命令：
+```bash
+sysctl fs.file-max
+```
+**进程级文件描述符限制**
+
+Linux操作系统默认有一个相对较少的可用文件描述符和最大用户进程（1024）设置。因此对于一个账户，将其最大打开文件描述符（打开文件数）和最大用户进程配置为适当的值非常重要。
+
+::: tip 提示
+对于打开文件描述符，一个合理的最大值是32768。
+:::
+
+使用如下命令来设置打开文件描述符的最大值和用户进程的最大值。
+```bash
+ulimit -n 32768 -u 32768
+```
+或者，也可以相应地修改如下文件：
+```
+/etc/security/limits.conf
+
+- soft    nofile          32768
+- hard    nofile          32768
+
+/etc/security/limits.d/90-nproc.conf
+
+- soft nproc 32768
+```
+
+::: tip 提示
+可以参照[增加打开文件数限制](https://easyengine.io/tutorials/linux/increase-open-files-limit/)了解更多细节。
+:::
 ## 4.固化内存调优
 本章节中包括了固化内存和原生持久化的性能建议和调优参数，在[内存配置](/doc/2.6.0/java/DurableMemory.md#_3-内存配置)中已经包括了一般的配置参数。
 ### 4.1.一般调优
@@ -203,6 +228,9 @@ cfg.setDataStorageConfiguration(storageCfg);
 // Starting the node.
 Ignition.start(cfg);
 ```
+**JVM调整**
+
+如果使用了原生持久化，建议将`MaxDirectMemorySize`配置为`<walSegmentSize * 4 >`，对于默认的WAL配置，该值为256MB。
 ### 4.2.与原生持久化有关的调优
 本章节包含了开启Ignite原生持久化之后的建议。
 
@@ -309,7 +337,10 @@ WAL段的默认大小（64MB）在高负载情况下可能是低效的，因为�
 
 具体可以看[WAL模式](/doc/java/Persistence.md#_2-2-wal模式)的相关内容。
 
-#### 4.2.5.页面写入优化
+#### 4.2.5.WAL冻结
+有些场景中[禁用WAL](/doc/java/Persistence.md#_2-3-wal激活和冻结)可以提高性能。
+
+#### 4.2.6.页面写入优化
 
 Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页面。这个进程在后台进行，对应用没有影响。
 
@@ -354,7 +385,7 @@ storeCfg.setWriteThrottlingEnabled(true);
 // Starting the node.
 Ignition.start(cfg);
 ```
-#### 4.2.6.检查点缓冲区大小
+#### 4.2.7.检查点缓冲区大小
 
 前述章节中描述的检查点缓冲区大小，是检查点处理的触发器之一。
 
@@ -416,7 +447,7 @@ Ignition.start(cfg);
 当脏页面数超过`总页数*2/3`或者达到`DataRegionConfiguration.checkpointPageBufferSize`时，检查点处理就会被触发。但是如果使用了页面写入优化，`DataRegionConfiguration.checkpointPageBufferSize`就会失效，因为算法的原因，不会达到这个值。
 :::
 
-#### 4.2.7.启用直接I/O
+#### 4.2.8.启用直接I/O
 
 通常当应用访问磁盘上的数据时，操作系统拿到数据后会将其写入一个文件缓冲区缓存，写操作也是同样，操作系统首先将数据写入缓存，然后才会传输到磁盘，要消除这个过程，可以打开**直接IO**，这时数据会忽略文件缓冲区缓存，直接从磁盘进行读写。
 
@@ -430,11 +461,11 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 
 相关的[Wiki页面](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-DirectI/O)有更多的细节。
 
-#### 4.2.8.购买产品级的SSD
+#### 4.2.9.购买产品级的SSD
 
 限于[SSD的操作特性](http://codecapsule.com/2014/02/12/coding-for-ssds-part-2-architecture-of-an-ssd-and-benchmarking/)，在经历几个小时的高强度写入负载之后，Ignite原生持久化的性能可能会下降，因此需要考虑购买快速的产品级SSD来保证长时间高水平的性能。
 
-#### 4.2.9.SSD预留空间
+#### 4.2.10.SSD预留空间
 
 由于SSD[预留空间](http://www.seagate.com/ru/ru/tech-insights/ssd-over-provisioning-benefits-master-ti/)的原因，50%使用率的磁盘的随机写性能要好于90%使用率的磁盘，因此需要考虑购买高预留空间比率的SSD，然后还要确保厂商能提供工具来进行相关的调整。
 
@@ -494,8 +525,8 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 
 作为一个解决方案，可以增加页面刷新到磁盘的频率，从默认的30秒到5秒。
 ```bash
-sysctl –w vm.dirty_writeback_centisecs=500
-  sysctl –w vm.dirty_expire_centisecs=500
+  sysctl -w vm.dirty_writeback_centisecs=500
+  sysctl -w vm.dirty_expire_centisecs=500
 ```
 **内存问题**
 
@@ -503,12 +534,12 @@ sysctl –w vm.dirty_writeback_centisecs=500
 
  - 检查并且降低‘swappiness’的设定来保护堆和匿名内存
 ```bash
-sysctl –w vm.swappiness=10
+sysctl -w vm.swappiness=10
 ```
  - 启动时给JVM增加–XX:+AlwaysPreTouch参数
  - 关闭NUMA zone-reclaim优化
 ```bash
-sysctl –w vm.zone_reclaim_mode=0
+sysctl -w vm.zone_reclaim_mode=0
 ```
  - 如果使用RedHat发行版，关闭transparent_hugepage
 ```bash
@@ -568,54 +599,6 @@ sysctl -w vm.extra_free_kbytes=1240000
 jcmd <PID> JFR.start name=<recordcing_name> duration=60s filename=/var/recording/recording.jfr settings=profile
 ```
 关于Java的Flight Recorder的完整信息，可以查看Oracle的官方文档。
-
-### 5.4.文件描述符
-**系统级文件描述符限制**
-对于大规模的服务端应用，当运行大量的线程访问网格时，可能最终在客户端和服务端节点上打开大量的文件，因此建议增加默认值到默认的最大值。
-
-错误的文件描述符设置会影响应用的稳定性和性能，为此，需要设置`系统级文件描述符限制`和`进程级文件描述符限制`，以root用户分别按照如下步骤操作：
-
- - 修改**/etc/sysctl.conf**文件的如下行：
-```
-fs.file-max = 300000
-```
- - 执行如下命令使改变生效：
-```bash
-cat /proc/sys/fs/file-max
-```
-验证这个设置可以用：
-```bash
-sysctl fs.file-max
-```
-
-**进程级文件描述符限制**
-
-默认情况下，Linux操作系统有一个相对较少的文件描述符和最大用户进程（1024）设置。重要的是，使用一个用户账户，它有它自己的最大打开文件描述符（打开文件数）和最大的用户进程配置为一个合适的值。
-
-::: tip 提示
-对于打开文件描述符，一个合理的最大值是32768。
-:::
-
-使用如下命令来设置打开文件描述符的最大值和用户进程的最大值。
-```bash
-ulimit -n 32768 -u 32768
-```
-或者，也可以相应地修改如下文件：
-```
-/etc/security/limits.conf
-
-- soft    nofile          32768
-- hard    nofile          32768
-
-/etc/security/limits.d/90-nproc.conf
-
-- soft nproc 32768
-```
-
-::: tip 提示
-可以参照[增加打开文件数限制](https://easyengine.io/tutorials/linux/increase-open-files-limit/)了解更多细节。
-:::
-
 ## 6.严重错误处理
 ### 6.1.概述
 Ignite是一个健壮且容错的系统，但在现实中，一些无法预知的问题，可能导致节点无法操作，以致影响整个集群的状态，这样的问题可以在运行时进行检测，然后根据预配置的错误处理程序进行处理。
@@ -667,7 +650,7 @@ Ignite内部有一些工作进程，它们对集群的正常运行非常重要�
  - 过期进程：基于TTL的过期；
  - NIO进程：基础拓扑操作；
 
-Ignite有一个内部机制用于验证关键进程是否正常,会定期检查每个进程是否在线，并更新其心跳时间戳。如果在配置的时间段内没有监测到其中一个条件，该进程会被认为阻塞，然后Ignite会将该信息记录日志。失效时间由`IgniteConfiguration.systemWorkerBlockedTimeout`属性指定（毫秒，默认值等于[故障检测超时](/doc/java/Clustering.md#_5-1-9-故障检测超时)）。
+Ignite有一个内部机制用于验证关键进程是否正常,会定期检查每个进程是否在线，并更新其心跳时间戳。如果在配置的时间段内没有监测到其中任何一个条件，该进程会被认为阻塞，然后Ignite会将该信息记录日志。失效时间由`IgniteConfiguration.systemWorkerBlockedTimeout`属性指定（毫秒，默认值等于[故障检测超时](/doc/java/Clustering.md#_5-1-14-故障检测超时)）。
 
 关键进程停止响应的情况被认为是严重故障，但是它们默认不由配置好的故障处理程序处理。如果希望故障处理程序以处理其它严重故障的方式处理这些情况，则需要将处理程序的`ignoredFailureTypes`属性设置为空值，如下所示。空值的原因是，此类故障默认被添加到处理程序的忽略列表中，并且从忽略列表移除的唯一方法是清空列表。
 

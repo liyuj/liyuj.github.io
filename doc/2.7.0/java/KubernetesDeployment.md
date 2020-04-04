@@ -232,7 +232,7 @@ spec:
 #### 2.2.3.有状态集部署
 最后一步是以有状态集的形式在Kubernetes中部署Ignite配置组。
 
-建议为预写日志文件（WAL）和数据库文件提供[单独的磁盘设备](/doc/2.7.0/java/ProductionReadiness.md#_4-2-2-为WAL使用单独的磁盘设备)，以获得更好的性能。这就是为什么本节提供了两种部署方案的说明：当WAL和数据库文件位于同一个存储中以及分别存储时。
+建议为预写日志文件（WAL）和数据库文件提供[单独的磁盘设备](/doc/2.7.0/java/ProductionReadiness.md#_4-2-2-为wal使用单独的磁盘设备)，以获得更好的性能。这就是为什么本节提供了两种部署方案的说明：当WAL和数据库文件位于同一个存储中以及分别存储时。
 
 ::: warning 有状态集部署时间
 Kubernetes环境可能需要一段时间来分配需要的持久化存储，从而成功地部署所有配置组。在分配时，配置组的部署状态可能会显示如下消息：“pod has unbound persistentvolumeclaims（repeated 4 times）”。
