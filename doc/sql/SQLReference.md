@@ -135,7 +135,7 @@ index_option := {INLINE_SIZE size | PARALLEL parallelism_level}
 
  - 索引是有代价的：它们消耗内存，每个索引需要单独更新，因此当配置了很多索引时，缓存更新的性能会下降。最重要的是，执行查询时如果选择了错误的索引优化器会犯更多的错误。
 
-::: warning 注意
+::: danger 注意
 索引每个字段是错误的！
 :::
 
@@ -203,7 +203,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
  - `WITH`：标准ANSI SQL中未定义的参数：
    - `TEMPLATE=<cache's template name>`：在Ignite中注册的大小写敏感的缓存模板，用于CREATE TABLE命令在创建分布式缓存时的配置。一个模板是在集群中通过`Ignite.addCacheConfiguration`注册的`CacheConfiguration`类的实例。使用预定义的`TEMPLATE=PARTITIONED`或者`TEMPLATE=REPLICATED`模板，可以直接创建对应复制类型的缓存，其它的参数由`CacheConfiguration`对象决定，在没有显式指定的情况下，默认会使用`TEMPLATE=PARTITIONED`模板。
    - `BACKUPS=<number of backups>`：设置数据的备份数量，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存备份数量为0；
-   - `ATOMICITY=<ATOMIC | TRANSACTIONAL>`：为底层缓存设置`ATOMIC`或者`TRANSACTIONAL`模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`ATOMIC`模式；
+   - `ATOMICITY=<ATOMIC | TRANSACTIONAL | TRANSACTIONAL_SNAPSHOT>`：为底层缓存设置[原子化模式](/doc/java/Key-ValueDataGrid.md#_8-1-1-原子化模式)模式，如果该参数和`TEMPLATE`参数都未指定，那么创建的缓存为`ATOMIC`模式。如果指定为`TRANSACTIONAL_SNAPSHOT`模式，那么该表会[支持事务](/doc/java/Key-ValueDataGrid.md#_8-3-多版本并发控制)；
    - `WRITE_SYNCHRONIZATION_MODE=<PRIMARY_SYNC | FULL_SYNC | FULL_ASYNC>`：设置底层缓存的写同步模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`FULL_SYNC`模式；
    - `CACHE_GROUP=<group name>`：设置底层缓存所属的组名；
    - `AFFINITY_KEY=<affinity key column name>`：设置[关联键](/doc/java/Key-ValueDataGrid.md#_7-关联并置)名字，它应该是`PRIMARY KEY`约束中的一个列；
@@ -289,7 +289,7 @@ DROP TABLE [IF EXISTS] tableName
 **参数**
 
  - `tableName`：要删除的表名；
- - `IF NOT EXISTS`：如果指定名字的表不存在，不会抛出错误。
+ - `IF EXISTS`：如果指定名字的表不存在，不会抛出错误。
 
 **描述**
 
@@ -641,7 +641,7 @@ COPY FROM '/path/to/local/file.csv' INTO city (
 ### 4.2.SET STREAMING
 将文件内容流化，批量地导入SQL表。
 ```sql
-SET STREAMING ON;
+SET STREAMING [OFF|ON];
 ```
 **描述**
 
@@ -851,26 +851,7 @@ SUM ([DISTINCT] expression)
 ```sql
 SELECT SUM(goal) FROM Players;
 ```
-### 5.10.SELECTIVITY
-```sql
-SELECTIVITY (expression)
-```
-**参数**
-
- - `expression`：可以是列名。
-
-**描述**
-
-估算性能优化选择（0-100）。这个值被定义为（100 * distinctCount / rowCount）。0行的优化选择为0（未知）。该函数只对SELECT语句有效。
-
-**示例**
-
-计算`first_name`和`second_name`列的选择性：
-```sql
-SELECT SELECTIVITY(first_name), SELECTIVITY(second_name) FROM Player
-  WHERE ROWNUM() < 20000;
-```
-### 5.11.STDDEV_POP
+### 5.10.STDDEV_POP
 ```sql
 STDDEV_POP ([DISTINCT] expression)
 ```
@@ -889,7 +870,7 @@ STDDEV_POP ([DISTINCT] expression)
 ```sql
 SELECT STDDEV_POP(age) from Players;
 ```
-### 5.12.STDDEV_SAMP
+### 5.11.STDDEV_SAMP
 ```sql
 STDDEV_SAMP ([DISTINCT] expression)
 ```
@@ -908,7 +889,7 @@ STDDEV_SAMP ([DISTINCT] expression)
 ```sql
 SELECT STDDEV_SAMP(age) from Players;
 ```
-### 5.13.VAR_POP
+### 5.12.VAR_POP
 ```sql
 VAR_POP ([DISTINCT] expression)
 ```
@@ -927,7 +908,7 @@ VAR_POP ([DISTINCT] expression)
 ```sql
 SELECT VAR_POP (age) from Players;
 ```
-### 5.14.VAR_SAMP
+### 5.13.VAR_SAMP
 ```sql
 VAR_SAMP ([DISTINCT] expression)
 ```
@@ -945,7 +926,7 @@ VAR_SAMP ([DISTINCT] expression)
 ```sql
 SELECT VAR_SAMP(age) FROM Players;
 ```
-### 5.15.GROUP_CONCAT
+### 5.14.GROUP_CONCAT
 ```sql
 GROUP_CONCAT([DISTINCT] expression || [expression || [expression ...]]
   [ORDER BY expression [ASC|DESC], [[ORDER BY expression [ASC|DESC]]]
@@ -2887,7 +2868,7 @@ ROLLBACK [TRANSACTION]
  - `COMMIT`语句提交当前事务；
  - `ROLLBACK`语句回滚当前事务。
 
-::: warning 限制
+::: danger 限制
 事务内不支持DDL语句。
 :::
 
@@ -2902,7 +2883,7 @@ BEGIN;
 
 INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
 
-Update City SET population = population + 1 where id = 3;
+UPDATE City SET population = population + 1 WHERE id = 3;
 
 COMMIT;
 ```
@@ -2912,7 +2893,7 @@ BEGIN;
 
 INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
 
-Update City SET population = population + 1 where id = 3;
+UPDATE City SET population = population + 1 WHERE id = 3;
 
 ROLLBACK;
 ```

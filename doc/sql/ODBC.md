@@ -7,9 +7,9 @@ Ignite包括一个ODBC驱动，可以通过标准SQL查询和原生ODBC API查�
 
 Ignite的ODBC驱动实现了ODBC API的3.0版。
 ### 1.2.集群配置
-ODBC驱动在Windows中被视为一个动态库，在Linux中被视为一个共享对象，应用不会直接加载它。作为替代，必要时它会使用一个驱动加载器API来加载和卸载ODBC驱动。
+Ignite的ODBC驱动在Windows中被视为一个动态库，在Linux中被视为一个共享对象，应用不会直接加载它。作为替代，必要时它会使用一个驱动加载器API来加载和卸载ODBC驱动。
 
-Ignite的ODBC驱动在内部使用TCP协议来接入Ignite集群，这个连接在Ignite中是通过一个叫做`ClientListenerProcessor`的组件来处理的。除了ODBC连接，它还处理JDBC连接以及瘦客户端连接。当节点启动时，`ClientListenerProcessor`默认是开启的，通过下面的代码可以对参数进行调整：
+Ignite的ODBC驱动在内部使用TCP来接入Ignite集群，这个连接在Ignite中是通过一个叫做`ClientListenerProcessor`的组件来处理的。除了ODBC连接，它还处理JDBC连接以及瘦客户端连接。当节点启动时，`ClientListenerProcessor`默认是开启的，通过下面的代码可以对参数进行调整：
 
 XML:
 ```xml
@@ -83,9 +83,9 @@ clientConnectorCfg.setThreadPoolSize(4);
 cfg.setClientConnectorConfiguration(clientConnectorCfg);
 ...
 ```
-通过`ClientListenerProcessor`从ODBC驱动端建立的到集群的连接也是可以配置的，关于如何从驱动端修改连接的配置，可以看[这里](#_5-2-连接串和dsn)。
+通过`ClientListenerProcessor`从ODBC驱动端建立的连接也是可以配置的，关于如何从驱动端修改连接的配置，可以看[这里](#_2-连接串和dsn)。
 ### 1.3.线程安全
-Ignite ODBC驱动的当前实现仅仅在连接层提供了线程的安全，这意味着如果没有额外的同步化，无法从多个线程访问同一个连接。不过可以为每个线程创建独立的连接，然后同时使用。
+Ignite ODBC驱动的当前实现仅在连接层提供了线程安全，这意味着如果没有额外的同步处理，多线程无法访问同一个连接。不过可以为每个线程创建独立的连接，然后同时使用。
 ### 1.4.要求
 Ignite的ODBC驱动官方在如下环境中进行了测试：
 
@@ -95,7 +95,7 @@ Ignite的ODBC驱动官方在如下环境中进行了测试：
 |Visual Studio|2010及以上|
 
 ### 1.5.构建ODBC驱动
-在Windows中，Ignite现在提供了预构建的32位和64位驱动的安装器，因此如果只是想在Windows中安装驱动，那么直接看下面的安装驱动章节就可以了。
+在Windows中，Ignite提供了预构建的32位和64位驱动的安装器，因此如果只是想在Windows中安装驱动，那么直接看下面的安装驱动章节就可以了。
 
 对于Linux环境，安装之前还是需要进行构建，因此如果使用的是Linux或者使用Windows但是仍然想自己构建驱动，那么往下看。
 
@@ -106,17 +106,23 @@ Ignite的ODBC驱动的源代码随着Ignite版本一起发布，在使用之前�
 这里假定使用的是二进制版本，如果使用的是源代码版本，那么需要将所有使用的`%IGNITE_HOME%\platforms\cpp`替换为`%IGNITE_HOME%\modules\platforms\cpp`。
 
 #### 1.5.1.在Windows上构建
-如果要在Windows上构建ODBC驱动，需要MS Visual Studio 2010及以后的版本，一旦打开了Ignite方案`%IGNITE_HOME%\platforms\cpp\project\vs\ignite.sln`(或者`ignite_86.sln`,32位平台)，在方案浏览器中左击Ignite项目，然后选择“Build”，Visual Studio会自动地检测并且构建所有必要的依赖。
+如果要在Windows上构建ODBC驱动，需要MS Visual Studio 2010及以后的版本。一旦打开了Ignite方案`%IGNITE_HOME%\platforms\cpp\project\vs\ignite.sln`(或者`ignite_86.sln`，32位平台)，在方案浏览器中点击odbc项目，然后选择“Build”，Visual Studio会自动地检测并且构建所有必要的依赖。
 
-> 如果使用VS 2015及以后的版本（MSVC14.0及以后），需要将`legacy_stdio_definitions.lib`作为额外的库加入`odbc`项目的链接器配置以构建项目，要在IDE中将库文件加入链接器，可以打开项目节点的上下文菜单，选择`Properties`，然后在`Project Properties`对话框中，选择`Linker`，然后编辑`Linker Input`，这时就可以将`legacy_stdio_definitions.lib`加入分号分割的列表中。
+.sln文件的路径可能会有所不同，具体取决于是从源文件还是从二进制文件进行构建。如果在`%IGNITE_HOME%\platforms\cpp\project\vs\`中找不到.sln文件，可以尝试在`%IGNITE_HOME%\modules\platforms\cpp\project\vs\`中查找。
+::: warning 注意
+如果使用VS 2015及以后的版本（MSVC14.0及以后），需要将`legacy_stdio_definitions.lib`作为额外的库加入`odbc`项目的链接器配置以构建项目。要在IDE中将库文件加入链接器，可以打开项目节点的上下文菜单，选择`Properties`，然后在`Project Properties`对话框中，选择`Linker`，然后编辑`Linker Input`，这时就可以将`legacy_stdio_definitions.lib`加入分号分割的列表中。
+:::
 
-构建过程结束之后，会生成`ignite.odbc.dll`文件，对于64位版本，位于`%IGNITE_HOME%\platforms\cpp\project\vs\x64\Release`中，对于32位版本，位于`%IGNITE_HOME%\platforms\cpp\project\vs\Win32\Release`中。
+构建过程完成之后，会生成`ignite.odbc.dll`文件，对于64位版本，位于`%IGNITE_HOME%\platforms\cpp\project\vs\x64\Release`中，对于32位版本，位于`%IGNITE_HOME%\platforms\cpp\project\vs\Win32\Release`中。
 
+::: warning 注意
+确认为系统使用相应的驱动（32位或64位）。
+:::
 **在Windows中构建安装器**
 
 为了简化安装，构建完驱动之后可能想构建安装器，Ignite使用[WiX工具包](http://wixtoolset.org/)来生成ODBC的安装器，因此需要下载并安装WiX，记得一定要把Wix工具包的`bin`目录加入PATH变量中。
 
-一切就绪之后，打开终端然后定位到`%IGNITE_HOME%\platforms\cpp\odbc\install`目录，按顺序执行如下的命令：
+一切就绪之后，打开终端然后定位到`%IGNITE_HOME%\platforms\cpp\odbc\install`目录，按顺序执行如下的命令来构建安装器：
 
 64位：
 ```bash
@@ -157,7 +163,9 @@ whereis libignite-odbc
 
 *使用安装器进行安装*
 
->首先要安装微软的Microsoft Visual C++ 2010 Redistributable 32位或者64位包。
+::: warning 注意
+首先要安装微软的Microsoft Visual C++ 2010 Redistributable 32位或者64位包。
+:::
 
 这是最简单的方式，也是建议的方式，只需要启动指定版本的安装器即可：
 
@@ -166,7 +174,7 @@ whereis libignite-odbc
 
 *手动安装*
 
-要在Windows上手动安装驱动，首先要为驱动在文件系统中选择一个目录，选择一个位置后就可以把驱动放在哪并且确保所有的驱动依赖可以被解析，也就是说，它们要么位于`%PATH%`，要么和驱动位于同一个目录。
+要在Windows上手动安装ODBC驱动，首先要为驱动在文件系统中选择一个目录，选择一个位置后就可以把驱动放在哪并且确保所有的驱动依赖可以被解析，也就是说，它们要么位于`%PATH%`，要么和驱动位于同一个目录。
 
 之后，就需要使用`%IGNITE_HOME%/platforms/cpp/odbc/install`目录下的安装脚本之一，注意，要执行这些脚本，很可能需要管理员权限。
 
@@ -179,12 +187,12 @@ AMD64:
 install_amd64 <absolute_path_to_64_bit_driver> [<absolute_path_to_32_bit_driver>]
 ```
 #### 1.6.2.在Linux上安装
-要在Linux上构建和安装ODBC驱动，首先需要安装ODBC驱动管理器，Ignite ODBC驱动已经使用[UnixODBC](http://www.unixodbc.org/)进行了测试。
+要在Linux上构建和安装ODBC驱动，首先需要安装ODBC驱动管理器，Ignite ODBC驱动已经和[UnixODBC](http://www.unixodbc.org/)进行了测试。
 
 如果已经构建完成并且执行了`make install`命令，`libignite-odbc.so`很可能会位于`/usr/local/lib`，要在ODBC驱动管理器中安装ODBC驱动并且可以使用，需要按照如下的步骤进行操作：
 
  - 确保链接器可以定位ODBC驱动的所有依赖。可以使用`ldd`命令像如下这样进行检查（假定ODBC驱动位于`/usr/local/lib`）:`ldd /usr/local/lib/libignite-odbc.so`，如果存在到其它库的无法解析的链接，需要将这些库文件所在的目录添加到`LD_LIBRARY_PATH`；
- - 编辑`$IGNITE_HOME/platforms/cpp/odbc/install/ignite-odbc-install.ini`文件，并且确保`Apache Ignite`段的`Driver`参数指向`libignite-odbc.so`所在的正确位置；
+ - 编辑`$IGNITE_HOME/platforms/cpp/odbc/install/ignite-odbc-install.ini`文件，并且确保`Apache Ignite`段的`Driver`参数指向`libignite-odbc.so`所在的位置；
  - 要安装Ignite的ODBC驱动，可以使用如下的命令：`odbcinst -i -d -f $IGNITE_HOME/platforms/cpp/odbc/install/ignite-odbc-install.ini`，要执行这条命令，很可能需要root权限。
 
 到现在为止，Ignite的ODBC驱动已经安装好了并且可以用了，可以像其它ODBC驱动一样，连接、使用。
@@ -216,7 +224,7 @@ Ignite的ODBC驱动可以使用一些连接串/DSN参数，所有的参数都是
 |`ENFORCE_JOIN_ORDER`|强制SQL查询中表关联顺序，如果设置为`true`，查询优化器在关联时就不会对表进行再排序。|false|
 |`PROTOCOL_VERSION`|使用的ODBC协议版本，目前支持如下的版本：2.1.0、2.1.5、2.3.0、2.3.2和2.5.0，因为向后兼容，也可以使用协议的早期版本。|2.3.0|
 |`REPLICATED_ONLY`|配置查询只在全复制的表上执行，这是个提示，用于更高效地执行。|false|
-|`COLLOCATED`|用于优化的并置标志，当Ignite执行分布式查询时，它会将子查询发送给每个节点，如果事先知道要查询的数据是在同一个节点并置在一起的，通常是基于关联键，Ignite会有一个显著的性能提升和拓扑优化。|false|
+|`COLLOCATED`|如果SQL语句包含按主键或关联键对结果集进行分组的GROUP BY子句，可以将此参数设置为true。当Ignite执行分布式查询时，会向单个集群节点发送子查询，如果事先知道待查询的数据是在同一个节点上并置在一起的，并且是按主键或关联键分组的，那么Ignite通过在参与查询的每个节点本地分组数据来实现显著的性能和网络优化。|false|
 |`LAZY`|查询延迟执行。Ignite默认会将所有的结果集放入内存然后将其返回给客户端，对于不太大的结果集，这样会提供较好的性能，并且使内部的数据库锁时间最小化，因此提高了并发能力。但是，如果相对于可用内存来说结果集过大，那么会导致频繁的GC暂停，甚至`OutOfMemoryError`，如果使用这个标志，可以提示Ignite延迟加载结果集，这样可以在不大幅降低性能的前提下，最大限度地减少内存的消耗。|false|
 |`SKIP_REDUCER_ON_UPDATE`|开启服务端的更新特性。当Ignite执行DML操作时，首先，它会获取所有受影响的中间行给查询发起方进行分析（通常被称为汇总），然后会准备一个更新值的批量发给远程节点。这个方式可能影响性能，如果一个DML操作会移动大量数据条目时，还可能会造成网络堵塞。使用这个标志可以提示Ignite在对应的远程节点上进行中间行的分析和更新。默认值为false，这意味着会首先获取中间行然后发给查询发起方。|false|
 |`SSL_MODE`|确定服务端是否需要SSL连接。可以根据需要使用`require`或者`disable`。||
@@ -258,7 +266,11 @@ DRIVER={Apache Ignite};ADDRESS=example.com:12901;CACHE=MyCache;PAGE_SIZE=4096
 ### 2.4.配置DSN
 如果要使用[DSN](https://en.wikipedia.org/wiki/Data_source_name)(数据源名)来进行连接，可以使用同样的参数。
 
-要在Windows上配置DSN，需要使用一个叫做`odbcad32`的系统工具，这是一个ODBC数据源管理器，要启动这个工具，打开`Control panel`->`Administrative Tools`->`数据源（ODBC）`，当ODBC数据源管理器启动后，选择`Add...`->`Apache Ignite`，然后以正确的方式配置DSN。
+要在Windows上配置DSN，需要使用一个叫做`odbcad32`（32位x86系统）/`odbcad64`（64位）的系统工具，这是一个ODBC数据源管理器。
+
+安装DSN工具时，如果使用的是预构建的msi文件，一定要先安装Microsoft Visual C++ 2010（[32位x86](https://www.microsoft.com/en-ie/download/details.aspx?id=5555)，或者[64位x64](https://www.microsoft.com/en-us/download/details.aspx?id=14632)）。
+
+要启动这个工具，打开`Control panel`->`Administrative Tools`->`数据源（ODBC）`，当ODBC数据源管理器启动后，选择`Add...`->`Apache Ignite`，然后以正确的方式配置DSN。
 
 ![](https://files.readme.io/3fee52e-dsn_configuration.png)
 
@@ -290,7 +302,7 @@ driver=Apache Ignite
 ### 3.2.配置Ignite集群
 第一步，需要对集群节点进行配置，这个配置需要包含缓存的配置以及定义了`QueryEntities`的属性。如果应用（当前场景是ODBC驱动）要通过SQL语句进行数据的查询和修改，`QueryEntities`是必须的，或者，也可以使用DDL创建表。
 
-**DDL**：
+**CPP**：
 ```cpp
 SQLHENV env;
 
@@ -318,8 +330,8 @@ SQLAllocHandle(SQL_HANDLE_STMT, dbc, &stmt);
 
 SQLCHAR query1[] = "CREATE TABLE Person ( "
     "id LONG PRIMARY KEY, "
-    "firstName VARCHAR,
-    "lastName VARCHAR,
+    "firstName VARCHAR, "
+    "lastName VARCHAR, "
   	"salary FLOAT) "
     "WITH \"template=partitioned\"";
 
@@ -398,6 +410,7 @@ SQLExecDirect(stmt, query3, SQL_NTS);
 
                 <property name="fields">
                   <map>
+                    <entry key="id" value="java.lang.Integer"/>
                     <entry key="name" value="java.lang.String"/>
                   </map>
                 </property>
@@ -420,7 +433,7 @@ SQLExecDirect(stmt, query3, SQL_NTS);
 ```
 从上述配置中可以看出，定义了两个缓存，包含了`Person`和`Organization`类型的数据，它们都列出了使用SQL可以读写的特定字段和索引。
 ::: warning OdbcConfiguration
-确保在配置中显式地配置了`OdbcConfiguration`。
+确保在配置中显式地配置了`OdbcConfiguration`，具体参见[集群配置](#_1-2-集群配置)。
 :::
 
 ### 3.3.接入集群
@@ -1075,7 +1088,7 @@ ODBC[定义](https://msdn.microsoft.com/en-us/library/ms710289.aspx)了若干接
 |`SQL_C_GUID`|是|
 
 ## 5.数据类型
-下面列出了在规范中受支持的 - `SQL数据类型：
+支持如下的SQL数据类型（[规范](https://docs.microsoft.com/en-us/sql/odbc/reference/appendixes/sql-data-types?view=sql-server-ver15)中列出）：
 
  - `SQL_CHAR`
  - `SQL_VARCHAR`

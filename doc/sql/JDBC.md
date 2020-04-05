@@ -4,9 +4,10 @@ Ignite提供了一个JDBC驱动，它可以通过标准的SQL语句处理分布�
 
 目前，Ignite支持两种类型的驱动，轻量易用的JDBC Thin模式驱动以及以客户端节点形式与集群进行交互。
 ### 1.1.JDBC Thin模式驱动
-JDBC Thin模式驱动是默认的，是一个轻量级驱动，要使用这种驱动，只需要将`ignite-core-{version}.jar`放入应用的类路径即可。
+JDBC Thin模式驱动是Ignite提供的默认轻量级驱动，要使用这种驱动，只需要将`ignite-core-{version}.jar`加入应用的类路径即可。
 
-驱动会接入集群节点然后将所有的请求转发给它进行处理。节点会处理分布式的查询以及结果集的汇总，然后将结果集反馈给客户端应用。
+驱动会接入集群的一个节点然后将所有的请求转发给它进行处理。节点会处理分布式的查询以及结果集的汇总，然后将结果集反馈给客户端应用。
+
 JDBC连接串可以有两种模式：URL查询模式以及分号模式：
 ```
 // URL query pattern
@@ -42,21 +43,21 @@ Connection conn = DriverManager.getConnection("jdbc:ignite:thin://192.168.0.50")
 
 |属性名|描述|默认值|
 |---|---|---|
-|`user`|SQL连接的用户名，如果服务端开启了认证则此参数为必需。|`ignite`|
-|`password`|SQL连接的密码，如果服务端开启了认证则此参数为必需。|`ignite`|
+|`user`|SQL连接的用户名，如果服务端开启了认证则此参数为必需。关于如何开启认证和创建用户，可以分别参见[认证](/doc/java/Security.md#_2-1-认证)和[创建用户](/doc/sql/SQLReference.md#_2-6-create-user)的文档。|`ignite`|
+|`password`|SQL连接的密码，如果服务端开启了认证则此参数为必需。关于如何开启认证和创建用户，可以分别参见[认证](/doc/java/Security.md#_2-1-认证)和[创建用户](/doc/sql/SQLReference.md#_2-6-create-user)的文档。|`ignite`|
 |`distributedJoins`|对于非并置数据是否使用分布式关联|`false`|
 |`enforceJoinOrder`|是否在查询中强制表的关联顺序，如果配置为`true`，查询优化器在关联中不会对表进行重新排序。|false|
-|`collocated`|数据是否并置，当执行分布式查询时，它会将子查询发送给各个节点，如果事先知道要查询的数据在相同的节点是并置在一起的，那么Ignite会有显著的性能提升和拓扑优化。|`false`|
+|`collocated`|如果SQL语句包含按主键或关联键对结果集进行分组的GROUP BY子句，可以将此参数设置为true。当Ignite执行分布式查询时，会向单个集群节点发送子查询，如果事先知道待查询的数据是在同一个节点上并置在一起的，并且是按主键或关联键分组的，那么Ignite通过在参与查询的每个节点本地分组数据来实现显著的性能和网络优化。|`false`|
 |`replicatedOnly`|查询是否只包含复制表，这是一个潜在的可能提高性能的提示。|`false`|
 |`autoCloseServerCursor`|当拿到最后一个结果集时是否自动关闭服务端游标。开启之后，对`ResultSet.close()`的调用就不需要网络访问，这样会改进性能。但是，如果服务端游标已经关闭，在调用`ResultSet.getMetadata()`方法时会抛出异常，这时为什么默认值为`false`的原因。|`false`|
 |`socketSendBuffer`|发送套接字缓冲区大小，如果配置为0，会使用操作系统默认值。|`0`|
 |`socketReceiveBuffer`|接收套接字缓冲区大小，如果配置为0，会使用操作系统默认值。|`0`|
 |`tcpNoDelay`|是否使用`TCP_NODELAY`选项。|`true`|
-|`lazy`|查询延迟执行。Ignite默认会将所有的结果集放入内存然后将其返回给客户端，对于不太大的结果集，这样会提供较好的性能，并且使内部的数据库锁时间最小化，因此提高了并发能力。但是，如果相对于可用内存来说结果集过大，那么会导致频繁的GC暂停，甚至`OutOfMemoryError`，如果使用这个标志，可以提示Ignite延迟加载结果集，这样可以在不大幅降低性能的前提下，最大限度地减少内存的消耗。|`false`|
-|`skipReducerOnUpdate`|开启服务端的更新特性。当Ignite执行DML操作时，首先，它会获取所有受影响的中间行给查询发起方进行分析（通常被称为汇总），然后会准备一个更新值的批量发给远程节点。这个方式可能影响性能，如果一个DML操作会移动大量数据条目时，还可能会造成网络堵塞。使用这个标志可以提示Ignite在对应的远程节点上进行中间行的分析和更新。默认值为false，这意味着会首先获取中间行然后发给查询发起方。|`false`|
+|`lazy`|查询延迟执行。Ignite默认会将所有的结果集放入内存然后将其返回给客户端。对于不太大的结果集，这样会提供较好的性能，并且使内部的数据库锁时间最小化，因此提高了并发能力。但是如果相对于可用内存来说结果集过大，那么会导致频繁的GC暂停甚至`OutOfMemoryError`，如果使用这个标志，可以提示Ignite延迟加载结果集，这样可以在不大幅降低性能的前提下，最大限度地减少内存的消耗。|`false`|
+|`skipReducerOnUpdate`|开启服务端的更新特性。当Ignite执行DML操作时，首先，它会获取所有受影响的中间行给查询发起方进行分析（通常被称为汇总方），然后会准备一个更新值的批次发给远程节点。这个方式可能影响性能，如果一个DML操作需要移动大量数据时，还可能会造成网络堵塞。使用这个标志可以提示Ignite在对应的远程节点上进行中间行的分析和更新。默认值为false，这意味着会首先获取中间行然后发给查询发起方。|`false`|
 |`sslMode`|开启SSL连接。可用的模式为：1.`require`：在客户端开启SSL协议，只有SSL连接才可以接入。2.`disable`：在客户端禁用SSL协议，只支持普通连接。|`disable`|
-|`sslProtocol`|安全连接的协议名，如果未指定，会使用TLS协议。协议实现由JSSE支持：`SSLv3 (SSL), TLSv1 (TLS), TLSv1.1, TLSv1.2`|`TLS`|
-|`sslKeyAlgorithm`|创建密钥管理器使用的算法。注意大多数情况使用默认值就可以了。算法实现由JSSE提供：`PKIX (X509 or SunPKIX), SunX509`||
+|`sslProtocol`|安全连接的协议名，如果未指定，会使用TLS协议。协议实现由JSSE提供：`SSLv3 (SSL), TLSv1 (TLS), TLSv1.1, TLSv1.2`|`TLS`|
+|`sslKeyAlgorithm`|用于创建密钥管理器的密钥管理器算法。注意多数情况使用默认值即可。算法实现由JSSE提供：`PKIX (X509或SunPKIX), SunX509`||
 |`sslClientCertificateKeyStoreUrl`|客户端密钥存储库文件的url，这是个强制参数，因为没有密钥管理器SSL上下文无法初始化。如果`sslMode`为`require`并且未通过属性文件指定密钥存储库 URL，那么会使用JSSE属性`javax.net.ssl.keyStore`的值。|JSSE系统属性`javax.net.ssl.keyStore`的值。|
 |`sslClientCertificateKeyStorePassword`|客户端密钥存储库密码。如果`sslMode`为`require`并且未通过属性文件指定密钥存储库密码，那么会使用JSSE属性`javax.net.ssl.keyStorePassword`的值。|JSSE属性`javax.net.ssl.keyStorePassword`的值。|
 |`sslClientCertificateKeyStoreType`|用于上下文初始化的客户端密钥存储库类型。如果`sslMode`为`require`并且未通过属性文件指定密钥存储库类型，那么会使用JSSE属性`javax.net.ssl.keyStoreType`的值。|JSSE属性`javax.net.ssl.keyStoreType`的值，如果属性未定义，默认值为JKS。|
@@ -129,9 +130,8 @@ XML：
 |`sslContextFactory`|提供节点侧SSL的`Factory<SSLContext>`实现的类名。|null|
 
 ::: warning JDBC Thin模式驱动并非线程安全
-JDBC对象中的`Connection`、`Statement`和`ResultSet`不是线程安全的。因此不能在多个线程中使用一个JDBC连接对Statement和ResultSet进行操作。
-JDBC Thin模式驱动添加了并发保护，如果检测到了并发访问，那么会抛出`SQLException`，消息为：`Concurrent access to JDBC connection is not allowed [ownThread=<guard_owner_thread_name>, curThread=<current_thread_name>]",
-SQLSTATE="08006`。
+JDBC对象中的`Connection`、`Statement`和`ResultSet`不是线程安全的。因此不能在多线程中使用一个JDBC连接的Statement和ResultSet。
+JDBC Thin模式驱动防止并发，如果检测到了并发访问，那么会抛出`SQLException`，消息为：`Concurrent access to JDBC connection is not allowed [ownThread=<guard_owner_thread_name>,curThread=<current_thread_name>]",SQLSTATE="08006`。
 :::
 
 ### 1.2.使用SSL
@@ -150,7 +150,11 @@ JDBC Thin模式驱动可以使用SSL套接字通讯在驱动和节点间建立�
 :::
 
 如果希望使用自己的实现或者通过某种方式配置`SSLSocketFactory`，可以使用驱动的`sslFactory`参数，这是一个包含`Factory<SSLSocketFactory>`接口实现的类名字符串，该类对于JDBC驱动的类加载器必须可用。
-### 1.3.示例
+### 1.3.Ignite DataSource
+`DataSource`对象可用作部署对象，其可以通过JNDI命名服务按逻辑名定位。Ignite JDBC驱动的`org.apache.ignite.IgniteJdbcThinDataSource`实现了JDBC的`DataSource`接口，这样就可以使用`DataSource`接口了。
+
+除了通用的DataSource属性外，`IgniteJdbcThinDataSource`还支持所有可以传递给JDBC连接字符串的Ignite专有属性。例如，`distributedJoins`属性可以通过`IgniteJdbcThinDataSource#setDistributedJoins()`方法进行调整。
+### 1.4.示例
 要处理集群中的数据，需要使用下面的一种方式来创建一个JDBC`Connection`对象：
 ```java
 // Open the JDBC connection via DriverManager.
@@ -220,7 +224,7 @@ conn.createStatement().
 ```java
 conn.createStatement().execute("DELETE FROM Person WHERE age = 25");
 ```
-### 1.4.流处理
+### 1.5.流处理
 Ignite的JDBC驱动可以通过`SET STREAMING`命令对流化数据进行批量处理，具体可以看[SET STREAMING](/doc/sql/SQLReference.md#_4-2-set-streaming)的相关内容。
 ## 2.JDBC客户端模式驱动
 ### 2.1.JDBC客户端模式驱动
