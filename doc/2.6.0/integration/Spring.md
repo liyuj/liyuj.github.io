@@ -96,7 +96,7 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
     </property>
 </bean>
 ```
-也可以在客户端侧使用近缓存，要做到这一点只需要简单地通过`dynamicNearCacheConfiguration`属性提供一个近缓存配置即可。近缓存默认是不启用的，下面是一个例子：
+也可以在客户端侧使用近缓存，为此只需要简单地通过`dynamicNearCacheConfiguration`属性提供一个近缓存配置即可。近缓存默认是不启用的，下面是一个例子：
 ```xml
 <bean id="cacheManager" class="org.apache.ignite.cache.spring.SpringCacheManager">
     ...

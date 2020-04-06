@@ -1,6 +1,6 @@
 # 工具和分析
 ## 1.SQL工具
-Ignite的JDBC和ODBC驱动使得从SQL工具接入集群然后处理存储在其中的数据成为可能，需要做的仅仅是为SQL工具配置JDBC或者ODBC驱动。在本文中会以DBeaver为例，一步步演示如何进行这些基本的配置。
+Ignite的JDBC和ODBC驱动使得从SQL工具接入集群然后处理其中的数据成为可能，需要做的仅仅是为SQL工具配置[JDBC](/doc/sql/JDBC.md)或者[ODBC](/doc/sql/ODBC.md)驱动。在本文中会以DBeaver为例，一步步演示如何进行这些基本的配置。
 ### 1.1.安装和配置
 [DBeaver](https://dbeaver.jkiss.org/)作为一个示例，是一个针对开发者和数据库管理员的免费开源的统一数据库工具，它支持包括Ignite在内的所有常见数据库。
 

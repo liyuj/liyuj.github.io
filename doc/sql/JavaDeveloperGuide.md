@@ -1,26 +1,10 @@
 # Java开发向导
 ## 1.SQL API
-除了JDBC驱动，Java开发者可以使用特定的SQL API来查询和修改存储于数据库中的数据。
-### 1.1.SqlQuery
-`SqlQuery`适用于查询执行完毕后需要获得返回的结果集中整个对象的场景，下面的代码片段显示了在实践中如何实现：
-```java
-IgniteCache<Long, Person> cache = ignite.cache("personCache");
+除了JDBC驱动，Java开发者还可以使用特定的SQL API来查询和修改数据库中的数据。
+### 1.1.SqlFieldsQueries
+`SqlFieldsQuery`类是执行SQL语句并遍历结果集的接口，它是在`IgniteCache.query(SqlFieldsQuery)`方法上执行的，该方法会返回一个游标。
 
-SqlQuery sql = new SqlQuery(Person.class, "salary > ?");
-
-// Find all persons earning more than 1,000.
-try (QueryCursor<Entry<Long, Person>> cursor = cache.query(sql.setArgs(1000))) {
-  for (Entry<Long, Person> e : cursor)
-    System.out.println(e.getValue().toString());
-}
-```
-::: warning 注意
-`SqlQuery`只支持`select * from ...`或者`select alias.* from ...`这种类型的查询，无法支持针对部分列的查询，也不支持`SELECT TOP`或者`SELECT DISTINCT`语句，如果尝试执行不支持的查询，都会抛出异常，如果要执行这样的查询，请使用`SqlFieldsQueries`。
-
-因为SqlQuery总是返回所有的字段，所以完全可以忽略查询中的SELECT子句，即使用`FROM Persons WHERE ...`或者像上例这样只提供WHERE子句`salary > ?`。
-:::
-### 1.2.SqlFieldsQueries
-不需要查询整个对象，只需要指定几个特定的字段即可，这样可以最小化网络和序列化的开销。为此，Ignite实现了一个`字段查询`的概念。`SqlFieldsQuery`接受一个标准SQL查询作为它的构造器参数，然后像下面的示例那样立即执行：
+只需要指定几个特定的字段即可，这样可以最小化网络和序列化的开销。`SqlFieldsQuery`接受一个标准SQL查询作为构造器参数，后续的执行方式如下：
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
 
@@ -35,7 +19,7 @@ try (QueryCursor<List<?>> cursor = cache.query(sql)) {
 }
 ```
 ::: warning 可查询字段定义
-在`SqlQuery`和`SqlFieldsQuery`中的指定字段可以被访问之前，它们需要为SQL模式的一部分，使用标准的DDL命令，或者特定的Java注解，或者`QueryEntity`配置，都可以进行字段的定义。
+在特定字段可以被`SqlFieldsQuery`访问之前，它们应做为SQL模式的一部分，使用标准的DDL命令，或者特定的Java注解，或者`QueryEntity`配置，都可以进行字段的定义。
 :::
 
 通过`SqlFieldsQuery`，还可以使用DML命令进行数据的修改：
@@ -69,7 +53,7 @@ IgniteCache<Long, Person> cache = ignite.cache("personCache");
 cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
            " values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
-### 1.3.示例
+### 1.2.示例
 Ignite的二进制包包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
 ## 2.模式和索引
 ### 2.1.概述
@@ -236,7 +220,7 @@ ccfg.setIndexedTypes(Long.class, Person.class);
 :::
 
 ::: tip 注意
-多亏了二进制编组器，不需要将索引类型类加入集群节点的类路径中，SQL查询引擎不需要对象反序列化就可以钻取索引和可查询字段的值。
+因为有[二进制编组器](/doc/java/README.md#_10-二进制编组器)，不需要将索引类型类加入集群节点的类路径中，SQL查询引擎不需要对象反序列化就可以钻取索引和可查询字段的值。
 :::
 
 **分组索引**
@@ -291,6 +275,7 @@ public class Person implements Serializable {
                 Indexed fields are added to 'indexes' list below.-->
                 <property name="fields">
                     <map>
+                        <entry key="id" value="java.lang.Long"/>
                         <entry key="name" value="java.lang.String"/>
                         <entry key="salary" value="java.lang.Long "/>
                     </map>
@@ -536,22 +521,19 @@ cache.query(query).getAll();
 ## 4.查询取消
 Ignite中有两种方式停止长时间运行的SQL查询，SQL查询时间长的原因，比如使用了未经优化的索引等。
 
-第一个方法是为特定的`SqlQuery`和`SqlFieldsQuery`设置查询执行的超时时间。
+第一个方法是为特定的`SqlFieldsQuery`设置查询执行的超时时间。
 ```java
-SqlQuery qry = new SqlQuery<AffinityKey<Long>, Person>(Person.class, joinSql);
+SqlFieldsQuery query = new SqlFieldsQuery("SELECT * from Person");
 
 // Setting query execution timeout
-qry.setTimeout(10_000, TimeUnit.SECONDS);
+query.setTimeout(10_000, TimeUnit.SECONDS);
 ```
 第二个方法是使用`QueryCursor.close()`来终止查询。
 ```java
-SqlQuery qry = new SqlQuery<AffinityKey<Long>, Person>(Person.class, joinSql);
+SqlFieldsQuery query = new SqlFieldsQuery("SELECT * FROM Person");
 
-// Getting query cursor.
-QueryCursor<List> cursor = cache.query(qry);
-
-// Executing query.
-....
+// Executing the query
+QueryCursor<List<?>> cursor = cache.query(query);
 
 // Halting the query that might be still in progress.
 cursor.close();

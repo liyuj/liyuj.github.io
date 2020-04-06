@@ -37,7 +37,7 @@ module.exports = {
         sidebarDepth: 2,
         locales: {
             '/': {
-                selectText: '最新版本',
+                selectText: '2.8.0',
                 label: '2.8.0',
                 nav: [{
                     text: '首页',
@@ -136,6 +136,7 @@ module.exports = {
                         'ODBC',
                         'ToolsAndAnalytics',
                         'JavaDeveloperGuide',
+                        'NETDeveloperGuide',
                         'PHPDeveloperGuide',
                         'ManagementMonitoring',
                         'SqlKeyValue'

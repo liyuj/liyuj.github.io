@@ -116,7 +116,7 @@ Ignite可以无限制地支持SQL查询，SQL语法兼容于ANSI-99标准，这�
 ## 5.多集群支持
 有这样一个场景，就是环境中同时部署并且运行着多个Ignite集群，然后想使用一个Web控制台实例并行地监控并且管理它们。
 
-要做到这一点，每个集群都需要启动一个Ignite Web控制台代理实例，然后映射到已经部署的Ignite Web控制台，如下图所示：
+为此每个集群都需要启动一个Ignite Web控制台代理实例，然后映射到已经部署的Ignite Web控制台，如下图所示：
 
 ![](https://files.readme.io/63771a6-Apache-Ignite-Multi-Cluster.png)
 
