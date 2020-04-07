@@ -66,7 +66,7 @@ Ignite是一个弹性的、可水平扩展的分布式系统，它支持按需�
 
 **不完整**，ACID事务是支持的，但是仅仅在键-值API级别，Ignite还支持*跨分区的事务*，这意味着事务可以跨越不同服务器不同分区中的键。
 
-Ignite在2.7版本中，通过MVCC技术，实现了包括SQL事务在内的全事务支持，不过目前还处于测试阶段。
+Ignite在2.7版本中，基于MVCC技术，引入了对SQL事务的支持，不过目前还处于测试阶段。
 
 **Ignite是不是一个多模式数据库？**
 
@@ -103,10 +103,46 @@ Apache Ignite官方在如下环境中进行了测试：
 
 **从源代码构建**
 
-Ignite C++基于Ignite，因此首先需要构建Java代码，具体可以参见Ignite版本的[相关页面](/doc/java/#_1-3-入门)。
+可以从源代码包，也可以从二进制包构建Apache Ignite C++，如果使用的是前一种方式，首先需要构建Java部分，具体可以参见Ignite版本的[相关页面](/doc/java/#_3-入门)。
 
-另外，如果要构建测试，还会需要[Boost](http://www.boost.org/)，在Windows中需要正确配置`BOOST_HOME`环境变量，如果不需要测试，可以排除测试的工程，或者不对它们进行编译。在Linux中可以使用`configure`脚本，具体可以调用`./configure --help`寻求帮助。
+**依赖**
 
+在Linux平台，需要某些开发环境依赖项，下面列出了一些流行的发行版及其软件包系统：
+
+Ubuntu和APT：
+```bash
+apt-get install libtool autoconf make g++ libssl1.0-dev
+
+# If ODBC enabled (disable with --disable-core):
+apt-get install unixodbc-dev
+
+# If thick client enabled (disable with --disable-odbc):
+apt-get install openjdk-11-jdk
+```
+OpenSUSE和Zypper：
+```bash
+zypper install libtool autoconf make gcc-c++ libopenssl-1_0_0-devel
+
+# If ODBC enabled (disable it with --disable-core):
+zypper install unixODBC-devel
+
+# If thick client enabled (enable it with --enable-odbc):
+zypper install java-11-openjdk-devel
+```
+Fedora和Yum：
+```bash
+yum install libtool autoconf make gcc-c++ compat-openssl10-devel
+
+# If ODBC enabled (disable it with --disable-core):
+yum install unixODBC-devel
+
+# If thick client enabled (enable it with --enable-odbc):
+yum install java-11-openjdk-devel
+```
+另外，如果要构建测试，还会需要[Boost](http://www.boost.org/)（已经在1.58和1.68版本上做了测试），在Windows中需要正确配置`BOOST_HOME`环境变量。如果不需要测试，可以排除测试的工程，或者不对它们进行构建。在Linux中可以使用`configure`脚本，具体可以调用`./configure --help`寻求帮助。
+::: warning OpenSSL
+当前，Apache Ignite C++将仅针对OpenSSL 1.0开发头文件构建。可以同时将OpenSSL 1.0和1.1库同时安装到系统中，这不会引起依赖关系冲突。
+:::
 使用如下的命令可以构建C++的二进制包：
 
 Windows：
@@ -125,6 +161,8 @@ libtoolize && aclocal && autoheader && automake --add-missing && autoreconf
 # ./configure --help
 # To use default configuration just type:
 ./configure
+# To build ODBC driver only, use:
+./configure --enable-odbc --disable-node --disable-core
 make
 
 #The following step is optional if you want to install Ignite
@@ -141,14 +179,17 @@ libtoolize && aclocal && autoheader && automake --add-missing && autoreconf
 # ./configure --help
 #
 # Specify a target subdirectory in your user's home dir:
-./configure --prefix=/home/user/odbc
+./configure --prefix=/home/user/ignite
+# To build ODBC driver only, use:
+./configure --prefix=/home/user/ignite \
+    --enable-odbc --disable-node --disable-core
 make
 
 #The following step is needed if you want to install Ignite
 #under specified prefix directory.
 make install
 ```
-::: tip 如要构建整个工程，需要boost.test库
+::: tip 如要构建整个工程需要boost.test库
 如果不打算运行测试，就不要构建整个工程，或者说，可以只构建需要的工程。在Windows上，可以通过单击解决方案资源管理器中感兴趣的工程并选择“构建”来实现这一点。在Linux上，可以使用`configure`脚本启用/禁用不同组件的构建。
 :::
 ### 3.3.从命令行启动
@@ -739,7 +780,40 @@ void TestClient()
   cacheClient.Put(42, "Hello Ignite Thin Client!");
 }
 ```
-### 7.5.认证
+### 7.5.分区感知
+分区感知使得瘦客户端可以将查询请求直接发送到持有待查询数据的节点，即客户端可以感知到[分区的分布](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
+
+在没有分区感知时，通过瘦客户端接入集群的应用需要通过某个服务端节点执行所有的查询和操作，该服务端节点充当传入请求的代理，该节点将操作重新路由到存储所请求数据的节点，这导致增加额外延迟的瓶颈。
+
+有了分区感知之后，瘦客户端可以将查询和操作直接发送到持有查询所需数据的节点，这消除了瓶颈，使应用更容易扩展。
+
+以下代码示例说明了如何在C++瘦客户端上使用分区感知功能：
+```cpp
+#include <ignite/thin/ignite_client.h>
+#include <ignite/thin/ignite_client_configuration.h>
+
+using namespace ignite::thin;
+
+void TestClientPartitionAwareness()
+{
+    IgniteClientConfiguration cfg;
+    cfg.SetEndPoints("127.0.0.1:10800,217.29.2.1:10800,200.10.33.1:10800");
+    cfg.SetPartitionAwareness(true);
+
+    IgniteClient client = IgniteClient::Start(cfg);
+
+    cache::CacheClient<int32_t, std::string> cacheClient =
+        client.GetOrCreateCache<int32_t, std::string>("TestCache");
+
+    cacheClient.Put(42, "Hello Ignite Partition Awareness!");
+
+    cacheClient.RefreshAffinityMapping();
+
+    // Getting a value
+    std::string val = cacheClient.Get(42);
+}
+```
+### 7.6.认证
 如果服务端开启了[身份认证](/doc/java/Security.md#_2-1-认证)，那么必须提供用户的凭据：
 
 C++：
@@ -787,7 +861,7 @@ void TestClientWithAuth()
 
 </bean>
 ```
-### 7.6.性能考量
+### 7.7.性能考量
 瘦客户端不是集群的一部分。因此关于集群及其数据分布的信息有限，再加上额外的网络延迟，瘦客户端上单个操作的延迟可能比普通客户端的延迟更差。虽然可以采取一些措施来改善瘦客户端延迟，例如最优映射，不过还是建议在单一键值操作方面使用批量操作（例如`GetAll()`，`SetAll()`），以在吞吐量方面获得最佳性能。
 
 **最优映射**
@@ -825,7 +899,7 @@ void TestClientWithAuth()
   std::string val = cacheClient.Gett(42);
 }
 ```
-### 7.7.瘦客户端API
+### 7.8.瘦客户端API
 瘦客户端提供了完整Ignite C++ API的子集。它还在开发中，社区计划在未来支持普通客户端中的大多数API。
 ## 8.性能提示
 Ignite C++内存数据网格性能和吞吐量在很大程度上取决于使用的功能和设置。在大多数场景中，只需调整缓存配置即可优化缓存性能。
