@@ -98,7 +98,7 @@ Ignite是一个分布式系统，因此，有能力将数据和数据以及数�
 ### 3.2.安装
 **NuGet**
 
-NuGet是将Ignite.NET包含到项目中最便捷的方法，具体可以在软件包管理器控制台中输入以下内容：`Install-Package Apache.Ignite`进行安装。
+NuGet是将Ignite.NET引入到项目中最便捷的方法，具体可以在软件包管理器控制台中输入以下内容：`Install-Package Apache.Ignite`进行安装。
 
 或者也可以在NuGet Gallery中搜索软件包：[https://www.nuget.org/packages/Apache.Ignite/](https://www.nuget.org/packages/Apache.Ignite/)。
 ::: tip 提示
@@ -315,7 +315,7 @@ namespace IgniteTest
 
 请参见[入门](#_3-入门)章节中的相关内容。
 
-一个额外的步骤是配置`IGNITE_HOME`环境变量或者`IgniteConfiguration.IgniteHome`，指向NuGet的包路径（通常是`packages/Apache.Ignite.2.4.0`）。
+一个额外的步骤是配置`IGNITE_HOME`环境变量或者`IgniteConfiguration.IgniteHome`，指向NuGet的包路径（通常是`packages/Apache.Ignite.x.y.z`）。
 
 **运行示例**
 
@@ -341,7 +341,7 @@ Ignite.NET会在如下路径中查找Java运行环境：
 ### 4.4.已知问题
 **NU1701**
 
-`warning NU1701: Package 'Apache.Ignite 2.4.0' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.`。
+`warning NU1701: Package 'Apache.Ignite x.y.z' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.`。
 
 Ignite.NET完全支持.NET Core，但NuGet程序集针对的是.NET 4.0。通过在`csproj`文件中添加`<PropertyGroup><NoWarn>NU1701</NoWarn></PropertyGroup>`，可以安全地忽略此警告。
 
@@ -619,6 +619,7 @@ class LifecycleExampleHandler : ILifecycleHandler
     public bool Started { get; private set; }
 }
 ```
+可以在`ILifecycleHandler`中注入Ignite实例和其他有用的资源。
 ### 7.3.生命周期事件类型
 Ignite.NET支持如下的生命周期事件类型：
 
@@ -1116,13 +1117,51 @@ Ignite的主线程池大小默认为可用CPU核数的2倍。在大多数情况�
 ```
 ### 10.7.尽可能地使用IBinarizable
 通过网络传输的每个对象都实现`Apache.Ignite.Core.Binary.IBinarizable`是一个最佳实践。这些可能是缓存键或值、作业、作业的参数或将通过网络发送到其他节点的任何内容。实现`IBinarizable`有时性能可能比标准序列化提高10倍以上。
-### 10.8.使用并置计算
+### 10.8.将DateTime值强制为Timestamp格式
+在[平台互操作性](#_13-平台互操作性)中解释了`DateTime`的序列化有两种方式：或者为`DateTime`（8字节）或者为对象。
+
+首选`Timestamp`格式：
+
+ - 更高效，更紧凑；
+ - 可与其他平台（Java，C ++，Python）上的Ignite互操作；
+
+因此建议全局使用`Timestamp`格式。
+
+传统API：
+```csharp
+new IgniteConfiguration
+{
+    ...
+    BinaryConfiguration = new BinaryConfiguration
+    {
+        Serializer = new BinaryReflectiveSerializer
+        {
+            ForceTimestamp = true
+        }
+    }
+};
+```
+瘦客户端：
+```csharp
+new IgniteClientConfiguration
+{
+    ...
+    BinaryConfiguration = new BinaryConfiguration
+    {
+        Serializer = new BinaryReflectiveSerializer
+        {
+            ForceTimestamp = true
+        }
+    }
+};
+```
+### 10.9.使用并置计算
 Ignite可以在内存中执行MapReduce计算，不过大多数计算通常需要处理缓存在远程节点上的某些数据。从远程节点加载该数据通常非常昂贵，但是将计算发送到数据所在的节点要廉价得多。最简单的方法是使用`ICompute.AffinityRun()`方法，还有其他方法，包括`ICacheAffinity.MapKeysToNodes()`方法。并置计算概念的更多信息和代码示例，请参见[关联并置](/doc/net/DataGrid.md#_7-关联并置)。
-### 10.9.使用数据流处理器
+### 10.10.使用数据流处理器
 如果需要将大量数据加载到缓存中，可以使用`IDataStreamer`。数据流处理器在将更新发送到远程节点之前，会将更新恰当地批量化，还会适当地控制每个节点上并行操作的数量，以避免故障。通常它的性能比一堆单线程更新高10倍。更详细的说明和示例，请参见[数据加载](/doc/net/DataGrid.md#_8-数据加载)章节。
-### 10.10.批量处理消息
+### 10.11.批量处理消息
 如果能发送10个比较大的作业而不是100个小些的作业，那么应该选择发送大些的作业，这会降低网络上传输作业的数量以及显著地提升性能。类似的对于缓存条目也是一样，应该尽可能使用持有键值集合的API方法，而不是一个一个地传递。
-### 10.11.调整垃圾收集
+### 10.12.调整垃圾收集
 如果由于垃圾收集（GC）导致吞吐量大幅波动，则应调整JVM参数。以下的JVM设置已经被证明可提供相当平稳的吞吐量，而不会出现大的波动：
 ```
 -XX:+UseParNewGC
@@ -1545,12 +1584,12 @@ app.config：
 
 ** Java中`BigDecimal`可以有任意的大小和精度，而C#中数值型固定为16个字节和28-29位精度，如果反序列化时一个`BigDecimal`无法匹配`decimal`，则Ignite.NET会抛出`BinaryObjectException`。
 
-枚举，在Ignite中，Java的`writeEnum`只会写入序数值，但是在.NET中，可以为`enumValue`分配任何数字，因此要注意，不会考虑任何自定义的枚举到原始值的绑定。
+**Enum**：在Ignite中，Java的`writeEnum`只会写入序数值，但是在.NET中，可以为`enumValue`分配任何数字，因此要注意，不会考虑任何自定义的枚举到原始值的绑定。
 
 ::: warning DateTime序列化
 DateTime可以是Local和UTC，Java中Timestamp只能是UTC。因此Ignite.NET可以通过两种方式对DateTime进行序列化：.NET风格（可以与非UTC值一起使用，在SQL中不可用）和作为Timestamp（对非UTC值抛出异常，可用在SQL中）。
 
-反射式序列化：使用`QuerySqlField`标记字段以强制执行时间戳序列化。
+反射式序列化：使用`QuerySqlField`标记字段以强制执行时间戳序列化，或者配置`BinaryReflectiveSerializer.ForceTimestamp`为`true`，这个可以每类型单独配置，也可以全局配置，比如：`IgniteConfiguration.BinaryConfiguration = new BinaryConfiguration { Serializer = new BinaryReflectiveSerializer { ForceTimestamp = true } }`。
 
 IBinarizable：使用`IBinaryWriter.WriteTimestamp`方法。
 
@@ -1684,7 +1723,7 @@ web.config：
  - 支持的运行时：.NET 4.0 + 、. NET Core 2.0+；
  - 支持的操作系统：Windows、Linux、macOS（.NET Core 2.0+支持的任何操作系统）
 
-::: warning 将多个线程与瘦客户端连接池一起使用可提高性能
+::: warning 将多线程与瘦客户端连接池一起使用可提高性能
 目前.NET瘦客户端没有创建多个线程来提高吞吐量的功能，不过可以通过从应用维护的池中获取瘦客户端连接来创建多个线程，以提高吞吐量。
 :::
 ### 15.3.配置服务端节点
@@ -1757,7 +1796,15 @@ using (IIgniteClient client = Ignition.StartClient(cfg))
   cache.Put(1, "Hello, World!");
 }
 ```
-### 15.5.瘦客户端API
+### 15.5.分区感知
+分区感知使得瘦客户端可以将查询请求直接发送到持有待查询数据的节点，即客户端可以感知到[分区的分布](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
+
+在没有分区感知时，通过瘦客户端接入集群的应用需要通过某个服务端节点执行所有的查询和操作，该服务端节点充当传入请求的代理，该节点将操作重新路由到存储所请求数据的节点，这导致增加额外延迟的瓶颈。
+
+有了分区感知之后，瘦客户端可以将查询和操作直接发送到持有查询所需数据的节点，这消除了瓶颈，使应用更容易扩展。
+
+要开启分区感知，需要配置`IgniteClientConfiguration.EnablePartitionAwareness`为`true`，并且在客户端连接配置中提供多个服务端节点的地址。
+### 15.6.瘦客户端API
 瘦客户端提供了完整Ignite.NET API的一个子集，并且还在不断发展，后续计划在胖客户端和瘦客户端中都支持大多数API。
 
 当前版本支持Cache API`ICacheClient`，包括支持谓词的`ScanQuery`。
@@ -1789,6 +1836,12 @@ catch (IgniteException e) {
 确认已安装JDK，配置好了`JAVA_HOME`环境变量并指向JDK安装目录。最新的JDK可以在这里找到：[http://www.oracle.com/technetwork/java/javase/downloads/index.html](http://www.oracle.com/technetwork/java/javase/downloads/index.html)。
 
 `errorCode=193`是`ERROR_BAD_EXE_FORMAT`，通常是由x64/x86不匹配引起的。确认已安装的JDK和应用具有相同的x64/x86平台架构。当未设置`JAVA_HOME`时，Ignite会自动检测到合适的JDK，因此即使同时安装了x86和x64的JDK，也没有问题。
+
+丢失依赖时会发生`126 ERROR_MOD_NOT_FOUND`。
+
+ - JDK8需要[Microsoft Visual C++ 2010 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=14632)包；
+ - 之后版本的JDK需要[Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=48145)包或者更新的版本。
+
 ### 16.4.无法找到Java类
 检查`IGNITE_HOME`环境变量、`IgniteConfiguration.IgniteHome`和`IgniteConfiguration.JvmClasspath`属性，具体请参见[部署](#_14-部署)章节，ASP.NET/IIS场景还需要其他的步骤。
 ### 16.5.Ignition.Start阻塞

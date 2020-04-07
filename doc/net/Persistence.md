@@ -133,7 +133,7 @@ Ignite有一个存储会话的概念，该概念可能跨越多个缓存存储�
 
 如果是`ATOMIC`模式缓存，则在每个`ICacheStore`方法完成后调用`SessionEnd()`方法。如果使用`TRANSACTIONAL`模式缓存，则在每个事务结束时调用`SessionEnd()`，其可以在底层存储上提交或回滚多个操作。
 ::: tip 提示
-`CacheStoreAdapater`提供了`SessionEnd()`方法的默认空实现。
+`CacheStoreAdapter`提供了`SessionEnd()`方法的默认空实现。
 :::
 
 ### 2.4.CacheStoreSession
