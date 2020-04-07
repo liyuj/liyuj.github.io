@@ -21,6 +21,12 @@ Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内
  - 通过在Ignite中读写DataFrame，可以在Spark作业间共享数据和状态；
  - 使用Ignite的SQL引擎，包括高级索引以及避免Ignite和Spark之间的网络数据移动，可以优化Spark的查询执行计划，从而实现更快的SparkSQL查询。
 
+### 1.3.支持的Spark版本
+Ignite有两个模块，分别支持不同的Spark版本：
+
+ - `ignite-spark`：与Spark2.3版本集成；
+ - `ignite-spark-2.4`：与Spark2.4版本集成。
+
 ## 2.IgniteContext和IgniteRDD
 ### 2.1.IgniteContext
 IgniteContext是Spark和Ignite集成的主要入口点。要创建一个Ignite上下文的实例，必须提供一个SparkContext的实例以及创建`IgniteConfiguration`的闭包（配置工厂）。Ignite上下文会确保Ignite服务端或者客户端节点存在于所有参与的作业实例中。或者，一个XML配置文件的路径也可以传入`IgniteContext`构造器，它会用于配置启动的节点。
