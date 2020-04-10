@@ -38,8 +38,8 @@ Ignite附带了`IGNITE_HOME/bin/ignitevisorcmd.{sh|bat}`脚本，用于启动命
 |top||输出当前的拓扑信息|
 |vvm||打开拓扑中节点的VisualVM|
 
-## 2.报警指令
-### 2.1.报警指令规范
+## 2.alert命令
+### 2.1.alert命令规范
 注册：alert: alert -r {-t=&lt;sec&gt;} {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;} ... {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;}
 
 取消注册：alert -u {-id=&lt;alert-id&gt;|-a}
@@ -122,8 +122,8 @@ ALERT [MyAlert] CONDITION [-nc=gte2 -cc=lte16] alarmed with node count [2] and c
 ```
 > 注意，这里$1指的是报警名，$2指的是报警条件，$3,$4……指的是每个子条件的值。
 
-## 3.启动指令
-### 3.1.启动指令规范
+## 3.start指令
+### 3.1.start命令规范
 在远程主机上启动或者重启节点。
 
 `start -f=<path> {-m=<num>} {-r}`

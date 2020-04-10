@@ -38,13 +38,13 @@ Ignite附带了`IGNITE_HOME/bin/ignitevisorcmd.{sh|bat}`脚本，用于启动命
 |top||输出当前的拓扑|
 |vvm||打开节点的VisualVM|
 
-## 2.报警指令
-### 2.1.报警指令规范
-注册：alert: alert -r {-t=&lt;sec&gt;} {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;} ... {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;}
+## 2.alert命令
+### 2.1.alert命令规范
+注册alert: alert -r {-t=&lt;sec&gt;} {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;} ... {-&lt;metric&gt;=&lt;condition&gt;&lt;value&gt;}
 
 取消注册：alert -u {-id=&lt;alert-id&gt;|-a}
 
-报警选项：
+alert选项：
 -n：报警名字
 -u：取消注册的报警，‘-a’标志或者‘id’参数需要二选一，注意同时只允许‘-u’和‘-r’其中之一，如果‘-r’或者‘-u’都没有提供，会输出所有的报警。
 -a：如果提供了‘-a’，所有的报警都会被取消。
@@ -58,7 +58,7 @@ Ignite附带了`IGNITE_HOME/bin/ignitevisorcmd.{sh|bat}`脚本，用于启动命
 
 -i：配置报警通知的最小调节时间间隔（秒），默认是60秒；
 
--&lt;metric&gt;：定义了有助记忆的可度量的指标：
+`-<metric>`：定义了有助记忆的可度量的指标：
 集群范围（不是特定节点的）：
 cc：网格内的有效CPU数量；
 nc：网格内的节点数量；
@@ -79,7 +79,7 @@ hu：节点使用的堆内存（MB）；
 cd：节点的当前CPU负载；
 hm：节点的堆内存最大值（MB）；
 
-&lt;condition&gt;定义指标的条件
+`<condition>`:定义指标的条件
 有助记忆谓词的比较部分：
 eq：等于‘=’`<value>`数
 neq：不等于‘!=’`<value>`数
@@ -120,10 +120,12 @@ echo ALERT [$1] CONDITION [$2] alarmed with node count [$3] and cpu count [$4]
 ```
 ALERT [MyAlert] CONDITION [-nc=gte2 -cc=lte16] alarmed with node count [2] and cpu count [8]
 ```
-> 注意，这里$1指的是报警名，$2指的是报警条件，$3,$4……指的是每个子条件的值。
+::: tip 注意
+这里$1指的是报警名，$2指的是报警条件，$3,$4……指的是每个子条件的值。
+:::
 
-## 3.启动指令
-### 3.1.启动指令规范
+## 3.start命令
+### 3.1.start命令规范
 在远程主机上启动或者重启节点。
 
 `start -f=<path> {-m=<num>} {-r}`

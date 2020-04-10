@@ -170,7 +170,7 @@ Ignite还无法直接提供授权功能，但是对于这样的高级安全特�
 ## 3.数据反序列化安全性
 如果攻击者找到办法可以将恶意代码植入集群节点的类路径中，那么数据的序列化是会受到影响的，解决这个问题的常规做法是保护对集群的访问，并且将访问权限授予有限的人群。
 
-但是如果攻击者突破了防护，Ignite还提供了`IGNITE_MARSHALLER_WHITELIST`和`IGNITE_MARSHALLER_BLACKLIST`这两个系统属性，这两个属性可以定义用于安全反序列化的白名单/黑名单。
+但是如果攻击者突破了防护，Ignite还提供了`IGNITE_MARSHALLER_WHITELIST`和`IGNITE_MARSHALLER_BLACKLIST`这两个系统属性，这两个属性可以定义用于允许/不允许安全反序列化的类列表。
 ### 3.1.IGNITE_MARSHALLER_WHITELIST
 要使用`IGNITE_MARSHALLER_WHITELIST`，可以创建一个包含允许反序列化的文件清单的文件，比如有一个名为whitelist.txt的文件，内容如下：
 ```
