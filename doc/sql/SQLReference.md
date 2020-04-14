@@ -614,13 +614,14 @@ DELETE FROM Person WHERE name = 'John Doe';
 将CSV文件的数据复制进一个SQL表。
 ```sql
 COPY FROM '/path/to/local/file.csv'
-INTO tablename (columnName, columnName, ...) FORMAT CSV
+INTO tableName (columnName, columnName, ...) FORMAT CSV [CHARSET 'charset-name']
 ```
 **参数**
 
  - `‘/path/to/local/file.csv’`：CSV文件的实际路径；
  - `tableName`：要注入数据的表名；
- - `columnName`：与CSV文件中的列对应的列名。
+ - `columnName`：与CSV文件中的列对应的列名；
+ - `charset-name`：字符集名，默认值为UTF-8。
 
 **描述**
 
