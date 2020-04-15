@@ -3,8 +3,9 @@
 ### 1.1.概述
 Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)的实现。它提供了基于注解的方式来启用Java方法的缓存，这样方法的执行结果就会存储在Ignite缓存中。如果之后同一个方法通过同样的参数集被调用，结果会直接从缓存中获得而不是实际执行这个方法。
 
-> **Spring缓存抽象文档**
-关于如何使用Spring缓存抽象的更多信息，包括可用的注解，可以参照这个文档页面：[http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html).
+::: tip Spring缓存抽象文档
+关于如何使用Spring缓存抽象的更多信息，包括可用的注解，可以参照这个文档页面：[http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)。
+:::
 
 ### 1.2.如何启用缓存
 只需要两个简单的步骤就可以将Ignite缓存嵌入基于Spring的应用：
@@ -13,7 +14,8 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
  - 在Spring应用上下文中配置`SpringCacheManager`作为缓存管理器。
 
 嵌入式节点可以通过`SpringCacheManager`自己启动，这种情况下需要分别通过`configurationPath`或者`configuration`属性提供一个Ignite配置文件的路径或者`IgniteConfiguration`Bean（看下面的示例）。注意同时设置两个属性是非法的，会抛出`IllegalArgumentException`。
-配置路径：
+
+配置文件路径：
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -127,8 +129,9 @@ public long averageSalary(int organizationId) {
 ```
 当这个方法第一次被调用时，`SpringCacheManager`会自动创建一个`averageSalary`缓存，它也会在缓存中查找事先计算好的平均值然后如果存在，就会直接返回，如果这个组织的平均值还没有被计算过，那么这个方法就会被调用然后将结果保存在缓存中，因此下一次请求这个组织的平均值，就不需要访问数据库了。
 
-> **缓存键**
+::: tip 缓存键
 因为`organizationId`是唯一的方法参数，所以它会自动作为缓存键。
+:::
 
 如果一个雇员的工资发生变化，可能希望从缓存中删除这个雇员所属组织的平均值，否则`averageSalary(...)`方法会返回过时的缓存结果。这个可以通过将`@CacheEvict`注解加到一个方法上来更新雇员的工资：
 ```java
@@ -146,9 +149,10 @@ public void updateSalary(Employee e) {
 ```
 在这个方法被调用之后，该雇员所属组织的平均值就会被从`averageSalary`缓存中踢出，这会强迫`averageSalary(...)`方法在下次调用时重新计算。
 
-> **Spring表达式语言(SpEL)**
+::: tip Spring表达式语言(SpEL)
 注意这个方法是以雇员为参数的，而平均值是通过组织的Id将平均值存储在缓存中的。为了明确地指定什么作为缓存键，可以使用注解的`key`参数和[Spring表达式语言](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html)。
 `#e.organizationId`表达式的意思是从e变量中获取`organizationId`属性的值。本质上会在提供的雇员对象上调用`getOrganizationId()`方法，以及将返回的值作为缓存键。
+:::
 
 ## 2.Spring Data
 ### 2.1.概述
@@ -164,8 +168,9 @@ Ignite实现了Spring Data的`CrudRepository`接口，它不仅仅支持基本�
     <version>{ignite.version}</version>
 </dependency>
 ```
->**Ignite版本**
+::: tip Ignite版本
 Ignite从2.0版本开始支持Spring Data，因此需要使用`2.0.0`及之后的版本。
+:::
 ### 2.3.IgniteRepository
 Ignite引入了一个特定的`IgniteRepository`接口，扩展了默认的`CrudRepository`，这个接口可以被所有希望从Ignite集群中存储和查询数据的自定义Spring Data Repository继承。
 
@@ -201,17 +206,17 @@ public interface PersonRepository extends IgniteRepository<Person, Long> {
 `@RepositoryConfig`注解需要指定，它会将Repository映射到一个分布式缓存，在上面的示例中，`PersonRepository`映射到了`PersonCache`。
 
 自定义方法（比如`findByFirstName(name)`以及`findTopByLastNameLike(name)`）的签名会被自动处理，在该方法被调用时会被转成对应的SQL查询。另外，如果需要执行明确的SQL查询作为方法调用的结果，也可以使用`@Query(queryString)`注解。
->**不支持的CRUD操作**
-`CrudRepository`接口的部分操作目前还不支持。这些操作是不需要提供键作为参数的：
- 1.`save(S entity)`
- 2.`save(Iterable<S> entities)`
- 3.`delete(T entity)`
- 4.`delete(Iterable<? extends T> entities)`
-这些操作可以使用`IgniteRepository`接口中提供的功能相当的函数就行替代：
- 1.`save(ID key, S entity)`
- 2.`save(Map<ID, S> entities)`
- 3.`deleteAll(Iterable<ID> ids)`
-
+::: warning 不支持的CRUD操作
+`CrudRepository`接口的部分操作目前还不支持。这些操作是不需要提供主键作为参数的：
+ - `save(S entity)`
+ - `save(Iterable<S> entities)`
+ - `delete(T entity)`
+ - `delete(Iterable<? extends T> entities)`
+这些操作可以使用`IgniteRepository`接口中提供的功能相当的函数替代：
+ - `save(ID key, S entity)`
+ - `save(Map<ID, S> entities)`
+ - `deleteAll(Iterable<ID> ids)`
+:::
 ### 2.4.Spring Data和Ignite配置
 要在Spring Data中启用面向Ignite的Repository，需要在应用的配置上添加`@EnableIgniteRepositories`注解，如下所示：
 ```java

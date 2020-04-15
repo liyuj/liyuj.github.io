@@ -1789,3 +1789,69 @@ cfg.setDataStorageConfiguration(storageCfg);
 ::: warning 可能的数据丢失
 虽然交换空间位于磁盘上，但不要认为它可以替代原生持久化，交换空间中的数据只在节点在线期间可用。一旦节点停止，所有数据都会丢失。要一直保证数据的可用性，要么使用原生持久化，要么使用第三方持久化。
 :::
+## 7.磁盘压缩
+磁盘压缩是指将数据页面写入磁盘时对其进行压缩的过程，以减小磁盘空间占用。这些页面在内存中是未压缩的，但是当将数据刷新到磁盘时，将使用配置的算法对其进行压缩。这仅适用于原生持久化并且不会压缩索引或WAL记录的数据页，[WAL记录压缩](#_2-5-wal记录压缩)是可以单独启用的。
+
+磁盘页面压缩是在每个缓存的配置中设定的，缓存必须在[持久化的数据区](#_1-2-开启持久化存储)中。目前没有选项可全局启用磁盘页面压缩,此外，还必须必须满足以下的条件：
+
+ - 将持久化配置中的`pageSize`属性设置为文件系统页面大小的至少2倍，这意味着页面大小必须为8K或16K；
+ - 启用`ignite-compress`模块。
+
+要为缓存启用磁盘页面压缩，需要在缓存配置中提供一种可用的压缩算法，如下所示：
+
+XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration" id="ignite.cfg">
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
+            <property name="dataStorageConfiguration">
+                <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+                    <property name="pageSize" value="#{4096 * 2}"/>
+                    <property name="defaultDataRegionConfiguration">
+                        <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                            <property name="persistenceEnabled" value="true"/>
+                        </bean>
+                    </property>
+                </bean>
+            </property>
+            <property name="name" value="myCache"/>
+          	<!-- enable disk page compression for this cache -->
+            <property name="diskPageCompression" value="LZ4"/>
+            <!-- optionally set the compression level -->
+            <property name="diskPageCompressionLevel" value="10"/>
+        </bean>
+    </property>
+</bean>
+```
+Java：
+```java
+DataStorageConfiguration dsCfg = new DataStorageConfiguration();
+
+//set the page size to 2 types of the disk page size
+dsCfg.setPageSize(4096 * 2);
+
+//enable persistence for the default data region
+dsCfg.setDefaultDataRegionConfiguration(new DataRegionConfiguration().setPersistenceEnabled(true));
+
+IgniteConfiguration cfg = new IgniteConfiguration();
+cfg.setDataStorageConfiguration(dsCfg);
+
+CacheConfiguration cacheCfg = new CacheConfiguration("myCache");
+//enable disk page compression for this cache
+cacheCfg.setDiskPageCompression(DiskPageCompression.LZ4);
+//optionally set the compression level
+cacheCfg.setDiskPageCompressionLevel(10);
+
+cfg.setCacheConfiguration(cacheCfg);
+
+Ignite ignite = Ignition.start(cfg);
+
+```
+**支持的算法**
+
+支持的压缩算法包括：
+
+ - `ZSTD`：支持从-131072到22的压缩级别（默认值：3）；
+ - `LZ4`：支持从0到17的压缩级别（默认值：0）；
+ - `SNAPPY`
+ - `SKIP_GARBAGE`：该算法仅从半填充页面中提取有用的数据，而不压缩数据。
