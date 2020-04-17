@@ -212,7 +212,9 @@ public interface PersonRepository extends IgniteRepository<Person, Long> {
  - `save(Iterable<S> entities)`
  - `delete(T entity)`
  - `delete(Iterable<? extends T> entities)`
+
 这些操作可以使用`IgniteRepository`接口中提供的功能相当的函数替代：
+
  - `save(ID key, S entity)`
  - `save(Map<ID, S> entities)`
  - `deleteAll(Iterable<ID> ids)`
