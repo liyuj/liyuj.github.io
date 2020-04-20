@@ -63,47 +63,47 @@ http://[host]:[port]/ignite?cmd=put&key=1&val=2018-01-01&cacheName=myCache&keyTy
 ```
 http://[host]:[port]/ignite?cmd=get&key=1&cacheName=myCache&keyType=int&valueType=date
 ```
-### 2.3.API参考
+### 2-3-API参考
 
- - [返回值](#12.2.3.1.返回值)
- - [log](#12.2.3.2.log)
- - [version](#12.2.3.3.version)
- - [decr](#12.2.3.4.decr)
- - [incr](#12.2.3.5.incr)
- - [cache](#12.2.3.6.cache)
- - [cas](#12.2.3.7.cas)
- - [prepend](#12.2.3.8.prepend)
- - [append](#12.2.3.9.append)
- - [rep](#12.2.3.10.rep)
- - [getrep](#12.2.3.11.getrep)
- - [repval](#12.2.3.12.repval)
- - [rmvall](#12.2.3.13.rmvall)
- - [rmvval](#12.2.3.14.rmvval)
- - [rmv](#12.2.3.15.rmv)
- - [getrmv](#12.2.3.16.getrmv)
- - [add](#12.2.3.17.add)
- - [putall](#12.2.3.18.putall)
- - [put](#12.2.3.19.put)
- - [getall](#12.2.3.20.getall)
- - [get](#12.2.3.21.get)
- - [conkey](#12.2.3.22.conkey)
- - [conkeys](#12.2.3.23.conkeys)
- - [getput](#12.2.3.24.getput)
- - [putifabs](#12.2.3.25.putifabs)
- - [getputifabs](#12.2.3.26.getputifabs)
- - [size](#12.2.3.27.size)
- - [getorcreate](#12.2.3.28.getorcreate)
- - [destcache](#12.2.3.29.destcache)
- - [node](#12.2.3.30.node)
- - [top](#12.2.3.31.top)
- - [exe](#12.2.3.32.exe)
- - [res](#12.2.3.33.res)
- - [qryexe](#12.2.3.34.qryexe)
- - [qryfldexe](#12.2.3.35.qryfldexe)
- - [qryfetch](#12.2.3.36.qryfetch)
- - [qrycls](#12.2.3.37.qrycls)
- - [metadata](#12.2.3.38.metadata)
- - [qryscanexe](#12.2.3.39.qryscanexe)
+ - [返回值](#_2-3-1-返回值)
+ - [log](#_2-3-2-log)
+ - [version](#_2-3-3-version)
+ - [decr](#_2-3-4-decr)
+ - [incr](#_2-3-5-incr)
+ - [cache](#_2-3-6-cache)
+ - [cas](#_2-3-7-cas)
+ - [prepend](#_2-3-8-prepend)
+ - [append](#_2-3-9-append)
+ - [rep](#_2-3-10-rep)
+ - [getrep](#_2-3-11-getrep)
+ - [repval](#_2-3-12-repval)
+ - [rmvall](#_2-3-13-rmvall)
+ - [rmvval](#_2-3-14-rmvval)
+ - [rmv](#_2-3-15-rmv)
+ - [getrmv](#_2-3-16-getrmv)
+ - [add](#_2-3-17-add)
+ - [putall](#_2-3-18-putall)
+ - [put](#_2-3-19-put)
+ - [getall](#_2-3-20-getall)
+ - [get](#_2-3-21-get)
+ - [conkey](#_2-3-22-conkey)
+ - [conkeys](#_2-3-23-conkeys)
+ - [getput](#_2-3-24-getput)
+ - [putifabs](#_2-3-25-putifabs)
+ - [getputifabs](#_2-3-26-getputifabs)
+ - [size](#_2-3-27-size)
+ - [getorcreate](#_2-3-28-getorcreate)
+ - [destcache](#_2-3-29-destcache)
+ - [node](#_2-3-30-node)
+ - [top](#_2-3-31-top)
+ - [exe](#_2-3-32-exe)
+ - [res](#_2-3-33-res)
+ - [qryexe](#_2-3-34-qryexe)
+ - [qryfldexe](#_2-3-35-qryfldexe)
+ - [qryfetch](#_2-3-36-qryfetch)
+ - [qrycls](#_2-3-37-qrycls)
+ - [metadata](#_2-3-38-metadata)
+ - [qryscanexe](#_2-3-39-qryscanexe)
 
 在内部，Ignite使用Jetty来提供HTTP服务的功能，HTTP REST客户端可以使用`ConnectorConfiguration`进行配置。
 #### 2.3.1.返回值
@@ -681,7 +681,7 @@ http://host:port/ignite?cmd=get&cacheName=SQL_PUBLIC_PERSON&keyType=int&key=1
 |cmd|string|否|**get**，小写||
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
 |key|string|否|要返回的值对应的键|testKey|
-|keyType|Java内置类型|是|具体可以看上面的[数据类型](#_12-2-2-数据类型)章节。||
+|keyType|Java内置类型|是|具体可以看上面的[数据类型](#_2-2-数据类型)章节。||
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
 **返回值示例**
