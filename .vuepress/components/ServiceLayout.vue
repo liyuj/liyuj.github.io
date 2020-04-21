@@ -25,7 +25,7 @@
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
-          <span class="fa fa-battery-0" style="font-size:36px;margin:20px"></span>
+          <span class="fa fa-battery-0" style="font-size:36px;margin:20px 0 20px 0"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">免费开发者交流群</h3>
           <h4>面向开发者</h4>
 				</div>
@@ -44,7 +44,7 @@
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
-          <span class="fa fa-battery-1" style="font-size:36px;margin:20px"></span>
+          <span class="fa fa-battery-1" style="font-size:36px;margin:50px 0 20px 0"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">付费开发者服务群</h3>
           <h4>面向开发者</h4>
 				</div>
@@ -63,7 +63,7 @@
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
-          <span class="fa fa-battery-2" style="font-size:36px;margin:20px"></span>
+          <span class="fa fa-battery-2" style="font-size:36px;margin:55px 0 20px 0"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">远程咨询顾问服务</h3>
           <h4>面向企业</h4>
 				</div>
@@ -80,7 +80,7 @@
       <div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom" style="color:red">
-          <span class="fa fa-battery-4" style="font-size:36px;margin:20px"></span>
+          <span class="fa fa-battery-4" style="font-size:36px;margin:40px 0 20px 0"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">驻场咨询顾问服务</h3>
           <h4>面向企业</h4>
 				</div>
