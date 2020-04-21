@@ -33,7 +33,7 @@
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
           <h4>服务内容：</h4>
-					开发者间交流平台，Ignite/GridGain产品资讯、功能介绍，不保证响应
+					开发者间交流平台，Ignite/GridGain产品资讯
           <h4>服务报价：</h4>免费
 				</div>
 				<!-- /COLUMN -->
@@ -51,8 +51,9 @@
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
-					<h4>服务内容：</h4>Ignite功能讲解/答疑、指导POC/应用开发/架构设计、问题处理指引，当日问题当日内不定期响应<br>
-          <h4>服务报价：</h4>100元/半月/人，150元/月/人，300元/季/人，500元/半年/人
+					<h4>服务内容：</h4>Ignite功能讲解/答疑、指导POC/应用开发/架构设计、问题处理指引
+          <h4>服务时间：</h4>8:30～22:00，当日问题当日内不定期回复
+          <h4>服务报价：</h4>100元/半月/人，150元/月/人，300元/季/人，500元/半年/人(开发票加收10%费用)
 				</div>
 				<!-- /COLUMN -->
 			</div>
@@ -69,7 +70,8 @@
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
-					<h4>服务内容：</h4>初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等，预约时间即时响应
+					<h4>服务内容：</h4>初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等
+          <h4>服务时间：</h4>预约时间不限时
           <h4>服务报价：</h4>免费初始交流/2小时内，3000元/周，5000元/半月，8000元/月，2万元/季，4万元/半年，8万元/年
 				</div>
 				<!-- /COLUMN -->
@@ -85,7 +87,8 @@
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:1px dashed #777">
-					<h4>服务内容：</h4>现场解决客户的各种个性化需求/问题，随时响应
+					<h4>服务内容：</h4>现场解决客户的各种个性化需求/问题
+          <h4>服务时间：</h4>即时
           <h4>服务报价：</h4>3000元/核算日，长期合作可议价。
 				</div>
 				<!-- /COLUMN -->
