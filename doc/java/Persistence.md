@@ -486,7 +486,7 @@ POJO配置：
 
 ```xml
 <!-- Data source beans -->
-<bean id="dsMySQL_Test" class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
+<bean id="dsMySQL_Test" class="com.mysql.cj.jdbc.MysqlDataSource">
   <property name="URL" value="jdbc:mysql://[host]:[port]/[database]"/>
   <property name="user" value="YOUR_USER_NAME"/>
   <property name="password" value="YOUR_PASSWORD"/>
