@@ -80,8 +80,8 @@ module.exports = {
                     link: 'https://my.oschina.net/liyuj'
                 },
                 {
-                    text: '历史版本',
-                    link: 'https://www.zybuluo.com/liyuj/note/230739'
+                    text: 'Confluent平台',
+                    link: '/confluent/'
                 }],
                 sidebar: {
                     '/doc/java/': [
@@ -164,6 +164,12 @@ module.exports = {
                         'VisorManagementConsole',
                         'ControlScript',
                         'Informatica'
+                    ],
+                    '/confluent/':[
+                        '',
+                        'Kafka-ConvertersSerialization',
+                        'Kafka-ErrorHandlingDeadLetterQueues',
+                        'Kafka-ConnectImprovementsIn-2-3'
                     ],
                     '/': [
                         ''

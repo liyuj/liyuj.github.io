@@ -125,7 +125,7 @@
 				<div class="col-md-3 col-sm-6 col-xs-12">
 					<div class="working-box">
 					   <span class="fa fa-plane"></span>
-					   <h3>独立大数据平台</h3>
+					   <h3>数据整合场景</h3>
 					   <h4>分布式内存数据库</h4>
 					   <div class="hexagon"> 03 </div>
 					   <p>Ignite可以独立搭建大数据平台，开启持久化可作为独立分布式数据库，对数据进行整合后，可以对外提供各种各样的服务，比如海量数据的高速查询服务、对数据进行分析后的增值服务、甚至机器学习等；软件开发商也可以基于Ignite进行行业解决方案开发</p>
