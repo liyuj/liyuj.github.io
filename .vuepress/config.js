@@ -169,6 +169,7 @@ module.exports = {
                         '',
                         'Kafka-ConvertersSerialization',
                         'Kafka-ErrorHandlingDeadLetterQueues',
+                        `Kafka-CreateDynamicConnectors`,
                         'Kafka-ConnectImprovementsIn-2-3'
                     ],
                     '/': [
