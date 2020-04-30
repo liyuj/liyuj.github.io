@@ -1802,20 +1802,21 @@ cfg.setDataStorageConfiguration(storageCfg);
 XML：
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration" id="ignite.cfg">
-    <property name="cacheConfiguration">
-        <bean class="org.apache.ignite.configuration.CacheConfiguration">
-            <property name="dataStorageConfiguration">
-                <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
-                    <property name="pageSize" value="#{4096 * 2}"/>
-                    <property name="defaultDataRegionConfiguration">
-                        <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
-                            <property name="persistenceEnabled" value="true"/>
-                        </bean>
-                    </property>
+    <property name="dataStorageConfiguration">
+        <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+            <property name="pageSize" value="#{4096 * 2}"/>
+            <property name="defaultDataRegionConfiguration">
+                <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                    <property name="persistenceEnabled" value="true"/>
                 </bean>
             </property>
+        </bean>
+    </property>
+
+    <property name="cacheConfiguration">
+        <bean class="org.apache.ignite.configuration.CacheConfiguration">
             <property name="name" value="myCache"/>
-          	<!-- enable disk page compression for this cache -->
+            <!-- enable disk page compression for this cache -->
             <property name="diskPageCompression" value="LZ4"/>
             <!-- optionally set the compression level -->
             <property name="diskPageCompressionLevel" value="10"/>
@@ -1845,7 +1846,6 @@ cacheCfg.setDiskPageCompressionLevel(10);
 cfg.setCacheConfiguration(cacheCfg);
 
 Ignite ignite = Ignition.start(cfg);
-
 ```
 **支持的算法**
 
