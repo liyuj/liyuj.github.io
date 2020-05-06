@@ -439,11 +439,13 @@ DEBUG TimestampIncrementingTableQuerier{table=null, query='SELECT t.id, t.custom
 […] FROM demo.transactions t LEFT OUTER JOIN demo.customers c on t.customer_id = c.id; WHERE `t.id` > ? ORDER BY `t.id` ASC
 ```
 8.注意在`JOIN`子句的`c.id`后面有语句终止符（;），后面有WHERE子句。该`WHERE`子句由Kafka Connect附加，用于实现所要求的`incrementing`模式，但创建了一个无效的SQL语句；
+
 9.然后在GitHub中查找与看到的错误相关的问题，因为有时它实际上是一个已知的问题，例如这个问题；
+
 10.如果连接器存在并且是`RUNNING`，并且Kafka Connect工作节点日志中也没有错误，还应该检查：
 
-    - 连接器的提取间隔是多少？也许它完全按照配置运行，并且源表中的数据已经更改，但就是没有拉取到新数据。要检查这一点，可以在Kafka Connect工作节点的输出中查找`JdbcSourceTaskConfig`的值和`poll.interval.ms`的值；
-    - 如果正在使用的是增量摄取，Kafka Connect关于偏移量是如何存储的？如果删除并重建相同名称的连接器，则将保留前一个实例的偏移量。考虑这样的场景，创建完连接器之后，成功地将所有数据提取到源表中的给定主键或时间戳值，然后删除并重新创建了它，新版本的连接器将获得之前版本的偏移量，因此仅提取比先前处理的数据更新的数据，具体可以通过查看保存在其中的`offset.storage.topic`值和相关表来验证这一点。
+   - 连接器的提取间隔是多少？也许它完全按照配置运行，并且源表中的数据已经更改，但就是没有拉取到新数据。要检查这一点，可以在Kafka Connect工作节点的输出中查找`JdbcSourceTaskConfig`的值和`poll.interval.ms`的值；
+   - 如果正在使用的是增量摄取，Kafka Connect关于偏移量是如何存储的？如果删除并重建相同名称的连接器，则将保留前一个实例的偏移量。考虑这样的场景，创建完连接器之后，成功地将所有数据提取到源表中的给定主键或时间戳值，然后删除并重新创建了它，新版本的连接器将获得之前版本的偏移量，因此仅提取比先前处理的数据更新的数据，具体可以通过查看保存在其中的`offset.storage.topic`值和相关表来验证这一点。
 
 ## 重置JDBC源连接器读取数据的点
 当Kafka Connect以分布式模式运行时，它会在Kafka主题（通过`offset.storage.topic`配置）中存储有关它在源系统中读取的位置（称为偏移量）的信息，当连接器任务重启时，它可以从之前的位置继续进行处理，具体可以在连接器工作节点日志中看到：

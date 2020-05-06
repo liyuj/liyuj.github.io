@@ -185,11 +185,11 @@ public class Employee
     public int Age { get; set; }
 }
 ```
-**分组索引**
+**组合索引**
 
-通过多字段索引可以加速复杂条件的查询，做法是使用`QuerySqlField.IndexGroups`属性。如果希望一个字段参与多个分组索引，也可以将多个组加入`IndexGroups`数组。
+通过多字段索引可以加速复杂条件的查询，做法是使用`QuerySqlField.IndexGroups`属性。如果希望一个字段参与多个组合索引，也可以将多个组加入`IndexGroups`数组。
 
-比如下面的分组索引示例，有个名为`Age`的属性，它参与了名为`age_salary_idx`的倒序分组索引，在同一个分组索引中，还有一个正序排列的`salary`属性，而在`salary`字段之上，它本身还建了弹列索引。
+比如下面的组合索引示例，有个名为`Age`的属性，它参与了名为`age_salary_idx`的倒序组合索引，在同一个组合索引中，还有一个正序排列的`salary`属性，而在`salary`字段之上，它本身还建了弹列索引。
 ```csharp
 public class Employee
 {

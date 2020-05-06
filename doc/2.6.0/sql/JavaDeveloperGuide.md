@@ -225,11 +225,11 @@ ccfg.setIndexedTypes(Long.class, Person.class);
 
 > 多亏了二进制编组器，不需要将索引类型类加入集群节点的类路径中，SQL查询引擎不需要对象反序列化就可以钻取索引和可查询字段的值。
 
-**分组索引**
+**组合索引**
 
-当查询条件复杂时可以使用多字段索引来加快查询的速度，这时可以用`@QuerySqlField.Group`注解。如果希望一个字段参与多个分组索引时也可以将多个`@QuerySqlField.Group`注解加入`orderedGroups`中。
+当查询条件复杂时可以使用多字段索引来加快查询的速度，这时可以用`@QuerySqlField.Group`注解。如果希望一个字段参与多个组合索引时也可以将多个`@QuerySqlField.Group`注解加入`orderedGroups`中。
 
-比如，下面的`Person`类中`age`字段加入了名为`age_salary_idx`的分组索引，它的分组序号是0并且降序排列，同一个分组索引中还有一个字段`salary`,它的分组序号是3并且升序排列。最重要的是`salary`字段还是一个单列索引(除了`orderedGroups`声明之外，还加上了`index = true`)。分组中的`order`不需要是什么特别的数值，它只是用于分组内的字段排序。
+比如，下面的`Person`类中`age`字段加入了名为`age_salary_idx`的组合索引，它的分组序号是0并且降序排列，同一个组合索引中还有一个字段`salary`,它的分组序号是3并且升序排列。最重要的是`salary`字段还是一个单列索引(除了`orderedGroups`声明之外，还加上了`index = true`)。分组中的`order`不需要是什么特别的数值，它只是用于分组内的字段排序。
 
 **Java：**
 ```java
@@ -253,7 +253,7 @@ public class Person implements Serializable {
 
 在上面基于注解的配置中涉及的所有概念，对于基于`QueryEntity`的方式也都有效，此外，如果类型的字段通过`@QuerySqlField`进行了配置并且通过`CacheConfiguration.setIndexedTypes`注册过的，在内部也会被转换为查询实体。
 
-下面的示例显示的是如何像可查询字段那样定义一个单一字段索引和分组索引。
+下面的示例显示的是如何像可查询字段那样定义一个单一字段索引和组合索引。
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
     <property name="name" value="mycache"/>
