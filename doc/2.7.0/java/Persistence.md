@@ -357,7 +357,7 @@ Ignite可以和任意RDBMS集成，将数据加载进Ignite缓存，然后执行
 
 **自动**
 
-使用Ignite的Web控制台可以从RDBMS中自动导入元数据，以及创建Ignite的集群配置，具体细节可以看[自动化RDBMS集成](/doc/2.7.0/tools/IgniteWebConsoleAbilities.md#_2-自动化RDBMS集成)的相关文档。
+使用Ignite的Web控制台可以从RDBMS中自动导入元数据，以及创建Ignite的集群配置，具体细节可以看[自动化RDBMS集成](/doc/2.7.0/tools/IgniteWebConsoleAbilities.md#_2-自动化rdbms集成)的相关文档。
 
 **手动**
 

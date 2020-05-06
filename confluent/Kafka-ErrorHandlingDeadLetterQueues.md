@@ -1,7 +1,7 @@
-# Kafka连接器深度解读之错误处理和死信队列
-Kafka连接器是Kafka的一部分，是在Kafka和其它技术之间构建流式管道的一个强有力的框架。它可用于将数据从多个地方（包括数据库、消息队列和文本文件）流式注入到Kafka，以及从Kafka将数据流式传输到目标端（如文档存储、NoSQL、数据库、对象存储等）中。
+# Kafka Connect深度解读之错误处理和死信队列
+Kafka Connect是Kafka的一部分，是在Kafka和其它技术之间构建流式管道的一个强有力的框架。它可用于将数据从多个地方（包括数据库、消息队列和文本文件）流式注入到Kafka，以及从Kafka将数据流式传输到目标端（如文档存储、NoSQL、数据库、对象存储等）中。
 
-现实世界并不完美，出错是难免的，因此在出错时Kafka的管道能尽可能优雅地处理是最好的。一个常见的场景是获取与特定序列化格式不匹配的主题的消息（比如预期为Avro时实际为JSON，反之亦然）。自从Kafka 2.0版本发布以来，Kafka连接器包含了错误处理选项，即将消息路由到*死信队列*的功能，这是构建数据管道的常用技术。
+现实世界并不完美，出错是难免的，因此在出错时Kafka的管道能尽可能优雅地处理是最好的。一个常见的场景是获取与特定序列化格式不匹配的主题的消息（比如预期为Avro时实际为JSON，反之亦然）。自从Kafka 2.0版本发布以来，Kafka Connect包含了错误处理选项，即将消息路由到*死信队列*的功能，这是构建数据管道的常用技术。
 
 在本文中将介绍几种处理问题的常见模式，并说明如何实现。
 ## 失败后立即停止
@@ -9,7 +9,7 @@ Kafka连接器是Kafka的一部分，是在Kafka和其它技术之间构建流�
 
 ![](https://www.confluent.io/wp-content/uploads/Source_Topic_Messages_Kafka_Connect_Sink_Messages-e1552329568691.png)
 
-这是Kafka连接器的默认行为，也可以使用下面的配置项显式地指定：
+这是Kafka Connect的默认行为，也可以使用下面的配置项显式地指定：
 ```properties
 errors.tolerance = none
 ```
@@ -34,7 +34,7 @@ $ curl -s "http://localhost:8083/connectors/file_sink_01/status"| \
     jq -c -M '[.name,.tasks[].state]'
 ["file_sink_01","FAILED"]
 ```
-查看Kafka连接器工作节点的日志，可以看到错误已经记录并且任务已经终止：
+查看Kafka Connect工作节点的日志，可以看到错误已经记录并且任务已经终止：
 ```
 org.apache.kafka.connect.errors.ConnectException: Tolerance exceeded in error handler
  at org.apache.kafka.connect.runtime.errors.RetryWithToleranceOperator.execAndHandleError(RetryWithToleranceOperator.java:178)
@@ -45,7 +45,7 @@ Caused by: org.apache.kafka.connect.errors.DataException: Converting byte[] to K
 Caused by: org.apache.kafka.common.errors.SerializationException: com.fasterxml.jackson.core.JsonParseException: Unexpected character ('b' (code 98)): was expecting double-quote to start field name
  at [Source: (byte[])"{brokenjson-:"bar 1"}"; line: 1, column: 3]
 ```
-要修复管道，需要解决源主题上的消息问题。除非事先指定，Kafka连接器是不会简单地“跳过”无效消息的。如果是配置错误（例如指定了错误的序列化转换器），那最好了，改正之后重新启动连接器即可。不过如果确实是该主题的无效消息，那么需要找到一种方式，即不要阻止所有其它有效消息的处理。
+要修复管道，需要解决源主题上的消息问题。除非事先指定，Kafka Connect是不会简单地“跳过”无效消息的。如果是配置错误（例如指定了错误的序列化转换器），那最好了，改正之后重新启动连接器即可。不过如果确实是该主题的无效消息，那么需要找到一种方式，即不要阻止所有其它有效消息的处理。
 ## 静默忽略无效的消息
 如果只是希望处理一直持续下去：
 ```properties
@@ -75,7 +75,7 @@ $ curl -s "http://localhost:8083/connectors/file_sink_05/status"| \
     jq -c -M '[.name,.tasks[].state]'
 ["file_sink_05","RUNNING"]
 ```
-这时即使连接器读取的源主题上有无效的消息，也不会有错误写入Kafka连接器工作节点的输出，而有效的消息会按照预期写入输出文件：
+这时即使连接器读取的源主题上有无效的消息，也不会有错误写入Kafka Connect工作节点的输出，而有效的消息会按照预期写入输出文件：
 ```
 $ head data/file_sink_05.txt
 {foo=bar 1}
@@ -84,7 +84,7 @@ $ head data/file_sink_05.txt
 …
 ```
 ## 是否可以感知数据的丢失？
-配置了`errors.tolerance = all`之后，Kafka连接器就会忽略掉无效的消息，并且默认也不会记录被丢弃的消息。如果确认配置`errors.tolerance = all`，那么就需要仔细考虑是否以及如何知道实际上发生的消息丢失。在实践中这意味着基于可用指标的监控/报警，和/或失败消息的记录。
+配置了`errors.tolerance = all`之后，Kafka Connect就会忽略掉无效的消息，并且默认也不会记录被丢弃的消息。如果确认配置`errors.tolerance = all`，那么就需要仔细考虑是否以及如何知道实际上发生的消息丢失。在实践中这意味着基于可用指标的监控/报警，和/或失败消息的记录。
 
 确定是否有消息被丢弃的最简单方法，是将源主题上的消息数与写入目标端的数量进行对比：
 ```
@@ -102,7 +102,7 @@ $ wc -l data/file_sink_05.txt
 
 这时可以看到发生了错误，但是并不知道那些消息发生了错误，不过这是用户想要的。其实即使之后这些被丢弃的消息被写入了`/dev/null`，实际上也是可以知道的，这也正是死信队列概念出现的点。
 ## 将消息路由到死信队列
-Kafka连接器可以配置为将无法处理的消息（例如上面提到的反序列化错误）发送到一个单独的Kafka主题，即死信队列。有效消息会正常处理，管道也会继续运行。然后可以从死信队列中检查无效消息，并根据需要忽略或修复并重新处理。
+Kafka Connect可以配置为将无法处理的消息（例如上面提到的反序列化错误）发送到一个单独的Kafka主题，即死信队列。有效消息会正常处理，管道也会继续运行。然后可以从死信队列中检查无效消息，并根据需要忽略或修复并重新处理。
 
 ![](https://www.confluent.io/wp-content/uploads/DLQ_Source_Topic_Messages_Kafka_Connect_Sink_Messages-e1552339900964.png)
 
@@ -168,14 +168,14 @@ Format:STRING
 ```
 从输出中可以看出，消息的时间戳为（`1/24/19 5:16:03 PM UTC`），键为（`NULL`），然后为值。这时可以看到值是无效的JSON格式`{foo:"bar 1"}`（`foo`也应加上引号），因此JsonConverter在处理时会抛出异常，因此最终会输出到死信主题。
 
-但是只有看到消息才能知道它是无效的JSON，即便如此，也只能假设消息被拒绝的原因，要确定Kafka连接器将消息视为无效的实际原因，有两个方法：
+但是只有看到消息才能知道它是无效的JSON，即便如此，也只能假设消息被拒绝的原因，要确定Kafka Connect将消息视为无效的实际原因，有两个方法：
 
  - 死信队列的消息头；
- - Kafka连接器的工作节点日志。
+ - Kafka Connect的工作节点日志。
 
 下面会分别介绍。
 ## 记录消息的失败原因：消息头
-消息头是使用Kafka消息的键、值和时间戳存储的附加元数据，是在Kafka 0.11版本中引入的。Kafka连接器可以将有关消息拒绝原因的信息写入消息本身的消息头中。这个做法比写入日志文件更好，因为它将原因直接与消息联系起来。
+消息头是使用Kafka消息的键、值和时间戳存储的附加元数据，是在Kafka 0.11版本中引入的。Kafka Connect可以将有关消息拒绝原因的信息写入消息本身的消息头中。这个做法比写入日志文件更好，因为它将原因直接与消息联系起来。
 
 配置如下的参数，可以在死信队列的消息头中包含拒绝原因：
 ```properties
@@ -258,7 +258,7 @@ __connect.errors.class.name=org.apache.kafka.connect.json.JsonConverter
 __connect.errors.exception.class.name=org.apache.kafka.connect.errors.DataException
 __connect.errors.exception.message=Converting byte[] to Kafka Connect data failed due to serialization error:
 ```
-Kafka连接器处理的每条消息都来自源主题和该主题中的特定点（偏移量），消息头已经准确地说明了这一点。因此可以使用它来回到原始主题并在需要时检查原始消息，由于死信队列已经有一个消息的副本，这个检查更像是一个保险的做法。
+Kafka Connect处理的每条消息都来自源主题和该主题中的特定点（偏移量），消息头已经准确地说明了这一点。因此可以使用它来回到原始主题并在需要时检查原始消息，由于死信队列已经有一个消息的副本，这个检查更像是一个保险的做法。
 
 根据从上面的消息头中获取的详细信息，可以再检查一下源消息：
 ```
@@ -286,7 +286,7 @@ Key (-1 bytes):
 ```
 与死信队列中的上述消息相比，可以看到完全相同，甚至包括时间戳，唯一的区别是主题、偏移量和消息头。
 ## 记录消息的失败原因：日志
-记录消息的拒绝原因的第二个选项是将其写入日志。根据安装方式不同，Kafka连接器会将其写入标准输出或日志文件。无论哪种方式都会为每个失败的消息生成一堆详细输出。进行如下配置可启用此功能：
+记录消息的拒绝原因的第二个选项是将其写入日志。根据安装方式不同，Kafka Connect会将其写入标准输出或日志文件。无论哪种方式都会为每个失败的消息生成一堆详细输出。进行如下配置可启用此功能：
 ```properties
 errors.log.enable = true
 ```
@@ -322,7 +322,7 @@ $ head data/file_sink_04.txt
 {foo=bar 3}
 […]
 ```
-这时去看Kafka连接器的工作节点日志，会发现每个失败的消息都有错误记录：
+这时去看Kafka Connect的工作节点日志，会发现每个失败的消息都有错误记录：
 ```
 ERROR Error encountered in task file_sink_04-0. Executing stage 'VALUE_CONVERTER' with class 'org.apache.kafka.connect.json.JsonConverter', where consumed record is {topic='test_topic_json', partition=0, offset=94, timestamp=1548350164096, timestampType=CreateTime}. (org.apache.kafka.connect.runtime.errors.LogReporter)
 org.apache.kafka.connect.errors.DataException: Converting byte[] to Kafka Connect data failed due to serialization error:
@@ -465,8 +465,8 @@ ksql> SELECT START_TS, SINK_NAME, DLQ_MESSAGE_COUNT FROM DLQ_BREACH;
 2019-02-01 02:56:00 | dlq_file_sink_06__01 | 9
 2019-02-01 03:10:00 | dlq_file_sink_06__01 | 8
 ```
-## Kafka连接器哪里没有提供错误处理？
-Kafka连接器的错误处理方式，如下表所示：
+## Kafka Connect哪里没有提供错误处理？
+Kafka Connect的错误处理方式，如下表所示：
 
 |连接器生命周期阶段|描述|是否处理错误？|
 |---|---|---|
@@ -484,6 +484,6 @@ Kafka连接器的错误处理方式，如下表所示：
 ![](https://www.confluent.io/wp-content/uploads/Permutations_Error_Handling_Kafka_Connect_Configuration.png)
 
 ## 总结
-处理错误是任何稳定可靠的数据管道的重要组成部分，根据数据的使用方式，可以有两个选项。如果管道任何错误的消息都不能接受，表明上游存在严重的问题，那么就应该立即停止处理（这是Kafka连接器的默认行为）。
+处理错误是任何稳定可靠的数据管道的重要组成部分，根据数据的使用方式，可以有两个选项。如果管道任何错误的消息都不能接受，表明上游存在严重的问题，那么就应该立即停止处理（这是Kafka Connect的默认行为）。
 
-另一方面，如果只是想将数据流式传输到存储以进行分析或非关键性处理，那么只要不传播错误，保持管道稳定运行则更为重要。这时就可以定义错误的处理方式，推荐的方式是使用死信队列并密切监视来自Kafka连接器的可用JMX指标。
+另一方面，如果只是想将数据流式传输到存储以进行分析或非关键性处理，那么只要不传播错误，保持管道稳定运行则更为重要。这时就可以定义错误的处理方式，推荐的方式是使用死信队列并密切监视来自Kafka Connect的可用JMX指标。

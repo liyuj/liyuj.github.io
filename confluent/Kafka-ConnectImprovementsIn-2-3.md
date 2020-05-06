@@ -1,11 +1,11 @@
-# Kafka连接器之在2.3版本中的改进
-在Kafka的2.3版本中，对Kafka连接器做了很大的改进。首先就是在添加和删除连接器时，修改了Kafka连接器处理任务的方式。之前这个动作造成了整个系统的停顿，这是一直被开发和运维人员诟病的地方，除此之外，社区中频繁提到的其他一些问题，也得到了解决。
-## Kafka连接器中的增量协作再平衡
-Kafka连接器集群由一个或多个工作节点进程组成，集群以任务的形式分发连接器的负载。在添加或删除连接器或工作节点时，Kafka连接器会尝试再平衡这些任务。在Kafka的2.3版本之前，集群会停止所有任务，重新计算所有任务的执行位置，然后重启所有任务。每次再平衡都会暂停所有数据进出的工作，通常时间很短，但有时也会持续一段时间。
+# Kafka Connect之在2.3版本中的改进
+在Kafka的2.3版本中，对Kafka Connect做了很大的改进。首先就是在添加和删除连接器时，修改了Kafka Connect处理任务的方式。之前这个动作造成了整个系统的停顿，这是一直被开发和运维人员诟病的地方，除此之外，社区中频繁提到的其他一些问题，也得到了解决。
+## Kafka Connect中的增量协作再平衡
+Kafka Connect集群由一个或多个工作节点进程组成，集群以任务的形式分发连接器的负载。在添加或删除连接器或工作节点时，Kafka Connect会尝试再平衡这些任务。在Kafka的2.3版本之前，集群会停止所有任务，重新计算所有任务的执行位置，然后重启所有任务。每次再平衡都会暂停所有数据进出的工作，通常时间很短，但有时也会持续一段时间。
 
 现在通过[KIP-415](https://cwiki.apache.org/confluence/display/KAFKA/KIP-415%3A+Incremental+Cooperative+Rebalancing+in+Kafka+Connect)，Kafka 2.3用增量协作再平衡做了替代，以后将仅对需要启动、停止或移动的任务进行再平衡。具体的详细信息请参见[这里](https://cwiki.apache.org/confluence/display/KAFKA/KIP-415%3A+Incremental+Cooperative+Rebalancing+in+Kafka+Connect)。
 
-下面用一些连接器做了一个简单的测试，这里只使用了一个分布式Kafka连接器工作节点，而源端使用了`kafka-connect-datagen`，它以固定的时间间隔根据给定的模式生成随机数据。以固定的时间间隔就可以粗略地计算由于再平衡而停止任务的时间，因为生成的消息作为Kafka消息的一部分，包含了时间戳。这些消息之后会被流式注入Elasticsearch，之所以用它，不仅因为它是一个易于使用的接收端，也因为可以通过观察源端消息的时间戳来查看生产中的任何停顿。
+下面用一些连接器做了一个简单的测试，这里只使用了一个分布式Kafka Connect工作节点，而源端使用了`kafka-connect-datagen`，它以固定的时间间隔根据给定的模式生成随机数据。以固定的时间间隔就可以粗略地计算由于再平衡而停止任务的时间，因为生成的消息作为Kafka消息的一部分，包含了时间戳。这些消息之后会被流式注入Elasticsearch，之所以用它，不仅因为它是一个易于使用的接收端，也因为可以通过观察源端消息的时间戳来查看生产中的任何停顿。
 
 通过如下的方式，可以创建源端：
 ```bash
@@ -39,14 +39,14 @@ curl -s -X PUT -H  "Content-Type:application/json" \
 
 ![](https://cdn.confluent.io/wp-content/uploads/Kibana_Rebalance_Kafka_2.2_vs_2.3.png)
 
-在Kafka连接器的工作节点日志中，可以查看活动和时间，并对Kafka的2.2版本和2.3版本的行为进行比较：
+在Kafka Connect的工作节点日志中，可以查看活动和时间，并对Kafka的2.2版本和2.3版本的行为进行比较：
 
 ![](https://cdn.confluent.io/wp-content/uploads/Kafka_Connect_Worker_Log.png)
 
 **注意：**为了清楚地说明问题，日志做了精简处理。
 
 ## 对日志的改进
-在再平衡问题（如前述）已大大改善之后，Kafka连接器的第二大困扰可能是难以在Kafka连接器工作节点日志中确定某个消息属于哪个连接器。
+在再平衡问题（如前述）已大大改善之后，Kafka Connect的第二大困扰可能是难以在Kafka Connect工作节点日志中确定某个消息属于哪个连接器。
 
 之前可以直接从连接器的任务中获取日志中的消息，例如：
 ```
@@ -68,7 +68,7 @@ INFO [sink-elastic-orders-00|task-0] Idle connection reaping disabled... (io.sea
 ```properties
 log4j.appender.stdout.layout.ConversionPattern=[%d] %p %X{connector.context}%m (%c:%L)%n
 ```
-通过环境变量`CONNECT_LOG4J_APPENDER_STDOUT_LAYOUT_CONVERSIONPATTERN`，[Kafka连接器的Docker镜像](https://hub.docker.com/r/confluentinc/cp-kafka-connect)也支持了这个特性。
+通过环境变量`CONNECT_LOG4J_APPENDER_STDOUT_LAYOUT_CONVERSIONPATTERN`，[Kafka Connect的Docker镜像](https://hub.docker.com/r/confluentinc/cp-kafka-connect)也支持了这个特性。
 
 具体细节请参见[KIP-449](https://cwiki.apache.org/confluence/display/KAFKA/KIP-449%3A+Add+connector+contexts+to+Connect+worker+logs)。
 
@@ -101,15 +101,15 @@ $ curl -s "http://localhost:8083/connectors?expand=info&expand=status"|jq 'to_en
 sink    |  sink-elastic-orders-00  |  RUNNING  |  RUNNING  |  io.confluent.connect.elasticsearch.ElasticsearchSinkConnector
 source  |  source-datagen-01       |  RUNNING  |  RUNNING  |  io.confluent.kafka.connect.datagen.DatagenConnector
 ```
-**Kafka连接器现已支持client.id**
+**Kafka Connect现已支持client.id**
 
-因为[KIP-411](https://cwiki.apache.org/confluence/display/KAFKA/KIP-411%3A+Make+default+Kafka+Connect+worker+task+client+IDs+distinct)，Kafka连接器现在可以以更有用的方式为每项任务配置`client.id`。之前，只能看到`consumer-25`作为连接器的消费者组的一部分从给定的分区进行消费，现在则可以将其直接绑定回特定的任务，从而使故障排除和诊断更加容易。
+因为[KIP-411](https://cwiki.apache.org/confluence/display/KAFKA/KIP-411%3A+Make+default+Kafka+Connect+worker+task+client+IDs+distinct)，Kafka Connect现在可以以更有用的方式为每项任务配置`client.id`。之前，只能看到`consumer-25`作为连接器的消费者组的一部分从给定的分区进行消费，现在则可以将其直接绑定回特定的任务，从而使故障排除和诊断更加容易。
 
 ![](https://cdn.confluent.io/wp-content/uploads/KIP-411_Kafka_Connect_client.id_.png)
 
 **连接器级生产者/消费者配置覆写**
 
-长期以来的一个常见需求是能够覆写分别由Kafka连接器接收端和源端使用的[消费者设置](https://kafka.apache.org/documentation/#consumerconfigs)或[生产者设置](https://kafka.apache.org/documentation/#producerconfigs)。到目前为止，它们都采用了工作节点配置中指定的值，除非生成了更多的工作节点，否则无法对诸如安全主体之类的内容进行细粒度的控制。
+长期以来的一个常见需求是能够覆写分别由Kafka Connect接收端和源端使用的[消费者设置](https://kafka.apache.org/documentation/#consumerconfigs)或[生产者设置](https://kafka.apache.org/documentation/#producerconfigs)。到目前为止，它们都采用了工作节点配置中指定的值，除非生成了更多的工作节点，否则无法对诸如安全主体之类的内容进行细粒度的控制。
 
 Kafka 2.3中的[KIP-458](https://cwiki.apache.org/confluence/display/KAFKA/KIP-458%3A+Connector+Client+Config+Override+Policy)使工作节点能够允许对配置进行覆写。`connector.client.config.override.policy`是一个新的参数，在工作节点级可以有3个可选项：
 
@@ -162,4 +162,4 @@ $ curl -s "localhost:9200/_cat/indices?h=idx,docsCount"
 orders-latest     2369
 orders-earliest 144932
 ```
-有两个索引：一个从同一主题注入了较少的消息，因为`orders-latest`索引只注入了连接器创建后才到达主题的消息；而另一个`orders-earliest`索引，由一个单独的连接器注入，它会使用Kafka连接器的默认配置，即会注入所有的新消息，再加上主题中原有的所有消息。
+有两个索引：一个从同一主题注入了较少的消息，因为`orders-latest`索引只注入了连接器创建后才到达主题的消息；而另一个`orders-earliest`索引，由一个单独的连接器注入，它会使用Kafka Connect的默认配置，即会注入所有的新消息，再加上主题中原有的所有消息。
