@@ -355,7 +355,7 @@ ignite:
 
  1. 创建`IgniteConfiguration`Bean：
    只需要创建一个方法返回`IgniteConfiguration`即可，其会通过开发者的配置创建`Ignite`实例：
-   ```java
+    ```java
     @Bean
     public IgniteConfiguration igniteConfiguration() {
         // If you provide a whole ClientConfiguration bean then configuration properties will not be used.
@@ -363,12 +363,12 @@ ignite:
         cfg.setIgniteInstanceName("my-ignite");
         return cfg;
     }
-   ```
+    ```
  2. 通过Spring Boot配置自定义`IgniteConfiguration`：
    如果希望自定义通过Spring Boot配置文件创建的`IgniteConfiguration`，那么需要在应用的上下文中提供一个`IgniteConfigurer`的实现。
 
-   首先，`IgniteConfiguration`会被Spring Boot加载，然后其实例会被传入配置器：
-   ```java
+    首先，`IgniteConfiguration`会被Spring Boot加载，然后其实例会被传入配置器：
+    ```java
     @Bean
     public IgniteConfigurer nodeConfigurer() {
         return cfg -> {
@@ -377,7 +377,7 @@ ignite:
         cfg.setIgniteInstanceName("my-ignite");
         };
     }
-   ```
+    ```
 ### 3.2.自动化配置Ignite的瘦客户端
 需要使用`ignite-spring-boot-thin-client-autoconfigure-ext`来自动化配置Ignite的瘦客户端。
 
@@ -406,7 +406,7 @@ ignite-client:
 
  1. 创建`ClientConfiguration`Bean：
    只需要创建一个方法返回`ClientConfiguration`即可，其会通过开发者的配置创建`IgniteClient`实例：
-   ```java
+    ```java
     @Bean
     public ClientConfiguration clientConfiguration() {
         // If you provide a whole ClientConfiguration bean then configuration properties will not be used.
@@ -414,19 +414,19 @@ ignite-client:
         cfg.setAddresses("127.0.0.1:10800");
         return cfg;
     }
-   ```
+    ```
  2. 通过Spring Boot配置自定义`ClientConfiguration`：
    如果希望自定义通过Spring Boot配置文件创建的`ClientConfiguration`，那么需要在应用的上下文中提供一个`IgniteClientConfigurer`的实现。
 
-   首先，`ClientConfiguration`会被Spring Boot加载，然后其实例会被传入配置器：
-   ```java
+    首先，`ClientConfiguration`会被Spring Boot加载，然后其实例会被传入配置器：
+    ```java
     @Bean
     IgniteClientConfigurer configurer() {
         //Setting some property.
         //Other will come from `application.yml`
         return cfg -> cfg.setSendBufferSize(64*1024);
     }
-   ```
+    ```
 ### 3.3.示例
 
  - [spring-boot-autoconfigure-ext](https://github.com/apache/ignite-extensions/tree/master/modules/spring-boot-autoconfigure-ext/examples/main)；
