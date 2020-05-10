@@ -47,7 +47,7 @@ try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
     System.out.println(cityCache.get(key));
 }
 ```
-也可以使用`BinaryObjects`访问缓存数据，好处是使用二进制对象避免了反序列化，这对于从一个没有该对象类的服务端访问该对象时非常重要，具体可以看[二进制编组器](/doc/java/#_1-10-二进制编组器)相关章节。
+也可以使用`BinaryObjects`访问缓存数据，好处是使用二进制对象避免了反序列化，这对于从一个没有该对象类的服务端访问该对象时非常重要，具体可以看[二进制编组器](/doc/java/#_8-二进制编组器)相关章节。
 ```java
 try (Ignite ignite = Ignition.start("config/ignite-config.xml")) {
     IgniteCache<BinaryObject, BinaryObject> cityCacheBinary = ignite.cache(CITY_CACHE_NAME).withKeepBinary();

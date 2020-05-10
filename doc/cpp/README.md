@@ -196,7 +196,7 @@ make install
 一个Ignite节点可以从命令行启动，或者使用默认的配置，或者也可以传入一个配置文件。可以启动任意数量的节点，它们会自动地进行彼此发现。
 
 ::: warning 平台互操作性
-如果要尝试部署一个同时包含Java和C++节点的集群，请注意看下面的[平台互操作性](#_1-5-平台互操作性)章节，确保做了和异构集群有关的额外配置。
+如果要尝试部署一个同时包含Java和C++节点的集群，请注意看下面的[平台互操作性](#_5-平台互操作性)章节，确保做了和异构集群有关的额外配置。
 :::
 **使用默认的配置**
 
@@ -499,7 +499,7 @@ if (nullablePtr) {
 ## 5.平台互操作性
 当使用Ignite C++时，在集群中C++和Java节点协同工作是很常见的。为了在C++和Java节点之间无缝互操作，应考虑以下事项：
 ### 5.1.二进制编组器配置
-Ignite的[二进制编组器](/doc/java/#_1-10-二进制编组器)负责集群中的数据、逻辑和消息的序列化和反序列化。由于架构的特殊性，Java和C++节点使用不同的二进制编组器默认配置启动，如果要建立异构集群，则可能导致节点启动过程中的异常，如下面的一个节点：
+Ignite的[二进制编组器](/doc/java/#_8-二进制编组器)负责集群中的数据、逻辑和消息的序列化和反序列化。由于架构的特殊性，Java和C++节点使用不同的二进制编组器默认配置启动，如果要建立异构集群，则可能导致节点启动过程中的异常，如下面的一个节点：
 ```
 class org.apache.ignite.spi.IgniteSpiException: Local node's
 binary configuration is not equal to remote node's binary configuration
@@ -733,9 +733,9 @@ foo(ignite::MakeReferenceFromSmartPointer(obj3);
 
 瘦客户端模式非常适合生命周期短和资源受限的应用，内存和CPU使用率极低。
 ### 7.1.安装
-瘦客户端API与Ignite C++一起分发，并与完整的Ignite C++ API共享许多类，头和库，因此可以轻松地从一个API切换到另一个API。基本安装和构建过程与[这里的描述](/doc/cpp/#_1-3-入门)是相同的。
+瘦客户端API与Ignite C++一起分发，并与完整的Ignite C++ API共享许多类，头和库，因此可以轻松地从一个API切换到另一个API。基本安装和构建过程与[这里的描述](/doc/cpp/#_3-入门)是相同的。
 ### 7.2.要求
-所有要求都与[普通客户端](/doc/cpp/#_1-3-1-要求)相同，但Java部分除外：不需要Java。
+所有要求都与[普通客户端](/doc/cpp/#_3-1-要求)相同，但Java部分除外：不需要Java。
 ### 7.3.配置服务端节点
 在Ignite服务端节点默认是启用瘦客户端连接器的。在Java或Spring XML中设置`IgniteConfiguration.clientConnectorConfiguration`为`null`可以禁用。
 

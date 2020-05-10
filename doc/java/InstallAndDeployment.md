@@ -1,14 +1,292 @@
-# 部署
-## 1.部署
+# 安装和部署部署
+## 1.安装和部署
 Ignite对部署没有要求，可以非常容易地部署到私有主机或者任意的云环境，比如，Ignite可以独立部署，也可以部署在Kubernetes或者Docker容器中，还有Apache Mesos以及Hadoop Yarn。它可以运行在物理主机中，也可以部署在虚拟机中。
 
 ![](https://files.readme.io/8a65d4a-ignite-deploy.png)
 
-## 2.Docker部署
+## 2.通过ZIP包安装
+安装Ignite的最通用方法是使用每个版本的二进制ZIP压缩文件。
+
+ - 下载Ignite的最新版本的[ZIP压缩包](https://ignite.apache.org/download.cgi#binaries)；
+ - 将压缩包解压到某个文件夹；
+ - （可选）将`ignite-rest-http`文件夹从`{ignite}/libs/optional`移动到`{ignite}/libs`，以开启Ignite的REST服务，Ignite的Web控制台会使用REST服务进行集群的管理和监控；
+ - （可选）配置`IGNITE_HOME`环境变量或者配置Windows的PATH，指向Ignite的安装文件夹，注意路径不能以`/`（Windows中为`\`）结尾。
+
+配置Ignite的工作文件夹：
+
+XML：
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="workDirectory" value="/path/to/work/directory"/>
+    <!-- other properties -->
+</bean>
+```
+Java：
+```java
+IgniteConfiguration igniteCfg = new IgniteConfiguration();
+igniteCfg.setWorkDirectory("/path/to/work/directory");
+```
+## 3.Maven配置
+### 3.1.概述
+如果项目里用Maven管理依赖，可以单独地导入各个Ignite模块。
+
+::: tip 注意
+在下面的例子中，要将`${ignite.version}`替换为实际使用的版本。
+:::
+
+::: tip Java 9/10/11
+如果使用的是Java 9/10/11，要确认更新了[这里](#_3-2-在jdk9-10-11中运行ignite)描述的JVM启动参数。
+:::
+
+### 3.2.常规依赖
+Ignite强依赖于`ignite-core.jar`。
+```xml
+<dependency>
+    <groupId>org.apache.ignite</groupId>
+    <artifactId>ignite-core</artifactId>
+    <version>${ignite.version}</version>
+</dependency>
+```
+不过很多时候需要其它更多的依赖，比如，要使用Spring配置或者SQL查询等。
+
+下面就是最常用的可选模块：
+
+ - ignite-indexing（可选，如果需要SQL查询）
+ - ignite-spring（可选，如果需要spring配置）
+
+```xml
+<dependency>
+    <groupId>org.apache.ignite</groupId>
+    <artifactId>ignite-core</artifactId>
+    <version>${ignite.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.ignite</groupId>
+    <artifactId>ignite-spring</artifactId>
+    <version>${ignite.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.ignite</groupId>
+    <artifactId>ignite-indexing</artifactId>
+    <version>${ignite.version}</version>
+</dependency>
+```
+
+### 3.3.导入独立模块
+可以一个个地导入Ignite模块，唯一必须的就是`ignite-core`，其它的都是可选的，所有可选模块都可以像核心模块一样导入，只是构件Id不同。
+
+现在提供如下模块：
+
+ - `ignite-spring`：基于Spring的配置支持
+ - `ignite-indexing`：SQL查询和索引
+ - `ignite-geospatial`：地理位置索引
+ - `ignite-hibernate`：Hibernate集成
+ - `ignite-web`：Web Session集群化
+ - `ignite-schedule`：基于Cron的计划任务
+ - `ignite-log4j`：Log4j日志
+ - `ignite-jcl`：Apache Commons logging日志
+ - `ignite-jta`：XA集成
+ - `ignite-hadoop2-integration`：HDFS2.0集成
+ - `ignite-rest-http`：HTTP REST请求
+ - `ignite-scalar`：Ignite Scalar API
+ - `ignite-slf4j`：SLF4J日志
+ - `ignite-ssh`；SSH支持，远程机器上启动网格节点
+ - `ignite-urideploy`：基于URI的部署
+ - `ignite-aws`：AWS S3上的无缝集群发现
+ - `ignite-aop`：网格支持AOP
+ - `ignite-visor-console`：开源的命令行管理和监控工具
+
+::: warning 构件版本
+注意，导入若干Ignite模块时，它们的版本号应该相同，比如，如果使用`ignite-core`1.8,所有其它的模块也必须导入1.8版本。
+:::
+
+### 3.4.LGPL依赖
+下面的Ignite模块有LGPL依赖，因此无法部署到Maven中央仓库：
+
+ - `ignite-hibernate`
+ - `ignite-geospatial`
+ - `ignite-schedule`
+
+要使用这些模块，需要手工从源代码进行构建然后加入自己的项目，比如，要将`ignite-hibernate`安装到本地库，可以在Ignite的源代码包中运行如下的命令：
+```bash
+mvn clean install -DskipTests -Plgpl -pl modules/hibernate -am
+```
+
+::: tip 第三方仓库
+GridGain提供自己的[Maven仓库](http://www.gridgainsystems.com/nexus/content/repositories/external)，包含了Ignite的LGPL构件，比如`ignite-hibernate`。<br>
+注意位于GridGain的Maven库中的构件仅仅为了方便使用，并不是官方的Ignite构件。
+:::
+## 4.RPM和DEB包安装
+### 4.1.概述
+Ignite可以通过[RPM](https://www.apache.org/dist/ignite/rpm)或者[DEB](https://www.apache.org/dist/ignite/deb)仓库进行安装。
+
+::: warning 确认Linux发行版
+Ignite的RPM/DEB包，在如下的Linux发行版中进行了验证：
+
+ - Ubuntu 14.10及以上的版本；
+ - Debian 9.3及以上的版本；
+ - CentOS 7.4.1708及以上的版本
+
+只要包可以安装，其它的发行版也是支持的。
+:::
+### 4.2.仓库的配置
+配置Ignite的RPM或者DEB仓库，如下所示（如果必要，需要根据提示接受GPG密钥），其中包括了特定发行版的配置：
+
+Debian：
+```bash
+# Install dirmngr (if not already installed) for apt-key ability to retrieve remote GPG keys
+sudo apt update
+sudo apt install dirmngr --no-install-recommends
+```
+RPM：
+```bash
+sudo bash -c 'cat <<EOF > /etc/yum.repos.d/ignite.repo
+[ignite]
+name=Apache Ignite
+baseurl=http://apache.org/dist/ignite/rpm/
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=http://apache.org/dist/ignite/KEYS
+       http://bintray.com/user/downloadSubjectPublicKey?username=bintray
+EOF'
+sudo yum check-update
+```
+DEB：
+```bash
+sudo bash -c 'cat <<EOF > /etc/apt/sources.list.d/ignite.list
+deb http://apache.org/dist/ignite/deb/ apache-ignite main
+EOF'
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
+sudo apt update
+```
+### 4.3.Ignite的安装
+安装Ignite的最新版：
+
+RPM：
+```bash
+sudo yum install apache-ignite
+```
+DEB：
+```bash
+sudo apt install apache-ignite --no-install-recommends
+```
+安装后的结构如下：
+
+|文件夹|映射至|描述|
+|---|---|---|
+|`/usr/share/apache-ignite`||Ignite安装的根目录|
+|`/usr/share/apache-ignite/bin`||二进制文件文件夹（脚本以及可执行程序）|
+|`/etc/apache-ignite`|`/usr/share/apache-ignite/config`|默认配置文件|
+|`/var/log/apache-ignite`|`/var/lib/apache-ignite/log`|日志目录|
+|`/usr/lib/apache-ignite`|`/usr/share/apache-ignite/libs`|核心和可选库|
+|`/var/lib/apache-ignite`|`/usr/share/apache-ignite/work`|Ignite的工作目录|
+|`/usr/share/doc/apache-ignite`||文档|
+|`/usr/share/license/apache-ignite-<version>`||协议|
+|`/etc/systemd/system`||`systemd`服务配置|
+
+### 4.4.将Ignite作为服务
+
+::: warning 注意
+如果运行于Windows10 WSL或者Docker，那么需要将Ignite作为一个独立的进程（而不是一个服务），具体可以看下面的章节。
+:::
+用一个配置文件启动一个Ignite节点，可以这样做：`sudo systemctl start apache-ignite@<config_name>`，注意这里的`<config_name>`参数是相对于`/etc/apache-ignite`文件夹的。
+
+运行Ignite服务：
+```bash
+sudo systemctl start apache-ignite@default-config.xml    # start Ignite service
+journalctl -fe                                           # check logs
+```
+如果要开启随着系统启动而节点自动重启，如下：
+```bash
+sudo systemctl enable apache-ignite@<config name>
+```
+### 4.5.将Ignite作为独立进程
+使用下面的命令可以将Ignite启动为一个独立的进程（先要切换到`/usr/share/apache-ignite`），如果要修改默认的配置，可以修改`/etc/apache-ignite/default-config.xml`文件。默认的配置会使用组播IP探测器，如果要使用静态IP探测器，需要修改默认的配置文件，具体参见[TCP/IP发现](/doc/java/Clustering.md#_6-1-tcp-ip发现)。
+
+首先，切换到`ignite`用户，如下：
+```bash
+sudo -u ignite /usr/bin/env bash    # switch to ignite user
+```
+然后切换到Ignite的bin文件夹，启动一个节点：
+```bash
+cd /usr/share/apache-ignite         # navigate to Ignite home folder
+bin/ignite.sh                       # run Ignite with default configuration
+```
+### 4.6.在Windows10 WSL中运行Ignite
+**网络配置**
+
+在Windows 10 WSL环境下运行Ignite，需要对具有高级安全的Windows防御防火墙进行正确的配置：
+
+ - 运行`具有高级安全的Windows防御防火墙`；
+ - 选择左侧的`入站规则`菜单；
+ - 选择右侧的`新建规则`菜单；
+ - 选择`程序`复选框然后点击`下一步`；
+ - 在`程序路径`字段中输入`%SystemRoot%\System32\wsl.exe`，然后点击`下一步`；
+ - 选择`允许连接`复选框，然后点击`下一步`；
+ - 选择`域`、`私有`和`公开`复选框，然后点击`下一步`；
+ - 在`名字`字段中输入名字（在`描述`字段中，也可以可选地写一段描述），然后点击`完成`。
+
+这个配置好的规则将允许Windows 10 WSL环境中的Ignite节点暴露于局域网中。
+
+**启动Ignite集群**
+
+由于特殊的网络堆栈实现，如果要在一个Windows10 WSL环境中运行多个节点，需要对配置进行自定义（可以看下面的`wsl-default-config`），启动命令如下：`bin/ignite.sh config/wsl-default-config.xml -J-DNODE=<00..99>`。
+
+wsl-default-config.xml：
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+
+    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="localPort" value="475${NODE}"/>
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>127.0.0.1:47500..47599</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+
+        <property name="communicationSpi">
+            <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+                <property name="localPort" value="481${NODE}"/>
+            </bean>
+        </property>
+
+    </bean>
+</beans>
+```
+首先，以`ignite`用户登录，如下：
+```bash
+sudo -u ignite /usr/bin/env bash
+```
+然后转到Ignite的主文件夹，然后在本地启动希望数量的节点（最多100）：
+```bash
+# Navigate to Ignite home folder
+cd /usr/share/apache-ignite
+
+# Run several local nodes
+bin/ignite.sh config/wsl-default-config.xml -J-DNODE=00 &
+bin/ignite.sh config/wsl-default-config.xml -J-DNODE=01 &
+...
+bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
+```
+## 5.Docker部署
 Docker可以将Ignite应用及其所有的依赖打包进一个标准的容器，Docker会自动下载Ignite二进制包，将用户的库文件部署进Ignite以及配置节点，它还可以自动启动配置好的Ignite节点，这样的集成方式，使得通过简单地重启Ignite的Docker容器就可以部署新的代码。
 
 要运行一个Docker容器，需要拉取和启动一个Docker镜像，默认会下载最新的版本，在[这里](https://hub.docker.com/r/apacheignite/ignite/tags)可以看到完整的标签列表。
-### 2.1.下载Ignite的Docker镜像
+### 5.1.下载Ignite的Docker镜像
 使用下面的命令，可以拉取Ignite的Docker镜像：
 ```shell
 # Pull latest version.
@@ -17,7 +295,7 @@ sudo docker pull apacheignite/ignite
 # Pull a specific Ignite version {ignite-version}
 sudo docker pull apacheignite/ignite:{ignite-version}
 ```
-### 2.2.以内存集群模式运行Ignite的Docker镜像
+### 5.2.以内存集群模式运行Ignite的Docker镜像
 使用下面的命令可以运行Ignite的Docker镜像：
 ```shell
 # Run latest version.
@@ -43,7 +321,7 @@ apacheignite/ignite:{ignite-version}
 |`JVM_OPTS`|通过docker命令传递给ignite实例的环境变量。|无|`-Xms1g -Xmx1g -server -XX:+AggressiveOpts -XX:MaxPermSize=256m`|
 |`EXTERNAL_LIBS`|库文件URL列表|无|`http://central.maven.org/maven2/io/undertow/undertow-servlet/1.3.10.Final/undertow-servlet-1.3.10.Final.jar,http://central.maven.org/maven2/io/undertow/undertow-build-config/1.0.0.Beta24/undertow-build-config-1.0.0.Beta24.jar`|
 
-### 2.3.以持久化集群模式运行Ignite的Docker镜像
+### 5.3.以持久化集群模式运行Ignite的Docker镜像
 如果要使用Ignite的[持久化](/doc/java/Persistence.md)，Ignite会将用户的数据保存在容器文件系统的默认工作目录（`{IGNITE_HOME}/work`）下，如果重启容器，该目录会被清空，要避免这个问题，可以这样做：
 
  - 使用一个持久化卷来保存数据；
@@ -84,7 +362,7 @@ docker run -d \
 ```
 `-v`参数会在容器的`/persistence`目录下加载一个本地目录，`-e IGNITE_WORK_DIR=/persistence`选项会通知Ignite将这个目录作为工作目录。
 
-### 2.4.示例
+### 5.4.示例
 要启动Ignite的docker容器，可以使用如下的命令：
 ```bash
 sudo docker run -it --net=host -e "CONFIG_URI=https://raw.githubusercontent.com/apache/ignite/master/examples/config/example-cache.xml" apacheignite/ignite
@@ -93,9 +371,9 @@ sudo docker run -it --net=host -e "CONFIG_URI=https://raw.githubusercontent.com/
 
 ![](https://files.readme.io/ryYtMcSCuGiyVcXN1GCw_dock_git_repo.png)
 
-## 3.AWS部署
+## 6.AWS部署
 Ignite的AMI（Amazon机器镜像）可以通过AWS的EC2管理控制台快速配置和部署一个简单的Ignite集群。
-### 3.1.Amazon EC2部署
+### 6.1.Amazon EC2部署
 
  - 点击下表的链接选择必要的区域：
 
@@ -144,9 +422,9 @@ sudo docker logs -f CONTAINER_ID
 ```bash
 sudo docker exec -it container_id /bin/bash
 ```
-## 4.Google计算部署
+## 7.Google计算部署
 Ignite的镜像可以通过Google计算控制台快速配置和部署一个简单的Ignite集群。
-### 4.1.Google计算部署
+### 7.1.Google计算部署
 
  - 要导入[Ignite镜像](https://storage.googleapis.com/ignite-media/ignite-google-image.tar.gz)，执行如下的命令：
 ```bash
@@ -194,21 +472,21 @@ sudo docker logs -f CONTAINER_ID
 ```bash
 sudo docker exec -it container_id /bin/bash
 ```
-## 5.Mesos部署
-### 5.1.概述
+## 8.Mesos部署
+### 8.1.概述
 Apache Ignite支持在Mesos集群上调度和运行Ignite节点。
 
 Apache Mesos是一个集群管理器，它提供了一个通用运行环境以及所有的必要资源来部署、运行和管理分布式应用。它对资源的管理和隔离有助于充分利用服务器资源。
 
 要了解Apache Mesos的更多信息，请参照：[http://mesos.apache.org/](http://mesos.apache.org/)
 
-### 5.2.Ignite Mesos框架
+### 8.2.Ignite Mesos框架
 常规部署Apache Ignite集群需要下载Apache Ignite二进制包，修改配置参数以及启动节点。Apache Ignite Mesos框架由`调度器`和`任务`组成，可以极大地简化集群的部署。
 
  - `调度器`：调度器启动时将自己在Mesos主节点上注册，注册成功之后调度器就会开始处理从Mesos主节点到使用资源的Ignite节点的资源请求，调度器会维护Ignite集群所需（并且可用）的所有资源水平（CPU，内存等）；
  - `任务`：在Mesos从节点上启动Ignite节点。
 
-### 5.3.运行Ignite Mesos框架
+### 8.3.运行Ignite Mesos框架
 要运行Ignite Mesos框架需要配置好的正在运行的Apache Mesos集群，如果需要如何Apache Mesos集群的信息，请参照：[https://docs.mesosphere.com/getting-started/datacenter/install/](https://docs.mesosphere.com/getting-started/datacenter/install/)。
 
 ::: warning 注意
@@ -265,7 +543,9 @@ curl -X POST -H "Content-type: application/json" --data-binary @marathon.json ht
 ![](https://files.readme.io/qUqG485tRtKS50JCp7yn_mesos_sandbox.png)
  - 点击`stdout`获取标准输出日志，`stderr`获取标准错误日志；
 ![](https://files.readme.io/Ch5VkVm1Q5qGvrGEYF4k_mesos_sandbox_stdout.png)
+
 **通过jar文件运行框架**
+
  - 下载Ignite包然后打开`libs\optional\ignite-mesos\`文件夹；
  - 使用如下命令运行框架：
 ```shell
@@ -295,7 +575,7 @@ IGNITE_VERSION=1.7.0
  - 点击`stdout`获取标准输出日志，`stderr`获取标准错误日志；
 ![](https://files.readme.io/MEksCWXBTRq5WpUyp4CJ_stdout.png)
 
-### 5.4.配置
+### 8.4.配置
 所有配置都是通过环境变量或者配置文件处理的（这非常适用于简化marathon的配置以运行框架），下面的配置参数可以根据需要进行配置：
 
 |名称|描述|默认值|示例|
@@ -320,22 +600,22 @@ IGNITE_VERSION=1.7.0
 |`IGNITE_PACKAGE_PATH`|Ignite的压缩包路径，这个参数在访问因特网受限时是有用的。|无|/opt/ignite/apache-ignite-fabric-1.6.0-bin.zip|
 |`IGNITE_HTTP_SERVER_IDLE_TIMEOUT`|设置一个HTTP连接的最大空闲时间（毫秒），jetty服务器会使用，服务器提供了ignite的mesos框架所需的资源，比如ignite压缩包，用户的库文件，配置等。|30000|30000|
 
-## 6.Yarn部署
-### 6.1.概述
+## 9.Yarn部署
+### 9.1.概述
 与Yarn的集成可以支持在Yarn集群上调度和运行Apache Ignite节点。
 
 Yarn是一个资源管理器，它提供了一个包括所有必要资源的通用的运行环境来进行分布式应用的部署，运行和管理，它对资源的管理和隔离有助于充分利用服务器资源。
 
 要了解Yarn的信息，请参照[http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html)。
 
-### 6.2.Ignite Yarn应用
+### 9.2.Ignite Yarn应用
 部署Apache Ignite集群的典型步骤是下载Ignite的二进制包，修改配置文件以及启动节点。与Yarn的集成可以避免这些操作，Ignite Yarn应用可以极大的简化集群的部署，它由如下组件组成：
 
  - 下载Ignite二进制包，将必要的资源放入HDFS，创建启动任务的必要的上下文，启动`ApplicationMaster`进程；
  - `Application master`：注册成功之后组件就会开始处理从资源管理器到使用资源的Ignite节点的资源请求，`Application master`会维护Ignite集群所需的所有资源水平（CPU，内存等）；
  - `Container`：在从节点上运行Ignite节点的实体；
 
-### 6.3.运行Ignite Yarn应用
+### 9.3.运行Ignite Yarn应用
 要运行Ignite应用，需要配置和运行Yarn和Hadoop集群，要了解如何配置集群的信息，可以参照：[ http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html](http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html).
 
  - 下载Ignite；
@@ -372,7 +652,7 @@ yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar clu
  - 点击`stdout`获取标准输出日志，`stderr`获取标准错误日志；
 ![](https://files.readme.io/a3e8yeROWckIihHTWTwp_ContainerStdout.png)
 
-### 6.4.配置
+### 9.4.配置
 所有的配置都是通过环境变量和属性文件进行的，下面的配置参数可以根据需要进行配置：
 
 |名称|描述|默认值|示例|
@@ -391,15 +671,15 @@ yarn jar ignite-yarn-<ignite-version>.jar ./ignite-yarn-<ignite-version>.jar clu
 |`IGNITE_URL`|用于下载Ignite二进制包的地址，对于2.7版本，IGNITE_PATH或者IGNITE_URL是必须要有的|无|`http://mirror.linux-ia64.org/apache/ignite/2.7.0/apache-ignite-2.7.0-bin.zip`|
 |`IGNITE_JVM_OPTS`|JVM参数|无|-XX:+PrintGC|
 
-## 7.VMWare部署
-### 7.1.概述
+## 10.VMWare部署
+### 10.1.概述
 Ignite可以部署于VMWare管理的虚拟和云环境，没有什么和VMWare有关的特性，不过建议将Ignite实例绑定到一个单一专用的主机，这样可以：
 
  - 避免当Ignite实例与其它应用程序争用主机资源时，导致Ignite集群的性能出现峰值；
  - 确保高可用，如果一台主机宕机并且有两个或者多个Ignite服务端节点绑定到上面，那么可能导致数据丢失。
 
 下面的内容会说明和Ignite节点迁移有关的vMotion的使用。
-### 7.2.使用vMotion进行节点迁移
+### 10.2.使用vMotion进行节点迁移
 vMotion可以将一个在线的实例从一台主机迁移到另一台，但是迁移之后Ignite依赖的一些基本要求要得到满足：
 
  - 新主机有相同的内存状态；

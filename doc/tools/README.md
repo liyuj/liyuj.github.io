@@ -180,7 +180,7 @@ mvn clean package -pl :ignite-web-agent -am -P web-console -DskipTests=true
  - 在终端中切换到`$IGNITE_HOME/modules/web-console/backend`，如果需要，运行`npm install --no-optional`(如果依赖改变)，然后运行`npm start`启动后台；
  - 在另一个终端中切换到`$IGNITE_HOME/modules/web-console/frontend`，如果需要，运行`npm install --no-optional`(如果依赖改变)，然后运行`npm start`以开发模式启动webpack；
  - 在浏览器中打开：`http://localhost:9000`；
- - 在[入门](#_1-2-入门)章节中可以看到如何将部署的控制台接入一个远程集群，或者如何在远程主机上访问控制台。
+ - 在[入门](#_2-入门)章节中可以看到如何将部署的控制台接入一个远程集群，或者如何在远程主机上访问控制台。
 
 ### 3.4.在生产模式中运行Ignite的Web控制台
 **前提条件**
@@ -426,9 +426,9 @@ SELECT p.name, count(*) AS cnt FROM "ParkingCache".Parking p`
 ![](https://files.readme.io/5b5cdc8-sql-queries.png)
 
 ## 5.Docker部署
-在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker镜像，如果基于Docker的方式不可行，那么可以参照[构建和部署](#_1-3-构建和部署)章节的内容。
+在本地环境中部署Ignite Web控制台的最简单方式是使用控制台的Docker镜像，如果基于Docker的方式不可行，那么可以参照[构建和部署](#_3-构建和部署)章节的内容。
 ### 5.1.启动Web代理
-如[入门](#_1-2-入门)章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的[Web代理](#_1-2-2-ignite-web代理)，下面是步骤：
+如[入门](#_2-入门)章节所说，要在Ignite集群和Web控制台之间建立连接，需要首先配置并且启动Ignite的[Web代理](#_2-2-ignite-web代理)，下面是步骤：
 
 1.启动开启REST服务的Ignite节点，将`ignite-rest-http`目录从`IGNITE_HOME/libs/optional/`移动到`IGNITE_HOME/lib/`，或者如果从IDE启动节点，则需要将下面的依赖加入pom.xml文件：
 

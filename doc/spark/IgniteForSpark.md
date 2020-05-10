@@ -377,7 +377,7 @@ GitHub上有一些用于演示如何在Ignite中使用Spark DataFrame的示例�
 
 **独立部署**
 
-在独立部署模式，Ignite节点应该与Spark工作节点部署在一起。Ignite安装的介绍可以参照[入门](/doc/java/#_1-3-入门)章节，在所有的工作节点上安装Ignite之后，通过`ignite.sh`脚本在每个配置好的Spark workder上启动一个节点。
+在独立部署模式，Ignite节点应该与Spark工作节点部署在一起。Ignite安装的介绍可以参照[入门](/doc/java/#_3-入门)章节，在所有的工作节点上安装Ignite之后，通过`ignite.sh`脚本在每个配置好的Spark workder上启动一个节点。
 
 *默认将Ignite库文件加入Spark类路径*
 
@@ -413,7 +413,7 @@ import org.apache.ignite.configuration._
 ```
 **MESOS部署**
 
-Ignite可以部署在Mesos集群上，具体细节请参见[Mesos部署](/doc/java/Deployment.md#_5-mesos部署)。
+Ignite可以部署在Mesos集群上，具体细节请参见[Mesos部署](/doc/java/InstallAndDeployment.md#_8-mesos部署)。
 ### 4.2.嵌入式部署
 ::: danger 嵌入式模式已被弃用
 嵌入式模式意味着需要在Spark执行器中启动Ignite服务端节点，这可能导致意外的再平衡甚至数据丢失，因此该模式目前已被弃用并且最终会被废弃。可以考虑启动一个单独的Ignite集群然后使用独立模式来避免数据的一致性和性能问题。

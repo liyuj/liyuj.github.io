@@ -81,7 +81,7 @@ Ignite是一个分布式系统，因此，有能力将数据和数据以及数�
 ### 3.1.环境要求
 Apache Ignite官方在如下环境中进行了测试：
 
- - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9或之后的版本，具体可以看下面的[在JDK9及以后版本中运行Ignite](#_1-3-2-在jdk9-10-11中运行ignite)章节；
+ - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9或之后的版本，具体可以看下面的[在JDK9及以后版本中运行Ignite](#_3-2-在jdk9-10-11中运行ignite)章节；
  - OS：Linux（任何版本），Mac OS X（10.6及以上），Windows(XP及以上)，Windows Server（2008及以上），Oracle Solaris；
  - 网络：没有限制（建议10G）；
  - 架构：x86，x64，SPARC，PowerPC
@@ -181,7 +181,7 @@ Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于S
 ```
 
 ::: tip Maven配置
-关于如何包含个别的ignite maven模块的更多信息，可以参考[Maven设置](#_1-4-maven配置)章节。
+关于如何包含个别的ignite maven模块的更多信息，可以参考[Maven设置](/doc/java/InstallAndDeployment.md#_3-maven配置)章节。
 :::
 
 每个二进制包中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
@@ -781,7 +781,7 @@ public class ServiceGridExample {
 ### 3.10.Docker和云镜像安装
 最新的Ignite Docker镜像以及AWS和Google计算引擎的云镜像，可以通过Ignite的[下载页面](https://ignite.apache.org/download.cgi#docker)获得。
 ### 3.11.RPM|DEB包安装
-Ignite可以通过官方的[RPM和DEB仓库](#_1-12-rpm和deb包安装)进行安装。
+Ignite可以通过官方的[RPM和DEB仓库](/doc/java/InstallAndDeployment.md#_4-rpm和deb包安装)进行安装。
 ### 3.12.通过源代码构建
 如果下载了源代码，可以使用下面的命令构建二进制包：
 ```bash
@@ -800,106 +800,15 @@ $ mvn clean package -DskipTests -Prelease,lgpl
 $ mvn clean package -DskipTests -Dignite.edition=hadoop [-Dhadoop.version=X.X.X]
 ```
 具体细节请参见源码包中的DEVNOTES.txt文件。
-## 4.Maven配置
+## 4.Ignite生命周期
 ### 4.1.概述
-如果项目里用Maven管理依赖，可以单独地导入各个Ignite模块。
-
-::: tip 注意
-在下面的例子中，要将`${ignite.version}`替换为实际使用的版本。
-:::
-
-::: tip Java 9/10/11
-如果使用的是Java 9/10/11，要确认更新了[这里](#_3-2-在jdk9-10-11中运行ignite)描述的JVM启动参数。
-:::
-
-### 4.2.常规依赖
-Ignite强依赖于`ignite-core.jar`。
-```xml
-<dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-core</artifactId>
-    <version>${ignite.version}</version>
-</dependency>
-```
-不过很多时候需要其它更多的依赖，比如，要使用Spring配置或者SQL查询等。
-
-下面就是最常用的可选模块：
-
- - ignite-indexing（可选，如果需要SQL查询）
- - ignite-spring（可选，如果需要spring配置）
-
-```xml
-<dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-core</artifactId>
-    <version>${ignite.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-spring</artifactId>
-    <version>${ignite.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-indexing</artifactId>
-    <version>${ignite.version}</version>
-</dependency>
-```
-
-### 4.3.导入独立模块
-可以一个个地导入Ignite模块，唯一必须的就是`ignite-core`，其它的都是可选的，所有可选模块都可以像核心模块一样导入，只是构件Id不同。
-
-现在提供如下模块：
-
- - `ignite-spring`：基于Spring的配置支持
- - `ignite-indexing`：SQL查询和索引
- - `ignite-geospatial`：地理位置索引
- - `ignite-hibernate`：Hibernate集成
- - `ignite-web`：Web Session集群化
- - `ignite-schedule`：基于Cron的计划任务
- - `ignite-log4j`：Log4j日志
- - `ignite-jcl`：Apache Commons logging日志
- - `ignite-jta`：XA集成
- - `ignite-hadoop2-integration`：HDFS2.0集成
- - `ignite-rest-http`：HTTP REST请求
- - `ignite-scalar`：Ignite Scalar API
- - `ignite-slf4j`：SLF4J日志
- - `ignite-ssh`；SSH支持，远程机器上启动网格节点
- - `ignite-urideploy`：基于URI的部署
- - `ignite-aws`：AWS S3上的无缝集群发现
- - `ignite-aop`：网格支持AOP
- - `ignite-visor-console`：开源的命令行管理和监控工具
-
-::: warning 构件版本
-注意，导入若干Ignite模块时，它们的版本号应该相同，比如，如果使用`ignite-core`1.8,所有其它的模块也必须导入1.8版本。
-:::
-
-### 4.4.LGPL依赖
-下面的Ignite模块有LGPL依赖，因此无法部署到Maven中央仓库：
-
- - `ignite-hibernate`
- - `ignite-geospatial`
- - `ignite-schedule`
-
-要使用这些模块，需要手工从源代码进行构建然后加入自己的项目，比如，要将`ignite-hibernate`安装到本地库，可以在Ignite的源代码包中运行如下的命令：
-```bash
-mvn clean install -DskipTests -Plgpl -pl modules/hibernate -am
-```
-
-::: tip 第三方仓库
-GridGain提供自己的[Maven仓库](http://www.gridgainsystems.com/nexus/content/repositories/external)，包含了Ignite的LGPL构件，比如`ignite-hibernate`。<br>
-注意位于GridGain的Maven库中的构件仅仅为了方便使用，并不是官方的Ignite构件。
-:::
-
-## 5.Ignite生命周期
-### 5.1.概述
 Ignite是基于JVM的，一个JVM可以运行一个或者多个逻辑Ignite节点（大多数情况下，一个JVM仅运行一个Ignite节点）。在整个Ignite文档中，会交替地使用术语Ignite运行时以及Ignite节点，比如说可以该主机运行5个节点，技术上通常意味着主机上启动5个JVM，每个JVM运行一个节点，Ignite也支持一个JVM运行多个节点，事实上，通常作为Ignite内部测试用。
 
 ::: tip 提示
 Ignite运行时 == JVM进程 == Ignite节点（多数情况下）
 :::
 
-### 5.2.Ignition类
+### 4.2.Ignition类
 `Ignition`类在网络中启动各个Ignite节点，注意一台物理服务器（网络中的一台计算机）可以运行多个Ignite节点。
 下面的代码是在全默认配置下在本地启动网格节点；
 ```java
@@ -911,7 +820,7 @@ Ignite ignite = Ignition.start("examples/config/example-cache.xml");
 ```
 配置文件的路径既可以是绝对路径，也可以是相对于IGNITE_HOME的相对路径，也可以是相对于类路径的META-INF文件夹。
 
-### 5.3.LifecycleBean
+### 4.3.LifecycleBean
 有时可能希望在Ignite节点启动和停止的之前和之后执行特定的操作，这个可以通过实现`LifecycleBean`接口实现，然后在Spring的配置文件中通过指定`IgniteConfiguration`的`lifecycleBeans`属性实现。
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration">
@@ -946,9 +855,9 @@ public class MyLifecycleBean implements LifecycleBean {
     }
 }
 ```
-也可以将Ignite实例以及其它有用的资源注入`LifecycleBean`实现，查看[资源注入](#_1-8-资源注入)章节可以了解更多的信息。
+也可以将Ignite实例以及其它有用的资源注入`LifecycleBean`实现，查看[资源注入](#_6-资源注入)章节可以了解更多的信息。
 
-### 5.4.生命周期事件类型
+### 4.4.生命周期事件类型
 当前支持如下生命周期事件类型：
 
  - `BEFORE_NODE_START`：Ignite节点的启动程序初始化之前调用
@@ -956,8 +865,8 @@ public class MyLifecycleBean implements LifecycleBean {
  - `BEFORE_NODE_STOP`：Ignite节点的停止程序初始化之前调用
  - `AFTER_NODE_STOP`：Ignite节点停止之后调用
 
-## 6.异步支持
-### 6.1.概述
+## 5.异步支持
+### 5.1.概述
 Ignite的多数API即可以支持同步模式，也可以支持异步模式，异步方法需要有一个`Async`后缀。
 ```java
 // Synchronous get
@@ -967,7 +876,7 @@ V get(K key);
 IgniteFuture<V> getAsync(K key);
 ```
 异步操作返回的是一个`IgniteFuture`或其子类的实例，通过如下方式可以获得异步操作的结果，或者调用阻塞的`IgniteFuture.get()`方法，或者通过`IgniteFuture.listen()`方法或者`IgniteFuture.chain()`方法注册一个闭包，然后等待当操作完成后调用闭包。
-### 6.2.支持的接口
+### 5.2.支持的接口
 下面列出的接口可以用于同步或者异步模式：
 
  - `IgniteCompute`
@@ -977,7 +886,7 @@ IgniteFuture<V> getAsync(K key);
  - `IgniteMessaging`
  - `IgniteEvents`
 
-### 6.3.监听器和Future链
+### 5.3.监听器和Future链
 要在非阻塞模式下等待异步操作的结果（`IgniteFuture.get()`），可以使用`IgniteFuture.listen()`方法或者`IgniteFuture.chain()`方法注册一个闭包，当操作完成后，闭包会被调用，比如：
 ```java
 IgniteCompute compute = ignite.compute();
@@ -993,213 +902,12 @@ fut.listen(f -> System.out.println("Job result: " + f.get()));
 ::: warning 闭包执行和线程池
 异步操作完成后，如果通过`IgniteFuture.listen()`或者`IgniteFuture.chain()`方法传递了闭包，那么闭包就会被调用线程以同步的方式执行，否则，闭包就会随着操作的完成异步地执行。
 根据操作的类型，闭包可能被系统线程池中的线程调用（异步缓存操作），或者被公共线程池中的线程调用（异步计算操作）。因此需要避免在闭包实现中调用同步的缓存和计算操作，否则可能导致死锁。
-要实现Ignite计算操作异步嵌套执行，可以使用自定义线程池，相关内容可以查看[自定义线程池](#_1-9-8-自定义线程池)中的相关内容。
+要实现Ignite计算操作异步嵌套执行，可以使用自定义线程池，相关内容可以查看[自定义线程池](#_7-8-自定义线程池)中的相关内容。
 :::
-
-## 7.客户端和服务端
-### 7.1.概述
-Ignite有一个可选的概念，就是**客户端节点**和**服务端节点**，服务端节点参与缓存、计算执行、流式处理等等，而原生的客户端节点提供了远程连接服务端的能力。Ignite原生客户端可以使用完整的`Ignite`API集合，包括近缓存、事务、计算、流、服务等等。
-
-所有的Ignite节点默认都是以`服务端`模式启动的，`客户端`模式需要显式地启用。
-
-### 7.2.配置客户端和服务端
-可以通过`IgniteConfiguration.setClientMode(...)`属性配置一个节点，或者为客户端，或者为服务端。
-
-XML：
-```xml
-<bean class="org.apache.ignite.configuration.IgniteConfiguration">
-    ...
-    <!-- Enable client mode. -->
-    <property name="clientMode" value="true"/>
-    ...
-</bean>
-```
-Java:
-```java
-IgniteConfiguration cfg = new IgniteConfiguration();
-
-// Enable client mode.
-cfg.setClientMode(true);
-
-// Start Ignite in client mode.
-Ignite ignite = Ignition.start(cfg);
-```
-另外，为了方便也可以通过`Ignition`类来打开或者关闭客户端模式，这样可以使客户端和服务端共用一套配置。
-```java
-Ignition.setClientMode(true);
-
-// Start Ignite in client mode.
-Ignite ignite = Ignition.start();
-```
-### 7.3.创建分布式缓存
-当在Ignite中创建缓存时，不管是通过XML方式，还是通过` Ignite.createCache(...)`或者`Ignite.getOrCreateCache(...)`方法，Ignite会自动地在所有的服务端节点中部署分布式缓存。
-
-::: tip 提示
-当分布式缓存创建之后，它会自动地部署在所有的已有或者未来的**服务端**节点上。
-:::
-
-```java
-// Enable client mode locally.
-Ignition.setClientMode(true);
-
-// Start Ignite in client mode.
-Ignite ignite = Ignition.start();
-
-CacheConfiguration cfg = new CacheConfiguration("myCache");
-
-// Set required cache configuration properties.
-...
-
-// Create cache on all the existing and future server nodes.
-// Note that since the local node is a client, it will not
-// be caching any data.
-IgniteCache<?, ?> cache = ignite.getOrCreateCache(cfg);
-```
-
-### 7.4.客户端或者服务端计算
-`IgniteCompute`默认会在所有的服务端节点上执行作业，不过也可以通过创建相应的集群组来选择是只在服务端节点还是只在客户端节点上执行作业。
-
-服务端节点执行：
-```java
-IgniteCompute compute = ignite.compute();
-
-// Execute computation on the server nodes (default behavior).
-compute.broadcast(() -> System.out.println("Hello Server"));
-```
-客户端节点执行：
-```java
-ClusterGroup clientGroup = ignite.cluster().forClients();
-
-IgniteCompute clientCompute = ignite.compute(clientGroup);
-
-// Execute computation on the client nodes.
-clientCompute.broadcast(() -> System.out.println("Hello Client"));
-```
-### 7.5.管理慢客户端
-很多部署环境中，客户端节点是在主集群外启动的，机器和网络都比较差，而有时服务端可能会产生负载（比如持续查询通知）而客户端没有能力处理，导致服务端的输出消息队列不断增长，这可能导致服务端出现内存溢出的情况，或者如果打开背压控制时导致整个集群阻塞。
-
-要管理这样的状况，可以配置允许向客户端节点输出消息的最大值，如果输出队列的大小超过配置的值，该客户端节点会从集群断开以防止拖慢整个集群。
-
-下面的例子显示了如何通过XML或者编程的方式配置慢客户端队列限值：
-
-Java：
-```java
-IgniteConfiguration cfg = new IgniteConfiguration();
-
-// Configure Ignite here.
-
-TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
-commSpi.setSlowClientQueueLimit(1000);
-
-cfg.setCommunicationSpi(commSpi);
-```
-XML：
-```xml
-<bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
-  <!-- Configure Ignite here. -->
-
-  <property name="communicationSpi">
-    <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
-      <property name="slowClientQueueLimit" value="1000"/>
-    </bean>
-  </property>
-</bean>
-```
-### 7.6.客户端重连
-有几种情况客户端会从集群中断开：
-
- - 由于网络原因，客户端无法和服务端重建连接；
- - 与服务端的连接有时被断开，客户端也可以重建与服务端的连接，但是由于服务端无法获得客户端心跳，服务端仍然断开客户端节点；
- - 慢客户端会被服务端节点踢出；
-
-当一个客户端发现它与一个集群断开时，会为自己赋予一个新的节点`id`然后试图与该服务端重新连接。`注意`：这会产生一个副作用，就是当客户端重建连接时本地`ClusterNode`的`id`属性会发生变化，这意味着，如果业务逻辑依赖于这个`id`，就会受到影响。
-当客户端处于一个断开状态并且试图重建与集群的连接过程中时，Ignite API会抛出一个特定的异常：`IgniteClientDisconnectedException`，这个异常提供了一个`Future`，当客户端重连成功后它会完成（`IgniteCache`API会抛出`CacheException`，它有一个`IgniteClientDisconnectedException`作为它的触发原因）。这个`Future`也可以通过`IgniteCluster.clientReconnectFuture()`方法获得。
-
-此外，客户端重连也有一些特定的事件（这些事件是本地化的，也就是说它们只会在客户端节点触发）：
-
- - EventType.EVT_CLIENT_NODE_DISCONNECTED
- - EventType.EVT_CLIENT_NODE_RECONNECTED
-
-下面的例子显示`IgniteClientDisconnectedException`如何使用：
-
-计算：
-```java
-IgniteCompute compute = ignite.compute();
-
-while (true) {
-    try {
-        compute.run(job);
-    }
-    catch (IgniteClientDisconnectedException e) {
-        e.reconnectFuture().get(); // Wait for reconnection.
-
-        // Can proceed and use the same IgniteCompute instance.
-    }
-}
-```
-缓存：
-```java
-IgniteCache cache = ignite.getOrCreateCache(new CacheConfiguration<>());
-
-while (true) {
-  try {
-    cache.put(key, val);
-  }
-  catch (CacheException e) {
-    if (e.getCause() instanceof IgniteClientDisconnectedException) {
-      IgniteClientDisconnectedException cause =
-        (IgniteClientDisconnectedException)e.getCause();
-
-      cause.reconnectFuture().get(); // Wait for reconnection.
-
-      // Can proceed and use the same IgniteCache instance.
-    }
-  }
-}
-```
-客户端自动重连可以通过`TcpDiscoverySpi`的`clientReconnectDisabled`属性禁用，如果重连被禁用那么当发现与集群断开时客户端节点就会停止。
-
-下面的例子显示了如何禁用客户端重连：
-```java
-IgniteConfiguration cfg = new IgniteConfiguration();
-
-// Configure Ignite here.
-
-TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
-
-discoverySpi.setClientReconnectDisabled(true);
-
-cfg.setDiscoverySpi(discoverySpi);
-```
-### 7.7.客户端节点强制服务端模式
-客户端节点需要拓扑中有在线的服务端节点才能启动。
-
-不过如果在没有运行中的服务端节点时还要启动一个客户端节点，可以通过如下方式在客户端节点强制服务端模式发现。
-
-如果不管服务端节点是否在线都要启动客户端节点非常必要，可以在客户端强制服务端模式发现：
-```java
-IgniteConfiguration cfg = new IgniteConfiguration();
-
-cfg.setClientMode(true);
-
-// Configure Ignite here.
-
-TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
-
-discoverySpi.setForceServerMode(true);
-
-cfg.setDiscoverySpi(discoverySpi);
-```
-这种情况下，如果网络中的所有节点都是服务端节点时发现就会发生。
-
-::: warning 注意
-这种情况下为了发现能正常工作，发现SPI在所有节点上使用的所有地址应该是可以相互访问的。
-:::
-
-## 8.资源注入
-### 8.1.概述
+## 6.资源注入
+### 6.1.概述
 Ignite中，预定义的资源都是可以进行依赖注入的，同时支持基于属性和基于方法的注入。任何加注正确注解的资源都会在初始化之前注入相对应的任务、作业、闭包或者SPI。
-### 8.2.基于属性和基于方法
+### 6.2.基于属性和基于方法
 可以通过在一个属性或者方法上加注注解来注入资源。当加注在属性上时，Ignite只是在注入阶段简单地设置属性的值（不会理会该属性的访问修饰符）。如果在一个方法上加注了资源注解，它会访问一个与注入资源相对应的输入参数的类型，如果匹配，那么在注入阶段，就会将适当的资源作为输入参数，然后调用该方法。
 
 基于属性：
@@ -1234,7 +942,7 @@ public class MyClusterJob implements ComputeJob {
     ...
 }
 ```
-### 8.3.预定义的资源
+### 6.3.预定义的资源
 有很多的预定义资源可供注入：
 
 |资源|描述|
@@ -1251,34 +959,34 @@ public class MyClusterJob implements ComputeJob {
 |`TaskContinuousMapperResource`|注入一个`ComputeTaskContinuousMapper`的实例，持续映射可以在任何时点从任务中发布作业，即使过了*map*的初始化阶段。|
 |`TaskSessionResource`|注入`ComputeTaskSession`资源的实例，它为一个特定的任务执行定义了一个分布式的会话。|
 
-## 9.线程池
-### 9.1.概述
+## 7.线程池
+### 7.1.概述
 Ignite创建并且维护着一组线程池，根据使用的API不同分别用于不同的目的。本章节中会列出一些众所周知的内部线程池，然后会展示如何自定义线程池。在`IgniteConfiguration`的javadoc中，可以看到Ignite中可用的完整线程池列表。
-### 9.2.系统线程池
+### 7.2.系统线程池
 系统线程池处理所有与缓存相关的操作，除了SQL以及其它的查询类型，它们会使用查询线程池，同时这个线程池也负责处理Ignite计算任务的取消操作。
 
 默认的线程池数量为`max(8,CPU总核数)`，使用`IgniteConfiguration.setSystemThreadPoolSize(...)`可以进行调整。
-### 9.3.公共线程池
+### 7.3.公共线程池
 公共线程池负责Ignite的计算网格，所有的计算任务都由这个线程池接收然后处理。
 
 默认的线程池数量为`max(8,CPU总核数)`，使用`IgniteConfiguration.setPublicThreadPoolSize(...)`可以进行调整。
-### 9.4.查询线程池
+### 7.4.查询线程池
 查询线程池处理集群内所有的SQL、扫描和SPI查询。
 
 默认的线程池数量为`max(8,CPU总核数)`，使用`IgniteConfiguration.setQueryThreadPoolSize(...)`可以进行调整。
-### 9.5.服务线程池
+### 7.5.服务线程池
 Ignite的服务网格调用使用的是服务线程池，Ignite的服务和计算网格组件都有专用的线程池，可以避免当一个服务实现希望调用一个计算（或者反之）时的线程争用和死锁。
 
 默认的线程池数量为`max(8,CPU总核数)`，使用`IgniteConfiguration.setServiceThreadPoolSize(...)`可以进行调整。
-### 9.6.平行线程池
+### 7.6.平行线程池
 平行线程池通过将操作展开为多个平行的执行，有助于显著加速基本的缓存操作以及事务，因为可以避免相互竞争。
 
 默认的线程池数量为`max(8,CPU总核数)`，使用`IgniteConfiguration.setStripedPoolSize(...)`可以进行调整。
-### 9.7.数据流处理器线程池
+### 7.7.数据流处理器线程池
 数据流处理器线程池用于处理来自`IgniteDataStreamer`的所有消息和请求，各种内置的使用`IgniteDataStreamer`的流适配器也可以。
 
 默认的线程池数量为`max(8,CPU总核数)`，使用`IgniteConfiguration.setDataStreamerThreadPoolSize(...)`可以进行调整。
-### 9.8.自定义线程池
+### 7.8.自定义线程池
 对于Ignite的计算任务，也可以配置自定义的线程池，当希望同步地从一个计算任务调用另一个的时候很有用，因为可以避免死锁。要保证这一点，需要确保执行嵌套任务的线程池不同于上级任务的线程池。
 
 自定义线程池需要在`IgniteConfiguration`中进行定义，并且需要有一个唯一的名字：
@@ -1331,8 +1039,8 @@ ignite.compute().run(new OuterRunnable());
 ::: warning 未定义线程池
 如果应用请求在自定义线程池执行计算任务，而该线程池在Ignite节点中未定义，那么一个特定的警告消息就会在节点的日志中输出，然后任务就会被公共线程池接管执行。
 :::
-## 10.二进制编组器
-### 10.1.基本概念
+## 8.二进制编组器
+### 8.1.基本概念
 从1.6版本开始，Ignite引入了一个在缓存中存储数据的新概念，名为`二进制对象`，这个新的序列化格式提供了若干个优势：
 
  - 它可以从一个对象的序列化形式中读取一个任意的属性，而不需要将该对象完整地反序列化，这个功能完全删除了将缓存的键和值类部署到服务端节点类路径的必要性；
@@ -1355,7 +1063,7 @@ ignite.compute().run(new OuterRunnable());
 比如，`Externalizable`类型的对象无法被序列化成二进制形式，这时就需要自行实现`hashCode`和`equals`方法，具体可以看上面的限制章节。
 :::
 
-### 10.2.配置二进制对象
+### 8.2.配置二进制对象
 在绝大多数情况下不需要额外地配置二进制对象。
 但是，如果需要覆写默认的类型和属性ID计算或者加入`BinarySerializer`，可以为`IgniteConfiguration`定义一个`BinaryConfiguration`对象，这个对象除了为每个类型指定映射以及序列化器之外还可以指定一个全局的Name映射、一个全局ID映射以及一个全局的二进制序列化器。对于每个类型的配置，通配符也是支持的，这时提供的配置会适用于匹配类型名称模板的所有类型。
 配置二进制类型：
@@ -1380,7 +1088,7 @@ ignite.compute().run(new OuterRunnable());
   </property>
 ...
 ```
-### 10.3.BinaryObject缓存API
+### 8.3.BinaryObject缓存API
 Ignite默认使用反序列化值作为最常见的使用场景，要启用`BinaryObject`处理，需要获得一个`IgniteCache`的实例然后使用`withKeepBinary()`方法。启用之后，如果可能，这个标志会确保从缓存返回的对象都是`BinaryObject`格式的。将值传递给`EntryProcessor`和`CacheInterceptor`也是同样的处理。
 
 ::: tip 平台类型
@@ -1401,7 +1109,7 @@ IgniteCache<Integer, BinaryObject> binaryCache = ignite.cache("myCache").withKee
 // Get the above person object in the BinaryObject format.
 BinaryObject binaryPerson = binaryCache.get(personId);
 ```
-### 10.4.使用BinaryObjectBuilder修改二进制对象
+### 8.4.使用BinaryObjectBuilder修改二进制对象
 `BinaryObject`实例是不能修改的，要更新属性或者创建新的`BinaryObject`，必须使用`BinaryObjectBuilder`的实例。
 
 `BinaryObjectBuilder`的实例可以通过`IgniteBinary`入口获得。它可以使用类型名创建，这时返回的对象不包含任何属性，或者它也可以通过一个已有的`BinaryObject`创建，这时返回的对象会包含从给定的`BinaryObject`中拷贝的所有属性。
@@ -1439,7 +1147,7 @@ cache.<Integer, BinaryObject>withKeepBinary().invoke(
      }
   });
 ```
-### 10.5.BinaryObject类型元数据
+### 8.5.BinaryObject类型元数据
 像上面描述的那样，二进制对象结构可以在运行时进行修改，因此获取一个存储在缓存中的一个特定类型的信息也可能是有用的，比如属性名、属性类型名，关联属性名，Ignite通过`BinaryType`接口满足这样的需求。
 
 这个接口还引入了一个属性getter的更快的版本，叫做`BinaryField`。这个概念类似于Java的反射，可以缓存`BinaryField`实例中读取的属性的特定信息，它有助于从一个很大的二进制对象集合中读取同一个属性。
@@ -1461,7 +1169,7 @@ for (BinaryObject person : persons) {
 
 double avg = total / cnt;
 ```
-### 10.6.BinaryObject和CacheStore
+### 8.6.BinaryObject和CacheStore
 在缓存API上调用`withKeepBinary()`方法对于将用户对象传入`CacheStore`的方式不起作用，这么做是故意的，因为大多数情况下单个`CacheStore`实现要么使用反序列化类，要么使用`BinaryObject`表示。要控制对象传入Store的方式，需要使用`CacheConfiguration`的`storeKeepBinary`标志，当该标志设置为`false`时，会将反序列化值传入Store，否则会使用`BinaryObject`表示。
 
 下面是一个使用`BinaryObject`的Store的伪代码实现的示例：
@@ -1501,7 +1209,7 @@ public class CacheExampleBinaryStore extends CacheStoreAdapter<Integer, BinaryOb
     }
 }
 ```
-### 10.7.二进制Name映射器和二进制ID映射器
+### 8.7.二进制Name映射器和二进制ID映射器
 在内部，Ignite不会写属性或者类型名字的完整字符串，而是为了性能，为类型和属性名写一个整型哈希值。经过测试，在类型相同时，属性名或者类型名的哈希值冲突实际上是不存在的，为了性能使用哈希值是安全的。对于当不同的类型或者属性确实冲突的场合，`BinaryNameMapper`和`BinaryIdMapper`可以为该类型或者属性名覆写自动生成的哈希值。
 
 `BinaryNameMapper`：映射类型/类和属性名到不同的名字；
@@ -1518,9 +1226,9 @@ Ignite直接支持如下的映射器实现：
 如果使用了C++客户端并且在`BinaryConfiguration`中没有指定映射器，那么Ignite会使用`BinaryBasicNameMapper`并且`simpleName`属性会被设置为`true`，使用`BinaryBasicIdMapper`并且`lowerCase`属性会被设置为`true`。
 
 如果使用Java、.Net或者C++，默认是不需要任何配置的，只有当需要平台协同、名字转换复杂的情况下，才需要配置映射器。
-## 11.日志
+## 9.日志
 Ignite支持各种日志库和框架，可以直接使用[Log4j](https://logging.apache.org/log4j/2.x/)、[Log4j2](https://logging.apache.org/log4j/2.x/)、[JCL](https://commons.apache.org/proper/commons-logging/guide.html)和[SLF4J](https://www.slf4j.org/manual.html)，本文会描述如何使用它们。
-### 11.1.通用配置
+### 9.1.通用配置
 Ignite节点启动之后，会在控制台中输出启动信息，包括了配置的日志库信息。每个日志库都有自己的配置参数，需要分别进行配置。除了库特有的配置，还有一些系统属性可以对日志进行调整，如下表所示：
 
 |系统属性|描述|默认值|
@@ -1530,7 +1238,7 @@ Ignite节点启动之后，会在控制台中输出启动信息，包括了配�
 |`IGNITE_LOG_DIR`|该属性会指定Ignite日志的输出目录|$IGNITE_HOME/work/log|
 |`IGNITE_DUMP_THREADS_ON_FAILURE`|如果配置为`true`，在捕获严重错误时会在日志中输出线程堆栈信息|true|
 
-### 11.2.默认日志
+### 9.2.默认日志
 Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/config/java.util.logging.properties`配置文件进行配置，然后将日志写入`$IGNITE_HOME/work/log`文件夹，要修改这个日志目录，需要使用`IGNITE_LOG_DIR`环境变量。
 
 另外，Ignite启动于*静默*模式，会阻止`INFO`和`DEBUG`日志的输出。要关闭*静默*模式，可以使用`-DIGNITE_QUIET=false`系统属性。注意*静默*模式的所有信息都是输出到标准输出（STDOUT）的。
@@ -1559,7 +1267,7 @@ Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/c
 
 </bean>
 ```
-### 11.3.Log4j
+### 9.3.Log4j
 如果在启动独立集群节点时要使用Log4j模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1603,7 +1311,7 @@ ignite.log().info("Info Message Logged!");
 ::: tip 注意
 Log4j支持运行时配置，即配置文件的修改无需应用重启即可生效。
 :::
-### 11.4.Log4j2
+### 9.4.Log4j2
 如果在启动独立集群节点时要使用Log4j2模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j2`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1647,7 +1355,7 @@ ignite.log().info("Info Message Logged!");
 ::: tip 注意
 Log4j2支持运行时配置，即配置文件的修改无需应用重启即可生效。
 :::
-### 11.5.JCL
+### 9.5.JCL
 如果在启动独立集群节点时要使用JCL模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-jcl`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1689,7 +1397,7 @@ ignite.log().info("Info Message Logged!");
 ::: tip 注意
 注意JCL只是简单地将日志消息转发给底层的日志系统，这需要正确的配置，具体请参见[JCL官方文档](https://commons.apache.org/proper/commons-logging/guide.html#Configuration)。比如要使用Log4j，类路径中需要添加必要的库文件。
 :::
-### 11.6.SLF4J
+### 9.6.SLF4J
 如果在启动独立集群节点时要使用SLF4J模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-slf4j`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
 如果项目中使用maven进行依赖管理，那么需要添加如下的依赖：
@@ -1729,7 +1437,7 @@ Ignite ignite = Ignition.start(cfg);
 ignite.log().info("Info Message Logged!");
 ```
 要了解更多的信息，可以看[SLF4J手册](https://www.slf4j.org/docs.html)。
-### 11.7.日志配置示例
+### 9.7.日志配置示例
 下面的步骤可以引导开发者进行日志的配置，这可以覆盖大多数的场景。
 
  1. 使用Log4j或者Log4j2作为日志框架，具体可以看上面章节的介绍；
@@ -1739,7 +1447,7 @@ ignite.log().info("Info Message Logged!");
    - 如果使用的是`ignite.sh`，指定`-v`选项；
    - 如果通过Java代码启动，使用`IGNITE_QUIET=false`系统变量。
 
-### 11.8.日志管理提示
+### 9.8.日志管理提示
 日志在故障排除和查找错误方面起着重要作用。
 
 以下是一些关于如何管理日志文件的一般提示：
@@ -1748,173 +1456,7 @@ ignite.log().info("Info Message Logged!");
  - 确保存储日志文件的磁盘上有足够的可用空间；
  - 定期存档旧日志文件以节省存储空间。
 
-## 12.RPM和DEB包安装
-### 12.1.概述
-Ignite可以通过[RPM](https://www.apache.org/dist/ignite/rpm)或者[DEB](https://www.apache.org/dist/ignite/deb)仓库进行安装。
-
-::: warning 确认Linux发行版
-Ignite的RPM/DEB包，在如下的Linux发行版中进行了验证：
-
- - Ubuntu 14.10及以上的版本；
- - Debian 9.3及以上的版本；
- - CentOS 7.4.1708及以上的版本
-
-只要包可以安装，其它的发行版也是支持的。
-:::
-### 12.2.仓库的配置
-配置Ignite的RPM或者DEB仓库，如下所示（如果必要，需要根据提示接受GPG密钥），其中包括了特定发行版的配置：
-
-Debian：
-```bash
-# Install dirmngr (if not already installed) for apt-key ability to retrieve remote GPG keys
-sudo apt update
-sudo apt install dirmngr --no-install-recommends
-```
-RPM：
-```bash
-sudo bash -c 'cat <<EOF > /etc/yum.repos.d/ignite.repo
-[ignite]
-name=Apache Ignite
-baseurl=http://apache.org/dist/ignite/rpm/
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=http://apache.org/dist/ignite/KEYS
-       http://bintray.com/user/downloadSubjectPublicKey?username=bintray
-EOF'
-sudo yum check-update
-```
-DEB：
-```bash
-sudo bash -c 'cat <<EOF > /etc/apt/sources.list.d/ignite.list
-deb http://apache.org/dist/ignite/deb/ apache-ignite main
-EOF'
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
-sudo apt update
-```
-### 12.3.Ignite的安装
-安装Ignite的最新版：
-
-RPM：
-```bash
-sudo yum install apache-ignite
-```
-DEB：
-```bash
-sudo apt install apache-ignite --no-install-recommends
-```
-安装后的结构如下：
-
-|文件夹|映射至|描述|
-|---|---|---|
-|`/usr/share/apache-ignite`||Ignite安装的根目录|
-|`/usr/share/apache-ignite/bin`||二进制文件文件夹（脚本以及可执行程序）|
-|`/etc/apache-ignite`|`/usr/share/apache-ignite/config`|默认配置文件|
-|`/var/log/apache-ignite`|`/var/lib/apache-ignite/log`|日志目录|
-|`/usr/lib/apache-ignite`|`/usr/share/apache-ignite/libs`|核心和可选库|
-|`/var/lib/apache-ignite`|`/usr/share/apache-ignite/work`|Ignite的工作目录|
-|`/usr/share/doc/apache-ignite`||文档|
-|`/usr/share/license/apache-ignite-<version>`||协议|
-|`/etc/systemd/system`||`systemd`服务配置|
-
-### 12.4.将Ignite作为服务
-
-::: warning 注意
-如果运行于Windows10 WSL或者Docker，那么需要将Ignite作为一个独立的进程（而不是一个服务），具体可以看下面的章节。
-:::
-用一个配置文件启动一个Ignite节点，可以这样做：`sudo systemctl start apache-ignite@<config_name>`，注意这里的`<config_name>`参数是相对于`/etc/apache-ignite`文件夹的。
-
-运行Ignite服务：
-```bash
-sudo systemctl start apache-ignite@default-config.xml    # start Ignite service
-journalctl -fe                                           # check logs
-```
-如果要开启随着系统启动而节点自动重启，如下：
-```bash
-sudo systemctl enable apache-ignite@<config name>
-```
-### 12.5.将Ignite作为独立进程
-使用下面的命令可以将Ignite启动为一个独立的进程（先要切换到`/usr/share/apache-ignite`），如果要修改默认的配置，可以修改`/etc/apache-ignite/default-config.xml`文件。默认的配置会使用组播IP探测器，如果要使用静态IP探测器，需要修改默认的配置文件，具体参见[TCP/IP发现](/doc/java/Clustering.md#_5-1-tcp-ip发现)。
-
-首先，切换到`ignite`用户，如下：
-```bash
-sudo -u ignite /usr/bin/env bash    # switch to ignite user
-```
-然后切换到Ignite的bin文件夹，启动一个节点：
-```bash
-cd /usr/share/apache-ignite         # navigate to Ignite home folder
-bin/ignite.sh                       # run Ignite with default configuration
-```
-### 12.6.在Windows10 WSL中运行Ignite
-**网络配置**
-
-在Windows 10 WSL环境下运行Ignite，需要对具有高级安全的Windows防御防火墙进行正确的配置：
-
- - 运行`具有高级安全的Windows防御防火墙`；
- - 选择左侧的`入站规则`菜单；
- - 选择右侧的`新建规则`菜单；
- - 选择`程序`复选框然后点击`下一步`；
- - 在`程序路径`字段中输入`%SystemRoot%\System32\wsl.exe`，然后点击`下一步`；
- - 选择`允许连接`复选框，然后点击`下一步`；
- - 选择`域`、`私有`和`公开`复选框，然后点击`下一步`；
- - 在`名字`字段中输入名字（在`描述`字段中，也可以可选地写一段描述），然后点击`完成`。
-
-这个配置好的规则将允许Windows 10 WSL环境中的Ignite节点暴露于局域网中。
-
-**启动Ignite集群**
-
-由于特殊的网络堆栈实现，如果要在一个Windows10 WSL环境中运行多个节点，需要对配置进行自定义（可以看下面的`wsl-default-config`），启动命令如下：`bin/ignite.sh config/wsl-default-config.xml -J-DNODE=<00..99>`。
-
-wsl-default-config.xml：
-```xml
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-    <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
-
-    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
-        <property name="discoverySpi">
-            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
-                <property name="localPort" value="475${NODE}"/>
-                <property name="ipFinder">
-                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
-                        <property name="addresses">
-                            <list>
-                                <value>127.0.0.1:47500..47599</value>
-                            </list>
-                        </property>
-                    </bean>
-                </property>
-            </bean>
-        </property>
-
-        <property name="communicationSpi">
-            <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
-                <property name="localPort" value="481${NODE}"/>
-            </bean>
-        </property>
-
-    </bean>
-</beans>
-```
-首先，以`ignite`用户登录，如下：
-```bash
-sudo -u ignite /usr/bin/env bash
-```
-然后转到Ignite的主文件夹，然后在本地启动希望数量的节点（最多100）：
-```bash
-# Navigate to Ignite home folder
-cd /usr/share/apache-ignite
-
-# Run several local nodes
-bin/ignite.sh config/wsl-default-config.xml -J-DNODE=00 &
-bin/ignite.sh config/wsl-default-config.xml -J-DNODE=01 &
-...
-bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
-```
-## 13.异常处理
+## 10.异常处理
 下表描述了Ignite API支持的异常以及可以用来处理这些异常的操作。可以查看javadoc中的`throws`子句，查看是否存在已检查异常。
 
 |异常|描述|要采取的动作|运行时异常|
@@ -1940,7 +1482,7 @@ bin/ignite.sh config/wsl-default-config.xml -J-DNODE=99 &
 |`IgniteTxTimeoutCheckedException`|当事务超时时，会抛出此异常。|可进行重试。|否|
 |`ClusterTopologyException`|当集群拓扑发生错误（比如节点故障）时会抛出此异常（针对计算和事件API）。|在`Future`中等待并重试。|是|
 
-## 14.FAQ
+## 11.FAQ
 
 **1.堆内和堆外内存存储有何不同？**
 

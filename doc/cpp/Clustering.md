@@ -17,6 +17,6 @@ Ignite节点间可以自动发现。这有助于集群的按需扩展，而无�
 ## 3.集群配置
 在Ignite中，使用`DiscoverySpi`可实现节点间的自动发现。
 
-Ignite С++使用底层Spring XML文件来配置发现。具体请参见Ignite的[集群发现](/doc/java/Clustering.md#_5-集群发现)文档。
+Ignite С++使用底层Spring XML文件来配置发现。具体请参见Ignite的[集群发现](/doc/java/Clustering.md#_6-集群发现)文档。
 ## 4.网络配置
-网络配置请参见Ignite的[网络配置](/doc/java/Clustering.md#_8-网络配置)文档。
+网络配置请参见Ignite的[网络配置](/doc/java/Clustering.md#_9-网络配置)文档。

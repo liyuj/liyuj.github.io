@@ -86,6 +86,8 @@ module.exports = {
                 sidebar: {
                     '/doc/java/': [
                         '',
+                        'InstallAndDeployment',
+                        'KubernetesDeployment',
                         'Clustering',
                         'Key-ValueDataGrid',
                         'DataLoadingStreaming',
@@ -100,8 +102,6 @@ module.exports = {
                         'PlatformsProtocols',
                         'Plugins',
                         'Security',
-                        'Deployment',
-                        'KubernetesDeployment',
                         'TestsAndBenchmarking',
                         'Metrics',
                         'ProductionReadiness'
