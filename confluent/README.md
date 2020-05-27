@@ -633,7 +633,7 @@ ksql> LIST TOPICS;
  accounts               | false      | 1          | 1                  | 0         | 0
 ```
 ## Bytes, Decimals, Numerics和自定义类型
-这是话题比较深入。
+这个话题比较深入。
 
  - `numeric.mapping`: `best_fit`如果源中包含`NUMERIC/NUMBER`类型的数据，则可能需要这个配置项；
  - 如果需要，可以在JDBC连接器中使用`query`选项，用于对源表中的数据进行转换；

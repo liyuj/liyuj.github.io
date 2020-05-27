@@ -1,6 +1,6 @@
 module.exports = {
     title: 'Apache Ignite技术服务网',
-    description: '轻量级分布式内存HTAP数据库及计算平台,中国唯一Ignite技术咨询/服务商,GridGain中国独家合作伙伴,电话：18624049226',
+    description: 'ignite,中文,官网,中国,apache ignite,内存数据库,分布式数据库,分布式内存数据库,htap数据库,内存计算,并行计算',
     dest: "dist",
     head: [
         ['meta', { "name": 'keywords', "content": 'ignite,apache ignite,内存数据库,分布式数据库,分布式内存数据库,htap数据库,内存计算,并行计算' }],

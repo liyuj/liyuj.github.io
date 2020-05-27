@@ -120,7 +120,7 @@ http://node1:8080/ignite?cmd=size&cacheName=cache1
 ```
 假定有一个缓存，键和值都是*String*类型，可以像下面这样启动流处理器：
 ```java
-KafkaStreamer<String, String, String> kafkaStreamer = new KafkaStreamer<>();
+KafkaStreamer<String, String> kafkaStreamer = new KafkaStreamer<>();
 
 IgniteDataStreamer<String, String> stmr = ignite.dataStreamer("myCache"));
 

@@ -168,6 +168,12 @@ System.out.println("Checkpoint duration:" + pm.getLastCheckpointDuration());
 |`getWalFsyncTimeAverage()`|获取在最后配置的时间间隔内，以微妙计的平均WAL FSYNC模式持续时间。|
 |`getLastCheckpointDuration()`|获取以毫秒计的最近一次检查点进程持续时间。|
 |`getLastCheckpointTotalPagesNumber()`|获取最近的检查点进程中写入的页面总数。|
+|`getTotalAllocatedSize()`|与数据区相同|
+|`getTotalAllocatedPages()`|按字节|
+|`getPhysicalMemorySize()`|与数据区相同|
+|`getPhysicalMemoryPages()`|按字节|
+|`getCheckpointBufferPages()`|按页面数获取检查点缓冲区大小|
+|`getCheckpointBufferSize()`|按大小获取检查点缓冲区大小|
 
 具体可以看[DataStorageMetrics](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/DataStorageMetrics.html)的javadoc。
 
@@ -182,10 +188,10 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
 ::: warning 启用指标收集
 指标收集不是一个无代价的操作，会影响应用的性能，因此默认是关闭的，如果要打开，可以使用下面的方式：
 
- 1.对于数据区可以配置`DataRegionConfiguration.setMetricsEnabled(true)`；
- 2.对于原生持久化可以配置`DataStorageConfiguration.setMetricsEnabled(true)`；
- 3.可以使用特定JMXbean暴露的`DataRegionMetricsMXBean.enableMetrics()`方法；
- 4.可以使用特定JMXbean暴露的`DataStorageMetricsMXBean.enableMetrics()`方法；
+ 1. 对于数据区可以配置`DataRegionConfiguration.setMetricsEnabled(true)`；
+ 2. 对于原生持久化可以配置`DataStorageConfiguration.setMetricsEnabled(true)`；
+ 3. 可以使用特定JMXbean暴露的`DataRegionMetricsMXBean.enableMetrics()`方法；
+ 4. 可以使用特定JMXbean暴露的`DataStorageMetricsMXBean.enableMetrics()`方法；
 :::
 
 ### 1.3.内存使用量计算
