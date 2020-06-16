@@ -23,7 +23,7 @@
       <div class="container">
          <div class="intro-text clearfix">
             <h2 style="font-size:40px;">轻量级分布式内存HTAP数据库及计算平台</h2>
-            <h3>全功能分布式内存架构解决方案，中国唯一Ignite技术咨询/服务商</h3>
+            <h3>GridGain产品&技术服务中国总代理，中国唯一GridGain/Ignite技术咨询/服务商</h3>
          </div>
       </div>
    </section>
