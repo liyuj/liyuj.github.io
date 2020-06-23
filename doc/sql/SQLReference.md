@@ -759,31 +759,7 @@ BIT_OR (expression)
 对长度相等的两个二进制表达式的每一对对应的位执行逻辑或操作。
 
 对于每个对，如果第一个为1或者第二个为1或者两者都为1，则返回值为1，否则返回0。
-### 5.4.BOOL_AND
-```sql
-BOOL_AND (boolean)
-```
-**描述**
-
-如果所有的表达式都为true，则返回true，如果没有命中记录，返回值为NULL，该函数只对SELECT语句有效。
-
-**示例**
-```sql
-SELECT item, BOOL_AND(price > 10) FROM Items GROUP BY item;
-```
-### 5.5.BOOL_OR
-```sql
-BOOL_OR (boolean)
-```
-**描述**
-
-如果任意表达式为true，则返回true，如果没有命中记录，返回值为NULL，该函数只对SELECT语句有效。
-
-**示例**
-```sql
-SELECT BOOL_OR(CITY LIKE 'W%') FROM Users;
-```
-### 5.6.COUNT
+### 5.4.COUNT
 ```sql
 COUNT (* | [DISTINCT] expression)
 ```
@@ -797,7 +773,7 @@ COUNT (* | [DISTINCT] expression)
 ```sql
 SELECT city_id, COUNT(*) FROM Players GROUP BY city_id;
 ```
-### 5.7.MAX
+### 5.5.MAX
 ```sql
 MAX (expression)
 ```
@@ -815,7 +791,7 @@ MAX (expression)
 ```sql
 SELECT MAX(height) FROM Players;
 ```
-### 5.8.MIN
+### 5.6.MIN
 ```sql
 MIN (expression)
 ```
@@ -833,7 +809,7 @@ MIN (expression)
 ```sql
 SELECT MIN(age) FROM Players;
 ```
-### 5.9.SUM
+### 5.7.SUM
 ```sql
 SUM ([DISTINCT] expression)
 ```
@@ -852,82 +828,7 @@ SUM ([DISTINCT] expression)
 ```sql
 SELECT SUM(goal) FROM Players;
 ```
-### 5.10.STDDEV_POP
-```sql
-STDDEV_POP ([DISTINCT] expression)
-```
-**参数**
-
-  - `DISTINCT`：去除重复值；
-  - `expression`：可以是一个列名。
-
-**描述**
-
-返回总体标准差。此方法返回一个double型值。如果没有命中记录，返回值为NULL，该函数只对SELECT语句有效。
-
-**示例**
-
-计算玩家年龄的标准差：
-```sql
-SELECT STDDEV_POP(age) from Players;
-```
-### 5.11.STDDEV_SAMP
-```sql
-STDDEV_SAMP ([DISTINCT] expression)
-```
-**参数**
-
-  - `DISTINCT`：去除重复值；
-  - `expression`：可以是一个列名。
-
-**描述**
-
-返回样本标准差。此方法返回一个double型值。如果没有命中记录，返回值为NULL，该函数只对SELECT语句有效。
-
-**示例**
-
-计算玩家年龄的样本标准差：
-```sql
-SELECT STDDEV_SAMP(age) from Players;
-```
-### 5.12.VAR_POP
-```sql
-VAR_POP ([DISTINCT] expression)
-```
-**参数**
-
-  - `DISTINCT`：去除重复值；
-  - `expression`：可以是一个列名。
-
-**描述**
-
-返回总体方差（总体标准方差）。此方法返回一个double型值。如果没有命中记录，返回值为NULL，该函数只对SELECT语句有效。
-
-**示例**
-
-计算玩家年龄的总体方差：
-```sql
-SELECT VAR_POP (age) from Players;
-```
-### 5.13.VAR_SAMP
-```sql
-VAR_SAMP ([DISTINCT] expression)
-```
-**参数**
-
-  - `DISTINCT`：去除重复值；
-  - `expression`：可以是一个列名。
-
-**描述**
-返回样本方差（样本标准方差）。此方法返回一个double型值。如果没有命中记录，返回值为NULL，该函数只对SELECT语句有效。
-
-**示例**
-
-计算玩家年龄的样本方差：
-```sql
-SELECT VAR_SAMP(age) FROM Players;
-```
-### 5.14.GROUP_CONCAT
+### 5.8.GROUP_CONCAT
 ```sql
 GROUP_CONCAT([DISTINCT] expression || [expression || [expression ...]]
   [ORDER BY expression [ASC|DESC], [[ORDER BY expression [ASC|DESC]]]
