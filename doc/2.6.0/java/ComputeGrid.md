@@ -49,7 +49,8 @@ final Ignite ignite = Ignition.ignite();
 IgniteCompute compute = ignite.compute(ignite.cluster().forRemotes());
 
 // Print out hello message on remote nodes in the cluster group.
-compute.broadcast(() -> System.out.println("Hello Node: " + ignite.cluster().localNode().id()));
+compute.broadcast(() -> System.out.println("Hello Node: " + Ignition.localIgnite().cluster().localNode().id()));
+
 ```
 Java8异步广播：
 ```java
@@ -60,7 +61,7 @@ final Ignite ignite = Ignition.ignite();
 IgniteCompute compute = ignite.compute(ignite.cluster().forRemotes()).withAsync();
 
 // Print out hello message on remote nodes in the cluster group.
-compute.broadcast(() -> System.out.println("Hello Node: " + ignite.cluster().localNode().id()));
+compute.broadcast(() -> System.out.println("Hello Node: " + Ignition.localIgnite().cluster().localNode().id()));
 
 ComputeTaskFuture<?> fut = compute.future():
 
@@ -78,7 +79,7 @@ compute.broadcast(
     new IgniteRunnable() {
         @Override public void run() {
             // Print ID of remote node on remote node.
-            System.out.println(">>> Hello Node: " + ignite.cluster().localNode().id());
+            System.out.println(">>> Hello Node: " + Ignition.localIgnite().cluster().localNode().id());
         }
     }
 );
@@ -96,7 +97,7 @@ compute.broadcast(
     new IgniteRunnable() {
         @Override public void run() {
             // Print ID of remote node on remote node.
-            System.out.println(">>> Hello Node: " + ignite.cluster().localNode().id());
+            System.out.println(">>> Hello Node: " + Ignition.localIgnite().cluster().localNode().id());
         }
     }
 );
