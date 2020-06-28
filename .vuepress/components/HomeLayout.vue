@@ -23,7 +23,7 @@
       <div class="container">
          <div class="intro-text clearfix">
             <h2 style="font-size:40px;color:#fff;">轻量级分布式内存HTAP数据库及计算平台</h2>
-            <h3 style="color:#fff;">　　　　　　　　　　　　　GridGain产品&技术服务中国总代理，GridGain认证技术专家</h3>
+            <h3 style="color:#fff;">　　　　　　　　　　　　　GridGain产品&技术服务中国总代理，GridGain认证技术专家团队</h3>
          </div>
       </div>
    </section>
@@ -99,8 +99,8 @@
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<div class="section-title">
-					<h2>部署模式</h2>
-					<p>支持各种环境的多种部署模式</p>
+					<h2>架构模式</h2>
+					<p>灵活的分布式架构解决方案</p>
 				</div>
 			</div>
 		</div>
