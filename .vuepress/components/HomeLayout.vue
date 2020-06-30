@@ -149,6 +149,8 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12 text-center">
+					<p>声明：本公司与<a target="_blank" style="color: red;" href="https://www.apache.org">Apache软件基金会（ASF）</a>以及<a href="https://ignite.apache.org" target="_blank" style="color: red;">Apache Ignite社区</a>不存在任何隶属关系，也不相互提供担保。</p>
+
 					<p>Copyright &copy; 2019-2020 沈阳开源技术咨询服务有限公司 <a href="http://www.beian.miit.gov.cn/" target="_blank" style="color: #000000;">辽ICP备20001956号</a></p>
 				</div>
 			</div>
