@@ -166,7 +166,7 @@ fieldset {
 .section-title {
     margin: auto;
     max-width: 600px;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
     position: relative;
 }
 .section-title h2 {
@@ -339,7 +339,7 @@ fieldset {
 * -------------------------------------------------------------------------------------- */
 
 .slider-area {
-    background-image: url("../img/slider.jpg");
+    background-image: url("../img/01.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: top center;
@@ -347,7 +347,6 @@ fieldset {
     display: flex;
     align-items: center;
 }
-
 .slider-area:before {
     position: absolute;
     content: "";
@@ -359,7 +358,8 @@ fieldset {
 }
 
 .intro-text {
-    max-width: 750px;
+    max-width: 980px;
+    padding-left: 70px;    
 }
 
 .intro-text h2 {
@@ -397,7 +397,7 @@ fieldset {
 *                               04. Hero area css
 * ---------------------------------------------------------------------------------------*/
 .hero-box-area {
-    padding-bottom: 120px;
+    padding-bottom: 40px;
 }
 
 .hero-box {
@@ -758,7 +758,6 @@ fieldset {
 }
 
 .member-info {
-    background-image: url(../img/team/team.png);
     background-repeat: no-repeat;
     background-position: left bottom;
     background-size: cover;
