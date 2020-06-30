@@ -1,5 +1,5 @@
 module.exports = {
-    title: 'GridGain™/Ignite™技术服务',
+    title: 'Apache® Ignite™技术服务',
     description: 'ignite,中文,官网,中国,apache ignite,内存数据库,分布式数据库,分布式内存数据库,htap数据库,内存计算,并行计算',
     dest: "dist",
     head: [

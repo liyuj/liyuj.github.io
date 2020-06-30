@@ -22,7 +22,7 @@
    <section id="slider" class="slider-area">
       <div class="container">
          <div class="intro-text clearfix">
-            <h2 style="font-size:40px;color:#fff;">轻量级分布式内存HTAP数据库及计算平台</h2>
+            <h2 style="font-size:40px;color:#fff;">轻量级分布式内存HTAP数据库&计算平台</h2>
             <h3 style="color:#fff;">　　　　　　　　　　　　　GridGain产品&技术服务中国总代理，GridGain认证技术专家团队</h3>
          </div>
       </div>
