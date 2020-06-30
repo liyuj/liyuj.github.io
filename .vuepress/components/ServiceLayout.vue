@@ -28,7 +28,7 @@
           <h4><span>面向企业</span></h4>
           <h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等，GridGain基础版服务（社区版版本更新），GridGain标准版服务（社区版版本更新+紧急修复补丁）</span></h4>
           <h4><span>服务方式：</span><span style="font-weight:normal">中国服务商实施（远程/驻场），GridGain远程（基础版/标准版服务）</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">按年度订阅，GridGain服务包（按GCU计费，全款预付）+ 中国服务商服务包（标准远程服务10万元，驻场服务3000元/核算日，可分期付款），可提供不超过一周的远程免费POC服务</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">按年度订阅，GridGain服务包（按GCU计费，全款预付）+ 中国服务商服务包（标准远程服务10万元，驻场服务3000元/核算日，可分期付款），可提供不超过5工作日的远程免费POC服务</span></h4>
 				</div>
         <div class="col-sm-6 text-left scroll-animated-from-bottom">
           <h3 style="color:red;font-size:30px;margin:0 0 30px 0"><span class="fa fa-battery-2"></span>  本土咨询顾问服务</h3>
