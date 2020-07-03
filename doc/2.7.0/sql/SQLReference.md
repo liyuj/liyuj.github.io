@@ -204,7 +204,7 @@ tableColumn := columnName columnType [DEFAULT defaultValue] [PRIMARY KEY]
    - `TEMPLATE=<cache's template name>`：在Ignite中注册的大小写敏感的缓存模板，用于CREATE TABLE命令在创建分布式缓存时的配置。一个模板是在集群中通过`Ignite.addCacheConfiguration`注册的`CacheConfiguration`类的实例。使用预定义的`TEMPLATE=PARTITIONED`或者`TEMPLATE=REPLICATED`模板，可以直接创建对应复制类型的缓存，其它的参数由`CacheConfiguration`对象决定，在没有显式指定的情况下，默认会使用`TEMPLATE=PARTITIONED`模板。
    - `BACKUPS=<number of backups>`：设置数据的备份数量，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存备份数量为0；
    - `ATOMICITY=<ATOMIC | TRANSACTIONAL>`：为底层缓存设置`ATOMIC`或者`TRANSACTIONAL`模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`ATOMIC`模式；
-   - `WRITE_SYNCHRONIZATION_MODE=<PRIMARY_SYNC | FULL_SYNC | FULL_ASYNC>`：设置底层缓存的写同步模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`PRIMARY_SYNC`模式；
+   - `WRITE_SYNCHRONIZATION_MODE=<PRIMARY_SYNC | FULL_SYNC | FULL_ASYNC>`：设置底层缓存的写同步模式，如果未指定这个参数，或者未指定任意的`TEMPLATE`参数，那么创建的缓存为`FULL_SYNC`模式；
    - `CACHE_GROUP=<group name>`：设置底层缓存所属的组名；
    - `AFFINITY_KEY=<affinity key column name>`：设置[关联键](/doc/2.7.0/java/Key-ValueDataGrid.md#_7-关联并置)名字，它应该是`PRIMARY KEY`约束中的一个列；
    - `CACHE_NAME=<custom name of the new cache>`：命令创建的底层缓存的名字，下面会详细描述；
