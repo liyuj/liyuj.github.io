@@ -1,9 +1,9 @@
 module.exports = {
     title: 'Apache® Ignite™技术服务',
-    description: 'apache ignite,中文,官网,中国,社区，内存数据库,分布式数据库,分布式内存数据库',
+    description: 'ignite,apache ignite,ignite中文,ignite官网,ignite中国,ignite社区,分布式数据库',
     dest: "dist",
     head: [
-        ['meta', { "name": 'keywords', "content": 'ignite,apache ignite,内存数据库,分布式数据库,分布式内存数据库,htap数据库,内存计算,并行计算' }],
+        ['meta', { "name": 'keywords', "content": 'ignite,apache ignite,ignite中文,ignite官网,ignite中国,ignite社区,分布式数据库' }],
         ['meta', { "http-equiv": 'cache-control', "content": 'no-store,no-cache,must-revalidate' }],
         ['meta', { "http-equiv": 'expires', "content": '0' }],
         ['link', {rel: 'stylesheet',href: `/css/plugin.css`}],
