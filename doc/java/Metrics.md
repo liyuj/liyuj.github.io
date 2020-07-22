@@ -1232,3 +1232,5 @@ NODE_METRICS视图暴露了当前基线拓扑中的节点的各种信息。
 |`RECEIVED_MESSAGES_COUNT`|INT|节点接收的通信消息总量|
 |`RECEIVED_BYTES_COUNT`|LONG|接收的字节量|
 |`OUTBOUND_MESSAGES_QUEUE`|INT|出站消息队列大小|
+
+<RightPane/>

@@ -117,3 +117,4 @@ validate_indexes has finished with errors (listed above).
 ::: danger validate_indexes检查期间集群应该为空闲状态
 和`idle_verify`命令一样，只有所有的更新都停止，索引验证工具才能正常工作，否则，可能会出现检查线程与更新条目/索引的线程之间的竞争，这将导致假阳性错误报告。
 :::
+<RightPane/>

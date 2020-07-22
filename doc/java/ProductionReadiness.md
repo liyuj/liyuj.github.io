@@ -692,3 +692,5 @@ Ignite可以部署于VMWare、Docker、Kubernetes等管理的虚拟和云环境�
 
  - 避免当Ignite实例与其它应用程序争用主机资源时，导致Ignite集群的性能出现峰值；
  - 确保高可用，如果一台主机宕机并且有两个或者多个Ignite服务端节点绑定到上面，那么可能导致数据丢失。
+
+<RightPane/>

@@ -29,3 +29,5 @@ Ignite的内存MapReduce可以高效地对存储于任何Hadoop文件系统中�
 Ignite的Hadoop加速器提供了一组在内存中进行Hadoop作业执行以及文件系统操作的组件。它可以用于组合Ignite文件系统以及内存MapReduce，也可以轻易地将其嵌入任何Hadoop发行版。
 
 ![](https://files.readme.io/3ca42f4-ignite_filesystem_1.png)
+
+<RightPane/>

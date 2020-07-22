@@ -538,3 +538,4 @@ QueryCursor<List<?>> cursor = cache.query(query);
 // Halting the query that might be still in progress.
 cursor.close();
 ```
+<RightPane/>

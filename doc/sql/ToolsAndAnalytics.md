@@ -450,3 +450,4 @@ collectionAsScalaIterable(res).foreach(println _)
 ::: warning 注意
 注意Ignite集群的Ignite版本以及Zeppelin的版本必须匹配。
 :::
+<RightPane/>

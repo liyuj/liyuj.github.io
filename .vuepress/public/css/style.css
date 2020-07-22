@@ -1674,7 +1674,7 @@ fieldset {
     bottom:198px;
 }
 .weixin-box{
-    bottom:142px;
+    bottom:132px;
 }
 .weixin-qq{
     bottom:86px;
@@ -1685,10 +1685,6 @@ fieldset {
     height: 100px;
 }
 
-.btn-success {
-    background-color: rgb(101, 183, 204);
-    border-color: rgb(101, 183, 204);
-}
 .btn-circle {
     width: 56px;
     height: 56px;
@@ -1701,15 +1697,7 @@ fieldset {
     padding: 0px;
     border-radius: 10rem;
 }
-.btn {
-    font-size: 11px;
-    letter-spacing: 1.7px;
-    text-transform: uppercase;
-    padding: 8px 26px 6px;
-    border-radius: 2px;
-    outline: none;
-    transition: all 0.15s linear 0s;
-}
+
 .btn-success {
     color: rgb(255, 255, 255);
     background-color: rgb(60, 212, 88);
@@ -1718,11 +1706,11 @@ fieldset {
 .btn {
     display: inline-block;
     font-weight: 600;
-    color: rgb(117, 117, 117);
+    color: rgb(60, 212, 88);
     text-align: center;
     vertical-align: middle;
     user-select: none;
-    background-color: transparent;
+    background-color: rgb(255, 255, 255);
     font-size: 0.9375rem;
     line-height: 1.9;
     border-width: 1px;

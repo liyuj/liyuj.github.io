@@ -2799,3 +2799,4 @@ UPDATE City SET population = population + 1 WHERE id = 3;
 
 ROLLBACK;
 ```
+<RightPane/>

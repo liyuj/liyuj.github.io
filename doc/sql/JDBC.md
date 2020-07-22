@@ -437,3 +437,5 @@ catch (SQLException e) {
 |`0A000`|不支持的操作|
 |`42000`|查询解析异常|
 |`50000`|Ignite内部错误，这个代码不是ANSI定义的，属于Ignite特有的错误，获取`java.sql.SQLException`的错误信息可以了解更多的细节|
+
+<RightPane/>

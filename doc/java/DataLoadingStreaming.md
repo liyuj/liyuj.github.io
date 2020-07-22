@@ -303,3 +303,4 @@ try (IgniteDataStreamer<String, Double> mktStmr = ignite.dataStreamer("marketDat
       mktStmr.addData(tick);
 }
 ```
+<RightPane/>

@@ -1938,3 +1938,5 @@ Object value = cache.get(10);
 ::: warning 警告
 注意不会为原子缓存记录违反一致性事件。
 :::
+
+<RightPane/>

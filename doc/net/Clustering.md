@@ -773,3 +773,5 @@ AssemblyInfo.cs：
 
  - 运行该项目并观察"Hello，World！"在所有`Apache.Ignite.exe`窗口的控制台输出；
  - 将"Hello，World！"改为其他的值，然后再次运行该程序，观察每个节点的输出有何不同。
+
+<RightPane/>

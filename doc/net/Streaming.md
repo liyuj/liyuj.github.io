@@ -65,3 +65,4 @@ using (var ldr = ignite.GetDataStreamer<int, Account>("myStreamCache"))
 **StreamVisitor**
 
 `StreamVisitor`也是一种`IStreamReceiver`的简化实现，它会读取流中的每个键值对，注意其不会更新缓存。如果数据需要存储在缓存中，则应显式调用`ICache.Put(...)`等方法。
+<RightPane/>

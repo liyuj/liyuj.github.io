@@ -1548,3 +1548,5 @@ SQL查询总是被广播到保存有要查询的数据的每个节点，例外�
 开发IGFS的初衷是将其做为Hadoop加速的解决方案。然而在实践中，IGFS提供了不一致的性能表现，它所提供的任何性能增加对于生产来说都微不足道，此外它的整合成本也比较高。要获得数量级的性能提升，基于内存的存储必须与应用使用的API紧密耦合，对于IGFS，存储是Ignite，而API是用Hive、Impala、Pig、MapReduce等分别开发的。
 
 对于废弃Hadoop的场景以及实时分析来说，最好使用Ignite的标准配置：即打开Ignite的原生持久化，然后使用Ignite SQL、计算网格或ML处理Ignite中的数据，并使用Hadoop框架处理HDFS数据集。也可以考虑将Spark作为一个通用API，用于合并存储在两个数据集中的数据。
+
+<RightPane/>

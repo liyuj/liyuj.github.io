@@ -245,3 +245,4 @@ ignite-web-agent.sh --node-uri http://host1:8080
 ```bash
 ignite-web-agent.sh --node-uri http://host2:9090
 ```
+<RightPane/>

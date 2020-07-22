@@ -198,3 +198,4 @@ sudo make install
 ```bash
 sudo odbcinst -i -d -f $IGNITE_HOME/platforms/cpp/odbc/install/ignite-odbc-install.ini
 ```
+<RightPane/>

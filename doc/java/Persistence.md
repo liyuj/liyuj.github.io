@@ -1855,3 +1855,5 @@ Ignite ignite = Ignition.start(cfg);
  - `LZ4`：支持从0到17的压缩级别（默认值：0）；
  - `SNAPPY`
  - `SKIP_GARBAGE`：该算法仅从半填充页面中提取有用的数据，而不压缩数据。
+
+<RightPane/>

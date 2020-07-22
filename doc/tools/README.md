@@ -870,3 +870,4 @@ $ kubectl get pods -n ignite
 NAME                        READY     STATUS    RESTARTS   AGE
 web-agent-5596bd78c-h4272   1/1       Running   0          1h
 ```
+<RightPane/>

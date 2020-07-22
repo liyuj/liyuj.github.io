@@ -99,3 +99,5 @@ CONFIGS="-b 1 -sm PRIMARY_SYNC -dn PutBenchmark`IgniteNode"
 构件位于`modules/yardstick/target/assembly`目录。
 ### 1.7.自定义Ignite测试
 所有的测试用例都需要继承`AbstractBenchmark`类，并且实现`test`方法（这个方法实际执行性能测试）。
+
+<RightPane/>

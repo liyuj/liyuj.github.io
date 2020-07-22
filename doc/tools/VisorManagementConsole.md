@@ -240,3 +240,4 @@ ignitevisorcmd.{bat|sh} -np -e="'open -cpath=config/default-config.xml;status'"
 ::: warning 注意
 在批处理模式中，Visor命令行只是简单地按照给定的命令一个一个地执行，就和通过键盘输入时一样的。
 :::
+<RightPane/>

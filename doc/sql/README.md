@@ -476,3 +476,5 @@ personCache.query(query).getAll();
 ```
 ### 2.9.示例
 GitHub上有和这个入门文档有关的完整[代码](https://github.com/VeryFatBoy/Ignite-SQL-Getting-Started)。
+
+<RightPane/>

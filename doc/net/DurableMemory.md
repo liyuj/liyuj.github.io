@@ -59,3 +59,5 @@ app.config：
 </igniteConfiguration>
 ```
 更多的内容，请参见[内存配置](/doc/java/DurableMemory.md#_3-内存配置)的相关文档。
+
+<RightPane/>

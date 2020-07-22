@@ -1674,3 +1674,5 @@ DecisionTreeNode mdl = (DecisionTreeNode)SparkModelParser.parse(
 不支持从Spark中的`PipelineModel`加载。
 由于Ignite和Spark方面的预处理的不同性质，不支持Spark的中间特征转换器。
 :::
+
+<RightPane/>

@@ -1884,3 +1884,5 @@ catch (IgniteException e) {
 在Linux平台的.NET Core环境下，当用户代码抛出`NullReferenceException`异常时，就会发生这种情况。其原因是，.NET和Java都使用SIGSEGV来处理某些异常，包括`NullPointerException`和`NullReferenceException`，当JVM与.NET运行在同一进程中时，它将覆盖该处理器，破坏.NET异常处理（具体参见[1](https://github.com/dotnet/coreclr/issues/25945)，[2](https://github.com/dotnet/coreclr/issues/25166)）。
 
 .NET Core 3.0解决了该问题（[#25972](https://github.com/dotnet/coreclr/pull/25972)：将`COMPlus_EnableAlternateStackCheck`环境变量设置为`1`）。
+
+<RightPane/>

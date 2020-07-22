@@ -1184,3 +1184,5 @@ if (ret != SQL_SUCCESS)
 |`HY106`|获取类型超范围|
 |`HYC00`|特性未实现|
 |`IM001`|函数不支持|
+
+<RightPane/>

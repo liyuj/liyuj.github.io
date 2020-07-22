@@ -129,3 +129,4 @@ ignite.compute().affinityRun(CITY_CACHE_NAME, "NLD", new IgniteRunnable() {
 ::: tip 注意
 也可以操作`City`类，不使用二进制格式操作缓存，这种情况下，`City`类必须存在于服务端节点的类路径中。
 :::
+<RightPane/>

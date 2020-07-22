@@ -436,3 +436,5 @@ cfg.setMaxPerNodeCount(2);
 
 ignite.services().deploy(cfg);
 ```
+
+<RightPane/>

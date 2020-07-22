@@ -1391,3 +1391,5 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
 ```
 ### 5.4.安装Web控制台
 如果希望在Kubernetes中安装[Web控制台](/doc/tools/README.md#_1-ignite-web控制台)，请参见这个[安装文档](/doc/tools/README.md#_6-kubernetes安装)。
+
+<RightPane/>

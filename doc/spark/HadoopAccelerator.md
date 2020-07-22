@@ -525,3 +525,4 @@ Transaction isolation: TRANSACTION_REPEATABLE_READ
 1 row selected (0.957 seconds)
 0: jdbc:hive2://localhost:10000>
 ```
+<RightPane/>

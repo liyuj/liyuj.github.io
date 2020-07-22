@@ -9,3 +9,5 @@
 JdbcClient [id=4294967297, user=<anonymous>, rmtAddr=127.0.0.1:39264, locAddr=127.0.0.1:10800]
 ```
 使用该Bean提供的功能，可以通过ID删除特定的连接，也可以一次删除所有的连接。
+
+<RightPane/>

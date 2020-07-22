@@ -74,3 +74,5 @@ Ignite的插件使用JDK的`ServiceLoader`类进行加载，对于要加载的�
 然后在该文件中提供插件构造器的实现类：
 
 ![](https://files.readme.io/5d1ed7f-plugin-provider-2.png)
+
+<RightPane/>

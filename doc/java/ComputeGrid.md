@@ -1688,3 +1688,4 @@ Ignite不带有JBoss，因此必要的库需要单独下载（如果已经安装
 Spring AOP框架基于动态代理实现，对于在线织入不需要任何特定的运行时参数，所有的织入都是按需的，对于有加注了`@Gridify`注解的方法的对象会通过调用`GridifySpringEnhancer.enhance()`方法执行。
 
 注意这个织入的方法是非常不方便的，推荐使用AspectJ或者JBoss AOP代替。当代码增强是不想要的并且无法使用时，Spring AOP适用于这样的场景，它也可以用于对织入什么进行细粒度的控制。
+<RightPane/>

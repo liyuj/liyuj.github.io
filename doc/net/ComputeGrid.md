@@ -305,3 +305,5 @@ compute.Apply(..., "Some argument");
   ...
 </bean>
 ```
+
+<RightPane/>
