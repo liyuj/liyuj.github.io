@@ -1222,3 +1222,5 @@ Ignite的Cassandra模块提供了一组单元测试用例，它可以用来测�
  5. 透过Ignite缓存测试`BLOB`持久化策略；
  6. 透过Ignite缓存测试`POJO`持久化策略；
  7. 通过`loadCache`操作预热Ignite缓存。
+
+<RightPane/>

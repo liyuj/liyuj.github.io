@@ -30,3 +30,4 @@ Ignite的Hadoop加速器提供了一套组件，可以进行内存中的作业�
 **流处理集成**
 
 Ignite可以和各种著名的流处理技术和产品进行集成，比如Kafka、Camel或者JMS，可以轻易且高效地将数据流数据注入Ignite。
+<RightPane/>

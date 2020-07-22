@@ -227,3 +227,4 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
+<RightPane/>

@@ -173,3 +173,4 @@ Cache<int32_t, Person> cache = node.GetOrCreateCache<int32_t, Person>("myCache")
 // Initiating cache loading.
 cache.LoadCache();
 ```
+<RightPane/>

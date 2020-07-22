@@ -223,3 +223,5 @@ criteria.setCacheable(true);
 注意为了更好的性能缓存配置为`原子化`的。
 ### 1.5.示例
 GitHub上有完整的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java-lgpl/org/apache/ignite/examples/datagrid/hibernate/HibernateL2CacheExample.java)。
+
+<RightPane/>

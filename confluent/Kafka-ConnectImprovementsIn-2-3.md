@@ -163,3 +163,4 @@ orders-latest     2369
 orders-earliest 144932
 ```
 有两个索引：一个从同一主题注入了较少的消息，因为`orders-latest`索引只注入了连接器创建后才到达主题的消息；而另一个`orders-earliest`索引，由一个单独的连接器注入，它会使用Kafka Connect的默认配置，即会注入所有的新消息，再加上主题中原有的所有消息。
+<RightPane/>

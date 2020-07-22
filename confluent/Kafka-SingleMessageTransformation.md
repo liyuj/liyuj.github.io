@@ -164,3 +164,4 @@ transforms=insertuuid
 transforms.insertuuid.type=kafka.connect.smt.InsertUuid$Value
 transforms.insertuuid.uuid.field.name="uuid"
 ```
+<RightPane/>

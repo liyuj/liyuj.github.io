@@ -28,3 +28,4 @@
 :::
 
 要了解MyBatis缓存特性的更多信息，可以参考[MyBatis手册](http://www.mybatis.org/mybatis-3/sqlmap-xml.html#cache)。
+<RightPane/>

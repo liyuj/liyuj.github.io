@@ -449,3 +449,5 @@ $ curl -s http://localhost:8081/subjects/TESTDATA-value/versions/latest|jq '.sch
 任何写入原始主题（`testdata-csv`）的新消息都由KSQL自动处理，并写入Avro格式的名为`TESTDATA`的新主题。现在，任何想要使用此数据的应用或团队都可以简单地处理`TESTDATA`主题，并利用声明模式的Avro序列化数据。还可以使用此技术更改主题中的分区数，分区键和复制因子。
 ## 结论
 Kafka Connect是一个非常简单但功能强大的工具，可用于将其它系统与Kafka集成，最常见的误解是Kafka Connect提供的转换器。之前已经介绍过Kafka消息只是键/值对，了解应该使用哪个序列化机制然后在Kafka Connect中对其进行标准化非常重要。
+
+<RightPane/>

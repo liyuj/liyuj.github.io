@@ -7,3 +7,5 @@ Ignite是一个兼容ANSI 99的、支持水平扩展的和容错的分布式SQL�
 Ignite中和SQL有关的文档，主要内容都在[这里](/doc/sql)。
 
 ![](https://files.readme.io/b1fb8af-sql_database.png)
+
+<RightPane/>

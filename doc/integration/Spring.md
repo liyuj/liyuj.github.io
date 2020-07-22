@@ -431,3 +431,5 @@ ignite-client:
 
  - [spring-boot-autoconfigure-ext](https://github.com/apache/ignite-extensions/tree/master/modules/spring-boot-autoconfigure-ext/examples/main)；
  - [spring-boot-thin-client-autoconfigure-ext](https://github.com/apache/ignite-extensions/tree/master/modules/spring-boot-thin-client-autoconfigure-ext/examples/main)。
+
+<RightPane/>

@@ -119,3 +119,4 @@ bin/kafka-configs --bootstrap-server localhost:9092 --alter --add-config 'produc
 ```
 ## 合规性
 许多行业要求政府强制执行其他法规。Confluent平台支持[HIPAA和SSAE 18 SOC2合规性认证](https://docs.confluent.io/current/security/compliance.html#security-compliance)，Confluent Cloud支持[GDPR，ISO 27001，PCI 2级，SOC 1、2和3标准](https://docs.confluent.io/current/cloud/faq.html#what-compliance-standards-does-ccloud-offer)，并且Confluent Cloud企业版还支持HIPAA合规性。
+<RightPane/>

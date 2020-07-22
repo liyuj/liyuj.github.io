@@ -181,3 +181,5 @@ public class MonitoringThread extends Thread {
 实现了一个监控线程后，当外部源发生更改时可以触发任务重新配置，这样就有了一个动态的Kafka Connect。
 
 至此，虽然要让这个连接器完全正常运行还需要一些其他的工作，但是创建一个动态的源端连接器的主要内容就这么多了。
+
+<RightPane/>
