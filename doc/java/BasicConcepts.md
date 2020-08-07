@@ -123,15 +123,21 @@ Apache Ignite官方在如下环境中进行了测试：
 
 使用默认的配置启动集群，打开命令行，转到`IGNITE_HOME`（Ignite安装文件夹），然后输入：
 
-Linux：
+<Tabs>
+<Tab name="Linux">
 ```bash
 $ bin/ignite.sh
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 $ bin\ignite.bat
 ```
+</Tab>
+</Tabs>
 输出大致如下：
+
 ```
 [02:49:12] Ignite node started OK (id=ab5d18a6)
 [02:49:12] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.0GB]
@@ -142,14 +148,19 @@ $ bin\ignite.bat
 
 要使用一个自定义配置文件，可以将其作为参数传给`ignite.sh/bat`，如下：
 
-Linux：
+<Tabs>
+<Tab name="Linux">
 ```bash
 $ bin/ignite.sh examples/config/example-ignite.xml
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 $ bin\ignite.bat examples\config\example-ignite.xml
 ```
+</Tab>
+</Tabs>
 配置文件的路径，可以是绝对路径，也可以是相对于`IGNITE_HOME`（Ignite安装文件夹）的相对路径，也可以是类路径中的`META-INF`文件夹。
 ::: tip 交互模式
 如果要使用交互模式选择一个配置文件，传入`-i`参数即可，就是`ignite.sh -i`。

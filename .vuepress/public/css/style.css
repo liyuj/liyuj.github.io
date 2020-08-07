@@ -1754,3 +1754,80 @@ fieldset {
 .text-center {
     text-align: center;
   }
+
+
+  .tabs-component-tabs {
+    border: solid 1px #ddd;
+    margin-bottom: 5px;
+  }
+  
+  @media (min-width: 700px) {
+    .tabs-component-tabs {
+      border: 1 #999;
+      align-items: stretch;
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: -1px;
+      padding-left: 0px;
+      margin-block-start: 5px;
+      background-color: #999;
+    }
+  }
+  
+  .tabs-component-tab {
+    color: #999;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 0;
+    list-style: none;
+  }
+  
+  .tabs-component-tab:not(:last-child) {
+    border-bottom: dotted 1px #ddd;
+  }
+  
+  .tabs-component-tab.is-active {
+    color: #000;
+  }
+  
+  @media (min-width: 700px) {
+    .tabs-component {        
+        margin-bottom: 10px;        
+      }
+    .tabs-component-tab {
+      background-color: #fff;
+      border: solid 1px #ddd;
+      border-radius: 3px 3px 0 0;    
+      
+      transition: transform .3s ease;
+    }
+  
+    .tabs-component-tab.is-active {
+      border-bottom: solid 1px #fff;
+      z-index: 2;
+      transform: translateY(0);
+    }
+  }
+  
+  .tabs-component-tab-a {
+    align-items: center;
+    color: inherit;
+    display: flex;
+    padding: 1px 5px;
+    text-decoration: none;
+  }
+
+  .tabs-component-tab-a:hover {
+    color:rgb(60, 212, 88);
+  }
+  
+  @media (min-width: 700px) {
+    .tabs-component-panels {
+      border-top-left-radius: 0;
+      background-color: #282c34;
+      border: solid 1px #282c34;
+      padding: 0px;    
+      box-shadow: 0 0 10px rgba(0, 0, 0, .05);    
+    }
+  }
+  
