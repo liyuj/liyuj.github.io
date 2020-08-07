@@ -252,7 +252,11 @@ Kubernetes环境可能需要一段时间来分配需要的持久化存储，从�
 
 使用以下模板为WAL请求存储类：
 
-ignite-wal-storage-class.yaml (AWS)：
+ignite-wal-storage-class.yaml：
+
+<Tabs>
+<Tab name="AWS">
+
 ```yaml
 #Amazon AWS Configuration
 kind: StorageClass
@@ -265,7 +269,9 @@ parameters:
   type: gp2 #Volume type io1, gp2, sc1, st1. Default: gp2
   zones: us-east-1d
 ```
-ignite-wal-storage-class.yaml (GCE)：
+</Tab>
+<Tab name="GCE">
+
 ```yaml
 #Google Compute Engine Configuration
 kind: StorageClass
@@ -279,7 +285,9 @@ parameters:
   zones: europe-west1-b
   replication-type: none
 ```
-ignite-wal-storage-class.yaml (Azure)：
+</Tab>
+<Tab name="Azure">
+
 ```yaml
 #Microsoft Azure Configuration
 kind: StorageClass
@@ -292,6 +300,9 @@ parameters:
   storageaccounttype: Standard_LRS
   kind: managed
 ```
+</Tab>
+</Tabs>
+
 通过执行以下命令为WAL文件请求存储：
 ```bash
 #Request storage class
@@ -299,7 +310,11 @@ kubectl create -f ignite-wal-storage-class.yaml
 ```
 执行类似的操作，为数据库文件请求专用存储类：
 
-ignite-persistence-storage-class.yaml (AWS)：
+ignite-persistence-storage-class.yaml：
+
+<Tabs>
+<Tab name="AWS">
+
 ```yaml
 #Amazon AWS Configuration
 kind: StorageClass
@@ -312,7 +327,9 @@ parameters:
   type: gp2 #Volume type io1, gp2, sc1, st1. Default: gp2
   zones: us-east-1d
 ```
-ignite-persistence-storage-class.yaml (GCE)：
+</Tab>
+<Tab name="GCE">
+
 ```yaml
 #Google Compute Engine configuration
 kind: StorageClass
@@ -326,7 +343,9 @@ parameters:
   zones: europe-west1-b
   replication-type: none
 ```
-ignite-persistence-storage-class.yaml (Azure)：
+</Tab>
+<Tab name="Azure">
+
 ```yaml
 #Microsoft Azure Configuration
 kind: StorageClass
@@ -339,6 +358,9 @@ parameters:
   storageaccounttype: Standard_LRS
   kind: managed
 ```
+</Tab>
+</Tabs>
+
 通过执行以下命令为数据库文件请求存储：
 ```bash
 #Request storage class
@@ -421,6 +443,7 @@ kubectl create -f ignite-stateful-set.yaml
 ```bash
 kubectl get pods --namespace=ignite
 ```
+
 **数据库和WAL文件使用相同的存储**
 
 如果出于某种原因，需要将WAL和数据库文件存储在同一个磁盘设备中，那么可以使用下面的配置模板来部署和启动有状态集：
@@ -476,10 +499,13 @@ spec:
         requests:
           storage: 1Gi
 ```
+<br>
+
 ```bash
 # Create the stateful set
 kubectl create -f ignite-stateful-set.yaml
 ```
+
 如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看[Docker部署](/doc/java/InstallAndDeployment.md#_5-docker部署)的相关章节。
 
 确认Ignite的配置组已经启动运行：
@@ -688,7 +714,9 @@ kubectl create -f ignite-service.yaml
 #### 2.5.2.基于Kubernetes服务的发现
 如果要开启Kubernetes环境的节点自动发现，需要在下面的配置中使用`TcpDiscoveryKubernetesIpFinder`：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 	...
@@ -701,7 +729,9 @@ XML：
   </property>
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 // Configuring discovery SPI.
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -719,6 +749,9 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 ::: tip Maven构件
 如果要使用`TcpDiscoveryKubernetesIpFinder`，需要在Maven中添加`ignite-kubernetes`依赖。
 :::

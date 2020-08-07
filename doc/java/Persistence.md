@@ -18,7 +18,9 @@ Ignite的原生持久化有如下的特性，其与第三方数据库有很大�
 ### 1.2.开启持久化存储
 要开启Ignite的原生持久化，需要给集群的节点配置传递一个`DataStorageConfiguration`的实例：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <!-- Enabling Apache Ignite native persistence. -->
@@ -36,7 +38,9 @@ XML：
 
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 // Apache Ignite node configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -50,6 +54,9 @@ storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
 // Applying settings.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
+</Tab>
+</Tabs>
+
 持久化开启之后，所有的数据和索引都会存储在所有集群节点的内存和磁盘上，下图描述了在单独的集群节点的文件系统层看到的持久化结构：
 ::: tip 每个数据区和每个缓存的持久化
 Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具体可以看[内存区](/doc/java/DurableMemory.md#_3-2-内存区)。
@@ -92,7 +99,9 @@ Ignite可以为每个具体的数据区甚至每个缓存开启持久化，具�
 
 修改存储目录的代码如下所示：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     <property name="dataStorageConfiguration">
@@ -107,7 +116,9 @@ XML：
     </property>
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 //data storage configuration
@@ -121,6 +132,9 @@ cfg.setDataStorageConfiguration(storageCfg);
 
 Ignite ignite = Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 ::: warning 确保持久化文件不存储于临时文件夹
 部分系统中，默认的位置可能位于`/temp`文件夹，这可能导致在重启节点进程时操作系统删除持久化文件，为了避免这种情况需要注意：
 
@@ -168,7 +182,9 @@ WAL的目的是为单个节点或者整个集群故障的场景提供一种恢�
 
 下面是如何配置WAL模式的代码示例：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
@@ -190,7 +206,9 @@ XML：
 
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 // Apache Ignite node configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -209,6 +227,9 @@ cfg.setDataStorageConfiguration(psCfg);
 
 //Additional parameters.
 ```
+</Tab>
+</Tabs>
+
 ### 2.3.WAL激活和冻结
 WAL是Ignite持久化的一个基本组件，会在集群故障时保证持久性和一致性。
 
@@ -240,7 +261,9 @@ WAL记录压缩要求引入`ignite-compress`模块。如果使用的是二进制
 
 WAL记录压缩默认是禁用的，如果要启用，需要在数据存储配置中设置压缩算法和压缩级别：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
@@ -258,7 +281,9 @@ XML：
 
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -272,6 +297,9 @@ dsCfg.setWalPageCompressionLevel(8);
 cfg.setDataStorageConfiguration(dsCfg);
 Ignite ignite = Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 支持的压缩算法在[这里](https://ignite.apache.org/releases/2.8.0/javadoc/org/apache/ignite/configuration/DiskPageCompression.html)有列出。
 ### 2.6.WAL存档调整
 下面是一些关于如何通过调整WAL存档参数来调整空间占用和集群性能的提示。
@@ -280,7 +308,9 @@ Ignite ignite = Ignition.start(cfg);
 
 要启用WAL存档压缩，请将`DataStorageConfiguration.walCompactionEnabled`属性设置为`true`，还可以指定压缩级别（`1`表示最快的速度，`9`表示最佳的压缩）。
 
-XML:
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
   <!-- Enabling Apache Ignite Persistent Store. -->
@@ -295,7 +325,9 @@ XML:
 </bean>
 
 ```
-Java:
+</Tab>
+<Tab name="Java">
+
 ```java
 DataStorageConfiguration dsCfg = new DataStorageConfiguration();
 
@@ -305,12 +337,17 @@ dsCfg.setDefaultDataRegionConfiguration(regCfg);
 
 dsCfg.setWalCompactionEnabled(true);
 ```
+</Tab>
+</Tabs>
+
 #### 2.6.2.禁用WAL存档
 有时可能想要禁用WAL存档，比如减少与将WAL段复制到存档文件有关的开销，当Ignite将数据写入WAL段的速度快于将段复制到存档文件的速度时，这样做就有用，因为这样会导致I/O瓶颈，从而冻结节点的操作，如果遇到了这样的问题，就可以尝试关闭WAL存档。
 
 要关闭存档，可以将WAL路径和WAL存档路径配置为同一个值，这时Ignite就不会将段复制到存档文件，而是只是在WAL文件夹中创建新的段。根据[WAL存档大小](#_2-4-wal存档)设置，旧段将随着WAL的增长而删除。
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
@@ -332,7 +369,9 @@ XML：
 
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 DataStorageConfiguration dsCfg = new DataStorageConfiguration();
 
@@ -346,6 +385,9 @@ dsCfg.setWalPath(walAbsPath);
 
 dsCfg.setWalArchivePath(walAbsPath);
 ```
+</Tab>
+</Tabs>
+
 ## 3.检查点
 ### 3.1.概述
 由于[WAL](#_2-预写日志-wal)文件会一直增长，而且通过WAL从头到尾地恢复集群会花费大量的时间。为了解决这个问题，Ignite引入了一个检查点过程。
@@ -422,7 +464,9 @@ JCache规范提供了[javax.cache.integration.CacheLoader](https://ignite.apache
 对于分布式缓存的配置，`Factory`应该是可序列化的。
 :::
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
@@ -443,7 +487,9 @@ XML：
   ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -458,6 +504,9 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 ### 4.5.RDBMS集成
 Ignite可以和任意RDBMS集成，将数据加载进Ignite缓存，然后执行键-值操作，包括ACID事务，这有两种方式：
 
@@ -482,7 +531,8 @@ Ignite可以和任意RDBMS集成，将数据加载进Ignite缓存，然后执行
 
 本例中使用MySQL数据库，假定有一个`PERSON`表，该表有字段：`id`、`orgId`、`name`以及`salary`。
 
-POJO配置：
+<Tabs>
+<Tab name="POJO配置">
 
 ```xml
 <!-- Data source beans -->
@@ -602,7 +652,9 @@ POJO配置：
   </property>
 </bean>
 ```
-缓存加载：
+</Tab>
+<Tab name="缓存加载">
+
 ```java
 try (Ignite ignite = Ignition.start("path/to/xml-config/file")) {
   // Load data from person table into PersonCache.
@@ -612,7 +664,9 @@ try (Ignite ignite = Ignition.start("path/to/xml-config/file")) {
   ...
 }
 ```
-Person类示例：
+</Tab>
+<Tab name="Person类示例">
+
 ```java
 import java.io.Serializable;
 
@@ -772,6 +826,8 @@ public class Person implements Serializable {
     }
 }
 ```
+</Tab>
+</Tabs>
 
 **CacheJdbcBlobStore**
 
@@ -900,7 +956,9 @@ Ignite有一个存储会话的概念，它可以跨越不止一个`CacheStore`�
 
 下面是几个不同场景的`CacheStore`的实现，注意有没有事务时的不同处理。
 
-JDBC无事务：
+<Tabs>
+<Tab name="JDBC无事务">
+
 ```java
 public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   // This method is called whenever "get(...)" methods are called on IgniteCache.
@@ -997,7 +1055,9 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   }
 }
 ```
-JDBC有事务：
+</Tab>
+<Tab name="JDBC有事务">
+
 ```java
 public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   /** Auto-injected store session. */
@@ -1139,7 +1199,9 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   }
 }
 ```
-JDBC批量操作：
+</Tab>
+<Tab name="JDBC批量操作">
+
 ```java
 public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
   // Skip single operations and open connection methods.
@@ -1214,6 +1276,9 @@ public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
   }
 }
 ```
+</Tab>
+</Tabs>
+
 ### 4.8.原生持久化和第三方持久化一起使用
 从2.4版本开始，在一个集群中，Ignite支持原生持久化和第三方持久化的共存，如果启用了第三方持久化，Ignite会尽力保证两者之间的一致性。
 
@@ -1262,7 +1327,9 @@ Ignite无法保证原生持久化和第三方持久化之间的严格一致性�
 
 当集群第一次激活之后，基线拓扑就从当前的服务端节点中自动建立起来，这步完成之后，与构成基线拓扑有关的节点信息就会持久化到磁盘。之后即使关闭或者重启集群，只要基线拓扑中的节点启动运行，集群都会自动地激活。
 
-Java：
+<Tabs>
+<Tab name="Java">
+
 ```java
 // Connect to the cluster.
 Ignite ignite = Ignition.start();
@@ -1271,22 +1338,31 @@ Ignite ignite = Ignition.start();
 // only if you manually activate the cluster for the very first time.
 ignite.cluster().active(true);
 ```
-Linux：
+</Tab>
+<Tab name="Linux">
+
 ```bash
 ## Run this command from your `$IGNITE_HOME/bin` folder
 bin/control.sh --activate
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ## Run this command from your `$IGNITE_HOME/bin` folder
 bin\control.bat --activate
 ```
-REST
+</Tab>
+<Tab name="REST">
+
 ```
 ## Replace [host] and [port] with actual values.
 
 https://[host]:[port]/ignite?cmd=activate
 ```
+</Tab>
+</Tabs>
+
 有关如何通过REST API来对集群进行激活/冻结的更新信息，可以看这个[文档](/doc/java/PlatformsProtocols.md#_2-3-40-activate)。
 
 **集群冻结**
@@ -1296,7 +1372,9 @@ https://[host]:[port]/ignite?cmd=activate
 :::
 要冻结集群，可以使用下面的方法：
 
-Java：
+<Tabs>
+<Tab name="Java">
+
 ```java
 // Connect to the cluster.
 Ignite ignite = Ignition.start();
@@ -1304,28 +1382,38 @@ Ignite ignite = Ignition.start();
 // Deactivate the cluster.
 ignite.cluster().active(false);
 ```
-Unix：
+</Tab>
+<Tab name="Unix">
+
 ```shell
 ## Run this command from your `$IGNITE_HOME` folder
 bin/control.sh --deactivate
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ## Run this command from your `$IGNITE_HOME` folder
 bin\control.bat --deactivate
 ```
-REST：
+</Tab>
+<Tab name="REST">
+
 ```
 ## Replace [host] and [port] with actual values.
 
 https://[host]:[port]/ignite?cmd=deactivate
 ```
+</Tab>
+</Tabs>
 
 **通过代码配置基线拓扑**
 
 如上所述，手工激活集群之后基线拓扑就会自动初始化，使用`IgniteCluster.activate()`方法，可以通过代码对集群进行激活，然后可以使用`IgniteCluster.setBaseLineTopogy()`对已有的基线拓扑进行调整，注意**必须**激活集群之后才能调用这个方法。
 
-将所有的服务端节点配置为基线拓扑：
+<Tabs>
+<Tab name="将所有的服务端节点配置为基线拓扑">
+
 ```java
 // Connect to the cluster.
 Ignite ignite = Ignition.start();
@@ -1340,7 +1428,9 @@ Collection<ClusterNode> nodes = ignite.cluster().forServers().nodes();
 // Set the baseline topology that is represented by these nodes.
 ignite.cluster().setBaselineTopology(nodes);
 ```
-将整个集群都配置为基线拓扑：
+</Tab>
+<Tab name="将集群拓扑配置为基线拓扑">
+
 ```java
 // Connect to the cluster.
 Ignite ignite = Ignition.start();
@@ -1352,6 +1442,9 @@ ignite.cluster().active(true)
 // Set the baseline topology to a specific Ignite cluster topology version.
 ignite.cluster().setBaselineTopology(2);
 ```
+</Tab>
+</Tabs>
+
 如果之后更新了基线拓扑，比如说往其中加入了新的节点，那么Ignite就会在所有新的基线拓扑节点中对数据进行再平衡。
 
 **通过命令行配置基线拓扑**
@@ -1362,14 +1455,21 @@ ignite.cluster().setBaselineTopology(2);
 
 定义和调整基线拓扑的命令需要提供一个节点的唯一性ID，这个ID是在节点第一次启动时赋予节点的，并且在重启之后还会复用。要获取当前运行节点的唯一性ID，可以在`$IGNITE_HOME/bin`文件夹中执行`./control.sh --baseline`命令来获取与集群基线拓扑有关的信息，比如：
 
-Linux：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 bin/control.sh --baseline
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 bin\control.bat --baseline
 ```
+</Tab>
+</Tabs>
+
 输出大致如下：
 ```
 Cluster state: active
@@ -1391,71 +1491,111 @@ Other nodes:
 
 要将一组节点组成基线拓扑，可以使用`./control.sh --baseline set`命令再加上节点唯一性ID的列表：
 
-Linux:
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 bin\control.sh --baseline set consistentId1[,consistentId2,....,consistentIdN]
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 bin\control.bat --baseline set {consistentId1[,consistentId2,....,consistentIdN]}
 ```
+</Tab>
+</Tabs>
+
 另外，也可以使用数值化的集群拓扑版本来配置基线：
 
-Linux：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 bin/control.sh --baseline version topologyVersion
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 bin\control.bat --baseline version {topologyVersion}
 ```
+</Tab>
+</Tabs>
+
 在上面这个命令中，需要将`topologyVersion`替换为实际的拓扑版本。
 
-*往拓扑中添加节点*
+*将节点加入拓扑*
 
 要将节点加进已有的基线拓扑，可以使用`./control.sh --baseline add`命令，它会接受逗号分隔的、待加入拓扑的节点的唯一性ID列表。
 
-Linux：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 bin/control.sh --baseline add consistentId1[,consistentId2,....,consistentIdN]
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 bin\control.bat --baseline add {consistentId1[,consistentId2,....,consistentIdN]}
 ```
+</Tab>
+</Tabs>
+
 比如，下面的命令会将唯一性ID为`5d782f5e-0d47-4f42-aed9-3b7edeb527c0`的节点加入基线拓扑：
 
-Linux：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 bin/control.sh --baseline add 5d782f5e-0d47-4f42-aed9-3b7edeb527c0
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 bin\control.bat --baseline add eb05ce3d-f246-4b7b-8e80-91155774c20b
 ```
+</Tab>
+</Tabs>
 
 *从拓扑中删除节点*
 
 要从拓扑中删除节点，使用`./control.sh --baseline remove`命令，语法如下：
 
-Linux：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 bin/control.sh --baseline remove consistentId1[,consistentId2,....,consistentIdN]
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 bin\control.bat --baseline remove {consistentId1[,consistentId2,....,consistentIdN]}
 ```
+</Tab>
+</Tabs>
+
 注意，计划要从拓扑中删除的节点首先要停止，否则会抛出一个信息类似`Failed to remove nodes from baseline`的异常，下面的示例显示如何删除唯一性ID为`fdf68f13-8f1c-4524-9102-ac2f5937c62c`的节点（假定该节点已经停止）：
 
-Linux：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 bin/control.sh --baseline remove fdf68f13-8f1c-4524-9102-ac2f5937c62c
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 bin\control.bat --baseline remove eb05ce3d-f246-4b7b-8e80-91155774c20b
 ```
+</Tab>
+</Tabs>
 
 *集群激活命令行工具*
 
@@ -1496,11 +1636,15 @@ Ignite提供了`control.sh|bat`脚本，位于`$IGNITE_HOME/bin`文件夹，它�
 
 此功能默认是禁用的，可以使用控制脚本开启该功能，还可以通过编程方式启用该功能。
 
-Shell：
+<Tabs>
+<Tab name="Shell">
+
 ```shell
 control.sh --baseline auto_adjust enable timeout 30000
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 Ignite ignite = Ignition.start();
 
@@ -1508,20 +1652,30 @@ ignite.cluster().baselineAutoAdjustEnabled(true);
 
 ignite.cluster().baselineAutoAdjustTimeout(30000);
 ```
+</Tab>
+</Tabs>
+
 这个命令开启了自动调整功能并且配置超时时间为30s。
 
 如果要禁用该功能，可以使用下面的命令：
 
-Shell：
+<Tabs>
+<Tab name="Shell">
+
 ```shell
 control.sh --baseline auto_adjust disable
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 Ignite ignite = Ignition.start();
 
 ignite.cluster().baselineAutoAdjustEnabled(false);
 ```
+</Tab>
+</Tabs>
+
 ### 5.5.集群激活/冻结事件
 集群激活/冻结时，Ignite会产生对应的事件：
 
@@ -1724,7 +1878,9 @@ public class BaselineWatcher {
  - 配置`maxSize`的值大于内存大小，这时操作系统就会使用交换；
  - 配置`DataRegionConfiguration.swapPath`属性来启用交换。
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <!-- Durable memory configuration. -->
@@ -1757,7 +1913,9 @@ XML：
   <!-- Other configurations. -->
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -1786,6 +1944,9 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
+</Tab>
+</Tabs>
+
 ::: warning 可能的数据丢失
 虽然交换空间位于磁盘上，但不要认为它可以替代原生持久化，交换空间中的数据只在节点在线期间可用。一旦节点停止，所有数据都会丢失。要一直保证数据的可用性，要么使用原生持久化，要么使用第三方持久化。
 :::
@@ -1799,7 +1960,9 @@ cfg.setDataStorageConfiguration(storageCfg);
 
 要为缓存启用磁盘页面压缩，需要在缓存配置中提供一种可用的压缩算法，如下所示：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration" id="ignite.cfg">
     <property name="dataStorageConfiguration">
@@ -1824,7 +1987,9 @@ XML：
     </property>
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 DataStorageConfiguration dsCfg = new DataStorageConfiguration();
 
@@ -1847,6 +2012,9 @@ cfg.setCacheConfiguration(cacheCfg);
 
 Ignite ignite = Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 **支持的算法**
 
 支持的压缩算法包括：

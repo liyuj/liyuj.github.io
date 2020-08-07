@@ -81,18 +81,214 @@ Ignite是一个分布式系统，因此，有能力将数据和数据以及数�
 ### 3.1.环境要求
 Apache Ignite官方在如下环境中进行了测试：
 
- - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上，如果使用了JDK9或之后的版本，具体可以看下面的[在JDK9及以后版本中运行Ignite](#_3-2-在jdk9-10-11中运行ignite)章节；
+ - JDK：Oracle JDK8及以上，Open JDK8及以上，IBM JDK8及以上；
  - OS：Linux（任何版本），Mac OS X（10.6及以上），Windows(XP及以上)，Windows Server（2008及以上），Oracle Solaris；
- - 网络：没有限制（建议10G）；
+ - 网络：没有限制（建议10G甚至更快的网络带宽）；
  - 架构：x86，x64，SPARC，PowerPC
 
-### 3.2.在JDK9/10/11中运行Ignite
-要在Java 9/10/11环境下运行Ignite，需要按照如下步骤操作：
+如果使用了JDK9或之后的版本，具体可以看下面的[在JDK9及以后版本中运行Ignite](#_3-10-在jdk11及以后的版本中运行)章节；
+
+### 3.2.安装Apache Ignite
+Ignite入门的最简单方式是使用每次版本发布生成的二进制压缩包：
+ 
+ - 下载最新版本的[Ignite压缩包](https://ignite.apache.org/download.cgi#binaries)；
+ - 将该包解压到操作系统的一个文件夹；
+ - （可选）将`ignite-rest-http`文件夹从`{ignite}/libs/optional`移动到`{ignite}/libs`，这样开启Ignite的REST服务库后，就可以使用Ignite的Web控制台对集群进行管理和监控；
+ - （可选）配置`IGNITE_HOME`环境变量指向Ignite的安装文件夹，路径不要以`/`（Windows为`\`）结尾，如果Ignite运行有问题，需要关注这个配置项；
+
+<Tabs>
+<Tab name="以XML格式配置工作目录">
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="workDirectory" value="/path/to/work/directory"/>
+    <!-- other properties -->
+</bean>
+```
+</Tab>
+<Tab name="以编程方式配置工作目录">
+
+```java
+IgniteConfiguration igniteCfg = new IgniteConfiguration();
+igniteCfg.setWorkDirectory("/path/to/work/directory");
+```
+</Tab>
+</Tabs>
+
+### 3.3.启动Ignite集群
+可以从命令行启动Ignite集群，或者使用默认的配置，或者传入一个自定义配置文件，可以同时启动任意多个节点，他们都会自动地相互发现。
+
+在命令行中转到Ignite安装文件夹的`bin`目录：
+
+<Tabs>
+<Tab name="Unix">
+```shell
+cd {ignite}/bin/
+```
+</Tab>
+<Tab name="Windows">
+
+```batch
+cd {ignite}\bin\
+```
+</Tab>
+</Tabs>
+
+向下面这样，将一个自定义配置文件作为参数传递给`ignite.sh|bat`，然后启动一个节点：
+
+<Tabs>
+<Tab name="Unix">
+```shell
+./ignite.sh ../examples/config/example-ignite.xml
+```
+</Tab>
+<Tab name="Windows">
+
+```batch
+ignite.bat ..\examples\config\example-ignite.xml
+```
+</Tab>
+</Tabs>
+
+输出大致如下：
+```
+[08:53:45] Ignite node started OK (id=7b30bc8e)
+[08:53:45] Topology snapshot [ver=1, locNode=7b30bc8e, servers=1, clients=0, state=ACTIVE, CPUs=4, offheap=1.6GB, heap=2.0GB]
+```
+再次开启一个终端然后执行和前述同样的命令，这样会往集群中添加一个节点，这时再次看下输出，注意包含`Topology snapshot`的行，就会发现集群中有了2个服务端节点，同时集群中可用的CPU和内存也会更多：
+```
+[08:54:34] Ignite node started OK (id=3a30b7a4)
+[08:54:34] Topology snapshot [ver=2, locNode=3a30b7a4, servers=2, clients=0, state=ACTIVE, CPUs=4, offheap=3.2GB, heap=4.0GB]
+```
+::: tip 默认配置
+`ignite.sh|bat`默认会使用`config/default-config.xml`这个配置文件启动节点。
+:::
+好了，这样就启动了第一个Ignite集群。
+### 3.4.创建第一个应用
+集群启动之后，就可以为Ignite创建一个`HelloWorld`示例，首先需要使用Maven向Java应用中添加必要的Ignite构件。
+### 3.5.创建Maven工程
+使用喜欢的IDE创建一个新的Maven工程，然后将下面的依赖加入工程的`pom.xml`中：
+```xml
+<properties>
+    <ignite.version>2.8.0</ignite.version>
+</properties>
+
+<dependencies>
+    <dependency>
+        <groupId>org.apache.ignite</groupId>
+        <artifactId>ignite-core</artifactId>
+        <version>${ignite.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.ignite</groupId>
+        <artifactId>ignite-spring</artifactId>
+        <version>${ignite.version}</version>
+    </dependency>
+</dependencies>
+```
+::: tip 修改Ignite的版本以及开启其他的模块
+将`ignite.version`替换为实际使用的Ignite版本。
+如果需要，将其他的Ignite构件加入依赖，比如可以导入`ignite-indexing`模块以开启Ignite的SQL API，加入`ignite-ml`可以引入Ignite的机器学习库。
+:::
+### 3.6.添加IgniteHelloWorld
+下面这个`IgniteHelloWord.java`文件，会在所有已启动的服务端节点上输出`Hello World`以及其他的一些环境信息，该示例会显示如何使用Java API配置集群，如何创建缓存，如何加载数据并在服务端以MapReduce模式执行Java任务：
+```java
+public class IgniteHelloWorld {
+    public static void main(String[] args) throws IgniteException {
+        // Preparing IgniteConfiguration using Java APIs
+        IgniteConfiguration cfg = new IgniteConfiguration();
+
+        // The node will be started as a client node.
+        cfg.setClientMode(true);
+
+        // Classes of custom Java logic will be transferred over the wire from this app.
+        cfg.setPeerClassLoadingEnabled(true);
+
+        // Setting up an IP Finder to ensure the client can locate the servers.
+        TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder();
+        ipFinder.setAddresses(Collections.singletonList("127.0.0.1:47500..47509"));
+        cfg.setDiscoverySpi(new TcpDiscoverySpi().setIpFinder(ipFinder));
+
+        // Starting the node
+        Ignite ignite = Ignition.start(cfg);
+
+        // Create an IgniteCache and put some values in it.
+        IgniteCache<Integer, String> cache = ignite.getOrCreateCache("myCache");
+        cache.put(1, "Hello");
+        cache.put(2, "World!");
+
+        System.out.println(">> Created the cache and add the values.");
+
+        // Executing custom Java compute task on server nodes.
+        ignite.compute(ignite.cluster().forServers()).broadcast(new RemoteTask());
+
+        System.out.println(">> Compute task is executed, check for output on the server nodes.");
+
+        // Disconnect from the cluster.
+        ignite.close();
+    }
+
+    /**
+     * A compute tasks that prints out a node ID and some details about its OS and JRE.
+     * Plus, the code shows how to access data stored in a cache from the compute task.
+     */
+    private static class RemoteTask implements IgniteRunnable {
+        @IgniteInstanceResource
+        Ignite ignite;
+
+        @Override public void run() {
+            System.out.println(">> Executing the compute task");
+
+            System.out.println(
+                "   Node ID: " + ignite.cluster().localNode().id() + "\n" +
+                "   OS: " + System.getProperty("os.name") +
+                "   JRE: " + System.getProperty("java.runtime.name"));
+
+            IgniteCache<Integer, String> cache = ignite.cache("myCache");
+
+            System.out.println(">> " + cache.get(1) + " " + cache.get(2));
+        }
+    }
+}
+```
+不要忘了添加`import`语句，然后如果IDE和Maven解决了所有的依赖，就可以了。
+
+如果IDE仍然使用早于1.8版本的Java编译器，那么还需要将下面的配置项加入`pom.xml`文件：
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+```
+### 3.7.运行该应用
+编译并运行`IgniteHelloWorld.java`，然后就会在服务端节点上看到`Hello World!`以及其他的一些环境信息输出。
+
+这样第一个Ignite应用就建完了，它会接入并使用本地集群的资源。
+### 3.8.集群的管理和监控
+监控集群状态以及控制其行为的最简单的方式是使用像[Web控制台](https://ignite.apache.org/features/manageandmonitor.html)或者[Visor命令行](/doc/2.6.0/tools/VisorManagementConsole.md)这样的Ignite工具。
+
+### 3.9.进一步编程的示例
+通过学习技术文档以及运行二进制包附带的示例代码，可以进一步学习Ignite，该示例文件夹位于`{ignite}\examples`目录下。
+
+::: tip 提示
+如果更方便，这些示例代码可以Ignite的Github代码库的如下[位置](https://github.com/apache/ignite/tree/master/examples)中找到。
+:::
+
+### 3.10.在Java11及以后的版本中使用Ignite
+要在Java11及以后的版本中执行Ignite：
 
  1. 配置`JAVA_HOME`环境变量或者Windows的`PATH`，指向Java的安装目录；
- 2. Ignite使用了专有的SDK API，默认不可用，需要给JVM传递特定的标志，以使这些API可用。如果使用了启动脚本`ignite.sh`（或者Windows中的`ignite.bat`），那么什么都不需要做，因为脚本中已经配置好了，否则需要在应用的JVM中提供下面的参数；
- 3. Java 11中已经可以使用TLSv1.3，目前还不支持，如果节点间使用了SSL，可以考虑添加`-Djdk.tls.client.protocols=TLSv1.2`；
- 4. 给应用的JVM添加如下的参数，如果使用的是Java瘦客户端或者Ignite JDBC，是不需要这些的：
+ 2. Ignite使用了专有的SDK API，这些API默认并未开启，因此需要向JVM传递额外的专有标志来让这些API可用。如果使用的是`ignite.sh`或者`ignite.bat`，那么什么都不需要做，因为脚本已经提前配置好了。否则就需要向应用的JVM添加下面的参数；
+ 3. TLSv1.3，Java11中已经可以使用，目前还不支持，如果节点间使用了SSL，可以考虑添加`-Djdk.tls.client.protocols=TLSv1.2`；
+ 4. 给Java应用添加下面的VM选项，如果使用的是Java瘦客户端或者JDBC，则不需要。
+ 
 ```properties
 --add-exports=java.base/jdk.internal.misc=ALL-UNNAMED
 --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
@@ -101,716 +297,6 @@ Apache Ignite官方在如下环境中进行了测试：
 --add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED
 --illegal-access=permit
 ```
-
-### 3.3.启动第一个Ignite集群
-
-**使用二进制包**
-
-可以从下面的步骤开始：
-
- - 从[官网](https://ignite.apache.org/download.cgi#binaries)下载zip格式的Ignite二进制包；
- - 解压到系统中的一个安装文件夹；
- - （可选）配置`IGNITE_HOME`环境变量/PATH，指向安装文件夹，确保路径不以`/`结尾。
-
-::: tip 其它的安装选项
-除了二进制包，Ignite还支持源代码安装、docker、云镜像以及RPM格式，具体可以看下面的说明。
-在应用中，建议使用Maven，后面会介绍。
-:::
-
-现在就可以使用命令行接口启动第一个Ignite集群，如下所示，可以使用默认的或者也可以传入自定义的配置文件，可以启动任意多个节点，它们之间会自动发现。
-
-**使用默认的配置**
-
-使用默认的配置启动集群，打开命令行，转到`IGNITE_HOME`（Ignite安装文件夹），然后输入：
-
-<Tabs>
-<Tab name="Linux">
-```bash
-$ bin/ignite.sh
-```
-</Tab>
-<Tab name="Windows">
-
-```batch
-$ bin\ignite.bat
-```
-</Tab>
-</Tabs>
-输出大致如下：
-
-```
-[02:49:12] Ignite node started OK (id=ab5d18a6)
-[02:49:12] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.0GB]
-```
-`ignite.sh`/`ignite.bat`默认会使用`config/default-config.xml`配置文件启动节点。
-
-**传入配置文件**
-
-要使用一个自定义配置文件，可以将其作为参数传给`ignite.sh/bat`，如下：
-
-<Tabs>
-<Tab name="Linux">
-```bash
-$ bin/ignite.sh examples/config/example-ignite.xml
-```
-</Tab>
-<Tab name="Windows">
-
-```batch
-$ bin\ignite.bat examples\config\example-ignite.xml
-```
-</Tab>
-</Tabs>
-配置文件的路径，可以是绝对路径，也可以是相对于`IGNITE_HOME`（Ignite安装文件夹）的相对路径，也可以是类路径中的`META-INF`文件夹。
-::: tip 交互模式
-如果要使用交互模式选择一个配置文件，传入`-i`参数即可，就是`ignite.sh -i`。
-:::
-
-好，这样就成功了！
-### 3.4.使用Maven
-下一步是将Ignite嵌入自己的应用，Java中的最简单的入门方式是使用Maven依赖系统。
-
-Ignite中只有`ignite-core`模块是必须的，一般来说，要使用基于Spring的xml配置，还需要`ignite-spring`模块，要使用SQL查询，还需要`ignite-indexing`模块。
-
-下面中的`${ignite-version}`需要替换为实际使用的版本。
-```xml
-<dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-core</artifactId>
-    <version>${ignite.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-spring</artifactId>
-    <version>${ignite.version}</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-indexing</artifactId>
-    <version>${ignite.version}</version>
-</dependency>
-```
-
-::: tip Maven配置
-关于如何包含个别的ignite maven模块的更多信息，可以参考[Maven设置](/doc/java/InstallAndDeployment.md#_3-maven配置)章节。
-:::
-
-每个二进制包中，都会有一个[示例工程](https://github.com/apache/ignite/tree/master/examples)，在开发环境中打开这个工程，然后转到`{ignite_version}/examples`文件夹找到`pom.xml`文件，依赖引入之后，各种示例就可以演示Ignite的各种功能了。
-
-### 3.5.第一个SQL应用
-下面会创建两张表及其索引，分别为`City`表和`Person`表，分别表示居住在城市中的人，并且城市中会有很多的人，通过WITH子句然后指定`affinityKey=city_id`，可以将人对象和其居住的城市对象并置在一起。
-
-通过命令行或者嵌入式模式启动Ignite集群节点后，可以通过下面的语句创建SQL模式：
-
-SQL：
-```sql
-CREATE TABLE City (
-  id LONG PRIMARY KEY, name VARCHAR)
-  WITH "template=replicated";
-
-CREATE TABLE Person (
-  id LONG, name VARCHAR, city_id LONG, PRIMARY KEY (id, city_id))
-  WITH "backups=1, affinityKey=city_id";
-
-CREATE INDEX idx_city_name ON City (name);
-
-CREATE INDEX idx_person_name ON Person (name);
-```
-JDBC：
-```java
-// Register JDBC driver.
-Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
-
-// Open JDBC connection.
-Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1/");
-
-// Create database tables.
-try (Statement stmt = conn.createStatement()) {
-
-    // Create table based on REPLICATED template.
-    stmt.executeUpdate("CREATE TABLE City (" +
-    " id LONG PRIMARY KEY, name VARCHAR) " +
-    " WITH \"template=replicated\"");
-
-    // Create table based on PARTITIONED template with one backup.
-    stmt.executeUpdate("CREATE TABLE Person (" +
-    " id LONG, name VARCHAR, city_id LONG, " +
-    " PRIMARY KEY (id, city_id)) " +
-    " WITH \"backups=1, affinityKey=city_id\"");
-
-    // Create an index on the City table.
-    stmt.executeUpdate("CREATE INDEX idx_city_name ON City (name)");
-
-    // Create an index on the Person table.
-    stmt.executeUpdate("CREATE INDEX idx_person_name ON Person (name)");
-}
-```
-ODBC：
-```cpp
-SQLHSTMT stmt;
-
-// Allocate a statement handle.
-SQLAllocHandle(SQL_HANDLE_STMT, dbc, &stmt);
-
-// Create table based on REPLICATED template.
-SQLCHAR query1[] = "CREATE TABLE City ("
-  "id LONG PRIMARY KEY, name VARCHAR) "
-  "WITH \"template=replicated\"";
-SQLSMALLINT queryLen1 = static_cast<SQLSMALLINT>(sizeof(query1));
-
-SQLExecDirect(stmt, query, queryLen);
-
-// Create table based on PARTITIONED template with one backup.
-SQLCHAR query2[] = "CREATE TABLE Person ( "
-    "id LONG, name VARCHAR, city_id LONG "
-    "PRIMARY KEY (id, city_id)) "
-    "WITH \"backups=1, affinityKey=city_id\"";
-SQLSMALLINT queryLen2 = static_cast<SQLSMALLINT>(sizeof(query2));
-
-SQLExecDirect(stmt, query, queryLen);
-
-// Create an index on the City table.
-SQLCHAR query3[] = "CREATE INDEX idx_city_name ON City (name)";
-
-SQLSMALLINT queryLen3 = static_cast<SQLSMALLINT>(sizeof(query3));
-
-SQLRETURN ret = SQLExecDirect(stmt, query3, queryLen3);
-
-// Create an index on the Person table.
-SQLCHAR query4[] = "CREATE INDEX idx_person_name ON Person (name)";
-
-SQLSMALLINT queryLen4 = static_cast<SQLSMALLINT>(sizeof(query4));
-
-ret = SQLExecDirect(stmt, query4, queryLen4);
-```
-下一步，需要往两个表中注入一些数据，比如：
-
-SQL：
-```sql
-INSERT INTO City (id, name) VALUES (1, 'Forest Hill');
-INSERT INTO City (id, name) VALUES (2, 'Denver');
-INSERT INTO City (id, name) VALUES (3, 'St. Petersburg');
-
-INSERT INTO Person (id, name, city_id) VALUES (1, 'John Doe', 3);
-INSERT INTO Person (id, name, city_id) VALUES (2, 'Jane Roe', 2);
-INSERT INTO Person (id, name, city_id) VALUES (3, 'Mary Major', 1);
-INSERT INTO Person (id, name, city_id) VALUES (4, 'Richard Miles', 2);
-```
-JDBC：
-```java
-// Register JDBC driver
-Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
-
-// Open JDBC connection
-Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1/");
-
-// Populate City table
-try (PreparedStatement stmt =
-conn.prepareStatement("INSERT INTO City (id, name) VALUES (?, ?)")) {
-
-    stmt.setLong(1, 1L);
-    stmt.setString(2, "Forest Hill");
-    stmt.executeUpdate();
-
-    stmt.setLong(1, 2L);
-    stmt.setString(2, "Denver");
-    stmt.executeUpdate();
-
-    stmt.setLong(1, 3L);
-    stmt.setString(2, "St. Petersburg");
-    stmt.executeUpdate();
-}
-
-// Populate Person table
-try (PreparedStatement stmt =
-conn.prepareStatement("INSERT INTO Person (id, name, city_id) VALUES (?, ?, ?)")) {
-
-    stmt.setLong(1, 1L);
-    stmt.setString(2, "John Doe");
-    stmt.setLong(3, 3L);
-    stmt.executeUpdate();
-
-    stmt.setLong(1, 2L);
-    stmt.setString(2, "Jane Roe");
-    stmt.setLong(3, 2L);
-    stmt.executeUpdate();
-
-    stmt.setLong(1, 3L);
-    stmt.setString(2, "Mary Major");
-    stmt.setLong(3, 1L);
-    stmt.executeUpdate();
-
-    stmt.setLong(1, 4L);
-    stmt.setString(2, "Richard Miles");
-    stmt.setLong(3, 2L);
-    stmt.executeUpdate();
-}
-```
-ODBC：
-```cpp
-SQLHSTMT stmt;
-
-// Allocate a statement handle.
-SQLAllocHandle(SQL_HANDLE_STMT, dbc, &stmt);
-
-// Populate City table.
-SQLCHAR query1[] = "INSERT INTO City (id, name) VALUES (?, ?)";
-
-SQLRETURN ret = SQLPrepare(stmt, query1, static_cast<SQLSMALLINT>(sizeof(query1)));
-
-char name[1024];
-
-int32_t key = 1;
-strncpy(name, "Forest Hill", sizeof(name));
-ret = SQLExecute(stmt);
-
-key = 2;
-strncpy(name, "Denver", sizeof(name));
-ret = SQLExecute(stmt);
-
-key = 3;
-strncpy(name, "Denver", sizeof(name));
-ret = SQLExecute(stmt);
-
-// Populate Person table
-SQLCHAR query2[] = "INSERT INTO Person (id, name, city_id) VALUES (?, ?, ?)";
-
-ret = SQLPrepare(stmt, query2, static_cast<SQLSMALLINT>(sizeof(query2)));
-
-key = 1;
-strncpy(name, "John Doe", sizeof(name));
-int32_t city_id = 3;
-ret = SQLExecute(stmt);
-
-key = 2;
-strncpy(name, "Jane Roe", sizeof(name));
-city_id = 2;
-ret = SQLExecute(stmt);
-
-key = 3;
-strncpy(name, "Mary Major", sizeof(name));
-city_id = 1;
-ret = SQLExecute(stmt);
-
-key = 4;
-strncpy(name, "Richard Miles", sizeof(name));
-city_id = 2;
-ret = SQLExecute(stmt);
-```
-Java API：
-```java
-// Connecting to the cluster.
-Ignite ignite = Ignition.start();
-
-// Getting a reference to an underlying cache created for City table above.
-IgniteCache<Long, City> cityCache = ignite.cache("SQL_PUBLIC_CITY");
-
-// Getting a reference to an underlying cache created for Person table above.
-IgniteCache<PersonKey, Person> personCache = ignite.cache("SQL_PUBLIC_PERSON");
-
-// Inserting entries into City.
-SqlFieldsQuery query = new SqlFieldsQuery(
-    "INSERT INTO City (id, name) VALUES (?, ?)");
-
-cityCache.query(query.setArgs(1, "Forest Hill")).getAll();
-cityCache.query(query.setArgs(2, "Denver")).getAll();
-cityCache.query(query.setArgs(3, "St. Petersburg")).getAll();
-
-// Inserting entries into Person.
-query = new SqlFieldsQuery(
-    "INSERT INTO Person (id, name, city_id) VALUES (?, ?, ?)");
-
-personCache.query(query.setArgs(1, "John Doe", 3)).getAll();
-personCache.query(query.setArgs(2, "Jane Roe", 2)).getAll();
-personCache.query(query.setArgs(3, "Mary Major", 1)).getAll();
-personCache.query(query.setArgs(4, "Richard Miles", 2)).getAll();
-```
-下面就可以查询数据了，可以查询人及其居住的城市，这会进行两个表的关联：
-
-SQL：
-```sql
-SELECT p.name, c.name
-FROM Person p, City c
-WHERE p.city_id = c.id;
-```
-JDBC：
-```java
-// Register JDBC driver
-Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
-
-// Open JDBC connection
-Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1/");
-
-// Get data
-try (Statement stmt = conn.createStatement()) {
-    try (ResultSet rs =
-    stmt.executeQuery("SELECT p.name, c.name " +
-    " FROM Person p, City c " +
-    " WHERE p.city_id = c.id")) {
-
-      while (rs.next())
-         System.out.println(rs.getString(1) + ", " + rs.getString(2));
-    }
-}
-```
-ODBC：
-```cpp
-SQLHSTMT stmt;
-
-// Allocate a statement handle
-SQLAllocHandle(SQL_HANDLE_STMT, dbc, &stmt);
-
-// Get data using an SQL join sample.
-SQLCHAR query[] = "SELECT p.name, c.name "
-  "FROM Person p, City c "
-  "WHERE p.city_id = c.id";
-
-SQLSMALLINT queryLen = static_cast<SQLSMALLINT>(sizeof(query));
-
-SQLRETURN ret = SQLExecDirect(stmt, query, queryLen);
-```
-Java API：
-```java
-// Connecting to the cluster.
-Ignite ignite = Ignition.start();
-
-// Getting a reference to an underlying cache created for City table above.
-IgniteCache<Long, City> cityCache = ignite.cache("SQL_PUBLIC_CITY");
-
-// Querying data from the cluster using a distributed JOIN.
-SqlFieldsQuery query = new SqlFieldsQuery("SELECT p.name, c.name " +
-    " FROM Person p, City c WHERE p.city_id = c.id");
-
-FieldsQueryCursor<List<?>> cursor = cityCache.query(query);
-
-Iterator<List<?>> iterator = cursor.iterator();
-
-
-while (iterator.hasNext()) {
-    List<?> row = iterator.next();
-
-    System.out.println(row.get(0) + ", " + row.get(1));
-}
-```
-这会产生如下的输出：
-```
-Mary Major, Forest Hill
-Jane Roe, Denver
-Richard Miles, Denver
-John Doe, St. Petersburg
-```
-### 3.6.第一个计算应用
-作为第一个计算应用，它会计算一句话中非空白字符的字符数量。作为一个示例，首先将一句话分割为多个单词，然后通过计算作业来计算每一个独立单词中的字符数量。最后，我们将从每个作业获得的结果简单相加来获得整个的数量。
-
-闭包计算：
-```java
-try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
-  Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
-
-  // Iterate through all the words in the sentence and create Callable jobs.
-  for (final String word : "Count characters using callable".split(" "))
-    calls.add(word::length);
-
-  // Execute collection of Callables on the grid.
-  Collection<Integer> res = ignite.compute().call(calls);
-
-  // Add up all the results.
-  int sum = res.stream().mapToInt(Integer::intValue).sum();
-
-  System.out.println("Total number of characters is '" + sum + "'.");
-}
-```
-非闭包计算:
-```java
-try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
-    Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
-
-    // Iterate through all the words in the sentence and create Callable jobs.
-    for (final String word : "Count characters using callable".split(" ")) {
-        calls.add(new IgniteCallable<Integer>() {
-            @Override public Integer call() throws Exception {
-                return word.length();
-            }
-        });
-    }
-
-    // Execute collection of Callables on the grid.
-    Collection<Integer> res = ignite.compute().call(calls);
-
-    int sum = 0;
-
-    // Add up individual word lengths received from remote nodes.
-    for (int len : res)
-        sum += len;
-
-    System.out.println(">>> Total number of characters in the phrase is '" + sum + "'.");
-}
-```
-
-::: tip 零部署
-注意，由于Ignite的`零部署`特性，当从IDE运行上面的程序时，远程节点没有经过显式地部署，就获得了计算作业。
-:::
-
-另一个例子，创建一个应用，它会读取第一个SQL应用中保存的数据，然后在这些对象上进行一些额外的处理。
-
-下面会创建一个天气警报应用，假定丹佛有一个天气警报，然后需要提醒丹佛的居民为恶劣天气做好准备。
-
-下面是代码片段：
-```java
-Ignite ignite = Ignition.start();
-
-long cityId = 2; // Id for Denver
-
-// Sending the logic to a cluster node that stores Denver and its residents.
-ignite.compute().affinityRun("SQL_PUBLIC_CITY", cityId, new IgniteRunnable() {
-
-  @IgniteInstanceResource
-  Ignite ignite;
-
-  @Override
-  public void run() {
-    // Getting an access to Persons cache.
-    IgniteCache<BinaryObject, BinaryObject> people = ignite.cache(
-        "Person").withKeepBinary();
-
-    ScanQuery<BinaryObject, BinaryObject> query =
-        new ScanQuery <BinaryObject, BinaryObject>();
-
-    try (QueryCursor<Cache.Entry<BinaryObject, BinaryObject>> cursor =
-           people.query(query)) {
-
-      // Iteration over the local cluster node data using the scan query.
-      for (Cache.Entry<BinaryObject, BinaryObject> entry : cursor) {
-        BinaryObject personKey = entry.getKey();
-
-        // Picking Denver residents only only.
-        if (personKey.<Long>field("CITY_ID") == cityId) {
-            person = entry.getValue();
-
-            // Sending the warning message to the person.
-        }
-      }
-    }
-  }
-}
-```
-在上例中使用了`affinityRun()`方法，并且指定了`SQL_PUBLIC_CITY`缓存，`cityId`以及一个新创建的`IgniteRunnable()`，这样确保了计算被发送到丹佛及其居民所在的节点，使得可以直接在数据所在的地方执行业务逻辑，避免了昂贵的序列化和网络开销。
-### 3.7.第一个数据网格应用
-我们再来一个小例子，它从/往分布式缓存中获取/添加数据，并且执行基本的事务。
-
-因为在应用中使用了缓存，要确保它是经过配置的，我们可以用Ignite自带的示例配置，它已经做了一些缓存的配置。
-```bash
-$ bin/ignite.sh examples/config/example-cache.xml
-```
-Put和Get：
-```java
-try (Ignite ignite = Ignition.start("examples/config/example-ignite.xml")) {
-    IgniteCache<Integer, String> cache = ignite.getOrCreateCache("myCacheName");
-
-    // Store keys in cache (values will end up on different cache nodes).
-    for (int i = 0; i < 10; i++)
-        cache.put(i, Integer.toString(i));
-
-    for (int i = 0; i < 10; i++)
-        System.out.println("Got [key=" + i + ", val=" + cache.get(i) + ']');
-}
-```
-原子化操作：
-```java
-// Put-if-absent which returns previous value.
-Integer oldVal = cache.getAndPutIfAbsent("Hello", 11);
-
-// Put-if-absent which returns boolean success flag.
-boolean success = cache.putIfAbsent("World", 22);
-
-// Replace-if-exists operation (opposite of getAndPutIfAbsent), returns previous value.
-oldVal = cache.getAndReplace("Hello", 11);
-
-// Replace-if-exists operation (opposite of putIfAbsent), returns boolean success flag.
-success = cache.replace("World", 22);
-
-// Replace-if-matches operation.
-success = cache.replace("World", 2, 22);
-
-// Remove-if-matches operation.
-success = cache.remove("Hello", 1);
-```
-事务：
-```java
-try (Transaction tx = ignite.transactions().txStart()) {
-    Integer hello = cache.get("Hello");
-
-    if (hello == 1)
-        cache.put("Hello", 11);
-
-    cache.put("World", 22);
-
-    tx.commit();
-}
-```
-分布式锁：
-```java
-// Lock cache key "Hello".
-Lock lock = cache.lock("Hello");
-
-lock.lock();
-
-try {
-    cache.put("Hello", 11);
-    cache.put("World", 22);
-}
-finally {
-    lock.unlock();
-}
-```
-### 3.8.第一个服务网格应用
-Ignite的服务网格对于在集群中部署微服务非常有用，Ignite会处理和部署的服务有关的任务的生命周期，并且提供了在应用中调用服务的简单方式。
-
-作为一个示例，下面会开发一个服务，它会返回一个特定城市当前的天气预报。首先，它会创建一个只有一个方法的服务接口，这个接口扩展自`org.apache.ignite.services.Service`。
-
-服务接口：
-```java
-import org.apache.ignite.services.Service;
-
-public interface WeatherService extends Service {
-    /**
-     * Get a current temperature for a specific city in the world.
-     *
-     * @param countryCode Country code (ISO 3166 country codes).
-     * @param cityName City name.
-     * @return Current temperature in the city in JSON format.
-     * @throws Exception if an exception happened.
-     */
-    String getCurrentTemperature(String countryCode, String cityName)
-        throws Exception;
-}
-```
-服务的实现会接入天气频道然后获取天气数据，代码如下：
-```java
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import org.apache.ignite.services.ServiceContext;
-
-
-public class WeatherServiceImpl implements WeatherService {
-    /** Weather service URL. */
-    private static final String WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?";
-
-    /** Sample app ID. */
-    private static final String appId = "ca7345b4a1ef8c037f7749c09fcbf808";
-
-    /** {@inheritDoc}. */
-    @Override public void init(ServiceContext ctx) throws Exception {
-        System.out.println("Weather Service is initialized!");
-    }
-
-    /** {@inheritDoc}. */
-    @Override public void execute(ServiceContext ctx) throws Exception {
-        System.out.println("Weather Service is started!");
-    }
-
-    /** {@inheritDoc}. */
-    @Override public void cancel(ServiceContext ctx) {
-        System.out.println("Weather Service is stopped!");
-    }
-
-    /** {@inheritDoc}. */
-    @Override public String getCurrentTemperature(String cityName,
-        String countryCode) throws Exception {
-
-        System.out.println(">>> Requested weather forecast [city="
-            + cityName + ", countryCode=" + countryCode + "]");
-
-        String connStr = WEATHER_URL + "q=" + cityName + ","
-            + countryCode + "&appid=" + appId;
-
-        URL url = new URL(connStr);
-
-        HttpURLConnection conn = null;
-
-        try {
-            // Connecting to the weather service.
-            conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("GET");
-
-            conn.connect();
-
-            // Read data from the weather server.
-            try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()))) {
-
-                String line;
-                StringBuilder builder = new StringBuilder();
-
-                while ((line = reader.readLine()) != null)
-                    builder.append(line);
-
-                return builder.toString();
-            }
-        } finally {
-            if (conn != null)
-                conn.disconnect();
-        }
-    }
-}
-```
-最后，服务需要在集群中进行部署，然后就可以在应用端进行调用，为了简化，服务在同一个应用中进行部署和调用，如下：
-```java
-import org.apache.ignite.Ignite;
-import org.apache.ignite.Ignition;
-
-public class ServiceGridExample {
-
-    public static void main(String[] args) throws Exception {
-        try (Ignite ignite = Ignition.start()) {
-
-            // Deploying a single instance of the Weather Service
-            // in the whole cluster.
-            ignite.services().deployClusterSingleton("WeatherService",
-               new WeatherServiceImpl());
-
-            // Requesting current weather for London.
-            WeatherService service = ignite.services().service("WeatherService");
-
-            String forecast = service.getCurrentTemperature("London", "UK");
-
-            System.out.println("Weather forecast in London:" + forecast);
-        }
-    }
-}
-```
-::: warning 零部署和服务网格
-零部署是不支持服务网格的，如果希望将上面的服务部署在通过`ignite.sh`或者`ignite.bat`文件启动的节点上，那么就需要将服务的实现打成jar包然后放在`{apache_ignite_version}/libs`文件夹中。
-:::
-
-### 3.9.集群管理和监控
-查看数据网格的数据、以及执行其它的管理和监控操作的最简单方式是使用[Ignite Web控制台](/doc/tools/#_1-1-ignite-web控制台)，还有就是使用Ignite的[Visor命令行](/doc/tools/VisorManagementConsole.md#_1-命令行接口)工具。
-
-### 3.10.Docker和云镜像安装
-最新的Ignite Docker镜像以及AWS和Google计算引擎的云镜像，可以通过Ignite的[下载页面](https://ignite.apache.org/download.cgi#docker)获得。
-### 3.11.RPM|DEB包安装
-Ignite可以通过官方的[RPM和DEB仓库](/doc/java/InstallAndDeployment.md#_4-rpm和deb包安装)进行安装。
-### 3.12.通过源代码构建
-如果下载了源代码，可以使用下面的命令构建二进制包：
-```bash
-# Unpack the source package
-$ unzip -q apache-ignite-{version}-src.zip
-$ cd apache-ignite-{version}-src
-
-# Build In-Memory Data Fabric release (without LGPL dependencies)
-$ mvn clean package -DskipTests
-
-# Build In-Memory Data Fabric release (with LGPL dependencies)
-$ mvn clean package -DskipTests -Prelease,lgpl
-
-# Build In-Memory Hadoop Accelerator release
-# (optionally specify version of hadoop to use)
-$ mvn clean package -DskipTests -Dignite.edition=hadoop [-Dhadoop.version=X.X.X]
-```
-具体细节请参见源码包中的DEVNOTES.txt文件。
 ## 4.Ignite生命周期
 ### 4.1.概述
 Ignite是基于JVM的，一个JVM可以运行一个或者多个逻辑Ignite节点（大多数情况下，一个JVM仅运行一个Ignite节点）。在整个Ignite文档中，会交替地使用术语Ignite运行时以及Ignite节点，比如说可以该主机运行5个节点，技术上通常意味着主机上启动5个JVM，每个JVM运行一个节点，Ignite也支持一个JVM运行多个节点，事实上，通常作为Ignite内部测试用。
@@ -921,7 +407,9 @@ Ignite中，预定义的资源都是可以进行依赖注入的，同时支持�
 ### 6.2.基于属性和基于方法
 可以通过在一个属性或者方法上加注注解来注入资源。当加注在属性上时，Ignite只是在注入阶段简单地设置属性的值（不会理会该属性的访问修饰符）。如果在一个方法上加注了资源注解，它会访问一个与注入资源相对应的输入参数的类型，如果匹配，那么在注入阶段，就会将适当的资源作为输入参数，然后调用该方法。
 
-基于属性：
+<Tabs>
+<Tab name="基于属性">
+
 ```java
 Ignite ignite = Ignition.ignite();
 
@@ -939,7 +427,9 @@ Collection<String> res = ignite.compute().broadcast(new IgniteCallable<String>()
   }
 });
 ```
-基于方法：
+</Tab>
+<Tab name="基于方法">
+
 ```java
 public class MyClusterJob implements ComputeJob {
     ...
@@ -953,6 +443,8 @@ public class MyClusterJob implements ComputeJob {
     ...
 }
 ```
+</Tab>
+</Tabs>
 ### 6.3.预定义的资源
 有很多的预定义资源可供注入：
 
@@ -1002,13 +494,8 @@ Ignite的服务网格调用使用的是服务线程池，Ignite的服务和计�
 
 自定义线程池需要在`IgniteConfiguration`中进行定义，并且需要有一个唯一的名字：
 
-Java:
-```java
-IgniteConfiguration cfg = ...;
-
-cfg.setExecutorConfiguration(new ExecutorConfiguration("myPool").setSize(16));
-```
-XML:
+<Tabs>
+<Tab name="XML">
 ```xml
 <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
@@ -1023,6 +510,17 @@ XML:
   ...
 </bean>
 ```
+</Tab>
+<Tab name="Java">
+
+```java
+IgniteConfiguration cfg = ...;
+
+cfg.setExecutorConfiguration(new ExecutorConfiguration("myPool").setSize(16));
+```
+</Tab>
+</Tabs>
+
 这样，假定下面的计算任务由上面定义的`myPool`线程池中的线程执行：
 ```java
 public class InnerRunnable implements IgniteRunnable {
@@ -1293,7 +791,9 @@ Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/c
 
 要使用Log4j进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="gridLogger">
@@ -1305,7 +805,9 @@ XML：
   ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -1318,10 +820,14 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
+</Tab>
+</Tabs>
+
 在上面的配置中，`log4j.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
 ::: tip 注意
 Log4j支持运行时配置，即配置文件的修改无需应用重启即可生效。
 :::
+
 ### 9.4.Log4j2
 如果在启动独立集群节点时要使用Log4j2模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j2`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 
@@ -1337,7 +843,9 @@ Log4j支持运行时配置，即配置文件的修改无需应用重启即可生
 
 要使用Log4j2进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="gridLogger">
@@ -1349,7 +857,9 @@ XML：
   ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -1362,6 +872,9 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
+</Tab>
+</Tabs>
+
 在上面的配置中，`log4j2.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
 ::: tip 注意
 Log4j2支持运行时配置，即配置文件的修改无需应用重启即可生效。
@@ -1381,7 +894,9 @@ Log4j2支持运行时配置，即配置文件的修改无需应用重启即可�
 
 要使用JCL进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="gridLogger">
@@ -1392,7 +907,9 @@ XML：
   ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -1405,6 +922,9 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
+</Tab>
+</Tabs>
+
 ::: tip 注意
 注意JCL只是简单地将日志消息转发给底层的日志系统，这需要正确的配置，具体请参见[JCL官方文档](https://commons.apache.org/proper/commons-logging/guide.html#Configuration)。比如要使用Log4j，类路径中需要添加必要的库文件。
 :::
@@ -1423,7 +943,9 @@ ignite.log().info("Info Message Logged!");
 
 要使用JCL进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="gridLogger">
@@ -1434,7 +956,9 @@ XML：
 
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -1447,6 +971,9 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
+</Tab>
+</Tabs>
+
 要了解更多的信息，可以看[SLF4J手册](https://www.slf4j.org/docs.html)。
 ### 9.7.日志配置示例
 下面的步骤可以引导开发者进行日志的配置，这可以覆盖大多数的场景。

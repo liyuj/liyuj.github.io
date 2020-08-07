@@ -14,18 +14,24 @@ Ignite对部署没有要求，可以非常容易地部署到私有主机或者�
 
 配置Ignite的工作文件夹：
 
-XML：
+<Tabs>
+<Tab name="XML">
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     <property name="workDirectory" value="/path/to/work/directory"/>
     <!-- other properties -->
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
 igniteCfg.setWorkDirectory("/path/to/work/directory");
 ```
+</Tab>
+</Tabs>
+
 ## 3.Maven配置
 ### 3.1.概述
 如果项目里用Maven管理依赖，可以单独地导入各个Ignite模块。
@@ -138,7 +144,10 @@ Debian：
 sudo apt update
 sudo apt install dirmngr --no-install-recommends
 ```
-RPM：
+
+<Tabs>
+<Tab name="RPM">
+
 ```bash
 sudo bash -c 'cat <<EOF > /etc/yum.repos.d/ignite.repo
 [ignite]
@@ -151,7 +160,9 @@ gpgkey=http://apache.org/dist/ignite/KEYS
 EOF'
 sudo yum check-update
 ```
-DEB：
+</Tab>
+<Tab name="DEB">
+
 ```bash
 sudo bash -c 'cat <<EOF > /etc/apt/sources.list.d/ignite.list
 deb http://apache.org/dist/ignite/deb/ apache-ignite main
@@ -159,17 +170,27 @@ EOF'
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
 sudo apt update
 ```
+</Tab>
+</Tabs>
+
 ### 4.3.Ignite的安装
 安装Ignite的最新版：
 
-RPM：
+<Tabs>
+<Tab name="RPM">
+
 ```bash
 sudo yum install apache-ignite
 ```
-DEB：
+</Tab>
+<Tab name="DEB">
+
 ```bash
 sudo apt install apache-ignite --no-install-recommends
 ```
+</Tab>
+</Tabs>
+
 安装后的结构如下：
 
 |文件夹|映射至|描述|
@@ -208,10 +229,25 @@ sudo systemctl enable apache-ignite@<config name>
 sudo -u ignite /usr/bin/env bash    # switch to ignite user
 ```
 然后切换到Ignite的bin文件夹，启动一个节点：
+
+<Tabs>
+<Tab name="默认配置">
+
 ```bash
 cd /usr/share/apache-ignite         # navigate to Ignite home folder
 bin/ignite.sh                       # run Ignite with default configuration
 ```
+</Tab>
+<Tab name="自定义配置">
+
+```bash
+sudo -u ignite /usr/bin/env bash       # switch to ignite user
+cd /usr/share/apache-ignite/bin        # navigate to Ignite bin folder
+./ignite.sh <path_to_custom_config>    # start Ignite with custom configuration
+```
+</Tab>
+</Tabs>
+
 ### 4.6.在Windows10 WSL中运行Ignite
 **网络配置**
 
