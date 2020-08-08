@@ -112,7 +112,9 @@ private static void readResponseHeader(DataInputStream in) throws IOException {
 
 客户端应用接入服务端节点需要通过TCP套接字，连接器默认使用`10800`端口。可以在集群的`IgniteConfiguration`中的`clientConnectorConfiguration`属性中，配置端口号及其它的服务端连接参数，如下所示：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
     <!-- Thin client connection configuration. -->
@@ -128,7 +130,9 @@ XML：
 
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 	IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -143,6 +147,9 @@ cfg.setClientConnectorConfiguration(ccfg);
 // Start Ignite node
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 **连接握手**
 
 除了套接字连接之外，瘦客户端协议还需要连接握手，以确保客户端和服务端版本兼容。注意握手必须是连接建立后的**第一条消息**。
@@ -764,7 +771,9 @@ UUID（Guid）数组。
 
 此字段包含唯一的类型标识符。它是低位优先的4个字节长度。默认情况下，`Type ID`是通过类型名称的Java风格的哈希值获得的。`Type ID`评估算法应该在集群中的所有平台上都相同，以便所有平台都能够使用此类型的对象进行操作。下面是所有瘦客户端推荐使用的默认`Type ID`计算算法：
 
-Java：
+<Tabs>
+<Tab name="Java">
+
 ```java
 static int hashCode(String str) {
   int len = str.length;
@@ -782,7 +791,9 @@ static int hashCode(String str) {
   return h;
 }
 ```
-C：
+</Tab>
+<Tab name="C">
+
 ```cpp
 int32_t HashCode(const char* val, size_t size)
 {
@@ -804,11 +815,16 @@ int32_t HashCode(const char* val, size_t size)
   return hash;
 }
 ```
+</Tab>
+</Tabs>
+
 **hash_code**
 
 值的哈希编码，它是低位优先的4字节长度，它由不包含头部的内容部分的Java风格的哈希编码计算得来，Ignite引擎用来作比较用，比如用作键的比较。下面是哈希值的计算算法：
 
-Java:
+<Tabs>
+<Tab name="Java">
+
 ```java
 static int dataHashCode(byte[] data) {
   int len = data.length;
@@ -821,7 +837,9 @@ static int dataHashCode(byte[] data) {
   return h;
 }
 ```
-C:
+</Tab>
+<Tab name="C">
+
 ```cpp
 int32_t GetDataHashCode(const void* data, size_t size)
 {
@@ -837,6 +855,9 @@ int32_t GetDataHashCode(const void* data, size_t size)
   return hash;
 }
 ```
+</Tab>
+</Tabs>
+
 **length**
 
 这个字段为对象（包括头部）的整体长度，它为低位优先的4字节整型值，通过在当前数据流的位置上简单地增加本字段值的偏移量，可以轻易地忽略整个对象。
@@ -853,7 +874,9 @@ int32_t GetDataHashCode(const void* data, size_t size)
 
 `schema_id`的计算算法如下：
 
-Java：
+<Tabs>
+<Tab name="Java">
+
 ```java
 /** FNV1 hash offset basis. */
 private static final int FNV1_OFFSET_BASIS = 0x811C9DC5;
@@ -885,7 +908,9 @@ static int calculateSchemaId(int fieldIds[])
   }
 }
 ```
-C：
+</Tab>
+<Tab name="C">
+
 ```cpp
 /** FNV1 hash offset basis. */
 enum { FNV1_OFFSET_BASIS = 0x811C9DC5 };
@@ -915,6 +940,9 @@ int32_t CalculateSchemaId(const int32_t* fieldIds, size_t num)
   }
 }
 ```
+</Tab>
+</Tabs>
+
 **object_fields**
 
 对象字段。每个字段都是二进制对象，可以是复杂类型，也可以是标准类型。注意，一个没有任何字段的复杂对象也是有效的，可能会遇到。每个字段的名字可有可无。对于命名字段，在对象模式中会写入一个偏移量，通过该偏移量，可以在对象中将其定位，而无需对整个对象进行反序列化。没有名字的字段总是存储在命名字段之后，并以所谓的`原始模式`写入。
@@ -1138,7 +1166,8 @@ private static String readString(DataInputStream in) throws IOException {
 |头信息|响应头|
 |数据对象|给定主键对应的值，如果不存在则为`null`|
 
-请求：
+<Tabs>
+<Tab name="请求">
 
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -1156,7 +1185,9 @@ writeByteLittleEndian(0, out);
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1168,6 +1199,9 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.3.OP_CACHE_GET_ALL
 从一个缓存中获得多个键值对。
 
@@ -1185,7 +1219,9 @@ int value = readIntLittleEndian(in);
 |int|结果数量|
 |键对象+值对象|返回的键值对，不包含缓存中没有的条目，重复多次，次数为前一个参数返回的值|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1209,7 +1245,9 @@ writeIntLittleEndian(key1, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key2, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1230,6 +1268,9 @@ for (int i = 0; i < resCount; i++) {
   int resValue = readIntLittleEndian(in); // Cache value
 }
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.4.OP_CACHE_PUT
 往缓存中写入给定的键值对（会覆盖已有的值）。
 
@@ -1245,7 +1286,9 @@ for (int i = 0; i < resCount; i++) {
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1266,7 +1309,9 @@ writeIntLittleEndian(key, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value, out);   // Cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1274,6 +1319,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.5.OP_CACHE_PUT_ALL
 往缓存中写入给定的多个键值对（会覆盖已有的值）。
 
@@ -1289,7 +1337,9 @@ readResponseHeader(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1321,7 +1371,9 @@ writeIntLittleEndian(key2, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value2, out);   // Cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1329,6 +1381,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.6.OP_CACHE_CONTAINS_KEY
 判断缓存中是否存在给定的键。
 
@@ -1344,7 +1399,9 @@ readResponseHeader(in);
 |头信息|响应头|
 |bool|主键存在则为true，否则为false|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1361,7 +1418,9 @@ writeByteLittleEndian(0, out);
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1372,6 +1431,9 @@ readResponseHeader(in);
 // Result
 boolean res = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.7.OP_CACHE_CONTAINS_KEYS
 判断缓存中是否存在给定的所有键。
 
@@ -1388,7 +1450,9 @@ boolean res = readBooleanLittleEndian(in);
 |头信息|响应头|
 |bool|主键存在则为true，否则为false|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1414,7 +1478,9 @@ int key2 = 22;
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key2, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 
 // Read result
@@ -1426,6 +1492,9 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.8.OP_CACHE_GET_AND_PUT
 往缓存中插入一个键值对，并且返回与该键对应的原值，如果缓存中没有该键，则会创建一个新的条目并返回`null`。
 
@@ -1442,7 +1511,9 @@ boolean res = readBooleanLittleEndian(in);
 |头信息|响应头|
 |数据对象|给定键的原有值，或者为`null`|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1463,7 +1534,9 @@ writeIntLittleEndian(key, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value, out);   // Cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1475,6 +1548,9 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.9.OP_CACHE_GET_AND_REPLACE
 替换缓存中给定键的值，然后返回原值，如果缓存中该键不存在，该操作会返回`null`而缓存不会有改变。
 
@@ -1491,7 +1567,9 @@ int value = readIntLittleEndian(in);
 |头信息|响应头|
 |数据对象|给定键的原有值，如果该键不存在则为`null`|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1512,7 +1590,9 @@ writeIntLittleEndian(key, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value, out);   // Cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1524,6 +1604,9 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.10.OP_CACHE_GET_AND_REMOVE
 删除缓存中给定键对应的数据，然后返回原值，如果缓存中该键不存在，该操作会返回`null`。
 
@@ -1539,7 +1622,9 @@ int value = readIntLittleEndian(in);
 |头信息|响应头|
 |数据对象|给定键的原有值，如果该键不存在则为`null`|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1556,7 +1641,9 @@ writeByteLittleEndian(0, out);
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1568,6 +1655,9 @@ readResponseHeader(in);
 int resTypeCode = readByte(in);
 int value = readInt(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.11.OP_CACHE_PUT_IF_ABSENT
 在条目不存在时插入一个新的条目。
 
@@ -1584,7 +1674,9 @@ int value = readInt(in);
 |头信息|响应头|
 |bool|插入成功为`true`，条目已存在为`false`|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1605,7 +1697,9 @@ writeIntLittleEndian(key, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value, out);   // Cache Value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
  // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1616,6 +1710,9 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.12.OP_CACHE_GET_AND_PUT_IF_ABSENT
 在条目不存在时插入一个新的条目，否则返回已有的值。
 
@@ -1632,7 +1729,9 @@ boolean res = readBooleanLittleEndian(in);
 |头信息|响应头|
 |数据对象|如果缓存没有该条目则返回`null`（这时会创建一个新条目），或者返回给定键对应的已有值。|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1653,7 +1752,9 @@ writeIntLittleEndian(key, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value, out);   // Cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1665,6 +1766,9 @@ readResponseHeader(in);
 int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.13.OP_CACHE_REPLACE
 替换缓存中已有键的值。
 
@@ -1681,7 +1785,9 @@ int value = readIntLittleEndian(in);
 |头信息|响应头|
 |bool|表示是否替换成功|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1702,7 +1808,9 @@ writeIntLittleEndian(key, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value, out);   // Cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1712,6 +1820,9 @@ readResponseHeader(in);
 
 boolean res = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.14.OP_CACHE_REPLACE_IF_EQUALS
 当在缓存中给定的键已存在且值等于给定的值时，才会用新值替换旧值。
 
@@ -1729,7 +1840,9 @@ boolean res = readBooleanLittleEndian(in);
 |头信息|响应头|
 |bool|表示是否替换成功|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1754,7 +1867,9 @@ writeIntLittleEndian(value, out);   // Cache value to compare
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(newValue, out);   // New cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1764,6 +1879,9 @@ readResponseHeader(in);
 
 boolean res = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.15.OP_CACHE_CLEAR
 清空缓存而不通知监听器或者缓存写入器，具体可以看对应方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#clear--)。
 
@@ -1777,7 +1895,9 @@ boolean res = readBooleanLittleEndian(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1790,7 +1910,9 @@ writeIntLittleEndian(cacheName.hashCode(), out);
 // Flags = none
 writeByteLittleEndian(0, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1798,6 +1920,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.16.OP_CACHE_CLEAR_KEY
 清空缓存键而不通知监听器或者缓存写入器，具体可以看对应方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#clear-K-)。
 
@@ -1812,7 +1937,9 @@ readResponseHeader(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1829,7 +1956,9 @@ writeByteLittleEndian(0, out);
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1837,6 +1966,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.17.OP_CACHE_CLEAR_KEYS
 清空缓存的多个键而不通知监听器或者缓存写入器，具体可以看对应方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#clearAll-java.util.Set-)。
 
@@ -1852,7 +1984,9 @@ readResponseHeader(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1876,7 +2010,9 @@ writeIntLittleEndian(key1, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key2, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1884,6 +2020,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.18.OP_CACHE_REMOVE_KEY
 删除给定键对应的数据，通知监听器和缓存的写入器，具体可以看相关方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#remove-K-)。
 
@@ -1899,7 +2038,9 @@ readResponseHeader(in);
 |头信息|响应头|
 |bool|表示是否删除成功|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1916,7 +2057,9 @@ writeByteLittleEndian(0, out);
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key1, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1927,6 +2070,9 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.19.OP_CACHE_REMOVE_IF_EQUALS
 当给定的值等于当前值时，删除缓存中给定键对应的条目，然后通知监听器和缓存写入器。
 
@@ -1943,7 +2089,9 @@ boolean res = readBooleanLittleEndian(in);
 |头信息|响应头|
 |bool|表示是否删除成功|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -1964,7 +2112,9 @@ writeIntLittleEndian(key, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(value, out);   // Cache value
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -1975,6 +2125,9 @@ readResponseHeader(in);
 // Resulting boolean value
 boolean res = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.20.OP_CACHE_GET_SIZE
 获取缓存条目的数量，该方法等同于[IgniteCache.size(CachePeekMode... peekModes)](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#size-org.apache.ignite.cache.CachePeekMode...-)。
 
@@ -1991,7 +2144,9 @@ boolean res = readBooleanLittleEndian(in);
 |头信息|响应头|
 |long|缓存大小|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2010,7 +2165,9 @@ writeIntLittleEndian(0, out);
 // Peek mode
 writeByteLittleEndian(0, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2021,6 +2178,9 @@ readResponseHeader(in);
 // Number of entries in cache
 long cacheSize = readLongLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.21.OP_CACHE_REMOVE_KEYS
 删除给定键对应的条目，通知监听器和缓存写入器，具体可以看相关方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#removeAll-java.util.Set-)。
 
@@ -2036,7 +2196,9 @@ long cacheSize = readLongLittleEndian(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2060,7 +2222,9 @@ writeIntLittleEndian(key1, out);   // Cache key
 writeByteLittleEndian(3, out);  // Integer type code
 writeIntLittleEndian(key2, out);   // Cache key
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2072,6 +2236,9 @@ readResponseHeader(in);
 int resTypeCode = readByte(in);
 int value = readInt(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.3.22.OP_CACHE_REMOVE_ALL
 从缓存中删除所有的条目，通知监听器和缓存写入器，具体可以看相关方法的[文档](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html#removeAll--)。
 
@@ -2085,7 +2252,9 @@ int value = readInt(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2098,7 +2267,9 @@ writeIntLittleEndian(cacheName.hashCode(), out);
 // Flags = none
 writeByteLittleEndian(0, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2112,6 +2283,9 @@ long resReqId = readLongLittleEndian(in);
 // Success
 int statusCode = readIntLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 ### 2.4.SQL和扫描查询
 #### 2.4.1.操作代码
 与Ignite服务端节点成功握手后，客户端就可以通过发送带有特定操作代码的请求（请参见下面的请求/响应结构）来执行各种SQL和扫描查询了：
@@ -2155,7 +2329,9 @@ int statusCode = readIntLittleEndian(in);
 |键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SQL_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String entityName = "Person";
 int entityNameLength = getStrLen(entityName); // UTF-8 bytes
@@ -2199,7 +2375,9 @@ writeIntLittleEndian(1, out);
 // Timeout
 writeLongLittleEndian(5000, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2221,6 +2399,9 @@ for (int i = 0; i < rowCount; i++) {
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.4.3.OP_QUERY_SQL_CURSOR_GET_PAGE
 通过`OP_QUERY_SQL`的游标ID，查询下一个游标页。
 
@@ -2237,7 +2418,9 @@ boolean moreResults = readBooleanLittleEndian(in);
 |键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SQL_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2247,7 +2430,9 @@ writeRequestHeader(8, OP_QUERY_SQL_CURSOR_GET_PAGE, 1, out);
 // Cursor Id (received from Sql query operation)
 writeLongLittleEndian(cursorId, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2267,6 +2452,9 @@ for (int i = 0; i < rowCount; i++){
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.4.4.OP_QUERY_SQL_FIELDS
 执行SQLFieldQuery。
 
@@ -2301,7 +2489,9 @@ boolean moreResults = readBooleanLittleEndian(in);
 |数据对象|字段（列）值，字段个数重复次数为前述字段数量参数值，行数重复次数为前一个参数的值|
 |bool|表示是否还可以通过`OP_QUERY_SQL_FIELDS_CURSOR_GET_PAGE`获得更多结果|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String sql = "Select id, salary from Person";
 int sqlLength = sql.getBytes("UTF-8").length;
@@ -2368,7 +2558,9 @@ writeLongLittleEndian(5000, out);
 // Replicated
 out.writeBoolean(false);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2392,6 +2584,9 @@ for (int i = 0; i < rowCount; i++) {
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.4.5.OP_QUERY_SQL_FIELDS_CURSOR_GET_PAGE
 通过`OP_QUERY_SQL_FIELDS`的游标ID，获取下一页的查询结果。
 
@@ -2407,7 +2602,9 @@ boolean moreResults = readBooleanLittleEndian(in);
 |数据对象|字段（列）值，字段个数重复次数为前述字段数量参数值，行数重复次数为前一个参数的值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SQL_FIELDS_CURSOR_GET_PAGE`获取。|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2417,7 +2614,9 @@ writeRequestHeader(8, QUERY_SQL_FIELDS_CURSOR_GET_PAGE, 1, out);
 // Cursor Id
 writeLongLittleEndian(1, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
  // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2434,6 +2633,9 @@ for (int i = 0; i < rowCount; i++){
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.4.6.OP_QUERY_SCAN
 执行扫描查询。
 
@@ -2456,7 +2658,9 @@ boolean moreResults = readBooleanLittleEndian(in);
 |键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SCAN_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2482,7 +2686,9 @@ writeIntLittleEndian(-1, out);
 // local flag
 out.writeBoolean(false);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2505,6 +2711,9 @@ for (int i = 0; i < rowCount; i++) {
 
 boolean moreResults = readBooleanLittleEndian(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.4.7.OP_QUERY_SCAN_CURSOR_GET_PAGE
 通过`OP_QUERY_SCAN`获取的游标，查询下一页的数据。
 
@@ -2533,7 +2742,9 @@ boolean moreResults = readBooleanLittleEndian(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2544,7 +2755,9 @@ writeRequestHeader(8, OP_RESOURCE_CLOSE, 1, out);
 long cursorId = 1;
 writeLongLittleEndian(cursorId, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2552,6 +2765,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 ### 2.5.二进制类型元数据
 #### 2.5.1.操作代码
 与Ignite服务端节点成功握手后，客户端就可以通过发送带有特定操作代码的请求（请参见下面的请求/响应结构）来执行与二进制类型有关的各种操作了：
@@ -2581,7 +2797,9 @@ readResponseHeader(in);
 |头信息|响应头|
 |string|二进制类型名|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String type = "ignite.myexamples.model.Person";
 int typeLen = type.getBytes("UTF-8").length;
@@ -2597,7 +2815,9 @@ writeByteLittleEndian(0, out);
 // Type id
 writeIntLittleEndian(type.hashCode(), out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2617,6 +2837,9 @@ String s = new String(buf);
 
 System.out.println(s);
 ```
+</Tab>
+</Tabs>
+
 #### 2.5.3.OP_REGISTER_BINARY_TYPE_NAME
 通过ID注册平台相关的完整二进制类型名，比如，.NET和Java都可以映射相同的类型`Foo`，但是在.NET中类型是`Apache.Ignite.Foo`，而在Java中是`org.apache.ignite.Foo`。
 
@@ -2631,7 +2854,9 @@ System.out.println(s);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String type = "ignite.myexamples.model.Person";
 int typeLen = type.getBytes("UTF-8").length;
@@ -2650,13 +2875,18 @@ writeIntLittleEndian(type.hashCode(), out);
 // Type name
 writeString(type, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.5.4.OP_GET_BINARY_TYPE
 通过ID获取二进制类型信息。
 
@@ -2680,7 +2910,9 @@ readResponseHeader(in);
 |int|BinarySchema计数|
 |BinarySchema|BinarySchema结构。int：唯一模式ID；int：模式中字段数；int：字段ID，Java风格字段名哈希值，重复多次，重复次数为模式中字段数量，BinarySchema重复次数为前一个参数数值|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String type = "ignite.myexamples.model.Person";
 
@@ -2692,7 +2924,9 @@ writeRequestHeader(4, OP_BINARY_TYPE_GET, 1, out);
 // Type id
 writeIntLittleEndian(type.hashCode(), out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2734,6 +2968,9 @@ private static void readBinaryTypeField (DataInputStream in) throws IOException{
   System.out.println(fieldName);
 }
 ```
+</Tab>
+</Tabs>
+
 #### 2.5.5.OP_PUT_BINARY_TYPE
 在集群中注册二进制类型信息。
 
@@ -2755,7 +2992,9 @@ private static void readBinaryTypeField (DataInputStream in) throws IOException{
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String type = "ignite.myexamples.model.Person";
 
@@ -2807,13 +3046,18 @@ private static void writeBinaryTypeField (String field, String fieldType, DataOu
   writeIntLittleEndian(field.hashCode(), out);
 }
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 ### 2.6.缓存配置
 #### 2.6.1.操作代码
 与Ignite服务端节点成功握手后，客户端就可以通过发送带有特定操作代码的请求（请参见下面的请求/响应结构）来执行各种缓存配置操作了：
@@ -2842,7 +3086,9 @@ readResponseHeader(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2861,13 +3107,18 @@ writeString(cacheName, out);
 // Send request
 out.flush();
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.6.3.OP_CACHE_GET_OR_CREATE_WITH_NAME
 通过给定的名字创建缓存，如果缓存的名字中有`*`，则可以应用一个缓存模板，如果给定名字的缓存已经存在，则什么也不做。
 
@@ -2880,7 +3131,9 @@ readResponseHeader(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -2899,13 +3152,18 @@ writeString(cacheName, out);
 // Send request
 out.flush();
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.6.4.OP_CACHE_GET_NAMES
 获取已有缓存的名字。
 
@@ -2919,14 +3177,18 @@ readResponseHeader(in);
 |int|缓存数量|
 |string|缓存名字，重复多次，重复次数为前一个参数的返回值|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
 // Request header
 writeRequestHeader(5, OP_CACHE_GET_NAMES, 1, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -2951,6 +3213,9 @@ for (int i = 0; i < cacheCount; i++) {
   System.out.println(s);
 }
 ```
+</Tab>
+</Tabs>
+
 #### 2.6.5.OP_CACHE_GET_CONFIGURATION
 获取指定缓存的配置信息。
 
@@ -3018,7 +3283,9 @@ for (int i = 0; i < cacheCount; i++) {
 |int|QueryIndex计数|
 |QueryIndex|QueryIndex结构。String：索引名；byte：索引类型，(SORTED：0；FULLTEXT：1；GEOSPATIAL：2)；int：内联大小；int：字段计数；(string + bool)：字段（名字+是否降序）|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String cacheName = "myCache";
 
@@ -3033,7 +3300,9 @@ writeIntLittleEndian(cacheName.hashCode(), out);
 // Flags = none
 writeByteLittleEndian(0, out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -3057,6 +3326,9 @@ boolean copyOnRead = readBooleanLittleEndian(in);
 
 // Other configurations
 ```
+</Tab>
+</Tabs>
+
 #### 2.6.6.OP_CACHE_CREATE_WITH_CONFIGURATION
 用给定的配置创建缓存，如果该缓存已存在会抛出异常。
 
@@ -3124,7 +3396,9 @@ boolean copyOnRead = readBooleanLittleEndian(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -3147,7 +3421,9 @@ writeShortLittleEndian(0, out);
 // Name
 writeString("myNewCache", out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -3155,6 +3431,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.6.7.OP_CACHE_GET_OR_CREATE_WITH_CONFIGURATION
 根据提供的配置创建缓存，如果该缓存已存在则什么都不做。
 
@@ -3167,7 +3446,9 @@ readResponseHeader(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
@@ -3191,7 +3472,9 @@ writeShortLittleEndian(0, out);
 // Name
 writeString("myNewCache", out);
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -3199,6 +3482,9 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 // Response header
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 #### 2.6.8.OP_CACHE_DESTROY
 销毁指定的缓存。
 
@@ -3211,7 +3497,9 @@ readResponseHeader(in);
 |---|---|
 |头信息|响应头|
 
-请求：
+<Tabs>
+<Tab name="请求">
+
 ```java
 String cacheName = "myCache";
 
@@ -3226,13 +3514,18 @@ writeIntLittleEndian(cacheName.hashCode(), out);
 // Send request
 out.flush();
 ```
-响应：
+</Tab>
+<Tab name="响应">
+
 ```java
 // Read result
 DataInputStream in = new DataInputStream(socket.getInputStream());
 
 readResponseHeader(in);
 ```
+</Tab>
+</Tabs>
+
 ## 3.Java瘦客户端
 ### 3.1.Java瘦客户端
 #### 3.1.1.概述
@@ -3244,7 +3537,9 @@ Java瘦客户端将[二进制客户端协议](#_2-二进制客户端协议)暴�
 #### 3.1.2.Maven配置
 添加`ignite-core`这一个依赖就可以使用所有的瘦客户端API。
 
-Maven：
+<Tabs>
+<Tab name="Maven">
+
 ```xml
  <properties>
         <ignite.version>2.5.0</ignite.version>
@@ -3258,7 +3553,9 @@ Maven：
         </dependency>
     </dependencies>
 ```
-Gradle：
+</Tab>
+<Tab name="Gradle">
+
 ```
  def igniteVersion = '2.5.0'
 
@@ -3266,6 +3563,9 @@ dependencies {
     compile group: 'org.apache.ignite', name: 'ignite-core', version: igniteVersion
 }
 ```
+</Tab>
+</Tabs>
+
 ::: tip Ignite版本
 瘦客户端和Ignite服务端版本可以不同，只要二进制协议版本是兼容的即可。
 :::
@@ -3313,20 +3613,27 @@ public static void main(String[] args) {
 #### 3.1.4.启动集群
 在本地主机上启动集群：
 
-Unix：
+<Tabs>
+<Tab name="Linix">
+
 ```bash
 $IGNITE_HOME/bin/ignite.sh $IGNITE_HOME/examples/config/example-ignite.xml
 
 ...
 [27-02-2018 19:21:00][INFO ][main][GridDiscoveryManager] Topology snapshot [ver=1, servers=1, clients=0, CPUs=8, offheap=1.0GB, heap=1.0GB]
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 %IGNITE_HOME%\bin\ignite.bat %IGNITE_HOME%\examples\config\example-ignite.xml
 
 ...
 [27-02-2018 19:21:00][INFO ][main][GridDiscoveryManager] Topology snapshot [ver=1, servers=1, clients=0, CPUs=8, offheap=1.0GB, heap=1.0GB]
 ```
+</Tab>
+</Tabs>
+
 ::: tip 服务端启动等待
 与Ignite客户端模式不同，它会等待服务端节点的启动，而瘦客户端在无法找到配置好的服务端时，会连接失败。
 :::
@@ -3671,14 +3978,21 @@ npm link apache-ignite-client #linking examples (optional)
 
 在用Node.js瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点。要使用默认的配置启动一个集群节点，打开终端，假定位于`IGNITE_HOME`（Ignite安装文件夹），只需要输入：
 
-Unix：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./ignite.sh
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ignite.bat
 ```
+</Tab>
+</Tabs>
+
 2.链接Ignite的Node.js示例（如果还没做）：
 ```bash
 cd {ignite}/modules/platforms/nodejs/examples # navigate to examples folder
@@ -3698,14 +4012,21 @@ Node.js瘦客户端有完整的直接可用的[示例](https://github.com/apache
 
 在用Node.js瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
 
-Unix：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./ignite.sh
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ignite.bat
 ```
+</Tab>
+</Tabs>
+
 #### 4.2.1.初始化IgniteClient
 客户端的使用始于`IgniteClient`类实例的创建，它会将Node.js应用接入Ignite集群。其构造函数有一个可选的参数`onStateChanged`回调函数，每次客户端跳转到新的连接状态时都会调用该回调函数（请参见下文）。
 
@@ -4417,14 +4738,21 @@ $ pip install pyignite
 
 要使用默认的配置启动一个集群节点，打开终端，假定位于`IGNITE_HOME`（Ignite安装文件夹），只需要输入：
 
-Unix：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./ignite.sh
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ignite.bat
 ```
+</Tab>
+</Tabs>
+
 2.在另一个终端窗口，转到`IGNITE_HOME/platforms/python/examples`，调用`python <example_file_name>.py`就可以运行一个示例，比如：
 ```bash
 $ cd IGNITE_HOME/platforms/python/examples
@@ -4435,14 +4763,21 @@ $ python get_and_put.py
 
 在用Python瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
 
-Unix：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./ignite.sh
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ignite.bat
 ```
+</Tab>
+</Tabs>
+
 #### 5.2.1.接入集群
 下面的代码片段显示了如何从Python瘦客户端接入Ignite集群：
 ```python
@@ -5430,14 +5765,21 @@ require_once "<local_ignite_path>/vendor/autoload.php";
 
 要使用默认的配置启动一个集群节点，打开终端，假定位于`IGNITE_HOME`（Ignite安装文件夹），只需要输入：
 
-Unix：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./ignite.sh
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ignite.bat
 ```
+</Tab>
+</Tabs>
+
 2.在另一个终端窗口，转到`IGNITE_HOME/platforms/php/examples`，调用`php <example_file_name>.php`就可以运行一个示例，比如：
 ```bash
 cd IGNITE_HOME/platforms/php/examples
@@ -5448,14 +5790,21 @@ php CachePutGetExample.php
 
 在用PHP瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
 
-Unix：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./ignite.sh
 ```
-Windows：
+</Tab>
+<Tab name="Windows">
+
 ```batch
 ignite.bat
 ```
+</Tab>
+</Tabs>
+
 #### 6.2.1.实例化Ignite客户端
 这个客户端的使用，是以`Client`对象的创建开始的，它负责将一个PHP应用接入Ignite集群。
 

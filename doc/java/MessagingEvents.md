@@ -31,7 +31,7 @@ send方法可以将一个带有特定消息主题的消息发送/发布到所有
 
 `send(...)`方法不保证消息的顺序，这意味着，当顺序地发送消息A和消息B，不能保证目标节点先收到A后收到B。
 ### 1.4.订阅消息
-listen方法可以监听/订阅消息。当这些方法被调用时，带有指定消息主题的监听器就会被注册到所有的（或者集群组）节点来监听新的消息。对于listen方法，可以传入一个返回boolean值的谓词，它会告诉监听器是继续还是停止监听新的消息。
+`listen`方法可以监听/订阅消息。当这些方法被调用时，带有指定消息主题的监听器就会被注册到所有的（或者集群组）节点来监听新的消息。对于listen方法，可以传入一个返回boolean值的谓词，它会告诉监听器是继续还是停止监听新的消息。
 
 **本地监听**
 
@@ -43,7 +43,9 @@ listen方法可以监听/订阅消息。当这些方法被调用时，带有指�
 ### 1.5.示例
 下面的示例显示了在远程节点间的消息交换：
 
-Java8：有序消息：
+<Tabs>
+<Tab name="有序消息">
+
 ```java
 Ignite ignite = Ignition.ignite();
 
@@ -60,7 +62,9 @@ rmtMsg.remoteListen("MyOrderedTopic", (nodeId, msg) -> {
 for (int i = 0; i < 10; i++)
     rmtMsg.sendOrdered("MyOrderedTopic", Integer.toString(i),0);
 ```
-Java8：无序消息：
+</Tab>
+<Tab name="无序消息">
+
 ```java
 Ignite ignite = Ignition.ignite();
 
@@ -77,29 +81,9 @@ rmtMsg.remoteListen("MyUnOrderedTopic", (nodeId, msg) -> {
 for (int i = 0; i < 10; i++)
     rmtMsg.send("MyUnOrderedTopic", Integer.toString(i));
 ```
-Java7：有序消息：
-```java
-Ignite ignite = Ignition.ignite();
+</Tab>
+</Tabs>
 
-// Get cluster group of remote nodes.
-ClusterGroup rmtPrj = ignite.cluster().forRemotes();
-
-// Get messaging instance over remote nodes.
-IgniteMessaging msg = ignite.message(rmtPrj);
-
-// Add message listener for specified topic on all remote nodes.
-msg.remoteListen("myOrderedTopic", new IgniteBiPredicate<UUID, String>() {
-    @Override public boolean apply(UUID nodeId, String msg) {
-        System.out.println("Received ordered message [msg=" + msg + ", from=" + nodeId + ']');
-
-        return true; // Return true to continue listening.
-    }
-});
-
-// Send ordered messages to all remote nodes.
-for (int i = 0; i < 10; i++)
-    msg.sendOrdered("myOrderedTopic", Integer.toString(i), 0);
-```
 ## 2.本地和远程事件
 ### 2.1.概述
 Ignite分布式事件功能使得在分布式集群环境下发生各种各样事件时应用可以接收到通知。可以自动获得比如任务执行、发生在本地或者远程节点上的读写或者查询操作的通知。
@@ -122,7 +106,9 @@ IgniteEvents evts = ignite.events();
 `remoteListen(...)`方法会在集群或者集群组内的所有节点上针对指定事件注册监听器。
 下面是每个方法的示例：
 
-本地监听：
+<Tabs>
+<Tab name="本地监听">
+
 ```java
 Ignite ignite = Ignition.ignite();
 
@@ -147,7 +133,9 @@ final IgniteCache<Integer, String> cache = ignite.cache("cacheName");
 for (int i = 0; i < 20; i++)
   cache.put(i, Integer.toString(i));
 ```
-远程监听：
+</Tab>
+<Tab name="远程监听">
+
 ```java
 Ignite ignite = Ignition.ignite();
 
@@ -167,6 +155,9 @@ ignite.events(ignite.cluster().forCacheNodes("cacheName")).remoteListen(null, rm
 for (int i = 0; i < 20; i++)
   cache.put(i, Integer.toString(i));
 ```
+</Tab>
+</Tabs>
+
 在上述示例中，`EVT_CACHE_OBJECT_PUT`,`EVT_CACHE_OBJECT_READ`,`EVT_CACHE_OBJECT_REMOVED`是在`EventType`接口中预定义的事件类型常量。
 
 ::: tip 注意
@@ -174,7 +165,7 @@ for (int i = 0; i < 20; i++)
 :::
 
 ::: warning 警告
-作为参数传入`localListen(...)`和`remoteListen(...)`方法的事件类型还必须在`IgniteConfiguration`中进行配置，可以参照下面的[配置](#_9-2-5-配置)章节。
+作为参数传入`localListen(...)`和`remoteListen(...)`方法的事件类型还必须在`IgniteConfiguration`中进行配置，可以参照下面的[配置](#_2-5-配置)章节。
 :::
 
 ### 2.4.事件的查询
@@ -190,7 +181,9 @@ for (int i = 0; i < 20; i++)
 ### 2.5.配置
 要获得集群内发生的任意任务或者缓存事件的通知，`IgniteConfiguration`的`includeEventTypes`属性必须启用：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     ...
@@ -201,7 +194,9 @@ XML：
     ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -211,6 +206,9 @@ cfg.setIncludeEventTypes(EVTS_CACHE);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 因为性能原因事件通知默认是关闭的。
 
 ::: tip 注意
