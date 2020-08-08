@@ -208,7 +208,9 @@ try (IgniteDataStreamer<Integer, String> stmr = ignite.dataStreamer("myStreamCac
 
 在下面的例子中，通过`StreamTransformer`在文本流中为每个发现的确切的单词增加一个计数。
 
-Java8：
+<Tabs>
+<Tab name="Java8">
+
 ```java
 CacheConfiguration cfg = new CacheConfiguration("wordCountCache");
 
@@ -234,7 +236,9 @@ try (IgniteDataStreamer<String, Long> stmr = ignite.dataStreamer(stmCache.getNam
     stmr.addData(word, 1L);
 }
 ```
-Java7:
+</Tab>
+<Tab name="Java7">
+
 ```java
 CacheConfiguration cfg = new CacheConfiguration("wordCountCache");
 
@@ -261,6 +265,9 @@ try (IgniteDataStreamer<String, Long> stmr = ignite.dataStreamer(stmCache.getNam
   for (String word : text)
     stmr.addData(word, 1L);
 ```
+</Tab>
+</Tabs>
+
 ### 3.5.StreamVisitor
 `StreamVisitor`也是`StreamReceiver`的一个方便实现，它会访问流中的每个键值组。注意，访问器不会更新缓存。如果键值组需要存储在缓存内，那么需要显式地调用任意的`cache.put(...)`方法。
 

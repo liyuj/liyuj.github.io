@@ -9,7 +9,9 @@ Ignite的固化内存可以通过`DataRegionMetrics`接口以及JMX Bean暴露�
 
 可以为希望收集指标的区域配置`DataRegionConfiguration.setMetricsEnabled(true)`，已开启指标收集：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="dataStorageConfiguration">
@@ -35,7 +37,9 @@ XML：
   ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -61,6 +65,8 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 // Apply the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
+</Tab>
+</Tabs>
 
 **获取指标**
 
@@ -111,7 +117,9 @@ Ignite还为原生持久化提供了一组指标，这些指标在`DataStorageMe
 
 通过配置`DataStorageConfiguration.setMetricsEnabled(true)`可以启用相关的指标收集，如下：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="dataStorageConfiguration">
@@ -128,7 +136,9 @@ XML：
   ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -145,6 +155,8 @@ storageCfg.setMetricsEnabled(true);
 // Apply the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
+</Tab>
+</Tabs>
 
 **获取指标**
 
@@ -216,7 +228,9 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
 ### 2.1.启用缓存指标
 要启用缓存指标，可以将希望收集指标的缓存的`CacheConfiguration.setStatisticsEnabled(boolean)`配置为`true`，下面以名为`test-cache`的缓存为例：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="cacheConfiguration">
@@ -231,7 +245,9 @@ XML：
   </property>
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -243,6 +259,9 @@ cacheCfg.setStatisticsEnabled(true);
 // Start the node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 ### 2.2.获取缓存指标
 通过如下方式可以获得一个特定缓存的最新指标快照：
 
