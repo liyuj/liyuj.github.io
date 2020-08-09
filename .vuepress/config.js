@@ -156,14 +156,10 @@ module.exports = {
                     ],
                     '/doc/spark/': [
                         '',
-                        'In-MemoryFileSystem',
-                        'HadoopAccelerator',
                         'IgniteForSpark'
                     ],
                     '/doc/tools/': [
                         '',
-                        'IgniteWebConsoleAbilities',
-                        'VisorManagementConsole',
                         'ControlScript',
                         'Informatica'
                     ],

@@ -87,7 +87,9 @@ Cache<int, std::string> cache = grid.GetCache<int, std::string>("myCache");
 ### 2.2.基本操作
 下面是基本的原子化操作的示例：
 
-Put&Get：
+<Tabs>
+<Tab name="Put&Get">
+
 ```cpp
 using namespace ignite;
 using namespace cache;
@@ -113,7 +115,9 @@ for (int i = 0; i < 10; ++i)
   	std::cout << "Got [key=" << i << ", val=" << cache.Get(i) << "]";
 
 ```
-原子化：
+</Tab>
+<Tab name="原子操作">
+
 ```cpp
 // Put-if-absent which returns previous value.
 std::string oldVal = cache.GetAndPutIfAbsent(11, "Hello");
@@ -133,6 +137,9 @@ success = cache.Replace(22, "World", "World!");
 // Remove-if-matches operation.
 success = cache.Remove(1, "Hello");
 ```
+</Tab>
+</Tabs>
+
 ## 3.缓存模式
 Ignite C++提供了不同的缓存操作模式，可以通过Spring的XML配置文件对其进行配置，具体请参见Ignite的[分区和复制](/doc/java/Key-ValueDataGrid.md#_3-1-分区和复制)文档。
 ## 4.缓存查询

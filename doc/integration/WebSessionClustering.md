@@ -177,12 +177,4 @@ WebSessionFilter有如下的配置参数：
 |`IgniteWebSessionsCacheName`|Web会话缓存的缓存名|无|
 |`IgniteWebSessionsMaximumRetriesOnFail`|只对`ATOMIC`缓存有效，指定了当主节点故障时的重试次数|3|
 
-### 1.6.支持的容器
-Ignite官方测试了如下的应用服务器：
-
- - Apache Tomcat 7
- - Eclipse Jetty 9
- - Apache Tomcat 6
- - Oracle WebLogic >= 10.3.4
-
 <RightPane/>

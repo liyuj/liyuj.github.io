@@ -105,7 +105,6 @@ XML：
 ### 3.5.配置线程池
 Ignite使用了一组线程池，它们的大小默认由`max(8, CPU总核数)`确定，这个默认值适用于大多数场景，从而减少了上下文切换以及更高效地利用CPU缓存。但是，如果因为I/O阻塞或者其它的原因，只要希望也可以增加特定线程池的大小，下面是一个如何配置线程池的例子:
 
-XML:
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     ...
@@ -194,7 +193,9 @@ sysctl –w vm.swappiness=0
 
 比如，下面的配置显示了如何为满足固化内存的需求分配4GB的内存空间：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
 
@@ -213,7 +214,9 @@ XML：
 <!-- The rest of the parameters. -->
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -229,6 +232,9 @@ cfg.setDataStorageConfiguration(storageCfg);
 // Starting the node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 **JVM调整**
 
 如果使用了原生持久化，建议将`MaxDirectMemorySize`配置为`<walSegmentSize * 4 >`，对于默认的WAL配置，该值为256MB。
@@ -245,7 +251,9 @@ Ignite的页面大小（`DataStorageConfiguration.pageSize`）不要小于存储
 
 选定最优值之后，可以将其用于集群的配置：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="dataStorageConfiguration">
@@ -258,7 +266,9 @@ XML：
   <!--- Additional settings ---->
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 // Ignite configuration.
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -272,11 +282,16 @@ storageCfg.setPageSize(4096);
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
+</Tab>
+</Tabs>
+
 #### 4.2.2.为WAL使用单独的磁盘设备
 
 考虑为Ignite原生持久化的分区和索引文件以及WAL使用单独的磁盘设备。Ignite会主动地写入分区/索引文件以及WAL，因此，如果为每个使用单独的物理磁盘，可以将写入吞吐量增加一倍，下面的示例会显示如何实践：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
    ...
@@ -305,7 +320,9 @@ XML：
     ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -327,6 +344,8 @@ storeCfg.setWalArchivePath("/wal/archive");
 // Starting the node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
 
 #### 4.2.3.增加WAL段大小
 
@@ -359,7 +378,9 @@ Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页�
 
 下面的示例显示了如何开启页面写入优化：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
    ...
@@ -373,7 +394,9 @@ XML：
     ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -386,6 +409,9 @@ storeCfg.setWriteThrottlingEnabled(true);
 // Starting the node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 #### 4.2.7.检查点缓冲区大小
 
 前述章节中描述的检查点缓冲区大小，是检查点处理的触发器之一。
@@ -400,7 +426,9 @@ Ignition.start(cfg);
 
 默认的缓冲区大小并没有为写密集型应用进行优化，因为在大小接近标称值时，页面写入优化算法会降低写入的性能，因此在正在进行检查点处理时，可以考虑增加`DataRegionConfiguration.checkpointPageBufferSize`，并且开启写入优化来阻止性能的下降：
 
-XML：
+<Tabs>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
    ...
@@ -425,7 +453,9 @@ XML：
     ...
 </bean>
 ```
-Java：
+</Tab>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
 
@@ -442,6 +472,9 @@ storeCfg.getDefaultDataRegionConfiguration().setCheckpointPageBufferSize(
 // Starting the node.
 Ignition.start(cfg);
 ```
+</Tab>
+</Tabs>
+
 在上例中，默认内存区的检查点缓冲区大小配置为1GB。
 
 ::: tip 检查点处理何时触发？

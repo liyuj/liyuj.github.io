@@ -34,7 +34,9 @@ Hibernate数据库映射对象的所有工作都是在一个会话中完成的�
 
 要在项目中添加Ignite-hibernate集成，需要将下面的依赖加入POM文件：
 
-Hibernate5:
+<Tabs>
+<Tab name="Hibernate5">
+
 ```xml
 <dependency>
   <groupId>org.apache.ignite</groupId>
@@ -42,7 +44,9 @@ Hibernate5:
   <version>${ignite.version}</version>
 </dependency>
 ```
-Hibernate4:
+</Tab>
+<Tab name="Hibernate4">
+
 ```xml
 <dependency>
   <groupId>org.apache.ignite</groupId>
@@ -50,6 +54,9 @@ Hibernate4:
   <version>${ignite.version}</version>
 </dependency>
 ```
+</Tab>
+</Tabs>
+
 **Hibernate配置示例**
 
 一个用Ignite配置Hibernate二级缓存的典型例子看上去像下面这样：
