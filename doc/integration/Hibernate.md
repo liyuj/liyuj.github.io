@@ -40,7 +40,7 @@ Hibernate数据库映射对象的所有工作都是在一个会话中完成的�
 ```xml
 <dependency>
   <groupId>org.apache.ignite</groupId>
-  <artifactId>ignite-hibernate_5.1</artifactId>
+  <artifactId>ignite-hibernate_5.3</artifactId>
   <version>${ignite.version}</version>
 </dependency>
 ```

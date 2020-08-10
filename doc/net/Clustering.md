@@ -29,14 +29,18 @@ ICluster cluster = ignite.GetCluster();
 ### 1.3.集群节点属性
 在启动时所有集群节点都会自动将所有环境和系统属性注册为节点属性，另外开发者也可以注册自己的节点属性：
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
     UserAttributes = new Dictionary<string, object> { { "ROLE", "worker" } }
 };
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
     <userAttributes>
@@ -44,7 +48,9 @@ app.config：
     </userAttributes>
 </igniteConfiguration>
 ```
-Spring XML：
+</Tab>
+<Tab name="Spring XML">
+
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration">
     ...
@@ -56,6 +62,9 @@ Spring XML：
     ...
 </bean>
 ```
+</Tab>
+</Tabs>
+
 下面的示例会显示如何获得配置了`worker`属性的节点：
 ```csharp
 IClusterGroup workers = ignite.GetCluster().ForAttribute("ROLE", "worker");
@@ -118,14 +127,18 @@ compute.Broadcast(new MyComputeAction());
 
 以下是`ClusterGroup`接口上一些可用的集群组示例：
 
-远程节点：
+<Tabs>
+<Tab name="远程节点">
+
 ```csharp
 ICluster cluster = ignite.GetCluster();
 
 // Cluster group with remote nodes, i.e. other than this node.
 IClusterGroup remoteGroup = cluster.ForRemotes();
 ```
-缓存节点：
+</Tab>
+<Tab name="缓存节点">
+
 ```csharp
 ICluster cluster = ignite.GetCluster();
 
@@ -139,14 +152,18 @@ IClusterGroup dataGroup = cluster.ForDataNodes("myCache");
 // All client nodes that access "myCache".
 IClusterGroup clientGroup = cluster.ForClientNodes("myCache");
 ```
-带有节点属性的节点：
+</Tab>
+<Tab name="带有节点属性的节点">
+
 ```csharp
 ICluster cluster = ignite.GetCluster();
 
 // All nodes with attribute "ROLE" equal to "worker".
 IClusterGroup attrGroup = cluster.ForAttribute("ROLE", "worker");
 ```
-某主机上的节点：
+</Tab>
+<Tab name="某主机上的节点">
+
 ```csharp
 ICluster cluster = ignite.GetCluster();
 
@@ -156,7 +173,9 @@ IClusterNode remoteNode = cluster.ForRemotes().GetNode();
 // All nodes on the same physical host as the remote node.
 IClusterGroup sameHost = cluster.forHost(remoteNode);
 ```
-最老的节点：
+</Tab>
+<Tab name="最老的节点">
+
 ```csharp
 ICluster cluster = ignite.GetCluster();
 
@@ -165,7 +184,9 @@ ICluster cluster = ignite.GetCluster();
 // node crashes.
 IClusterGroup oldestNode = cluster.ForOldest();
 ```
-本地节点：
+</Tab>
+<Tab name="本地节点">
+
 ```csharp
 ICluster cluster = ignite.GetCluster();
 
@@ -175,6 +196,9 @@ IClusterGroup localGroup = cluster.ForLocal();
 // Local node.
 IClusterNode localNode = localGroup.GetNode();
 ```
+</Tab>
+</Tabs>
+
 ### 2.2.自定义集群组
 可以基于某些谓词定义动态集群组，这样的集群组将始终仅包括符合谓词的节点。
 
@@ -263,7 +287,9 @@ IClusterGroup youngestNode = cluster.ForYoungest();
 ### 4.1.基于组播的发现
 `TcpDiscoveryMulticastIpFinder`使用组播来发现网格中的其他节点，并且是默认的IP探测器。除非打算修改默认设置，否则不必指定它。下面是配置此探测器的示例：
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -276,7 +302,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
     <discoverySpi type='TcpDiscoverySpi'>
@@ -284,7 +312,9 @@ app.config：
     </discoverySpi>
 </igniteConfiguration>
 ```
-Spring XML：
+</Tab>
+<Tab name="Spring XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
@@ -299,6 +329,9 @@ Spring XML：
   </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 ### 4.2.基于静态IP的发现
 对于禁用了组播的情况，应该使用`TcpDiscoveryStaticIpFinder`（Java中的`TcpDiscoveryVmIpFinder`），它需要事先配置好一个IP地址列表。
 
@@ -309,7 +342,9 @@ Spring XML：
 
 下面是配置此探测器的示例：
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -322,7 +357,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
     <discoverySpi type='TcpDiscoverySpi'>
@@ -335,7 +372,9 @@ app.config：
     </discoverySpi>
 </igniteConfiguration>
 ```
-Spring XML：
+</Tab>
+<Tab name="Spring XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
@@ -355,10 +394,15 @@ Spring XML：
   </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 ### 4.3.基于组播和静态IP的发现
 可以同时使用基于组播和静态IP的发现。这时除了通过组播接收的地址（如果有）之外，`TcpDiscoveryMulticastIpFinder`还可以与预配置的静态IP地址列表一起使用，就像上述基于静态IP的发现一样。下面是配置示例：
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -372,7 +416,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
     <discoverySpi type='TcpDiscoverySpi'>
@@ -385,7 +431,9 @@ app.config：
     </discoverySpi>
 </igniteConfiguration>
 ```
-Spring XML：
+</Tab>
+<Tab name="Spring XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
@@ -406,6 +454,9 @@ Spring XML：
   </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 ### 4.4.在同一个机器组中隔离Ignite集群
 出于测试目的或其他原因，有时可能需要在同一台主机上启动两个隔离的Ignite集群。
 
@@ -413,7 +464,9 @@ Spring XML：
 
 假设需要在一台主机上启动两个隔离的集群用于测试，那么第一个集群中的节点，应使用以下`TcpDiscoverySpi`和`TcpCommunicationSpi`配置：
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -441,7 +494,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
     <!--
@@ -467,7 +522,9 @@ app.config：
     <communicationSpi type='TcpCommunicationSpi' localPort='48100' />
 </igniteConfiguration>
 ```
-Spring XML：
+</Tab>
+<Tab name="Spring XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   	...
@@ -513,9 +570,14 @@ Spring XML：
     </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 而第二个集群中的节点，配置如下：
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -543,7 +605,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
     <!--
@@ -569,7 +633,9 @@ app.config：
     <communicationSpi type='TcpCommunicationSpi' localPort='49100' />
 </igniteConfiguration>
 ```
-Spring XML：
+</Tab>
+<Tab name="Spring XML">
+
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
     <!--
@@ -614,6 +680,9 @@ Spring XML：
     </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 从配置中可以看到，它们之间的差别很小，仅SPI和IP探测器的端口号有所不同。
 ::: tip 提示
 如果希望来自不同集群的节点能使用组播协议互相发现，则在上面的每个配置中可以将`TcpDiscoveryStaticIpFinder`替换为`TcpDiscoveryMulticastIpFinder`，并为每个集群设置唯一的`TcpDiscoveryMulticastIpFinder.MulticastGroups`。
@@ -635,7 +704,9 @@ Spring XML：
 :::
 **示例**
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -645,14 +716,18 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
   	<!-- Override local port. -->
     <communicationSpi type='TcpCommunicationSpi' localPort='4321' />
 </igniteConfiguration>
 ```
-Spring XML：
+</Tab>
+<Tab name="Spring XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
@@ -665,6 +740,9 @@ Spring XML：
   ...
 </bean>
 ```
+</Tab>
+</Tabs>
+
 ## 6.SSL和TLS
 Ignite.NET支持在所有节点间使用SSL套接字通信，具体可以参见Ignite的文档[SSL和TLS](/doc/java/Security.md#_1-ssl和tls)。
 ## 7.远程程序集加载
@@ -726,7 +804,9 @@ class HelloAction : IComputeAction
  - 将`AssemblyInfo.cs`中的`AssemblyVersion`值改为`1.0.*`；
  - 在Visual Studio中修改`Program.cs`，如下所示：
 
-Program.cs：
+<Tabs>
+<Tab name="Program.cs">
+
 ```csharp
 using System;
 using Apache.Ignite.Core;
@@ -760,16 +840,22 @@ namespace ConsoleApp
     }
 }
 ```
-Apache.Ignite.exe.config：
+</Tab>
+<Tab name="Apache.Ignite.exe.config">
+
 ```xml
 <igniteConfiguration peerAssemblyLoadingMode='CurrentAppDomain' />
 ```
-AssemblyInfo.cs：
+</Tab>
+<Tab name="AssemblyInfo.cs">
+
 ```
 ...
 [assembly: AssemblyVersion("1.0.*")]
 ...
 ```
+</Tab>
+</Tabs>
 
  - 运行该项目并观察"Hello，World！"在所有`Apache.Ignite.exe`窗口的控制台输出；
  - 将"Hello，World！"改为其他的值，然后再次运行该程序，观察每个节点的输出有何不同。

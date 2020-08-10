@@ -336,7 +336,9 @@ ignite.Logger.Info("Hello World!");
 ### 5.1.自定义Logger
 通过`IgniteConfiguration.Logger`和`ILogger`接口，开发者可以自定义日志记录器实现，.NET和Java端的日志消息都会转发到这里。
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -364,12 +366,17 @@ class MemoryLogger : ILogger
   }
 }
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
   <logger type="MyNamespace.MemoryLogger, MyAssembly" />
 </igniteConfiguration>
 ```
+</Tab>
+</Tabs>
+
 ### 5.2.NLog和log4net日志
 Ignite.NET为[NLog](http://nlog-project.org/)和[log4net](https://logging.apache.org/log4net/)提供了`ILogger`实现，他们位于二进制包（`Apache.Ignite.NLog.dll`和`Apache.Ignite.Log4Net.dll`）中并且可以通过NuGet安装：
 
@@ -378,7 +385,9 @@ Ignite.NET为[NLog](http://nlog-project.org/)和[log4net](https://logging.apache
 
 NLog和Log4Net使用静态预定义的配置，因此在Ignite中无需配置`IgniteConfiguration.Logger`：
 
-C#：
+<Tabs>
+<Tab name="C#">
+
 ```csharp
 var cfg = new IgniteConfiguration
 {
@@ -387,12 +396,17 @@ var cfg = new IgniteConfiguration
 
 var ignite = Ignition.Start();
 ```
-app.config：
+</Tab>
+<Tab name="app.config">
+
 ```xml
 <igniteConfiguration>
   <logger type="Apache.Ignite.NLog.IgniteNLogLogger, Apache.Ignite.NLog" />
 </igniteConfiguration>
 ```
+</Tab>
+</Tabs>
+
 使用NLog可以配置基于文件的简单日志，如下所示：
 ```csharp
 var nlogConfig = new LoggingConfiguration();

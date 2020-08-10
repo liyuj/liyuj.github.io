@@ -120,7 +120,7 @@ igniteCfg.setWorkDirectory("/path/to/work/directory");
 在命令行中转到Ignite安装文件夹的`bin`目录：
 
 <Tabs>
-<Tab name="Unix">
+<Tab name="Linux">
 ```shell
 cd {ignite}/bin/
 ```
@@ -136,7 +136,7 @@ cd {ignite}\bin\
 向下面这样，将一个自定义配置文件作为参数传递给`ignite.sh|bat`，然后启动一个节点：
 
 <Tabs>
-<Tab name="Unix">
+<Tab name="Linux">
 ```shell
 ./ignite.sh ../examples/config/example-ignite.xml
 ```

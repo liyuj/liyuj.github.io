@@ -96,12 +96,16 @@ Connection conn = DriverManager.getConnection(
 
 通过`IgniteConfiguration`配置`ClientConnectorConfiguration`，可以对参数进行修改：
 
-Java：
+<Tabs>
+<Tab name="Java">
+
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration()
     .setClientConnectorConfiguration(new ClientConnectorConfiguration());
 ```
-XML：
+</Tab>
+<Tab name="XML">
+
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   <property name="clientConnectorConfiguration">
@@ -109,6 +113,9 @@ XML：
   </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 其支持如下的参数：
 
 |参数名|描述|默认值|

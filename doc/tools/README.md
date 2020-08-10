@@ -150,7 +150,7 @@ ALERT [MyAlert] CONDITION [-nc=gte2 -cc=lte16] alarmed with node count [2] and c
  - `-n=<num>`：希望启动的节点数量，如果部分节点已经启动，那么只会启动剩下的节点，如果该值等于当前的节点数量，并且未指定`-r`标志，那么什么都不会发生；
  - `-g=<path>`：Ignite安装文件夹路径，如果未指定，远程主机必须定义IGNITE_HOME环境变量；
  - `-c=<path>`：配置文件路径（相对于Ignite主目录），如果未指定，会使用默认的Ignite配置文件；
- - `-s=<path>`：启动脚本路径（相对于Ignite主目录），对于Unix默认为`bin/ignite.sh`，对于Windows为`bin\ignite.bat"`；
+ - `-s=<path>`：启动脚本路径（相对于Ignite主目录），对于Linux默认为`bin/ignite.sh`，对于Windows为`bin\ignite.bat"`；
  - `-m=<num>`：定义一台主机可以并行启动的节点的最大值，这个实际上等于每台SSH服务器的并行SSH连接数，默认值为5；
  - `-t=<num>`：定义连接超时（毫秒，默认值为2000）;
  - `-r`：标识主机的已有节点会被重启，默认如果没有这个标志，已有节点会保留。

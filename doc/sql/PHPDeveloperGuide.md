@@ -97,7 +97,9 @@ PHP PDO端必须配置使用DSN。
 
 最后，都配置好之后，就可以在Ignite和PHP PDO应用之间相互连接了，可以像下面这样执行一些查询：
 
-**Insert**：
+<Tabs>
+<Tab name="INSERT">
+
 ```php
 <?php
 try {
@@ -134,7 +136,9 @@ try {
 }
 ?>
 ```
-**Update**:
+</Tab>
+<Tab name="UPDATE">
+
 ```php
 <?php
 try {
@@ -153,7 +157,9 @@ try {
 }
 ?>
 ```
-**Select**:
+</Tab>
+<Tab name="SELECT">
+
 ```php
 <?php
 try {
@@ -181,7 +187,9 @@ try {
 }
 ?>
 ```
-**Delete**:
+</Tab>
+<Tab name="DELETE">
+
 ```php
 <?php
 try {
@@ -200,4 +208,7 @@ try {
 }
 ?>
 ```
+</Tab>
+</Tabs>
+
 <RightPane/>

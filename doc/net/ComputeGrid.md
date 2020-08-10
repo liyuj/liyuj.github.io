@@ -141,7 +141,9 @@ class ComputeFunc : IComputeFunc<int>
 ### 3.4.示例
 下面是`IComputeTask`和`IComputeJob`实现的示例：
 
-ComputeTaskSplitAdapter：
+<Tabs>
+<Tab name="ComputeTaskSplitAdapter">
+
 ```csharp
 void CountChars()
 {
@@ -178,7 +180,9 @@ class CharCountJob : ComputeJobAdapter<int>
     }
 }
 ```
-ComputeTaskAdapter：
+</Tab>
+<Tab name="ComputeTaskAdapter">
+
 ```csharp
 void CountChars()
 {
@@ -218,6 +222,9 @@ private class CharCountJob : ComputeJobAdapter<int>
     }
 }
 ```
+</Tab>
+</Tabs>
+
 ## 4.数据和计算的并置
 将计算与数据并置可以最大程度地减少网络内的数据序列化，并可以显著提高应用的性能和可扩展性，因此应尽量将计算与缓存待处理数据的节点并置在一起。
 

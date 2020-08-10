@@ -24,7 +24,9 @@ try (QueryCursor<List<?>> cursor = cache.query(sql)) {
 
 通过`SqlFieldsQuery`，还可以使用DML命令进行数据的修改：
 
-**INSERT**
+<Tabs>
+<Tab name="INSERT">
+
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
 
@@ -32,27 +34,36 @@ cache.query(new SqlFieldsQuery(
     "INSERT INTO Person(id, firstName, lastName) VALUES(?, ?, ?)").
     setArgs(1L, "John", "Smith"));
 ```
-**UPDATE**
+</Tab>
+<Tab name="UPDATE">
+
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
 
 cache.query(new SqlFieldsQuery("UPDATE Person set lastName = ? " +
          "WHERE id >= ?").setArgs("Jones", 2L));
 ```
-**DELETE**
+</Tab>
+<Tab name="DELETE">
+
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
 
 cache.query(new SqlFieldsQuery("DELETE FROM Person " +
          "WHERE id >= ?").setArgs(2L));
 ```
-**MERGE**
+</Tab>
+<Tab name="MERGE">
+
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
 
 cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
            " values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
+</Tab>
+</Tabs>
+
 ### 1.2.示例
 Ignite的二进制包包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
 ## 2.模式和索引
@@ -63,7 +74,6 @@ Ignite的二进制包包括了一个可运行的`SqlDmlExample.java`，它是源
 
 这时，不管使用上述的哪种方式配置的表，那么一定要确保查询时要指定正确的模式名。比如，假定80%的表都是通过DDL配置的，那么通过`SqlQuery.setSchema("PUBLIC")`方法将查询的默认模式配置成`PUBLIC`就会很有意义：
 
-Java：
 ```java
 IgniteCache cache = ignite.getOrCreateCache(
     new CacheConfiguration<>()
@@ -98,7 +108,9 @@ cache.query(qry).getAll();
 ### 2.2.基于注解的配置
 索引，和可查询的字段一样，是可以通过编程的方式用`@QuerySqlField`进行配置的。如下所示，期望的字段已经加注了该注解。
 
-Java：
+<Tabs>
+<Tab name="Java">
+
 ```java
 public class Person implements Serializable {
   /** Indexed field. Will be visible for SQL engine. */
@@ -120,7 +132,9 @@ public class Person implements Serializable {
   private float salary;
 }
 ```
-Scala：
+</Tab>
+<Tab name="Scala">
+
 ```scala
 case class Person (
   /** Indexed field. Will be visible for SQL engine. */
@@ -141,6 +155,9 @@ case class Person (
   ...
 }
 ```
+</Tab>
+</Tabs>
+
 在SQL查询中，类型名会被用作表名，这时，表名为`Person`（模式名的定义和使用前面已经描述）。
 
 `id`和`salary`都是索引列，`id`字段升序排列（默认），而`salary`降序排列。
@@ -229,7 +246,6 @@ ccfg.setIndexedTypes(Long.class, Person.class);
 
 比如，下面的`Person`类中`age`字段加入了名为`age_salary_idx`的组合索引，它的分组序号是0并且降序排列，同一个组合索引中还有一个字段`salary`,它的分组序号是3并且升序排列。最重要的是`salary`字段还是一个单列索引(除了`orderedGroups`声明之外，还加上了`index = true`)。分组中的`order`不需要是什么特别的数值，它只是用于分组内的字段排序。
 
-**Java：**
 ```java
 public class Person implements Serializable {
   /** Indexed in a group index with "salary". */
@@ -334,7 +350,9 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 
 下面的例子展示了如何实现：
 
-**Java:**
+<Tabs>
+<Tab name="Java">
+
 ```java
 // Preparing cache configuration.
 CacheConfiguration cacheCfg = new CacheConfiguration<>("personCache");
@@ -369,7 +387,9 @@ cacheCfg.setQueryEntities(Collections.singletonList(entity));
 
 ignite.createCache(cacheCfg);
 ```
-**XML:**
+</Tab>
+<Tab name="XML">
+
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
     <property name="name" value="personCache"/>
@@ -408,6 +428,9 @@ ignite.createCache(cacheCfg);
     </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 ::: tip 哈希值自动计算和equals实现
 如果自定义键可以被序列化为二进制形式，那么Ignite会自动进行哈希值的计算并且实现`equals`方法。
 
@@ -419,7 +442,9 @@ ignite.createCache(cacheCfg);
 
 要配置索引以及/或者几何类型的可查询字段，可以使用和已有的非几何类型同样的方法，首先，可以使用`org.apache.ignite.cache.QueryEntity`定义索引，它对于基于Spring的XML配置文件非常方便，第二，通过`@QuerySqlField`注解来声明索引也可以达到同样的效果，它在内部会转化为`QueryEntities`。
 
-**QuerySqlField：**
+<Tabs>
+<Tab name="QuerySqlField">
+
 ```java
 /**
  * Map point with indexed coordinates.
@@ -437,7 +462,9 @@ private static class MapPoint {
     }
 }
 ```
-**QueryEntity:**
+</Tab>
+<Tab name="QueryEntity">
+
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
     <property name="name" value="mycache"/>
@@ -466,6 +493,9 @@ private static class MapPoint {
     </property>
 </bean>
 ```
+</Tab>
+</Tabs>
+
 使用上述方法定义了几何类型字段之后，就可以使用存储于这些字段中值进行查询了。
 ```java
 // Query to find points that fit into a polygon.

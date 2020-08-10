@@ -30,14 +30,21 @@ DBeaver安装完成之后，打开它然后选择`Database`->`Driver Manager`菜
 
 打开命令行工具然后定位到`{apache-ignite-version}/bin`，执行`ignite.sh`或者`ignite.bat`脚本：
 
-Unix：
-```
+<Tabs>
+<Tab name="Linux">
+
+```shell
 ./ignite.sh
 ```
-Windows：
-```
+</Tab>
+<Tab name="Windows">
+
+```batch
 ignite.bat
 ```
+</Tab>
+</Tabs>
+
 这个脚本会启动一个Ignite节点，使用同样的脚本可以启动很多的节点，节点启动之后会看到大致如下的输出：
 ```
 [12:46:46]    __________  ________________
@@ -149,28 +156,42 @@ Ignite提供了一个[SQLLine](http://sqlline.sourceforge.net/)工具，它是�
 ### 2.1.接入集群
 在`IGNITE_HOME/bin`目录中，执行`sqlline.sh -u jdbc:ignite:thin:[host]`命令就可以使用SQLLine接入集群，注意要将`[host]`替换为实际的值，比如：
 
-.sh：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./sqlline.sh --verbose=true -u jdbc:ignite:thin://127.0.0.1/
 ```
-.bat：
-```bash
+</Tab>
+<Tab name="Windows">
+
+```batch
 sqlline.bat --verbose=true -u jdbc:ignite:thin://127.0.0.1/
 ```
+</Tab>
+</Tabs>
+
 输入`./sqlline.sh -h`或者`./sqlline.sh --help`可以看到可用的各种选项。
 
 **使用认证**
 
 如果集群打开了认证，那么在`IGNITE_HOME/bin`目录中，通过运行`jdbc:ignite:thin://[address]:[port];user=[username];password=[password]`命令SQLLine才可以接入集群。注意要将`[address]`，`[port]`，`[username]`和`[password]替换为实际值，比如：
 
-.sh：
+<Tabs>
+<Tab name="Linux">
+
 ```bash
 ./sqlline.sh --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;password=ignite"
 ```
-.bat：
-```bash
+</Tab>
+<Tab name="Windows">
+
+```batch
 sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;password=ignite"
 ```
+</Tab>
+</Tabs>
+
 ::: tip 通过bash接入时JDBC URL要加引号
 当在bash环境中接入时连接的URL一定要加`" "`，比如：`"jdbc:ignite:thin://[address]:[port];user=[username];password=[password]"`。
 :::
@@ -213,7 +234,9 @@ sqlline.bat --verbose=true -u "jdbc:ignite:thin://127.0.0.1:10800;user=ignite;pa
 ### 2.3.示例
 接入集群后，就可以执行SQL语句和SQLLine命令，比如：
 
-**创建模式**：
+<Tabs>
+<Tab name="创建表">
+
 ```
 0: jdbc:ignite:thin://127.0.0.1/> CREATE TABLE City (id LONG PRIMARY KEY, name VARCHAR) WITH "template=replicated";
 No rows affected (0.301 seconds)
@@ -229,7 +252,9 @@ No rows affected (0.078 seconds)
 |           | PUBLIC       | PERSON       | TABLE       |             |
 +-----------+--------------+--------------+-------------+-------------+
 ```
-**定义索引**：
+</Tab>
+<Tab name="定义索引">
+
 ```
 0: jdbc:ignite:thin://127.0.0.1/> CREATE INDEX idx_city_name ON City (name);
 No rows affected (0.039 seconds)
@@ -245,6 +270,8 @@ No rows affected (0.013 seconds)
 |           | PUBLIC       | PERSON       | true        |                 |
 +-----------+--------------+--------------+-------------+-----------------+
 ```
+</Tab>
+</Tabs>
 
 ## 3.Tableau
 ### 3.1.概述

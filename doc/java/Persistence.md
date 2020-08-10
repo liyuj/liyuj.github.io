@@ -1383,7 +1383,7 @@ Ignite ignite = Ignition.start();
 ignite.cluster().active(false);
 ```
 </Tab>
-<Tab name="Unix">
+<Tab name="Linux">
 
 ```shell
 ## Run this command from your `$IGNITE_HOME` folder
