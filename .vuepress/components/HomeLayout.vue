@@ -19,15 +19,37 @@
       </template>
     </Sidebar>
 
-   <section id="slider" class="slider-area">
+   <section id="home">
+    <!-- Background Image -->
+    <div class="bg-img" style="background-image: url('../img/background1.jpg');">
+      <div class="overlay"></div>
+    </div>
+    <!-- home wrapper -->
+    <div class="home-wrapper">
       <div class="container">
-         <div class="intro-text clearfix">
-            <h2 style="font-size:40px;color:#fff;">轻量级分布式内存HTAP数据库&计算平台</h2>
-            <h3 style="color:#fff;">　　　　　　　　　　　　　GridGain产品&技术服务中国总代理，GridGain认证技术专家团队</h3>
-         </div>
+        <div class="row">
+
+          <!-- home content -->
+          <div class="col-md-10 col-md-offset-1">
+            <div class="home-content">
+              <h2 class="white-text" style="font-size:36px">轻量级分布式内存HTAP数据库&计算平台</h2>
+              <p class="white-text">GridGain产品&技术服务中国总代理，GridGain认证技术专家
+              </p>
+              <br/>
+              <br/>                            
+              <button class="white-btn" onclick="window.location.href='/Service.html'">GridGain技术支持服务</button>
+              <button class="white-btn" onclick="window.location.href='/Service.html'">本土咨询顾问服务</button>
+              <button class="white-btn" onclick="window.location.href='/Service.html'">付费会员服务</button>
+              <button class="white-btn" onclick="window.location.href='/Service.html'">免费开发者交流</button>
+            </div>
+          </div>
+          <!-- /home content -->
+
+        </div>
       </div>
-   </section>
-   <script>document.getElementById('slider').style.height=(document.documentElement.clientHeight) +'px';</script>
+    </div>
+    <!-- /home wrapper -->
+  </section>
 	<section id="aboutus" class="aboutus-area section-small">
 		<div class="container">
 			<div class="row">

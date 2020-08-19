@@ -139,6 +139,7 @@ module.exports = {
                         'ToolsAndAnalytics',
                         'JavaDeveloperGuide',
                         'NETDeveloperGuide',
+                        'CplusDeveloperGuide',
                         'PHPDeveloperGuide',
                         'ManagementMonitoring',
                         'SqlKeyValue'
