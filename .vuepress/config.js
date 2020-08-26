@@ -170,7 +170,9 @@ module.exports = {
                         'Kafka-ErrorHandlingDeadLetterQueues',
                         `Kafka-CreateDynamicConnectors`,
                         `Kafka-SingleMessageTransformation`,
-                        'Kafka-ConnectImprovementsIn-2-3'
+                        'Kafka-ConnectImprovementsIn-2-3',
+                        'Kafka-FastestMessagingSystem',
+                        'SecureKafkaDeploymentBestPractices'
                     ],
                     '/': [
                         ''

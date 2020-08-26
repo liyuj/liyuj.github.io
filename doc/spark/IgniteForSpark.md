@@ -194,15 +194,15 @@ Ignite可以作为Spark创建和维护的DataFrame的存储层，下面的保存
 
  - `Append`：DataFrame会附加到一个已有的表，如果要更新DataFrame中的已有条目，可以配置`OPTION_STREAMER_ALLOW_OVERWRITE=true`；
  - `Overwrite`：会执行如下的步骤：
- - 如果Ignite中的表已经存在，那么会被删除；
- - 会使用DataFrame的模式以及参数创建新的表；
- - DataFrame的内容会被插入新的表。
-- `ErrorIfExists`：（默认），如果表已经存在会抛出异常，表不存在时：
- - 会使用DataFrame的模式以及参数创建新的表；
- - DataFrame的内容会被插入新的表。
-- `Ignore`：如果表已经存在会被忽略，表不存在时：
- - 会使用DataFrame的模式以及参数创建新的表；
- - DataFrame的内容会被插入新的表。
+   - 如果Ignite中的表已经存在，那么会被删除；
+   - 会使用DataFrame的模式以及参数创建新的表；
+   - DataFrame的内容会被插入新的表。
+ - `ErrorIfExists`：（默认），如果表已经存在会抛出异常，表不存在时：
+   - 会使用DataFrame的模式以及参数创建新的表；
+   - DataFrame的内容会被插入新的表。
+ - `Ignore`：如果表已经存在会被忽略，表不存在时：
+   - 会使用DataFrame的模式以及参数创建新的表；
+   - DataFrame的内容会被插入新的表。
 
 保存模式可以通过`mode(SaveMode mode)`方法指定，具体可以参照Spark的文档，下面是该方法的一个示例：
 
