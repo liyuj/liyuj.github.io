@@ -1203,7 +1203,7 @@ public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
 <Tab name="JDBC批量操作">
 
 ```java
-public class CacheJdbcPersonStore extends CacheStore<Long, Person> {
+public class CacheJdbcPersonStore extends CacheStoreAdapter<Long, Person> {
   // Skip single operations and open connection methods.
   // You can copy them from jdbc non-transactional or jdbc transactional examples.
   ...
