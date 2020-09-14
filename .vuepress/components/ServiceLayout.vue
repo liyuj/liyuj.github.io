@@ -35,7 +35,7 @@
           <h4><span>面向企业</span></h4>
           <h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查、Ignite专题介绍/远程培训、协助POC、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等</span></h4>
           <h4><span>服务方式：</span><span style="font-weight:normal">中国服务商实施（远程/驻场）</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">远程（6千元/半月，1万元/月，2.5万元/季，5万元/半年，10万元/年），驻场（3000元/核算日,4万元/月，长期合作面议），可分期付款，可提供不超过3个工作日的远程免费POC服务</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">远程（6千元/半月，1万元/月，2.5万元/季，5万元/半年，10万元/年），驻场（3000元/核算日，4万元/月，长期合作面议），可分期付款，可提供不超过3个工作日的远程免费POC服务</span></h4>
 				</div>
 			</div>
       <div class="col-sm-12" style="border-top:3px dashed #777"></div>
