@@ -46,7 +46,7 @@
           <h4><span>面向开发者</span></h4>
           <h4><span>服务内容：</span><span style="font-weight:normal">Ignite功能讲解/答疑、指导POC/应用开发/架构设计、问题处理指引</span></h4>
           <h4><span>服务时间：</span><span style="font-weight:normal">8:30～22:00，当日问题当日内不定期回复</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">20元/次/人，会员服务（专属交流群+一次语音交流服务，150元/月/人，300元/季/人，500元/半年/人，900元/年/人，开发票加收10%费用)</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">25元/次/人，会员服务（专属交流群+一次语音交流服务，150元/月/人，300元/季/人，500元/半年/人，900元/年/人，开发票加收10%费用)</span></h4>
 				</div>
 
         <div class="col-sm-6 text-left scroll-animated-from-bottom">
