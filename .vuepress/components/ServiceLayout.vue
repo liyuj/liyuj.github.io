@@ -42,15 +42,15 @@
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-6 text-left scroll-animated-from-bottom" style="border-right:3px dashed #777">
-          <h3 style="color:red;font-size:30px;margin:30px 0 30px 0"><span class="fa fa-battery-1"></span>  付费开发者服务群</h3>
+          <h3 style="color:red;font-size:30px;margin:30px 0 30px 0"><span class="fa fa-battery-1"></span>  付费开发者服务</h3>
           <h4><span>面向开发者</span></h4>
-          <h4><span>服务内容：</span><span style="font-weight:normal">Ignite功能讲解/答疑、指导POC/应用开发/架构设计、问题处理指引、一次语音交流服务</span></h4>
+          <h4><span>服务内容：</span><span style="font-weight:normal">Ignite功能讲解/答疑、指导POC/应用开发/架构设计、问题处理指引</span></h4>
           <h4><span>服务时间：</span><span style="font-weight:normal">8:30～22:00，当日问题当日内不定期回复</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">100元/半月/人，150元/月/人，300元/季/人，500元/半年/人，900元/年/人(开发票加收10%费用)</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">20元/次/人，会员服务（专属交流群+一次语音交流服务，150元/月/人，300元/季/人，500元/半年/人，900元/年/人，开发票加收10%费用)</span></h4>
 				</div>
 
         <div class="col-sm-6 text-left scroll-animated-from-bottom">
-          <h3 style="color:red;font-size:30px;margin:30px 0 30px 0"><span class="fa fa-battery-0"></span>  免费开发者交流群</h3>
+          <h3 style="color:red;font-size:30px;margin:30px 0 30px 0"><span class="fa fa-battery-0"></span>  免费开发者服务</h3>
           <h4><span>面向开发者</span></h4>
           <h4><span>服务内容：</span><span style="font-weight:normal">开发者间交流平台，Ignite/GridGain产品资讯，功能性/适用性介绍</span></h4>
           <h4><span>服务报价：</span><span style="font-weight:normal">免费</span></h4>
