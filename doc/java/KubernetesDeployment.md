@@ -506,7 +506,7 @@ spec:
 kubectl create -f ignite-stateful-set.yaml
 ```
 
-如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URIL`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看[Docker部署](/doc/java/InstallAndDeployment.md#_5-docker部署)的相关章节。
+如上所示，该配置定义了一组环境变量（`OPTION_LIBS`和`CONFIG_URI`），Ignite的Docker镜像使用的一个shell脚本会用到它。Docker镜像的完整配置参数列表可以查看[Docker部署](/doc/java/InstallAndDeployment.md#_5-docker部署)的相关章节。
 
 确认Ignite的配置组已经启动运行：
 ```bash

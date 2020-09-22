@@ -28,15 +28,13 @@
     <div class="home-wrapper">
       <div class="container">
         <div class="row">
-
           <!-- home content -->
           <div class="col-md-10 col-md-offset-1">
             <div class="home-content">
               <h2 class="white-text" style="font-size:36px">轻量级分布式内存HTAP数据库&计算平台</h2>
-              <p class="white-text">GridGain产品&技术服务中国总代理，GridGain认证技术专家
               </p>
               <br/>
-              <br/>                            
+              <br/>
               <button class="white-btn" onclick="window.location.href='/Service.html'">GridGain技术支持服务</button>
               <button class="white-btn" onclick="window.location.href='/Service.html'">本土咨询顾问服务</button>
               <button class="white-btn" onclick="window.location.href='/Service.html'">付费开发者服务</button>
