@@ -47,8 +47,8 @@ Ignite中的原子化类型可以通过`IgniteConfiguration`的`AtomicConfigurat
 
 **示例**
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -61,16 +61,18 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
     <atomicConfiguration backups='1' cacheMode='Partitioned' atomicSequenceReserveSize='5000' />
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -86,7 +88,8 @@ var cfg = new IgniteConfiguration
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 <RightPane/>

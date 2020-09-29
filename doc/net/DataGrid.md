@@ -72,8 +72,8 @@ ICache<int, string> cache = ignite.GetCache<int, string>("mycache");
 ### 2.2.基本操作
 下面是一些基本的原子操作示例：
 
-<Tabs>
-<Tab name="Put&Get">
+<code-group>
+<code-block title="Put&Get">
 
 ```csharp
 using (var ignite = Ignition.Start())
@@ -88,8 +88,9 @@ using (var ignite = Ignition.Start())
         Console.WriteLine("Got [key={0}, val={1}]", i, cache.Get(i));
 }
 ```
-</Tab>
-<Tab name="原子操作">
+</code-block>
+
+<code-block title="原子操作">
 
 ```csharp
 // Put-if-absent which returns previous value.
@@ -110,8 +111,9 @@ success = cache.Replace(22, "World", "World!");
 // Remove-if-matches operation.
 success = cache.Remove(1, "Hello");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.3.ICacheEntryProcessor
 当对缓存执行写入和更新操作时，通常要在网络上发送完整的对象状态，而`ICacheEntryProcessor`可以直接在主节点上处理数据，通常仅需传输增量而不是完整状态。
@@ -164,8 +166,8 @@ Ignite.NET也提供了缓存操作的几种不同模式，具体细节可以参�
 
 相关配置的示例：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -181,8 +183,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -191,8 +194,9 @@ var cfg = new IgniteConfiguration
     </cacheConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 4.缓存查询
 Ignite.NET提供了非常优雅的查询接口，包括基于谓词的扫描查询、SQL查询和文本查询，对于SQL查询，Ignite支持内存中的索引，所以所有的数据检索都会非常快。如果数据保存在堆外内存，那么索引也会保存在堆外内存。
@@ -289,8 +293,8 @@ Ignite的缓存操作支持两种模式，`事务`模式和`原子`模式。在`
 
 原子化模式是通过`CacheConfiguration`进行配置的：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -308,8 +312,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -319,8 +324,9 @@ var cfg = new IgniteConfiguration
   <transactionConfiguration defaultTransactionConcurrency="Optimistic" />
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -345,8 +351,9 @@ var cfg = new IgniteConfiguration
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 6.2.ITransactions
 `ITransactions`接口包含了开始和完成事务、订阅监听器以及获取指标数据等功能。

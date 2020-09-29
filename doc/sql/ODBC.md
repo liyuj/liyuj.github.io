@@ -11,8 +11,8 @@ Ignite的ODBC驱动在Windows中被视为一个动态库，在Linux中被视为�
 
 Ignite的ODBC驱动在内部使用TCP来接入Ignite集群，这个连接在Ignite中是通过一个叫做`ClientListenerProcessor`的组件来处理的。除了ODBC连接，它还处理JDBC连接以及瘦客户端连接。当节点启动时，`ClientListenerProcessor`默认是开启的，通过下面的代码可以对参数进行调整：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -23,8 +23,9 @@ Ignite的ODBC驱动在内部使用TCP来接入Ignite集群，这个连接在Igni
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -33,8 +34,9 @@ ClientConnectorConfiguration clientConnectorCfg = new ClientConnectorConfigurati
 cfg.setClientConnectorConfiguration(clientConnectorCfg);
 ...
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 配置了`ClientListenerProcessor`之后，就会以默认的配置启动，部分列举如下：
 
@@ -54,8 +56,8 @@ cfg.setClientConnectorConfiguration(clientConnectorCfg);
 
 可以通过如下方式修改参数：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -75,8 +77,9 @@ cfg.setClientConnectorConfiguration(clientConnectorCfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -94,8 +97,9 @@ clientConnectorCfg.setThreadPoolSize(4);
 cfg.setClientConnectorConfiguration(clientConnectorCfg);
 ...
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 通过`ClientListenerProcessor`从ODBC驱动端建立的连接也是可以配置的，关于如何从驱动端修改连接的配置，可以看[这里](#_2-连接串和dsn)。
 ### 1.3.线程安全
@@ -138,22 +142,24 @@ Ignite的ODBC驱动的源代码随着Ignite版本一起发布，在使用之前�
 
 一切就绪之后，打开终端然后定位到`%IGNITE_HOME%\platforms\cpp\odbc\install`目录，按顺序执行如下的命令来构建安装器：
 
-<Tabs>
-<Tab name="64位">
+<code-group>
+<code-block title="64位">
 
 ```bash
 candle.exe ignite-odbc-amd64.wxs
 light.exe -ext WixUIExtension ignite-odbc-amd64.wixobj
 ```
-</Tab>
-<Tab name="32位">
+</code-block>
+
+<code-block title="32位">
 
 ```bash
 candle.exe ignite-odbc-x86.wxs
 light.exe -ext WixUIExtension ignite-odbc-x86.wixobj
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 完成之后，目录中会出现`ignite-odbc-amd64.msi`和`ignite-odbc-x86.msi`文件，然后就可以使用它们进行安装了。
 
@@ -199,20 +205,22 @@ whereis libignite-odbc
 
 之后，就需要使用`%IGNITE_HOME%/platforms/cpp/odbc/install`目录下的安装脚本之一，注意，要执行这些脚本，很可能需要管理员权限。
 
-<Tabs>
-<Tab name="x86">
+<code-group>
+<code-block title="x86">
 
 ```bash
 install_x86 <absolute_path_to_32_bit_driver>
 ```
-</Tab>
-<Tab name="AMD64">
+</code-block>
+
+<code-block title="AMD64">
 
 ```bash
 install_amd64 <absolute_path_to_64_bit_driver> [<absolute_path_to_32_bit_driver>]
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 1.6.2.在Linux上安装
 要在Linux上构建和安装ODBC驱动，首先需要安装ODBC驱动管理器，Ignite ODBC驱动已经和[UnixODBC](http://www.unixodbc.org/)进行了测试。
@@ -263,8 +271,8 @@ Ignite的ODBC驱动可以使用一些连接串/DSN参数，所有的参数都是
 ### 2.3.连接串示例
 下面的串，可以用于`SQLDriverConnect`ODBC调用，来建立与Ignite节点的连接。
 
-<Tabs>
-<Tab name="认证">
+<code-group>
+<code-block title="认证">
 
 ```properties
 DRIVER={Apache Ignite};
@@ -277,32 +285,37 @@ SSL_KEY_FILE=<path_to_private_key>;
 SSL_CERT_FILE=<path_to_client_certificate>;
 SSL_CA_FILE=<path_to_trusted_certificates>
 ```
-</Tab>
-<Tab name="指定缓存">
+</code-block>
+
+<code-block title="指定缓存">
 
 ```
 DRIVER={Apache Ignite};ADDRESS=localhost:10800;CACHE=yourCacheName
 ```
-</Tab>
-<Tab name="默认缓存">
+</code-block>
+
+<code-block title="默认缓存">
 
 ```
 DRIVER={Apache Ignite};ADDRESS=localhost:10800
 ```
-</Tab>
-<Tab name="DSN">
+</code-block>
+
+<code-block title="DSN">
 
 ```
 DSN=MyIgniteDSN
 ```
-</Tab>
-<Tab name="自定义页面大小">
+</code-block>
+
+<code-block title="自定义页面大小">
 
 ```
 DRIVER={Apache Ignite};ADDRESS=example.com:12901;CACHE=MyCache;PAGE_SIZE=4096
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.4.配置DSN
 如果要使用[DSN](https://en.wikipedia.org/wiki/Data_source_name)(数据源名)来进行连接，可以使用同样的参数。
@@ -343,8 +356,8 @@ driver=Apache Ignite
 ### 3.2.配置Ignite集群
 第一步，需要对集群节点进行配置，这个配置需要包含缓存的配置以及定义了`QueryEntities`的属性。如果应用（当前场景是ODBC驱动）要通过SQL语句进行数据的查询和修改，`QueryEntities`是必须的，或者，也可以使用DDL创建表。
 
-<Tabs>
-<Tab name="CPP">
+<code-group>
+<code-block title="CPP">
 
 ```cpp
 SQLHENV env;
@@ -391,8 +404,9 @@ SQLCHAR query3[] = "CREATE INDEX idx_organization_name ON Organization (name)";
 
 SQLExecDirect(stmt, query3, SQL_NTS);
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -476,8 +490,9 @@ SQLExecDirect(stmt, query3, SQL_NTS);
   </bean>
 </beans>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 从上述配置中可以看出，定义了两个缓存，包含了`Person`和`Organization`类型的数据，它们都列出了使用SQL可以读写的特定字段和索引。
 ::: warning OdbcConfiguration

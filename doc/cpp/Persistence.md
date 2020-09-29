@@ -41,8 +41,8 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
 
 要配置通读和通写，需要配置`CacheConfiguration`中`cacheStoreFactory`的`readThrough`和`writeThrough`属性，如下所示：
 
-<Tabs>
-<Tab name="自定义存储">
+<code-group>
+<code-block title="自定义存储">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -64,8 +64,9 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="CacheJdbcBlobStoreFactory">
+</code-block>
+
+<code-block title="CacheJdbcBlobStoreFactory">
 
 ```xml
 <bean id= "simpleDataSource" class="org.h2.jdbcx.JdbcDataSource"/>
@@ -88,8 +89,9 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="CacheJdbcPojoStore">
+</code-block>
+
+<code-block title="CacheJdbcPojoStore">
 
 ```xml
 <bean id= "simpleDataSource" class="org.h2.jdbcx.JdbcDataSource"/>
@@ -110,8 +112,9 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="CacheHibernateBlobStore">
+</code-block>
+
+<code-block title="CacheHibernateBlobStore">
 
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -133,8 +136,9 @@ Ignite原生持久化是一个分布式的兼容ACID和SQL的磁盘存储，它�
   ...
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: warning Ignite C++缓存存储
 目前，可以使用Java Spring XML配置来配置CacheStore及其属性，在以后的版本中将支持原生C++的方式。

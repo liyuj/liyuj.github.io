@@ -15,8 +15,8 @@ Ignite有一个可选的概念，就是**客户端节点**和**服务端节点**
 ### 2.2.配置客户端和服务端
 可以通过`IgniteConfiguration.setClientMode(...)`属性配置一个节点，或者为客户端，或者为服务端。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -26,8 +26,9 @@ Ignite有一个可选的概念，就是**客户端节点**和**服务端节点**
     ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -38,8 +39,9 @@ cfg.setClientMode(true);
 // Start Ignite in client mode.
 Ignite ignite = Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 另外，为了方便也可以通过`Ignition`类来打开或者关闭客户端模式，这样可以使客户端和服务端共用一套配置。
 ```java
@@ -76,8 +78,8 @@ IgniteCache<?, ?> cache = ignite.getOrCreateCache(cfg);
 ### 2.4.客户端或者服务端计算
 `IgniteCompute`默认会在所有的服务端节点上执行作业，不过也可以通过创建相应的集群组来选择是只在服务端节点还是只在客户端节点上执行作业。
 
-<Tabs>
-<Tab name="服务端计算">
+<code-group>
+<code-block title="服务端计算">
 
 ```java
 IgniteCompute compute = ignite.compute();
@@ -85,8 +87,9 @@ IgniteCompute compute = ignite.compute();
 // Execute computation on the server nodes (default behavior).
 compute.broadcast(() -> System.out.println("Hello Server"));
 ```
-</Tab>
-<Tab name="客户端计算">
+</code-block>
+
+<code-block title="客户端计算">
 
 ```java
 ClusterGroup clientGroup = ignite.cluster().forClients();
@@ -96,8 +99,9 @@ IgniteCompute clientCompute = ignite.compute(clientGroup);
 // Execute computation on the client nodes.
 clientCompute.broadcast(() -> System.out.println("Hello Client"));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.5.管理慢客户端
 很多部署环境中，客户端节点是在主集群外启动的，机器和网络都比较差，而有时服务端可能会产生负载（比如持续查询通知）而客户端没有能力处理，导致服务端的输出消息队列不断增长，这可能导致服务端出现内存溢出的情况，或者如果打开背压控制时导致整个集群阻塞。
@@ -146,8 +150,8 @@ XML：
 
 下面的例子显示`IgniteClientDisconnectedException`如何使用：
 
-<Tabs>
-<Tab name="计算">
+<code-group>
+<code-block title="计算">
 
 ```java
 IgniteCompute compute = ignite.compute();
@@ -163,8 +167,9 @@ while (true) {
     }
 }
 ```
-</Tab>
-<Tab name="缓存">
+</code-block>
+
+<code-block title="缓存">
 
 ```java
 IgniteCache cache = ignite.getOrCreateCache(new CacheConfiguration<>());
@@ -185,8 +190,9 @@ while (true) {
   }
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 客户端自动重连可以通过`TcpDiscoverySpi`的`clientReconnectDisabled`属性禁用，如果重连被禁用那么当发现与集群断开时客户端节点就会停止。
 
@@ -303,8 +309,8 @@ ClusterNode localNode = ignite.cluster().localNode();
 
 可以限制作业执行、服务部署、消息、事件以及其它任务只在部分集群组内执行，比如，下面这个例子只把作业广播到远程节点（除了本地节点）：
 
-<Tabs>
-<Tab name="Java8">
+<code-group>
+<code-block title="Java8">
 
 ```java
 final Ignite ignite = Ignition.ignite();
@@ -319,8 +325,9 @@ IgniteCompute compute = ignite.compute(cluster.forRemotes());
 // on which this closure is executing.
 compute.broadcast(() -> System.out.println("Hello Node: " + ignite.cluster().localNode().id());
 ```
-</Tab>
-<Tab name="Java7">
+</code-block>
+
+<code-block title="Java7">
 
 ```java
 final Ignite ignite = Ignition.ignite();
@@ -339,16 +346,17 @@ compute.broadcast(new IgniteRunnable() {
     }
 });
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.1.预定义集群组
 可以基于任何谓词创建集群组，为了方便Ignite也提供了一些预定义的集群组。
 
 下面的示例显示了`ClusterGroup`接口中定义的部分集群组：
 
-<Tabs>
-<Tab name="远程节点">
+<code-group>
+<code-block title="远程节点">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -356,8 +364,9 @@ IgniteCluster cluster = ignite.cluster();
 // Cluster group with remote nodes, i.e. other than this node.
 ClusterGroup remoteGroup = cluster.forRemotes();
 ```
-</Tab>
-<Tab name="缓存节点">
+</code-block>
+
+<code-block title="缓存节点">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -372,8 +381,9 @@ ClusterGroup dataGroup = cluster.forDataNodes("myCache");
 // All client nodes that access "myCache".
 ClusterGroup clientGroup = cluster.forClientNodes("myCache");
 ```
-</Tab>
-<Tab name="有属性的节点">
+</code-block>
+
+<code-block title="有属性的节点">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -381,8 +391,9 @@ IgniteCluster cluster = ignite.cluster();
 // All nodes with attribute "ROLE" equal to "worker".
 ClusterGroup attrGroup = cluster.forAttribute("ROLE", "worker");
 ```
-</Tab>
-<Tab name="随机节点">
+</code-block>
+
+<code-block title="随机节点">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -393,8 +404,9 @@ ClusterGroup randomGroup = cluster.forRandom();
 // First (and only) node in the random group.
 ClusterNode randomNode = randomGroup.node();
 ```
-</Tab>
-<Tab name="主机节点">
+</code-block>
+
+<code-block title="主机节点">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -405,8 +417,9 @@ ClusterGroup randomNode = cluster.forRandom();
 // All nodes on the same physical host as the random node.
 ClusterGroup cacheNodes = cluster.forHost(randomNode);
 ```
-</Tab>
-<Tab name="最老的节点">
+</code-block>
+
+<code-block title="最老的节点">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -416,8 +429,9 @@ IgniteCluster cluster = ignite.cluster();
 // node crashes.
 ClusterGroup oldestNode = cluster.forOldest();
 ```
-</Tab>
-<Tab name="本地节点">
+</code-block>
+
+<code-block title="本地节点">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -428,16 +442,17 @@ ClusterGroup localGroup = cluster.forLocal();
 // Local node.
 ClusterNode localNode = localGroup.node();
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.2.带节点属性的集群组
 Ignite的唯一特点是所有节点都是平等的。没有master节点或者server节点，也没有worker节点或者client节点，按照Ignite的观点所有节点都是平等的。但是，可以将节点配置成主节点，工作节点，或者客户端以及数据节点。
 
 所有集群节点启动时都会自动将所有的环境和系统属性注册为节点的属性，但是也可以通过配置自定义节点属性。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration">
@@ -450,8 +465,9 @@ Ignite的唯一特点是所有节点都是平等的。没有master节点或者se
     ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -463,8 +479,9 @@ cfg.setUserAttributes(attrs);
 // Start Ignite node.
 Ignite ignite = Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 注意
 启动时，所有的环境变量和系统属性都会自动地注册为节点属性。
@@ -487,8 +504,8 @@ Collection<GridNode> workerNodes = workerGroup.nodes();
 
 下面是一个集群组只会包括CPU利用率小于50%的节点的示例，注意这个组里面的节点会随着CPU负载的变化而改变。
 
-<Tabs>
-<Tab name="Java8">
+<code-group>
+<code-block title="Java8">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -496,8 +513,9 @@ IgniteCluster cluster = ignite.cluster();
 // Nodes with less than 50% CPU load.
 ClusterGroup readyNodes = cluster.forPredicate((node) -> node.metrics().getCurrentCpuLoad() < 0.5);
 ```
-</Tab>
-<Tab name="Java7">
+</code-block>
+
+<code-block title="Java7">
 
 ```java
 IgniteCluster cluster = ignite.cluster();
@@ -511,8 +529,9 @@ ClusterGroup readyNodes = cluster.forPredicate(
     }
 ));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.4.集群组组合
 可以通过彼此之间的嵌套来组合集群组，比如，下面的代码片段显示了如何通过组合最老组和远程组来获得最老的远程节点：
@@ -613,8 +632,8 @@ Ignite中，通过`DiscoverySpi`节点可以彼此发现对方，Ignite提供了
 
 下面的例子显示了如何通过Spring XML配置文件或者通过Java代码编程式地进行配置：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -630,8 +649,9 @@ Ignite中，通过`DiscoverySpi`节点可以彼此发现对方，Ignite提供了
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -650,8 +670,9 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 6.1.3.静态IP探测器
 对于组播被禁用的情况，`TcpDiscoveryVmIpFinder`会使用预配置的IP地址列表。
@@ -668,8 +689,8 @@ Ignition.start(cfg);
 
 下面的例子显示了如何通过Spring XML配置文件或者通过Java代码编程式地进行配置：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -700,8 +721,9 @@ Ignition.start(cfg);
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -722,24 +744,26 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-<Tab name="Shell">
+</code-block>
+
+<code-block title="Shell">
 
 ```bash
 # The configuration should use TcpDiscoveryVmIpFinder without addresses specified:
 
 IGNITE_TCP_DISCOVERY_ADDRESSES=1.2.3.4,1.2.3.5:47500..47509 bin/ignite.sh -v config/default-config.xml
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 6.1.4.组播和静态IP探测器
 可以同时使用基于组播和静态IP的发现，这种情况下，除了通过组播接受地址以外，如果有，`TcpDiscoveryMulticastIpFinder`也可以与预配置的静态IP地址列表一起工作，就像上面描述的基于静态IP的发现一样。
 
 下面的例子显示了如何配置使用了静态IP地址的组播IP探测器。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -768,8 +792,9 @@ IGNITE_TCP_DISCOVERY_ADDRESSES=1.2.3.4,1.2.3.5:47500..47509 bin/ignite.sh -v con
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -793,16 +818,17 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 6.1.5.在同一个机器组中隔离Ignite集群
 Ignite可以在同一组机器中启动两个隔离的集群，对于`TcpDiscoverySpi`和`TcpCommunicationSpi`，不同集群的节点使用不交叉的本地端口范围就可以了。
 
 假设为了测试需要在一台机器上启动两个互相隔离的集群，那么对于第一个集群的节点，需要使用如下的`TcpDiscoverySpi`和`TcpCommunicationSpi`配置：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -849,8 +875,9 @@ Ignite可以在同一组机器中启动两个隔离的集群，对于`TcpDiscove
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -890,13 +917,14 @@ cfg.setCommunicationSpi(commSpi);
 // Starting a node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 而对于第二个集群的节点，配置看起来是这样的：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -940,8 +968,9 @@ Ignition.start(cfg);
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -981,8 +1010,9 @@ cfg.setCommunicationSpi(commSpi);
 // Starting a node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 从配置中可以看到，它们的差别是很小的 - 只是SPI的端口号和IP探测器不同。
 
@@ -1004,8 +1034,8 @@ Ignition.start(cfg);
 #### 6.1.10.JDBC探测器
 可以用数据库作为通用共享存储来保存初始的IP地址，通过这个探测器这些节点会在启动时将IP地址写入数据库，这是通过`TcpDiscoveryJdbcIpFinder`实现的。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1026,8 +1056,9 @@ Ignition.start(cfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -1049,14 +1080,15 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 6.1.11.基于共享文件系统探测器
 一个共享文件系统可以用于节点IP地址的存储，节点会在启动时将它们的IP地址写入文件系统，这样的行为是由`TcpDiscoverySharedFsIpFinder`支持的。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1072,8 +1104,9 @@ Ignition.start(cfg);
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Configuring discovery SPI.
@@ -1094,8 +1127,9 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 6.1.12.Kubernetes IP探测器
 具体请参见[Kubernetes IP探测器](/doc/java/KubernetesDeployment.md#_2-5-kubernetes-ip探测器)。
@@ -1107,8 +1141,8 @@ Ignition.start(cfg);
 
 要配置ZooKeeper IP探测器，是通过`TcpDiscoveryZooKeeperIpFinder`实现的（注意需要启用`ignite-zookeeper`模块）。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1124,8 +1158,9 @@ Ignition.start(cfg);
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -1145,8 +1180,9 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 6.1.14.故障检测超时
 故障检测超时用于确定一个集群节点在与远程节点连接失败时可以等待多长时间。
@@ -1191,8 +1227,8 @@ ZooKeeper发现使用ZooKeeper作为同步的单点，然后将Ignite集群组�
 #### 6.2.2.配置
 要启用ZooKeeper发现，需要配置`ZooKeeperDiscoverySpi`：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1207,8 +1243,9 @@ ZooKeeper发现使用ZooKeeper作为同步的单点，然后将Ignite集群组�
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 ZookeeperDiscoverySpi zkDiscoSpi = new ZookeeperDiscoverySpi();
@@ -1228,8 +1265,9 @@ cfg.setDiscoverySpi(zkDiscoSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 下面两个参数是**必须**的（其它的是可选的）：
 
@@ -1319,8 +1357,8 @@ compute.broadcast(() -> System.out.println("Hello node: " + cluster.localNode().
 ```
 下面是对等类加载如何配置：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1330,8 +1368,9 @@ compute.broadcast(() -> System.out.println("Hello node: " + cluster.localNode().
     ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -1341,8 +1380,9 @@ cfg.setPeerClassLoadingEnabled(true);
 // Start Ignite node.
 Ignite ignite = Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 对等类加载的工作步骤如下：
 
@@ -1403,8 +1443,8 @@ Ignite ignite = Ignition.start(cfg);
 |`setPeerClassLoadingMissedResourcesCacheSize()`|错过的资源缓存的大小，设为0会避免错过的资源缓存。|`100`|
 |`setDeploymentMode()`|为部署的类和任务设置部署模式。|`SHARED`|
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1431,8 +1471,9 @@ Ignite ignite = Ignition.start(cfg);
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg=new IgniteConfiguration();
@@ -1453,8 +1494,9 @@ cfg.setPeerClassLoadingLocalClassPathExclude("com.mcompany.MyChangingClass");
 // Start a node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 9.网络配置
 ### 9.1.TcpCommunicationSpi
@@ -1499,8 +1541,8 @@ Ignite尝试支持IPv4和IPv6，但这有时会导致集群分离的问题。一
 
 下面的示例显示了如何调整`TcpCommunicationSpi`的参数：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1514,8 +1556,9 @@ Ignite尝试支持IPv4和IPv6，但这有时会导致集群分离的问题。一
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
@@ -1527,7 +1570,8 @@ cfg.setCommunicationSpi(commSpi);
 // Start grid.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 <RightPane/>

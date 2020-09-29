@@ -254,8 +254,8 @@ Kubernetes环境可能需要一段时间来分配需要的持久化存储，从�
 
 ignite-wal-storage-class.yaml：
 
-<Tabs>
-<Tab name="AWS">
+<code-group>
+<code-block title="AWS">
 
 ```yaml
 #Amazon AWS Configuration
@@ -269,8 +269,9 @@ parameters:
   type: gp2 #Volume type io1, gp2, sc1, st1. Default: gp2
   zones: us-east-1d
 ```
-</Tab>
-<Tab name="GCE">
+</code-block>
+
+<code-block title="GCE">
 
 ```yaml
 #Google Compute Engine Configuration
@@ -285,8 +286,9 @@ parameters:
   zones: europe-west1-b
   replication-type: none
 ```
-</Tab>
-<Tab name="Azure">
+</code-block>
+
+<code-block title="Azure">
 
 ```yaml
 #Microsoft Azure Configuration
@@ -300,8 +302,9 @@ parameters:
   storageaccounttype: Standard_LRS
   kind: managed
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 通过执行以下命令为WAL文件请求存储：
 ```bash
@@ -312,8 +315,8 @@ kubectl create -f ignite-wal-storage-class.yaml
 
 ignite-persistence-storage-class.yaml：
 
-<Tabs>
-<Tab name="AWS">
+<code-group>
+<code-block title="AWS">
 
 ```yaml
 #Amazon AWS Configuration
@@ -327,8 +330,9 @@ parameters:
   type: gp2 #Volume type io1, gp2, sc1, st1. Default: gp2
   zones: us-east-1d
 ```
-</Tab>
-<Tab name="GCE">
+</code-block>
+
+<code-block title="GCE">
 
 ```yaml
 #Google Compute Engine configuration
@@ -343,8 +347,9 @@ parameters:
   zones: europe-west1-b
   replication-type: none
 ```
-</Tab>
-<Tab name="Azure">
+</code-block>
+
+<code-block title="Azure">
 
 ```yaml
 #Microsoft Azure Configuration
@@ -358,8 +363,9 @@ parameters:
   storageaccounttype: Standard_LRS
   kind: managed
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 通过执行以下命令为数据库文件请求存储：
 ```bash
@@ -714,8 +720,8 @@ kubectl create -f ignite-service.yaml
 #### 2.5.2.基于Kubernetes服务的发现
 如果要开启Kubernetes环境的节点自动发现，需要在下面的配置中使用`TcpDiscoveryKubernetesIpFinder`：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -729,8 +735,9 @@ kubectl create -f ignite-service.yaml
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Configuring discovery SPI.
@@ -749,8 +756,9 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip Maven构件
 如果要使用`TcpDiscoveryKubernetesIpFinder`，需要在Maven中添加`ignite-kubernetes`依赖。

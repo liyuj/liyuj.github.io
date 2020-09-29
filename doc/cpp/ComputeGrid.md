@@ -244,8 +244,8 @@ void SomeUserFunction()
 ### 5.3.Broadcast方法
 所有的`Broadcast(...)`方法都会将作业广播到所有的集群节点上：
 
-<Tabs>
-<Tab name="Broadcast">
+<code-group>
+<code-block title="Broadcast">
 
 ```cpp
 Ignite ignite = Ignition.Get();
@@ -256,8 +256,9 @@ Compute compute = ignite.GetCompute();
 // Print out hello message on nodes in the cluster group.
 compute.Broadcast(HelloWorldJob());
 ```
-</Tab>
-<Tab name="异步Broadcast">
+</code-block>
+
+<code-block title="异步Broadcast">
 
 ```cpp
 Ignite ignite = Ignition.Get();
@@ -271,14 +272,15 @@ Future<void> fut = compute.BroadcastAsync(HelloWorldJob());
 // Wait for the task to complete.
 fut.Wait();
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 5.4.Call和Run方法
 所有的`Call(...)`和`Run(...)`方法都是在集群上执行单个作业：
 
-<Tabs>
-<Tab name="Call">
+<code-group>
+<code-block title="Call">
 
 ```cpp
 Ignite ignite = Ignition.Get();
@@ -295,8 +297,9 @@ int32_t wordsCount = compute.Call<int32_t>(CountWords(text));
 std::cout << "Text consists of " <<
   wordsCount << " words" << std::endl;
 ```
-</Tab>
-<Tab name="Run">
+</code-block>
+
+<code-block title="Run">
 
 ```cpp
 Ignite ignite = Ignition.Get();
@@ -315,8 +318,9 @@ for (auto& text : texts) {
   compute.Run(PrintWords(text));
 }
 ```
-</Tab>
-<Tab name="CallAsync">
+</code-block>
+
+<code-block title="CallAsync">
 
 ```cpp
 Ignite ignite = Ignition.Get();
@@ -337,8 +341,9 @@ futureWords.Wait();
 std::cout << "Text consists of " <<
   futureWords.GetValue() << " words" << std::endl;
 ```
-</Tab>
-<Tab name="RunAsync">
+</code-block>
+
+<code-block title="RunAsync">
 
 ```cpp
 Ignite ignite = Ignition.Get();
@@ -365,7 +370,8 @@ for (auto& fut : futs) {
   fut.Wait();
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 <RightPane/>

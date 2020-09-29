@@ -182,8 +182,8 @@ class ComputeFunc : IComputeFunc<int>
 ### 3.5.第一个Ignite数据网格应用
 下面是一组简单的应用，它们会简单地进行一些分布式缓存的读写，然后执行基本的事务操作：
 
-<Tabs>
-<Tab name="写和读">
+<code-group>
+<code-block title="写和读">
 
 ```csharp
 using (var ignite = Ignition.Start())
@@ -198,8 +198,9 @@ using (var ignite = Ignition.Start())
         Console.WriteLine("Got [key={0}, val={1}]", i, cache.Get(i));
 }
 ```
-</Tab>
-<Tab name="原子化操作">
+</code-block>
+
+<code-block title="原子化操作">
 
 ```csharp
 // Put-if-absent which returns previous value.
@@ -220,8 +221,9 @@ success = cache.Replace(22, "World", "World!");
 // Remove-if-matches operation.
 success = cache.Remove(1, "Hello");
 ```
-</Tab>
-<Tab name="事务">
+</code-block>
+
+<code-block title="事务">
 
 ```csharp
 using (var tx = ignite.GetTransactions().TxStart())
@@ -236,8 +238,9 @@ using (var tx = ignite.GetTransactions().TxStart())
     tx.Commit();
 }
 ```
-</Tab>
-<Tab name="分布式锁">
+</code-block>
+
+<code-block title="分布式锁">
 
 ```csharp
 // Lock cache key "11".
@@ -256,8 +259,9 @@ using (var cacheLock = cache.Lock(11))
     }
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.6.Ignite Visor管理控制台
 要确认数据网格的内容以及执行一些其它的管理和监视操作，最简单的方法是使用Ignite的[Visor命令行工具](/doc/tools/VisorManagementConsole.md)。
@@ -403,8 +407,8 @@ Ignition.Start(new IgniteConfiguration
 为了改善编辑体验，确保在工具-选项-文本编辑器-XML中启用了`语句完成`选项。
 :::
 
-<Tabs>
-<Tab name="app.config">
+<code-group>
+<code-block title="app.config">
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -449,14 +453,16 @@ Ignition.Start(new IgniteConfiguration
     </igniteConfiguration>
 </configuration>
 ```
-</Tab>
-<Tab name="C#">
+</code-block>
+
+<code-block title="C#">
 
 ```csharp
 var ignite = Ignition.StartFromApplicationConfiguration("igniteConfiguration");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 **Ignite配置段的语法**
 
@@ -472,8 +478,8 @@ Spring的XML文件可以使用原生的基于Java的Ignite配置，Spring的配�
 
 使用`IgniteConfiguration.SpringConfigUrl`属性时，Spring的配置会首先加载，在其之上才会应用其他的`IgniteConfiguration`属性，这样在Ignite.NET不直接支持某些Java属性时，此功能会有用。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -520,14 +526,16 @@ Spring的XML文件可以使用原生的基于Java的Ignite配置，Spring的配�
     </bean>
 </beans>
 ```
-</Tab>
-<Tab name="C#">
+</code-block>
+
+<code-block title="C#">
 
 ```csharp
 var ignite = Ignition.Start("spring-config.xml");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 6.独立节点
 Ignite.NET节点可以在.NET应用的代码中通过使用`Ignition.Start()`启动，也可以使用可执行的`Apache.Ignite.exe`（位于`{apache_ignite_release}\platforms\dotnet\bin`文件夹下）作为单独的进程启动。像通常一样，在内部`Apache.Ignite.exe`引用`Apache.Ignite.Core.dll`和使用`Ignition.Start()`，并且可以使用下面列出的命令行参数进行配置，方法是将它们作为命令行选项传递或直接在`Apache.Ignite.exe.config`文件中进行设置。
@@ -794,8 +802,8 @@ var cache = ignite.GetOrCreateCache<object, object>("cacheName");
 ### 9.4.客户端或者服务端上的计算
 `IgniteCompute`默认会在所有的服务端节点上执行计算作业，不过通过创建对应的集群组，也可以选择只在服务端节点或者只在客户端节点上执行。
 
-<Tabs>
-<Tab name="服务端计算">
+<code-group>
+<code-block title="服务端计算">
 
 ```csharp
 ICompute compute = ignite.GetCompute();
@@ -803,8 +811,9 @@ ICompute compute = ignite.GetCompute();
 // Execute computation on the server nodes (default behavior).
 compute.Broadcast(new MyComputeAction());
 ```
-</Tab>
-<Tab name="客户端计算">
+</code-block>
+
+<code-block title="客户端计算">
 
 ```csharp
 IClusterGroup clientGroup = ignite.GetCluster().ForClientNodes(null);
@@ -814,8 +823,9 @@ ICompute clientCompute = clientGroup.GetCompute();
 // Execute computation on the client nodes.
 clientCompute.Broadcast(new MyComputeAction());
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 9.5.客户端重连
 在以下几种情况下，客户端节点可能会与集群断开连接：
@@ -832,8 +842,8 @@ clientCompute.Broadcast(new MyComputeAction());
 
 `IIgnite`中当然也有`ClientDisconnected`和`ClientReconnected`事件：
 
-<Tabs>
-<Tab name="计算">
+<code-group>
+<code-block title="计算">
 
 ```csharp
 var compute = ignite.GetCompute();
@@ -852,8 +862,9 @@ while (true)
     }
 }
 ```
-</Tab>
-<Tab name="缓存">
+</code-block>
+
+<code-block title="缓存">
 
 ```csharp
 var cache = ignite.GetOrCreateCache("myCache");
@@ -877,13 +888,14 @@ while (true)
   }
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 使用`TcpDiscoverySpi`中的`ClientReconnectDisabled`属性，也可以禁用客户端的自动重连。如果重连被禁用，客户端节点会被停止。
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -894,14 +906,16 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <discoverySpi type="TcpDiscoverySpi" clientReconnectDisabled="true" />
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 9.6.管理慢客户端
 在许多环境中，客户端节点是在主集群之外、网络较差、速度较慢的主机上启动的，这时服务端可能会生成客户端无法处理的负载（例如持续查询通知等），从而导致服务端上出站消息队列的增加。如果启用了背压控制，最终可能会导致服务端内存不足或阻塞整个集群。
@@ -910,8 +924,8 @@ var cfg = new IgniteConfiguration
 
 下面显示了如何配置慢客户端队列限制：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -922,16 +936,18 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
     <communicationSpi type="TcpCommunicationSpi" slowClientQueueLimit="1000" />
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -942,16 +958,17 @@ var cfg = new IgniteConfiguration
   </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 10.性能优化技巧
 Ignite.NET内存数据网格的性能和吞吐量很大程度上依赖于使用的功能以及配置，在几乎所有的场景中都可以通过简单地调整缓存的配置来优化缓存的性能。
 ### 10.1.禁用内部事件通知
 Ignite有丰富的事件系统来向用户通知各种各样的事件，包括缓存的修改、退出、压缩、拓扑的变化等。因为每秒钟可能产生上千的事件，它会对系统产生额外的负载，这会导致显著地性能下降。因此，强烈建议只有应用逻辑必要时才启用这些事件。事件通知默认是禁用的：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -964,8 +981,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -976,8 +994,9 @@ var cfg = new IgniteConfiguration
     </includedEventTypes>
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -993,14 +1012,15 @@ var cfg = new IgniteConfiguration
     ...
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 10.2.调整缓存初始大小
 在大小和容量方面，Ignite的内部缓存映射的行为与普通的.NET Hashtable或Dictionary完全相同：它有初始容量（默认情况下很小），当没有空余时容量会增加一倍。内部缓存映射调整大小的过程会占用大量CPU且非常耗时，并且如果将巨大的数据集加载到缓存中（这是常规使用场景），则映射将不得不调整很多次。为避免这种情况，建议指定初始缓存映射容量，与数据集的预期大小相当。在加载期间这将节省大量CPU资源，因为不必调整映射的大小。例如如果希望将1亿数据加载到缓存中，则可以使用以下配置：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -1014,8 +1034,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -1024,8 +1045,9 @@ var cfg = new IgniteConfiguration
     </cacheConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1040,15 +1062,16 @@ var cfg = new IgniteConfiguration
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 上面的配置将节省`log₂(10⁸) − log₂(1024) ≈ 16`次缓存映射大小调整（初始映射容量默认为1024）。注意每次后续大小调整平均将比前一次多2倍的时间。
 ### 10.3.关闭备份
 如果使用了`分区`缓存，而且数据丢失并不是关键（比如，当有一个备份缓存存储时），可以考虑禁用`分区`缓存的备份。当备份启用时，缓存引擎会为每个条目维护一个远程拷贝，这需要网络交换，因此是耗时的。要禁用备份，可以使用如下的配置：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -1063,8 +1086,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -1073,8 +1097,9 @@ var cfg = new IgniteConfiguration
     </cacheConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1091,8 +1116,9 @@ var cfg = new IgniteConfiguration
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: warning 可能的数据丢失
 如果没有启用`分区`缓存的备份，会丢失缓存在故障节点的所有数据，这对于缓存临时数据或者数据可以通过某种方式重建可能是可以接受的。禁用备份之前一定要确认对于应用来说丢失数据不是严重问题。
@@ -1100,8 +1126,8 @@ var cfg = new IgniteConfiguration
 ### 10.4.调整退出策略
 退出默认是禁用的，为了确保缓存中的数据不会增长到超过限值，需要使用退出机制并选择合适的退出策略，下面的示例是配置LRU退出策略，最大值为100000条数据：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -1115,8 +1141,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -1127,8 +1154,9 @@ var cfg = new IgniteConfiguration
     </cacheConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
@@ -1143,8 +1171,9 @@ var cfg = new IgniteConfiguration
     ...
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 不管使用了哪个退出策略，缓存的性能取决于缓存中退出策略允许的最大数据量，即如果缓存大小超过了限值，就会发生退出。
 ### 10.5.调整缓存数据再平衡
@@ -1156,8 +1185,8 @@ var cfg = new IgniteConfiguration
 
 以下是在缓存配置中配置所有上述参数的示例：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -1172,8 +1201,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -1182,8 +1212,9 @@ var cfg = new IgniteConfiguration
     </cacheConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1200,8 +1231,9 @@ var cfg = new IgniteConfiguration
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 10.6.配置线程池
 Ignite的主线程池大小默认为可用CPU核数的2倍。在大多数情况下，每个内核持有2个线程可以提高应用的性能，因为上下文切换会更少，CPU缓存也会更好地工作。不过如果预期作业会因I/O或任何其他原因而阻塞，则增加线程池大小可能是有意义的。以下是如何配置线程池的示例：
@@ -1228,8 +1260,8 @@ Ignite的主线程池大小默认为可用CPU核数的2倍。在大多数情况�
 
 因此建议全局使用`Timestamp`格式。
 
-<Tabs>
-<Tab name="传统API">
+<code-group>
+<code-block title="传统API">
 
 ```csharp
 new IgniteConfiguration
@@ -1244,8 +1276,9 @@ new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="瘦客户端">
+</code-block>
+
+<code-block title="瘦客户端">
 
 ```csharp
 new IgniteClientConfiguration
@@ -1260,8 +1293,9 @@ new IgniteClientConfiguration
     }
 };
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 10.9.使用并置计算
 Ignite可以在内存中执行MapReduce计算，不过大多数计算通常需要处理缓存在远程节点上的某些数据。从远程节点加载该数据通常非常昂贵，但是将计算发送到数据所在的节点要廉价得多。最简单的方法是使用`ICompute.AffinityRun()`方法，还有其他方法，包括`ICacheAffinity.MapKeysToNodes()`方法。并置计算概念的更多信息和代码示例，请参见[关联并置](/doc/net/DataGrid.md#_7-关联并置)。
@@ -1469,8 +1503,8 @@ Ignite反射式序列化本质上是一种`IBinarizable`方式，其是通过反
 
 可以通过`BinaryReflectiveSerializer`显式启用原始模式：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var binaryConfiguration = new BinaryConfiguration
@@ -1484,8 +1518,9 @@ var binaryConfiguration = new BinaryConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -1498,8 +1533,9 @@ var binaryConfiguration = new BinaryConfiguration
 	</binaryConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 如果没有这个配置，`BinaryConfiguration`是不需要的。
 
@@ -1513,20 +1549,22 @@ Ignite中可以直接使用Entity Framework POCOs。
 
 将EF对象与Ignite结合使用时，要确认禁用创建代理：
 
-<Tabs>
-<Tab name="Entity Framework 6">
+<code-group>
+<code-block title="Entity Framework 6">
 
 ```csharp
 ctx.Configuration.ProxyCreationEnabled = false;
 ```
-</Tab>
-<Tab name="Entity Framework 5">
+</code-block>
+
+<code-block title="Entity Framework 5">
 
 ```csharp
 ctx.ContextOptions.ProxyCreationEnabled = false;
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 12.二进制模式
 上一章节[序列化](#_11-序列化)讲解了Ignite.NET如何将用户定义类型（类和结构）的实例转换为序列化形式，反之亦然。
@@ -1633,8 +1671,8 @@ Ignite.NET的Java部分默认会应用以下转换：
 
 例如，如果以下两种类型在.NET命名空间和Java包外部，则它们将自动彼此映射：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 class Person
@@ -1644,8 +1682,9 @@ class Person
     public byte[] Data { get; set; }
 }
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 class Person
@@ -1655,15 +1694,16 @@ class Person
     public byte[] data;
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 不过类型通常在某些命名空间或包中，包和命名空间的命名约定在Java和.NET中有所不同，.NET命名空间与Java包相同可能会出现问题。
 
 简单名称映射器（忽略命名空间）可以避免此问题，其应该在.NET端和Java端中同时配置：
 
-<Tabs>
-<Tab name="Java Spring XML">
+<code-group>
+<code-block title="Java Spring XML">
 
 ```xml
 <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1680,8 +1720,9 @@ class Person
     ...
 </bean>
 ```
-</Tab>
-<Tab name="C#">
+</code-block>
+
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -1693,8 +1734,9 @@ var cfg = new IgniteConfiguration
 }
 
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -1703,8 +1745,9 @@ var cfg = new IgniteConfiguration
   </binaryConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 13.3.类型兼容性
 
@@ -1839,22 +1882,24 @@ IIS有一个已知的问题：当重启Web应用时（由于代码更改或手�
 
 要解决此问题，需要确保为`IgniteInstanceName`分配唯一值或将`IgniteConfiguration.AutoGenerateIgniteInstanceName`属性设置为`true`：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration { AutoGenerateIgniteInstanceName = true };
 ```
-</Tab>
-<Tab name="web.config">
+</code-block>
+
+<code-block title="web.config">
 
 ```xml
 <igniteConfiguration autoGenerateIgniteInstanceName="true">
   ...
 </igniteConfiguration>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 这样就不会发生`GridName`冲突，并且来自旧AppDomain的节点最终会停止。
 ## 15.瘦客户端
@@ -1881,8 +1926,8 @@ Ignite服务端节点默认是启用了瘦客户端连接器的。该功能可�
 
 连接器可以做出如下调整：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg =  new IgniteConfiguration
@@ -1896,16 +1941,18 @@ var cfg =  new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
   <clientConnectorConfiguration host='myHost' port='10900' portRange='50' maxOpenCursorsPerConnection='50' />
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean  class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1918,8 +1965,9 @@ var cfg =  new IgniteConfiguration
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 15.4.接入集群
 瘦客户端API的入口点就是`Ignition.StartClient(IgniteClientConfiguration)`方法，其中`IgniteClientConfiguration.Host`属性是必需的，它应指向运行Ignite服务端节点的主机，其他属性应对应于服务端节点中`ClientConnectorConfiguration`的属性。

@@ -20,8 +20,8 @@ Ignite除了提供了标准的键-值的类似于Map的存储以外，也提供�
 
 下面是一个如何创建分布式队列和集合的例子：
 
-<Tabs>
-<Tab name="队列">
+<code-group>
+<code-block title="队列">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -32,8 +32,9 @@ IgniteQueue<String> queue = ignite.queue(
     new CollectionConfiguration() // Collection configuration.
 );
 ```
-</Tab>
-<Tab name="集合">
+</code-block>
+
+<code-block title="集合">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -43,16 +44,17 @@ IgniteSet<String> set = ignite.set(
     new CollectionConfiguration() // Collection configuration.
 );
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.2.并置和非并置模式
 如果只打算创建包含大量数据的几个Queue或者Set，那么应该以非并置模式创建，这会确保每个集群节点存储每个队列或者集合大体均等的一部分。另一方面，如果打算持有很多的队列或者集合，而大小又相对较小（和整个缓存比），那么以并置模式创建它们是更合理的。这个模式下所有的队列和集合元素都会存储在同一个集群节点上，但是每个节点会被赋予均等的队列或者集合数量。
 
 一个并置模式的队列或者集合可以通过`CollectionConfiguration`的`collocated`属性来创建，像下面这样：
 
-<Tabs>
-<Tab name="队列">
+<code-group>
+<code-block title="队列">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -64,8 +66,9 @@ colCfg.setCollocated(true);
 // Create collocated queue.
 IgniteQueue<String> queue = ignite.queue("queueName", 0, colCfg);
 ```
-</Tab>
-<Tab name="集合">
+</code-block>
+
+<code-block title="集合">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -77,8 +80,9 @@ colCfg.setCollocated(true);
 // Create collocated set.
 IgniteSet<String> set = ignite.set("setName", colCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 提示
 非并置模式只对`分区`缓存才有意义，也只有`分区`缓存才支持。
@@ -116,8 +120,8 @@ Ignite的原子性是跨集群分布式的，从根本上支持了对全局可�
 
 分布式原子化的long和reference可以分别通过`IgniteAtomicLong`和`IgniteAtomicReference`获得，如下：
 
-<Tabs>
-<Tab name="AtomicLong">
+<code-group>
+<code-block title="AtomicLong">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -128,8 +132,9 @@ IgniteAtomicLong atomicLong = ignite.atomicLong(
     false         // Create if it does not exist.
 )
 ```
-</Tab>
-<Tab name="AtomicReference">
+</code-block>
+
+<code-block title="AtomicReference">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -141,13 +146,14 @@ IgniteAtomicReference<Boolean> ref = ignite.atomicReference(
     true        // Create if it does not exist.
 );
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 下面是使用`IgniteAtomicLong`和`IgniteAtomicReference`的示例:
 
-<Tabs>
-<Tab name="AtomicLong">
+<code-group>
+<code-block title="AtomicLong">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -158,8 +164,9 @@ final IgniteAtomicLong atomicLong = ignite.atomicLong("atomicName", 0, true);
 // Increment atomic long on local node.
 System.out.println("Incremented value: " + atomicLong.incrementAndGet());
 ```
-</Tab>
-<Tab name="AtomicReference">
+</code-block>
+
+<code-block title="AtomicReference">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -171,8 +178,9 @@ IgniteAtomicReference<String> ref = ignite.atomicReference("refName", "someVal",
 //only then set the old value to new value.
 ref.compareAndSet("WRONG EXPECTED VALUE", "someNewVal"); // Won't change.
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 通过`IgniteAtomicLong`和`IgniteAtomicReference`提供的所有原子性操作都是同步的，一个原子性操作花费的时间依赖于与同一个原子性long类型的实例执行并发操作的节点数量，操作的强度以及网络的延时。
 
@@ -191,8 +199,8 @@ Ignite的原子化可以通过`IgniteConfiguration`的`atomicConfiguration`属�
 
 **示例**
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -208,8 +216,9 @@ Ignite的原子化可以通过`IgniteConfiguration`的`atomicConfiguration`属�
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 AtomicConfiguration atomicCfg = new AtomicConfiguration();
@@ -228,8 +237,9 @@ cfg.setAtomicConfiguration(atomicCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 4.CountDownLatch
 如果熟悉关于单一JVM内多线程间同步的`java.util.concurrent.CountDownLatch`,Ignite也提供了支持跨集群节点类似行为的`IgniteCountDownLatch`。

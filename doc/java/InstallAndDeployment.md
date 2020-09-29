@@ -14,23 +14,25 @@ Ignite对部署没有要求，可以非常容易地部署到私有主机或者�
 
 配置Ignite的工作文件夹：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     <property name="workDirectory" value="/path/to/work/directory"/>
     <!-- other properties -->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
 igniteCfg.setWorkDirectory("/path/to/work/directory");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 3.Maven配置
 ### 3.1.概述
@@ -145,8 +147,8 @@ sudo apt update
 sudo apt install dirmngr --no-install-recommends
 ```
 
-<Tabs>
-<Tab name="RPM">
+<code-group>
+<code-block title="RPM">
 
 ```bash
 sudo bash -c 'cat <<EOF > /etc/yum.repos.d/ignite.repo
@@ -160,8 +162,9 @@ gpgkey=http://apache.org/dist/ignite/KEYS
 EOF'
 sudo yum check-update
 ```
-</Tab>
-<Tab name="DEB">
+</code-block>
+
+<code-block title="DEB">
 
 ```bash
 sudo bash -c 'cat <<EOF > /etc/apt/sources.list.d/ignite.list
@@ -170,26 +173,29 @@ EOF'
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
 sudo apt update
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.3.Ignite的安装
 安装Ignite的最新版：
 
-<Tabs>
-<Tab name="RPM">
+<code-group>
+<code-block title="RPM">
 
 ```bash
 sudo yum install apache-ignite
 ```
-</Tab>
-<Tab name="DEB">
+</code-block>
+
+<code-block title="DEB">
 
 ```bash
 sudo apt install apache-ignite --no-install-recommends
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 安装后的结构如下：
 
@@ -230,23 +236,25 @@ sudo -u ignite /usr/bin/env bash    # switch to ignite user
 ```
 然后切换到Ignite的bin文件夹，启动一个节点：
 
-<Tabs>
-<Tab name="默认配置">
+<code-group>
+<code-block title="默认配置">
 
 ```bash
 cd /usr/share/apache-ignite         # navigate to Ignite home folder
 bin/ignite.sh                       # run Ignite with default configuration
 ```
-</Tab>
-<Tab name="自定义配置">
+</code-block>
+
+<code-block title="自定义配置">
 
 ```bash
 sudo -u ignite /usr/bin/env bash       # switch to ignite user
 cd /usr/share/apache-ignite/bin        # navigate to Ignite bin folder
 ./ignite.sh <path_to_custom_config>    # start Ignite with custom configuration
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.6.在Windows10 WSL中运行Ignite
 **网络配置**

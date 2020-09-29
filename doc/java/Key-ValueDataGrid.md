@@ -69,8 +69,8 @@ IgniteCache<Integer, String> cache = ignite.getOrCreateCache(cfg);
 ### 2.3.基本操作
 下面是一些JCache基本原子操作的例子：
 
-<Tabs>
-<Tab name="Put和Get">
+<code-group>
+<code-block title="Put和Get">
 
 ```java
 try (Ignite ignite = Ignition.start("examples/config/example-cache.xml")) {
@@ -84,8 +84,9 @@ try (Ignite ignite = Ignition.start("examples/config/example-cache.xml")) {
         System.out.println("Got [key=" + i + ", val=" + cache.get(i) + ']');
 }
 ```
-</Tab>
-<Tab name="原子操作">
+</code-block>
+
+<code-block title="原子操作">
 
 ```java
 // Put-if-absent which returns previous value.
@@ -106,8 +107,9 @@ success = cache.replace("World", 2, 22);
 // Remove-if-matches operation.
 success = cache.remove("Hello", 1);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: warning 死锁
 如果批量（比如`IgniteCache#putAll`、`IgniteCache#invokeAll`等）操作以并行方式执行，那么键应该是有序的，以避免死锁，应使用`TreeMap`而不是`HashMap`以保证一致性、有序性，注意这个对于`ATOMIC`和`TRANSACTIONAL`模式的缓存都是一样的。
@@ -118,8 +120,8 @@ success = cache.remove("Hello", 1);
 
 此外，可以在`EntryProcessor`中嵌入自定义逻辑，比如，获取之前缓存的数据然后加1。
 
-<Tabs>
-<Tab name="Java8">
+<code-group>
+<code-block title="Java8">
 
 ```java
 IgniteCache<String, Integer> cache = ignite.cache("mycache");
@@ -134,8 +136,9 @@ for (int i = 0; i < 10; i++)
     return null;
   });
 ```
-</Tab>
-<Tab name="Java7">
+</code-block>
+
+<code-block title="Java7">
 
 ```java
 IgniteCache<String, Integer> cache = ignite.cache("mycache");
@@ -153,8 +156,9 @@ for (int i = 0; i < 10; i++)
     }
   });
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 原子性
 `EntryProcessor`通过给键加锁以原子性方式执行。
@@ -287,8 +291,8 @@ Ignite中，*复制缓存*的实现类似于*分区缓存*，每个键都有一�
 #### 3.1.5.配置
 缓存可以每个缓存分别配置，通过设置`CacheConfiguration`的`cacheMode`属性实现：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -305,8 +309,9 @@ Ignite中，*复制缓存*的实现类似于*分区缓存*，每个键都有一�
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration("myCache");
@@ -320,8 +325,9 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.2.分区丢失策略
 在整个集群的生命周期中，所有的主节点以及持有这些分区数据的备份节点全部故障，导致分区数据丢失，是有可能的，这会导致部分数据丢失，这个需要根据实际需要进行处理。比如，有些应用认为这是严重的问题，会阻止所有到这个分区的写操作，而其它的应用可能忽略掉这个问题，因为数据可以重新加载。
@@ -338,8 +344,8 @@ Ignite支持如下的[分区丢失策略](https://ignite.apache.org/releases/lat
 
 分区丢失策略是在缓存层级进行配置的：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -356,8 +362,9 @@ Ignite支持如下的[分区丢失策略](https://ignite.apache.org/releases/lat
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 acheConfiguration cfg = new CacheConfiguration("cacheName");
@@ -365,8 +372,9 @@ acheConfiguration cfg = new CacheConfiguration("cacheName");
 // Set partition loss policy to READ_ONLY_SAFE
 cfg.setPartitionLossPolicy(PartitionLossPolicy.READ_ONLY_SAFE);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 **分区丢失事件处理**
 
@@ -417,8 +425,8 @@ boolean lostPartiion = cache.lostPartitions().isEmpty()
 #### 3.3.2.配置备份
 备份可以通过`CacheConfiguration`的`backups`属性进行配置，如下：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -436,8 +444,9 @@ boolean lostPartiion = cache.lostPartitions().isEmpty()
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
@@ -455,8 +464,9 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 3.3.3.同步和异步备份
 `CacheWriteSynchronizationMode`枚举可以用来配置主备之间同步和异步更新。写同步模式告诉Ignite在完成写或者提交之前客户端节点是否要等待来自远程节点的响应。
@@ -475,8 +485,8 @@ Ignition.start(cfg);
 
 写同步模式可以通过`CacheConfiguration`的`writeSynchronizationMode`属性进行配置，像下面这样：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -492,8 +502,9 @@ Ignition.start(cfg);
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
@@ -509,8 +520,9 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.4.缓存组
 对于集群中的缓存来说，总有一个开销，即缓存被拆分为分区后其状态必须在每个集群节点上进行跟踪以满足系统的需要。
@@ -528,8 +540,8 @@ Ignition.start(cfg);
 
 通过配置`CacheConfiguration`的`groupName`属性可以创建一个缓存组，示例如下：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -556,8 +568,9 @@ Ignition.start(cfg);
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Defining cluster configuration.
@@ -584,8 +597,9 @@ cfg.setCacheConfiguration(personCfg, orgCfg);
 //Starting the node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 从上例来看，`Person`和`Organization`都属于`group1`。
 
@@ -607,8 +621,8 @@ Ignition.start(cfg);
 #### 3.5.2.定义缓存模板
 要创建一个缓存模板，可以定义一个缓存配置然后将其加入`Ignite`实例，如下所示。如果希望在XML文件中定义缓存模板，需要在模板名之后加一个`*`号，用于区别这个配置是一个模板而不是一个实际的缓存。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <property name="cacheConfiguration">
@@ -625,8 +639,9 @@ Ignition.start(cfg);
    </list>
 </property>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 Ignite ignite = Ignition.start();
@@ -640,8 +655,9 @@ cfg.setCacheMode(CacheMode.PARTITIONED);
 // Register the cache template in Ignite.
 ignite.addCacheConfiguration(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 在集群中注册缓存模板后，就可以用它创建相同配置的缓存。
 #### 3.5.3.基于模板创建缓存
@@ -689,8 +705,8 @@ Ignite也通过`IndexingSpi`和`SpiQuery`类提供对自定义索引的支持。
 ### 4.3.扫描查询
 扫描查询可以通过用户定义的谓词以分布式的形式进行缓存的查询。
 
-<Tabs>
-<Tab name="Java8">
+<code-group>
+<code-block title="Java8">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("mycache");
@@ -702,8 +718,9 @@ try (QueryCursor<Cache.Entry<Long, Person>> cursor =
         System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 }
 ```
-</Tab>
-<Tab name="Java7">
+</code-block>
+
+<code-block title="Java7">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("mycache");
@@ -720,13 +737,14 @@ try (QueryCursor<Cache.Entry<Long, Person>> cursor = cache.query(new ScanQuery<>
         System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 扫描查询还支持可选的转换器闭包，它可以在服务端节点在将数据发送到客户端之前对其进行转换。这个很有用，比如，当只是希望从一个大的对象获取少量字段时，这样可以最小化网络的数据传输量，下面的示例显示了如何只获取对象的键，而不发送对象的值。
 
-<Tabs>
-<Tab name="Java8">
+<code-group>
+<code-block title="Java8">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("mycache");
@@ -737,8 +755,9 @@ List<Long> keys = cache.query(new ScanQuery<Long, Person>(
     Cache.Entry::getKey              // Transformer.
 ).getAll();
 ```
-</Tab>
-<Tab name="Java7">
+</code-block>
+
+<code-block title="Java7">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("mycache");
@@ -759,8 +778,9 @@ List<Long> keys = cache.query(new ScanQuery<>(
     }
 ).getAll();
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.4.SQL查询
 Ignite的SQL查询请参照SQL网格的相关章节。
@@ -814,8 +834,8 @@ public class Person implements Serializable {
 ### 4.7.使用QueryEntity进行查询配置
 索引和字段也可以通过`org.apache.ignite.cache.QueryEntity`进行配置，它便于通过Spring使用XML进行配置，详细信息可以参照JavaDoc。它与`@QuerySqlField`注解是等价的，因为在内部类注解会被转换成查询实体。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -856,8 +876,9 @@ public class Person implements Serializable {
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration<Long, Person> cacheCfg = new CacheConfiguration<>();
@@ -894,16 +915,17 @@ queryEntity.setIndexes(indexes);
 cacheCfg.setQueryEntities(Arrays.asList(queryEntity));
 ...
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 5.近缓存
 分区缓存和复制缓存也可以通过`近缓存`前移，它是堆内存中一个较小的本地缓存，可以用来存储最近或者最频繁访问的数据。和分区缓存一样，可以控制近缓存的大小以及回收策略。
 
 近缓存可以通过在`Ignite.createNearCache(NearCacheConfiguration)`中传入`NearCacheConfiguration`或者通过调用`Ignite.getOrCreateNearCache(String, NearCacheConfiguration)`方法在*客户端节点*直接创建。使用`Ignite.getOrCreateCache(CacheConfiguration, NearCacheConfiguration)`，可以在动态启动一个分布式缓存的同时为其创建一个近缓存。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -920,8 +942,9 @@ cacheCfg.setQueryEntities(Arrays.asList(queryEntity));
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Create near-cache configuration for "myCache".
@@ -937,8 +960,9 @@ nearCfg.setNearEvictionPolicyFactory(new LruEvictionPolicyFactory<>(100_000));
 IgniteCache<Integer, Integer> cache = ignite.getOrCreateCache(
     new CacheConfiguration<Integer, Integer>("myCache"), nearCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 通常只要用了Ignite的关联并置，近缓存就不应该用了。如果计算与相应的分区化缓存节点是并置的，那么近缓存也不需要了，因为所有数据只在分区缓存的本地才有效。不过有时无法将计算任务发送给远端节点，这时近缓存就可以显著提高应用的扩展性和总体性能。
 
@@ -988,8 +1012,8 @@ IgniteCache<Integer, Integer> cache = ignite.getOrCreateCache(
 
 本地监听器是通过`ContinuousQuery.setLocalListener(CacheEntryUpdatedListener<K, V>)`方法设置的。
 
-<Tabs>
-<Tab name="Java8">
+<code-group>
+<code-block title="Java8">
 
 ```java
 IgniteCache<Integer, String> cache = ignite.cache("mycache");
@@ -1021,8 +1045,9 @@ try (QueryCursor<Cache.Entry<Integer, String>> cur = cache.query(qry)) {
     cache.put(i, Integer.toString(i));
 }
 ```
-</Tab>
-<Tab name="Java7">
+</code-block>
+
+<code-block title="Java7">
 
 ```java
 IgniteCache<Integer, String> cache = ignite.cache(CACHE_NAME);
@@ -1067,8 +1092,9 @@ try (QueryCursor<Cache.Entry<Integer, String>> cur = cache.query(qry)) {
     cache.put(i, Integer.toString(i));
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 6.1.4.远程转换器
 持续查询默认会将整个更新后的对象发送给应用端的监听器，这会导致网络的过度使用，如果传输的对象很大，更是如此。另外，应用通常更希望得到更新对象的字段的子集，而不是整个对象。
@@ -1118,8 +1144,8 @@ qry.setLocalListener(names -> {
 注意，如果Scala的case class用于键类并且它的构造函数参数之一加注了`@AffinityKeyMapped`注解，默认这个注解并不会正确地用于生成的字段，因此也就不会被Ignite识别。要覆盖这个行为，可以使用`@field`[元注解](http://www.scala-lang.org/api/current/#scala.annotation.meta.package)而不是`@AffinityKeyMapped `（看下面的示例）。
 :::
 
-<Tabs>
-<Tab name="使用PersonKey">
+<code-group>
+<code-block title="使用PersonKey">
 
 ```java
 public class PersonKey {
@@ -1144,8 +1170,9 @@ comCache.put("myCompanyId", new Company(...));
 perCache.put(personKey1, p1);
 perCache.put(personKey2, p2);
 ```
-</Tab>
-<Tab name="使用PersonKey（Scala）">
+</code-block>
+
+<code-block title="使用PersonKey（Scala）">
 
 ```scala
 case class PersonKey (
@@ -1169,8 +1196,9 @@ compCache.put("myCompanyId", Company(...));
 perCache.put(personKey1, p1);
 perCache.put(personKey2, p2);
 ```
-</Tab>
-<Tab name="使用AffinityKey">
+</code-block>
+
+<code-block title="使用AffinityKey">
 
 ```java
 Object personKey1 = new AffinityKey("myPersonId1", "myCompanyId");
@@ -1184,8 +1212,9 @@ comCache.put("myCompanyId", new Company(..));
 perCache.put(personKey1, p1);
 perCache.put(personKey2, p2);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip SQL关联
 当在分区缓存的数据上执行分布式SQL关联时，一定要确保关联的键是并置的。
@@ -1198,8 +1227,8 @@ perCache.put(personKey2, p2);
 
 下面的例子显示了如何和上面提到的缓存`Person`和`Company`对象的同一个集群节点进行并置计算：
 
-<Tabs>
-<Tab name="Java8">
+<code-group>
+<code-block title="Java8">
 
 ```java
 String companyId = "myCompanyId";
@@ -1215,8 +1244,9 @@ ignite.compute().affinityRun("myCache", companyId, () -> {
   ...
 });
 ```
-</Tab>
-<Tab name="Java7">
+</code-block>
+
+<code-block title="Java7">
 
 ```java
 final String companyId = "myCompanyId";
@@ -1232,8 +1262,9 @@ ignite.compute().affinityRun("myCache", companyId, new IgniteRunnable() {
   }
 };
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 7.3.IgniteCompute和EntryProcessor
 `IgniteCompute.affinityRun(...)`和`IgniteCache.invoke(...)`方法都提供了数据和计算并置的能力。主要的不同在于`invoke(...)`方法是原子的并且执行时在键上加了锁，无法从`EntryProcessor`逻辑内部访问其它的键，因为它会触发一个死锁。
@@ -1253,8 +1284,8 @@ Ignite提供了`RendezvousAffinityFunction`，这个函数允许分区到节点�
 
 下面的代码片段显示了如何自定义和配置一个映射函数：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1276,8 +1307,9 @@ Ignite提供了`RendezvousAffinityFunction`，这个函数允许分区到节点�
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Preparing Apache Ignite node configuration.
@@ -1299,8 +1331,9 @@ cacheCfg.setAffinity(affFunc);
 // Setting the cache configuration.
 cfg.setCacheConfiguration(cacheCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 `AffinityFunction`是一个可插拔的API，也可以提供这个函数的自定义实现，`AffinityFunction`API的三个主要方法是：
 
@@ -1339,8 +1372,8 @@ Ignite支持几种类型的缓存操作，`事务`模式和`原子`模式，`原
 
 原子化模式是在`CacheAtomicityMode`枚举中定义的，
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1365,8 +1398,9 @@ Ignite支持几种类型的缓存操作，`事务`模式和`原子`模式，`原
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
@@ -1387,8 +1421,9 @@ cfg.setTransactionConfiguration(txCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 性能
 注意当使用`ATOMIC`模式时，事务是被禁用的，因为不需要事务，因此可以获得更高的性能和吞吐量。
@@ -1553,8 +1588,8 @@ K2 [key=2, cache=default]
 
 下面的示例显示如何配置超时时间：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1562,15 +1597,16 @@ K2 [key=2, cache=default]
     <property name="transactionConfiguration">
         <bean class="org.apache.ignite.configuration.TransactionConfiguration">
         <!--Set the timeout to 20 seconds-->
-        <property name="TxTimeoutOnPartitionMapExchange" value="20000"/>
+        <property name="txTimeoutOnPartitionMapExchange" value="20000"/>
         <!--Other trasaction configurations-->
         ...
         </bean>
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Create Ignite configuration
@@ -1587,8 +1623,9 @@ cfg.setTransactionConfiguration(txCfg);
 // Start the cluster node
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 如果事务因为超时而回滚，可以捕获并且处理`TransactionTimeoutException`。
 #### 8.1.8.集成JTA
@@ -1709,8 +1746,8 @@ while (retries < retryCount) {
 #### 8.3.3.开启MVCC
 要为缓存开启MVCC，需要在缓存配置中使用`TRANSACTIONAL_SNAPSHOT`原子化模式，如果使用`CREATE TABLE`命令创建表，则需要在该命令的`WITH`子句中将原子化模式作为参数传进去。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1727,14 +1764,16 @@ while (retries < retryCount) {
 </bean>
 
 ```
-</Tab>
-<Tab name="SQL">
+</code-block>
+
+<code-block title="SQL">
 
 ```sql
 CREATE TABLE Person WITH "ATOMICITY=TRANSACTIONAL_SNAPSHOT"
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: warning 警告
 `TRANSACTIONAL_SNAPSHOT`模式只支持默认的并发模型（`悲观`）和默认的隔离级别（`可重复读`），具体可以看上面的[并发模型和隔离级别](#_8-2-并发模型和隔离级别)章节。
@@ -1747,8 +1786,8 @@ CREATE TABLE Person WITH "ATOMICITY=TRANSACTIONAL_SNAPSHOT"
  - 如果使用了Java的事务API，会抛出`CacheException`异常（异常信息为`Cannot serialize transaction due to write conflict (transaction is marked for rollback)`），并且`Transaction.rollbackOnly`标志为`true`；
  - 如果通过JDBC/ODBC驱动执行了SQL事务，那么会得到`SQLSTATE:40001`错误代码。
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 for(int i = 1; i <=5 ; i++) {
@@ -1770,8 +1809,9 @@ for(int i = 1; i <=5 ; i++) {
     }
 }
 ```
-</Tab>
-<Tab name="JDBC">
+</code-block>
+
+<code-block title="JDBC">
 
 ```java
 Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
@@ -1812,8 +1852,9 @@ try {
     if (selectStmt != null) selectStmt.close();
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 8.3.5.限制
 **跨缓存事务**
@@ -1897,8 +1938,8 @@ Ignite中，只有在`TRANSACTIONAL`原子化模式中才支持锁，它可以�
 
 默认启用`ASYNC`再平衡模式，要使用其它的再平衡模式，可以像下面这样设置`CacheConfiguration`的`rebalanceMode`属性：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1912,8 +1953,9 @@ Ignite中，只有在`TRANSACTIONAL`原子化模式中才支持锁，它可以�
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
@@ -1927,8 +1969,9 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 10.3.再平衡线程池调节
 `IgniteConfiguration`提供了一个`setRebalanceThreadPoolSize`方法，它可以从Ignite的系统线程池中获取一定数量的线程用于数据再平衡。每当一个节点需要向远程节点发送一批数据时，或者需要处理来自相反方向的一批数据时，都会从池中获取一个系统线程，这个远程节点既可能是一个分区的主节点，也可能是备份节点。在批次发送/接收完以及处理完之后，该线程就会被释放。
@@ -1955,8 +1998,8 @@ Ignition.start(cfg);
 
 比如，如果希望再平衡器间隔100ms每个消息发送2MB数据，需要提供如下的配置：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1968,8 +2011,9 @@ Ignition.start(cfg);
 
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -1981,8 +2025,9 @@ cfg.setRebalanceThrottle(100);
 // Start the node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 10.5.配置
 缓存的再平衡行为可以通过下面的配置属性进行配置：

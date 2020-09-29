@@ -3,8 +3,8 @@
 ### 1.1.保护节点间的连接
 Ignite允许在所有节点之间使用SSL Socket进行通信。要使用SSL，需要设置`Factory<SSLContext>`以及配置Ignite配置文件的`SSL`段落，Ignite提供了一个默认的SSL上下文工厂，`org.apache.ignite.ssl.SslContextFactory`，它用一个配置好的keystore来初始化SSL上下文。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -18,8 +18,9 @@ Ignite允许在所有节点之间使用SSL Socket进行通信。要使用SSL，�
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
@@ -33,13 +34,14 @@ factory.setTrustStorePassword("123456".toCharArray());
 
 igniteCfg.setSslContextFactory(factory);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 某些情况下需要禁用客户端侧的证书认证（比如连接到一个自签名的服务器时），这可以通过给上述工厂设置禁用信任管理器实现，它可以通过`getDisabledTrustManager`获得。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -54,8 +56,9 @@ igniteCfg.setSslContextFactory(factory);
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
@@ -68,8 +71,9 @@ factory.setTrustManagers(SslContextFactory.getDisabledTrustManager());
 
 igniteCfg.setSslContextFactory(factory);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 如果配置了安全，那么日志就会包括：`communication encrypted=on`
 ```
@@ -79,8 +83,8 @@ INFO: Security status [authentication=off, communication encrypted=on]
 ### 1.2.SSL和TLS
 Ignite允许使用不同的加密类型，支持的加密算法可以参照：[http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext](http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#SSLContext),可以通过`setProtocol()`方法进行设置，默认值是`TLS`。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -93,8 +97,9 @@ Ignite允许使用不同的加密类型，支持的加密算法可以参照：[h
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
@@ -107,8 +112,9 @@ factory.setProtocol("TLS");
 
 igniteCfg.setSslContextFactory(factory);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 1.3.升级证书
 如果使用的是TLS/SSL，并且证书即将过期，则可以在不关闭集群的情况下安装新证书。
@@ -142,8 +148,8 @@ igniteCfg.setSslContextFactory(factory);
 
 要打开服务端认证，可以配置`IgniteConfiguration`的`authenticationEnabled`属性为`true`，比如：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -166,8 +172,9 @@ igniteCfg.setSslContextFactory(factory);
 
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Apache Ignite node configuration.
@@ -188,8 +195,9 @@ cfg.setAuthenticationEnabled(true);
 // Other configurations
 ...
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 **提供用户凭据**
 
@@ -209,20 +217,22 @@ ignite.myexamples.model.Person
 ```
 然后，在运行时配置系统属性：
 
-<Tabs>
-<Tab name="VM参数">
+<code-group>
+<code-block title="VM参数">
 
 ```properties
 -DIGNITE_MARSHALLER_WHITELIST=path/to/whitelist.txt
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 System.setProperty(IGNITE_MARSHALLER_WHITELIST, "Path/to/whitelist.txt");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 注意要将`Path/to/whitelist.txt`替换为白名单文件的实际路径。
 
@@ -239,20 +249,22 @@ ignite.myexamples.model.SomeOtherFile
 ```
 然后，在运行时配置系统属性：
 
-<Tabs>
-<Tab name="VM参数">
+<code-group>
+<code-block title="VM参数">
 
 ```
 -DIGNITE_MARSHALLER_BLACKLIST=path/to/blacklist.txt
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 System.setProperty(IGNITE_MARSHALLER_BLACKLIST, "Path/to/blacklist.txt");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 注意要将`Path/to/blacklist.txt`替换为黑名单文件的实际路径。
 
@@ -277,8 +289,8 @@ Ignite使用的是JDK提供的加密算法，`AES/CBC/PKCS5Padding`用于WAL记�
 ### 4.2.配置
 要开启集群的加密功能，需要在每个服务端节点的配置中提供一个主密钥，配置示例如下：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -299,8 +311,9 @@ Ignite使用的是JDK提供的加密算法，`AES/CBC/PKCS5Padding`用于WAL记�
     <!-- rest of configuration -->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration(“encrypted-instance”);
@@ -312,13 +325,14 @@ encSpi.setKeyStorePassword("secret");
 
 cfg.setEncryptionSpi(encSpi);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 配置好主密钥后，就可以向下面这样为每个缓存开启加密了：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="cache.cfg"
@@ -327,8 +341,9 @@ cfg.setEncryptionSpi(encSpi);
     <property name="encryptionEnabled" value="true"/>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration<Long, String> ccfg = new CacheConfiguration<Long, String>("encrypted-cache");
@@ -337,8 +352,9 @@ ccfg.setEncryptionEnabled(true);
 
 ignite.createCache(ccfg);
 ```
-</Tab>
-<Tab name="SQL">
+</code-block>
+
+<code-block title="SQL">
 
 ```sql
 CREATE TABLE encrypted(
@@ -347,8 +363,9 @@ CREATE TABLE encrypted(
   PRIMARY KEY (ID))
 WITH "ENCRYPTED=true";
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.3.主密钥生成示例
 带有主密钥的密钥存储库可以使用`keytool`来生成，如下：

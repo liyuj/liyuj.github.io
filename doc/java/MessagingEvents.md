@@ -43,8 +43,8 @@ send方法可以将一个带有特定消息主题的消息发送/发布到所有
 ### 1.5.示例
 下面的示例显示了在远程节点间的消息交换：
 
-<Tabs>
-<Tab name="有序消息">
+<code-group>
+<code-block title="有序消息">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -62,8 +62,9 @@ rmtMsg.remoteListen("MyOrderedTopic", (nodeId, msg) -> {
 for (int i = 0; i < 10; i++)
     rmtMsg.sendOrdered("MyOrderedTopic", Integer.toString(i),0);
 ```
-</Tab>
-<Tab name="无序消息">
+</code-block>
+
+<code-block title="无序消息">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -81,8 +82,9 @@ rmtMsg.remoteListen("MyUnOrderedTopic", (nodeId, msg) -> {
 for (int i = 0; i < 10; i++)
     rmtMsg.send("MyUnOrderedTopic", Integer.toString(i));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 2.本地和远程事件
 ### 2.1.概述
@@ -106,8 +108,8 @@ IgniteEvents evts = ignite.events();
 `remoteListen(...)`方法会在集群或者集群组内的所有节点上针对指定事件注册监听器。
 下面是每个方法的示例：
 
-<Tabs>
-<Tab name="本地监听">
+<code-group>
+<code-block title="本地监听">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -133,8 +135,9 @@ final IgniteCache<Integer, String> cache = ignite.cache("cacheName");
 for (int i = 0; i < 20; i++)
   cache.put(i, Integer.toString(i));
 ```
-</Tab>
-<Tab name="远程监听">
+</code-block>
+
+<code-block title="远程监听">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -155,8 +158,9 @@ ignite.events(ignite.cluster().forCacheNodes("cacheName")).remoteListen(null, rm
 for (int i = 0; i < 20; i++)
   cache.put(i, Integer.toString(i));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 在上述示例中，`EVT_CACHE_OBJECT_PUT`,`EVT_CACHE_OBJECT_READ`,`EVT_CACHE_OBJECT_REMOVED`是在`EventType`接口中预定义的事件类型常量。
 
@@ -181,8 +185,8 @@ for (int i = 0; i < 20; i++)
 ### 2.5.配置
 要获得集群内发生的任意任务或者缓存事件的通知，`IgniteConfiguration`的`includeEventTypes`属性必须启用：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -194,8 +198,9 @@ for (int i = 0; i < 20; i++)
     ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -206,8 +211,9 @@ cfg.setIncludeEventTypes(EVTS_CACHE);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 因为性能原因事件通知默认是关闭的。
 

@@ -17,8 +17,8 @@ AWS云上的节点发现通常认为很有挑战性。和其它大部分的虚�
 
 下面的例子显示了如何配置基于Amazon S3的IP探测器：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -41,8 +41,9 @@ AWS云上的节点发现通常认为很有挑战性。和其它大部分的虚�
   <constructor-arg value="YOUR_SECRET_ACCESS_KEY" />
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -63,13 +64,14 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 还可以将`Instance Profile`用作AWS的凭据提供者：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -91,8 +93,9 @@ Ignition.start(cfg);
   <constructor-arg value="false" />
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -113,16 +116,17 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 1.3.基于Amazon ALB的发现
 基于AWS ALB的IP探测器不需要节点注册其IP地址，该IP探测器会自动获取在`Application Load Balancer`下连接的所有节点的地址，并使用它们连接集群。至于使用，需要将`ipFinder`配置为`TcpDiscoveryAlbIpFinder`。
 
 下面是如何配置基于Amazon ALB的IP探测器的示例：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -150,8 +154,9 @@ Ignition.start(cfg);
   <constructor-arg value="YOUR_SECRET_ACCESS_KEY" />
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -173,16 +178,17 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 1.4.基于Amazon ELB的发现
 基于AWS ELB的IP探测器不需要节点注册其IP地址，该IP探测器会自动获取ELB中连接的所有节点的地址，然后使用它们连接集群。至于使用，需要将`ipFinder`配置为`TcpDiscoveryElbIpFinder`。
 
 下面是如何配置基于AWS ELB的IP探测器的示例：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -210,8 +216,9 @@ Ignition.start(cfg);
   <constructor-arg value="YOUR_SECRET_ACCESS_KEY" />
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -233,8 +240,9 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 提示
 上面的两个方法可以只配置一次然后就可以在所有的EC2示例中复用。
@@ -257,8 +265,8 @@ GCE上的节点发现通常认为很有挑战性。Google云，和其它大部�
 
 下面的例子显示了如何配置基于Google云存储的IP探测器：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -277,8 +285,9 @@ GCE上的节点发现通常认为很有挑战性。Google云，和其它大部�
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -295,8 +304,9 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 3.JClouds发现
 ### 3.1.概述
@@ -320,8 +330,8 @@ Ignition.start(cfg);
 
 下面的例子显示了如何配置基于Apache JCloud的IP探测器：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -346,8 +356,9 @@ Ignition.start(cfg);
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 TcpDiscoverySpi spi = new TcpDiscoverySpi();
@@ -365,7 +376,8 @@ cfg.setDiscoverySpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 <RightPane/>

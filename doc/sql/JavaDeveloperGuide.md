@@ -24,8 +24,8 @@ try (QueryCursor<List<?>> cursor = cache.query(sql)) {
 
 通过`SqlFieldsQuery`，还可以使用DML命令进行数据的修改：
 
-<Tabs>
-<Tab name="INSERT">
+<code-group>
+<code-block title="INSERT">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
@@ -34,8 +34,9 @@ cache.query(new SqlFieldsQuery(
     "INSERT INTO Person(id, firstName, lastName) VALUES(?, ?, ?)").
     setArgs(1L, "John", "Smith"));
 ```
-</Tab>
-<Tab name="UPDATE">
+</code-block>
+
+<code-block title="UPDATE">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
@@ -43,8 +44,9 @@ IgniteCache<Long, Person> cache = ignite.cache("personCache");
 cache.query(new SqlFieldsQuery("UPDATE Person set lastName = ? " +
          "WHERE id >= ?").setArgs("Jones", 2L));
 ```
-</Tab>
-<Tab name="DELETE">
+</code-block>
+
+<code-block title="DELETE">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
@@ -52,8 +54,9 @@ IgniteCache<Long, Person> cache = ignite.cache("personCache");
 cache.query(new SqlFieldsQuery("DELETE FROM Person " +
          "WHERE id >= ?").setArgs(2L));
 ```
-</Tab>
-<Tab name="MERGE">
+</code-block>
+
+<code-block title="MERGE">
 
 ```java
 IgniteCache<Long, Person> cache = ignite.cache("personCache");
@@ -61,8 +64,9 @@ IgniteCache<Long, Person> cache = ignite.cache("personCache");
 cache.query(new SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)" +
            " values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 1.2.示例
 Ignite的二进制包包括了一个可运行的`SqlDmlExample.java`，它是源代码的一部分，演示了上述提到的所有DML操作的使用。
@@ -108,8 +112,8 @@ cache.query(qry).getAll();
 ### 2.2.基于注解的配置
 索引，和可查询的字段一样，是可以通过编程的方式用`@QuerySqlField`进行配置的。如下所示，期望的字段已经加注了该注解。
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 public class Person implements Serializable {
@@ -132,8 +136,9 @@ public class Person implements Serializable {
   private float salary;
 }
 ```
-</Tab>
-<Tab name="Scala">
+</code-block>
+
+<code-block title="Scala">
 
 ```scala
 case class Person (
@@ -155,8 +160,9 @@ case class Person (
   ...
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 在SQL查询中，类型名会被用作表名，这时，表名为`Person`（模式名的定义和使用前面已经描述）。
 
@@ -350,8 +356,8 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" +
 
 下面的例子展示了如何实现：
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 // Preparing cache configuration.
@@ -387,8 +393,9 @@ cacheCfg.setQueryEntities(Collections.singletonList(entity));
 
 ignite.createCache(cacheCfg);
 ```
-</Tab>
-<Tab name="XML">
+</code-block>
+
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -428,8 +435,9 @@ ignite.createCache(cacheCfg);
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 哈希值自动计算和equals实现
 如果自定义键可以被序列化为二进制形式，那么Ignite会自动进行哈希值的计算并且实现`equals`方法。
@@ -442,8 +450,8 @@ ignite.createCache(cacheCfg);
 
 要配置索引以及/或者几何类型的可查询字段，可以使用和已有的非几何类型同样的方法，首先，可以使用`org.apache.ignite.cache.QueryEntity`定义索引，它对于基于Spring的XML配置文件非常方便，第二，通过`@QuerySqlField`注解来声明索引也可以达到同样的效果，它在内部会转化为`QueryEntities`。
 
-<Tabs>
-<Tab name="QuerySqlField">
+<code-group>
+<code-block title="QuerySqlField">
 
 ```java
 /**
@@ -462,8 +470,9 @@ private static class MapPoint {
     }
 }
 ```
-</Tab>
-<Tab name="QueryEntity">
+</code-block>
+
+<code-block title="QueryEntity">
 
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -493,8 +502,9 @@ private static class MapPoint {
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 使用上述方法定义了几何类型字段之后，就可以使用存储于这些字段中值进行查询了。
 ```java

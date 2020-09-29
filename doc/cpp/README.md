@@ -109,8 +109,8 @@ Apache Ignite官方在如下环境中进行了测试：
 
 在Linux平台，需要某些开发环境依赖项，下面列出了一些流行的发行版及其软件包系统：
 
-<Tabs>
-<Tab name="Ubuntu的APT">
+<code-group>
+<code-block title="Ubuntu的APT">
 
 ```bash
 apt-get install libtool autoconf make g++ libssl1.0-dev
@@ -121,8 +121,9 @@ apt-get install unixodbc-dev
 # If thick client enabled (disable with --disable-odbc):
 apt-get install openjdk-11-jdk
 ```
-</Tab>
-<Tab name="OpenSUSE的Zypper">
+</code-block>
+
+<code-block title="OpenSUSE的Zypper">
 
 ```bash
 zypper install libtool autoconf make gcc-c++ libopenssl-1_0_0-devel
@@ -133,8 +134,9 @@ zypper install unixODBC-devel
 # If thick client enabled (enable it with --enable-odbc):
 zypper install java-11-openjdk-devel
 ```
-</Tab>
-<Tab name="Fedora的Yum">
+</code-block>
+
+<code-block title="Fedora的Yum">
 
 ```bash
 yum install libtool autoconf make gcc-c++ compat-openssl10-devel
@@ -145,8 +147,9 @@ yum install unixODBC-devel
 # If thick client enabled (enable it with --enable-odbc):
 yum install java-11-openjdk-devel
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 另外，如果要构建测试，还会需要[Boost](http://www.boost.org/)（已经在1.58和1.68版本上做了测试），在Windows中需要正确配置`BOOST_HOME`环境变量。如果不需要测试，可以排除测试的工程，或者不对它们进行构建。在Linux中可以使用`configure`脚本，具体可以调用`./configure --help`寻求帮助。
 ::: warning OpenSSL
@@ -154,16 +157,17 @@ yum install java-11-openjdk-devel
 :::
 使用如下的命令可以构建C++的二进制包：
 
-<Tabs>
-<Tab name="Windows">
+<code-group>
+<code-block title="Windows">
 
 ```batch
 cd modules\platforms\cpp\project\vs
 
 msbuild ignite.sln /p:Configuration=Release /p:Platform=x64
 ```
-</Tab>
-<Tab name="Linux（系统范围）">
+</code-block>
+
+<code-block title="Linux（系统范围）">
 
 ```bash
 cd modules/platforms/cpp
@@ -182,8 +186,9 @@ make
 #for your system. It would probably require root:
 sudo make install
 ```
-</Tab>
-<Tab name="Linux(本地目录)">
+</code-block>
+
+<code-block title="Linux(本地目录)">
 
 ```bash
 cd modules/platforms/cpp
@@ -204,8 +209,9 @@ make
 #under specified prefix directory.
 make install
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 如要构建整个工程需要boost.test库
 如果不打算运行测试，就不要构建整个工程，或者说，可以只构建需要的工程。在Windows上，可以通过单击解决方案资源管理器中感兴趣的工程并选择“构建”来实现这一点。在Linux上，可以使用`configure`脚本启用/禁用不同组件的构建。
@@ -220,20 +226,22 @@ make install
 
 要用默认配置启动一个节点，打开终端，然后转到`IGNITE_HOME`文件夹（Ignite安装文件夹），使用上面的命令构建完成二进制包之后，只需要输入：
 
-<Tabs>
-<Tab name="Windows">
+<code-group>
+<code-block title="Windows">
 
 ```batch
 modules\platforms\cpp\project\vs\x64\Release\ignite.exe
 ```
-</Tab>
-<Tab name="Linux">
+</code-block>
+
+<code-block title="Linux">
 
 ```bash
 ./modules/platforms/cpp/ignite/ignite
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 输出大致如下：
 ```
@@ -246,26 +254,28 @@ modules\platforms\cpp\project\vs\x64\Release\ignite.exe
 
 如果要从命令行显式传递配置文件，需要在Ignite安装文件夹中输入`ignite.exe -springConfigUrl=<path to configuration file>`，比如：
 
-<Tabs>
-<Tab name="Windows">
+<code-group>
+<code-block title="Windows">
 
 ```batch
 modules\platforms\cpp\project\vs\x64\Release\ignite.exe -springConfigUrl=c:\work\my-config.xml
 ```
-</Tab>
-<Tab name="Linux">
+</code-block>
+
+<code-block title="Linux">
 
 ```bash
 ./modules/platforms/cpp/ignite/ignite -springConfigUrl=~/work/my-config.xml
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.4.第一个数据网格应用
 下面是一些小例子，进行分布式缓存的put/get操作，还有就是执行基本的事务：
 
-<Tabs>
-<Tab name="Put和Get">
+<code-group>
+<code-block title="Put和Get">
 
 ```cpp
 using namespace ignite;
@@ -292,8 +302,9 @@ for (int i = 0; i < 10; ++i)
   	std::cout << "Got [key=" << i << ", val=" << cache.Get(i) << "]";
 
 ```
-</Tab>
-<Tab name="原子操作">
+</code-block>
+
+<code-block title="原子操作">
 
 ```cpp
 // Put-if-absent which returns previous value.
@@ -314,8 +325,9 @@ success = cache.Replace(22, "World", "World!");
 // Remove-if-matches operation.
 success = cache.Remove(1, "Hello");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.5.Ignite Visor管理控制台
 检查数据网格的内容以及执行其它众多管理和监视操作的最简单方法是使用Ignite的Visor命令行工具。
@@ -492,8 +504,8 @@ namespace ignite
 ### 4.3.值的读写
 数据的读写有几种方法，第一个是直接使用对象的值：
 
-<Tabs>
-<Tab name="写">
+<code-group>
+<code-block title="写">
 
 ```cpp
 CustomType val;
@@ -503,19 +515,21 @@ CustomType val;
 
 writer.WriteObject<CustomType>("field_name", val);
 ```
-</Tab>
-<Tab name="读">
+</code-block>
+
+<code-block title="读">
 
 ```cpp
 CustomType val = reader.ReadObject<CustomType>("field_name");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 第二种方法是做同样的事，但是使用的是对象的指针：
 
-<Tabs>
-<Tab name="写">
+<code-group>
+<code-block title="写">
 
 ```cpp
 // Writing null to as a value for integer field.
@@ -529,8 +543,9 @@ CustomType *val;
 
 writer.WriteObject<CustomType*>("field_name", val);
 ```
-</Tab>
-<Tab name="读">
+</code-block>
+
+<code-block title="读">
 
 ```cpp
 // Reading value which can be null.
@@ -545,8 +560,9 @@ if (nullablePtr) {
   // ...
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 基于指针的技术的一个优点是它允许以值的形式对`null`进行读写。
 ## 5.平台互操作性
@@ -869,8 +885,8 @@ void TestClientPartitionAwareness()
 ### 7.6.认证
 如果服务端开启了[身份认证](/doc/java/Security.md#_2-1-认证)，那么必须提供用户的凭据：
 
-<Tabs>
-<Tab name="C++">
+<code-group>
+<code-block title="C++">
 
 ```cpp
 #include <ignite/thin/ignite_client.h>
@@ -896,8 +912,9 @@ void TestClientWithAuth()
   cacheClient.Put(42, "Hello Ignite Thin Client with auth!");
 }
 ```
-</Tab>
-<Tab name="服务端的Spring配置示例">
+</code-block>
+
+<code-block title="服务端的Spring配置示例">
 
 ```xml
 <bean  class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -918,8 +935,9 @@ void TestClientWithAuth()
 
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 7.7.性能考量
 瘦客户端不是集群的一部分。因此关于集群及其数据分布的信息有限，再加上额外的网络延迟，瘦客户端上单个操作的延迟可能比普通客户端的延迟更差。虽然可以采取一些措施来改善瘦客户端延迟，例如最优映射，不过还是建议在单一键值操作方面使用批量操作（例如`GetAll()`，`SetAll()`），以在吞吐量方面获得最佳性能。

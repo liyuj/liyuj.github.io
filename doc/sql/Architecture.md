@@ -201,8 +201,8 @@ Ignite默认会试图将所有结果集加载到内存然后将其发送给查�
 
 为了降低内存的消耗，以适度降低性能为代价，可以对结果集进行延迟加载和处理，这个可以通过给JDBC或者ODBC连接串传递`lazy`参数，或者对于Java、.NET和C++来说，使用一个简单的方法也可以实现:
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 SqlFieldsQuery query = new SqlFieldsQuery("SELECT * FROM Person WHERE id > 10");
@@ -210,14 +210,16 @@ SqlFieldsQuery query = new SqlFieldsQuery("SELECT * FROM Person WHERE id > 10");
 // Result set will be loaded lazily.
 query.setLazy(true);
 ```
-</Tab>
-<Tab name="JDBC连接串">
+</code-block>
+
+<code-block title="JDBC连接串">
 
 ```
 jdbc:ignite:thin://192.168.0.15?lazy=true
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 5.4.查询并置化的数据
 当Ignite执行分布式查询时，它将子查询发送给单个集群成员，并将结果分组到汇总节点上。如果预先知道查询的数据是按`GROUP BY`条件并置处理的，可以使用`SqlFieldsQuery.collocated = true`来减少节点之间的网络流量和查询执行时间。当此标志设置为`true`时，首先对单个节点执行查询，并将结果发送到汇总节点进行最终计算。考虑下面的示例，假设数据由`department_id`进行并置：
@@ -350,8 +352,8 @@ Ignite有一组默认的模式，为了更好地对表进行管理，也允许�
 
 下面的配置示例会创建两个模式：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -363,8 +365,9 @@ Ignite有一组默认的模式，为了更好地对表进行管理，也允许�
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -375,8 +378,9 @@ cfg.setSqlSchemas("MY_SCHEMA", "MY_SECOND_SCHEMA");
 ```
 jdbc:ignite:thin://127.0.0.1/MY_SCHEMA
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 6.2.PUBLIC模式
 `PUBLIC`模式用于当需要模式而又未指定时的默认值，比如，当通过JDBC接入集群而又未显式指定模式，就会接入`PUBLIC`模式。
@@ -408,14 +412,15 @@ SQL_<SchemaName>_<TableName>
 ### 7.2.开启MVCC
 要开启缓存的MVCC支持，需要在缓存的配置中使用`TRANSACTIONAL_SNAPSHOT`原子化模式。如果是使用的`CREATE TABLE`语句建的表，可以使用命令的`WITH`子句传递指定的原子化模式参数。
 
-<Tabs>
-<Tab name="SQL">
+<code-group>
+<code-block title="SQL">
 
 ```sql
 CREATE TABLE Person WITH "ATOMICITY=TRANSACTIONAL_SNAPSHOT"
 ```
-</Tab>
-<Tab name="XML">
+</code-block>
+
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -431,8 +436,9 @@ CREATE TABLE Person WITH "ATOMICITY=TRANSACTIONAL_SNAPSHOT"
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 7.3.限制
 

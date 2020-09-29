@@ -15,8 +15,8 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
 
 嵌入式节点可以通过`SpringCacheManager`自己启动，这种情况下需要分别通过`configurationPath`或者`configuration`属性提供一个Ignite配置文件的路径或者`IgniteConfiguration`Bean（看下面的示例）。注意同时设置两个属性是非法的，会抛出`IllegalArgumentException`。
 
-<Tabs>
-<Tab name="配置文件路径">
+<code-group>
+<code-block title="配置文件路径">
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -36,8 +36,9 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
     <cache:annotation-driven/>
 </beans>
 ```
-</Tab>
-<Tab name="配置Bean">
+</code-block>
+
+<code-block title="配置Bean">
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -61,8 +62,9 @@ Ignite提供了一个`SpringCacheManager`-一个[Spring缓存抽象](http://docs
     <cache:annotation-driven/>
 </beans>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 当缓存管理器初始化时也可能已经有一个Ignite节点正在运行（比如已经通过`ServletContextListenerStartup`启动了）。这时只需要简单地通过`gridName`属性提供网格名字就可以了。注意如果不设置网格名字，缓存管理器会试图使用默认的Ignite实例（名字为`null`的），下面是一个示例：
 

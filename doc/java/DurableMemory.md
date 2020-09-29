@@ -129,8 +129,8 @@ B+树的元页面需要获得特定B+树的根和它的层次，以高效地执�
 ## 3.内存配置
 Ignite节点默认会至多消耗本地可用内存的20%，大多数情况下这也是唯一需要调整的参数，要修改默认内存区大小，代码如下所示：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -152,8 +152,9 @@ Ignite节点默认会至多消耗本地可用内存的20%，大多数情况下�
 <!-- The rest of the parameters. -->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -170,8 +171,9 @@ cfg.setDataStorageConfiguration(storageCfg);
 // Starting the node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.1.全局配置参数
 要修改固化内存的全局配置参数，比如页面大小，通过`IgniteConfiguration.setDataStorageConfiguration(...)`方法传递一个`org.apache.ignite.configuration.DataStorageConfiguration`即可，下面是可用的参数：
@@ -189,8 +191,8 @@ Ignition.start(cfg);
 
 下面是使用`DataStorageConfiguration`如何修改页面大小和并发级别的示例代码：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -207,8 +209,9 @@ Ignition.start(cfg);
   <!--- Additional settings ---->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Ignite configuration.
@@ -226,8 +229,9 @@ storageCfg.setPageSize(8192);
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.2.内存区
 固化内存默认会初始化一个单一的可扩展内存区，它会占用禁用持久化的本地主机上20%的可用内存。也可以使用`org.apache.ignite.configuration.DataRegionConfiguration`类，定义多个数据区，它们可以有不同的参数，比如区大小、持久化和退出策略。
@@ -238,8 +242,8 @@ cfg.setDataStorageConfiguration(storageCfg);
 
 比如，要配置一个500MB的内存区并且开启持久化，那么就需要定义一个如下所示的配置：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -273,8 +277,9 @@ cfg.setDataStorageConfiguration(storageCfg);
   <!-- Other configurations. -->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Ignite configuration.
@@ -304,13 +309,14 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 下一步，要使用这个配置好的区域，使得Ignite缓存将数据存储于其中，需要将区域的名字（`500MB_Region`）传递给`org.apache.ignite.configuration.CacheConfiguration.setDataRegionName(...)`方法：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -338,8 +344,9 @@ cfg.setDataStorageConfiguration(storageCfg);
     <!-- ....... -->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Ignite configuration.
@@ -360,8 +367,9 @@ cacheCfg.setName("SampleCache");
 // Applying the cache configuration.
 cfg.setCacheConfiguration(cacheCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 用这个配置启动Ignite集群后，固化内存会分配一个初始大小为100MB的内存区，然后它可以增长到500MB。数据的超集会一直存储于磁盘上，确保即使内存空间不足也不会出现数据丢失的情况。如果开启了持久化，Ignite会自动地使最近最少使用的数据退出。这个区域只会存储`SampleCache`的所有数据，除非通过前述的方式显式地指定其它的内存区，其它的缓存都会绑定到默认的内存区。
 
@@ -412,8 +420,8 @@ Ignite支持两种页面选择算法：
 #### 4.2.1.Random-LRU
 要启用Random-LRU退出算法，可以将`DataPageEvictionMode.RANDOM_LRU`传递给相应的`DataRegionConfiguration`，如下所示：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -446,8 +454,9 @@ Ignite支持两种页面选择算法：
   <!-- The rest of the configuration. -->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Ignite configuration.
@@ -477,8 +486,9 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 Random-LRU算法工作方式如下：
 
@@ -489,8 +499,8 @@ Random-LRU算法工作方式如下：
 #### 4.2.2.Random-2-LRU
 Random-2-LRU退出算法是Random-LRU算法的抗扫描版，要启用这个算法，将`DataPageEvictionMode.RANDOM_2_LRU`传递给相应的`DataRegionConfiguration`即可，如下所示：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -523,8 +533,9 @@ Random-2-LRU退出算法是Random-LRU算法的抗扫描版，要启用这个算�
   <!-- The rest of the configuration. -->
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Ignite configuration.
@@ -554,8 +565,9 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 // Applying the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 在Random-2-LRU算法中，每个数据页面会存储两个最近访问时间戳，退出时，算法会随机地从跟踪数组中选择5个索引值，然后两个最近时间戳中的最小值会被用来和另外四个候选页面中的最小值进行比较。
 
@@ -590,8 +602,8 @@ LRU退出策略适用于堆内缓存的大多数使用场景，不确定时可�
 
 这个策略通过`LruEvictionPolicy`实现，通过`CacheConfiguration`进行配置，支持批量退出以及受到内存大小限制的退出。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
@@ -611,8 +623,9 @@ LRU退出策略适用于堆内缓存的大多数使用场景，不确定时可�
     ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
@@ -632,16 +645,17 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 4.3.2.先进先出（FIFO）
 FIFO退出策略基于先进先出算法，它确保缓存中保存时间最久的数据会被首先退出，它与`LruEvictionPolicy`不同，因为它忽略了数据的访问顺序。
 
 这个策略通过`FifoEvictionPolicy`实现，通过`CacheConfiguration`进行配置,支持批量退出以及受到内存大小限制的退出。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
@@ -661,8 +675,9 @@ FIFO退出策略基于先进先出算法，它确保缓存中保存时间最久�
     ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
@@ -682,8 +697,9 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 #### 4.3.3.有序
 有序退出策略和FIFO退出策略很像，不同点在于通过默认或者用户定义的比较器定义了数据的顺序，然后确保最小的数据（即排序数值最小的数据）会被退出。
@@ -692,8 +708,8 @@ Ignition.start(cfg);
 
 这个策略通过`SortedEvictionPolicy`实现，通过`CacheConfiguration`进行配置，支持批量退出以及受到内存大小限制的退出。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.cache.CacheConfiguration">
@@ -716,8 +732,9 @@ Ignition.start(cfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 CacheConfiguration cacheCfg = new CacheConfiguration();
@@ -737,8 +754,9 @@ cfg.setCacheConfiguration(cacheCfg);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 5.过期策略
 过期策略指定了在缓存条目过期之前必须经过的时间量，时间可以从创建、最后访问或者修改时间开始计算。
@@ -764,8 +782,8 @@ Ignition.start(cfg);
 
 过期策略可以在`CacheConfiguration`中进行设置，这个策略可以用于缓存内的所有条目。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -783,14 +801,16 @@ Ignition.start(cfg);
     </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 cfg.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.ZERO));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 也可以在对缓存进行单独操作时对过期策略进行设置或者修改。
 ```java

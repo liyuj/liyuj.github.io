@@ -7,8 +7,8 @@ Ignite内存平台基于固化内存架构，如果开启了[Ignite原生持久�
 ### 1.1.配置
 固化内存可以通过代码进行配置，也可以通过配置文件进行配置，下面是相关的配置方法：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -45,8 +45,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -62,8 +63,9 @@ var cfg = new IgniteConfiguration
   </dataStorageConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 更多的内容，请参见[内存配置](/doc/java/DurableMemory.md#_3-内存配置)的相关文档。
 

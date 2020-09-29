@@ -9,8 +9,8 @@ Ignite原生持久化是一种分布式的兼容ACID和SQL的磁盘存储，其�
 ### 1.1.用法
 要启用分布式持久化存储，需要配置`IgniteConfiguration.PersistentStoreConfiguration`属性：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -46,8 +46,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -73,8 +74,9 @@ var cfg = new IgniteConfiguration
   </cacheConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 启用持久化存储后，所有的数据和索引都会同时保存在内存和磁盘上。
 
@@ -161,8 +163,8 @@ Ignite有一个存储会话的概念，该概念可能跨越多个缓存存储�
 
 `ICacheStore`接口可以在`CacheConfiguration`中通过`PlatformDotNetCacheStoreFactory`，以代码或者配置文件的方式进行配置：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -173,8 +175,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -185,8 +188,9 @@ var cfg = new IgniteConfiguration
     </cacheConfiguration>
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -207,6 +211,7 @@ var cfg = new IgniteConfiguration
   ...
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 <RightPane/>

@@ -109,8 +109,8 @@ Ignite扩展了DataFrame，简化了开发，并且如果Ignite用作Spark的内
 ### 3.3.Spark会话
 如果要使用Spark DataFrame API，需要为Spark编程创建一个入口点，这是通过`SparkSession`对象实现的，大体如下：
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 // Creating spark session.
@@ -120,8 +120,9 @@ SparkSession spark = SparkSession.builder()
   .config("spark.executor.instances", "2")
   .getOrCreate();
 ```
-</Tab>
-<Tab name="Scala">
+</code-block>
+
+<code-block title="Scala">
 
 ```scala
 // Creating spark session.
@@ -131,8 +132,9 @@ implicit val spark = SparkSession.builder()
   .config("spark.executor.instances", "2")
   .getOrCreate()
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.4.读取DataFrame
 要从Ignite中读取数据，需要指定格式以及Ignite配置文件的路径，假定如下名为`person`的Ignite表已经创建和部署：
@@ -147,8 +149,8 @@ CREATE TABLE person (
 ```
 下面的Spark代码可以从`person`表检索到名字为`Mary Major`的所有行：
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 SparkSession spark = _
@@ -165,8 +167,9 @@ df.createOrReplaceTempView("person");
 Dataset<Row> igniteDF = spark.sql(
   "SELECT * FROM person WHERE name = 'Mary Major'");
 ```
-</Tab>
-<Tab name="Scala">
+</code-block>
+
+<code-block title="Scala">
 
 ```scala
 val spark: SparkSession = …
@@ -182,8 +185,9 @@ df.createOrReplaceTempView("person")
 
 val igniteDF = spark.sql("SELECT * FROM person WHERE name = 'Mary Major'")
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.5.保存DataFrames
 ::: tip 实现细节
@@ -206,8 +210,8 @@ Ignite可以作为Spark创建和维护的DataFrame的存储层，下面的保存
 
 保存模式可以通过`mode(SaveMode mode)`方法指定，具体可以参照Spark的文档，下面是该方法的一个示例：
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 SparkSession spark = _
@@ -222,8 +226,9 @@ jsonDataFrame.write()
 //... other options
    .save();
 ```
-</Tab>
-<Tab name="Scala">
+</code-block>
+
+<code-block title="Scala">
 
 ```scala
 val spark: SparkSession = …
@@ -238,8 +243,9 @@ jsonDataFrame.write
 //... other options
   .save()
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 如果是通过保存DataFrame的途径创建的新表，那么必须定义下面的选项：
 
@@ -248,8 +254,8 @@ jsonDataFrame.write
 
 下面的示例展示了如何将JSON文件的内容写入Ignite：
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 SparkSession spark = _
@@ -266,8 +272,9 @@ jsonDataFrame.write()
   .option(IgniteDataFrameSettings.OPTION_CREATE_TABLE_PARAMETERS(), "template=replicated")
   .save();
 ```
-</Tab>
-<Tab name="Scala">
+</code-block>
+
+<code-block title="Scala">
 
 ```scala
 val spark: SparkSession = …
@@ -284,8 +291,9 @@ jsonDataFrame.write
   .option(OPTION_CREATE_TABLE_PARAMETERS, "template=replicated")
   .save()
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 3.6.IgniteSparkSession和IgniteExternalCatalog
 针对已知数据源（比如表和视图）的元信息的读取和存储，Spark引入了叫做`catalog`的实体，关于这个目录，Ignite提供了自己的实现，叫做`IgniteExternalCatalog`。
@@ -310,8 +318,8 @@ CREATE TABLE person (
 ```
 然后执行下面的代码，列出表的元数据信息：
 
-<Tabs>
-<Tab name="Java">
+<code-group>
+<code-block title="Java">
 
 ```java
 // Using SparkBuilder provided by Ignite.
@@ -332,8 +340,9 @@ igniteSession.catalog().listColumns("person").show();
 // This will print out schema of CITY table.
 igniteSession.catalog().listColumns("city").show();
 ```
-</Tab>
-<Tab name="Scala">
+</code-block>
+
+<code-block title="Scala">
 
 ```scala
 // Using SparkBuilder provided by Ignite.
@@ -354,8 +363,9 @@ igniteSession.catalog.listColumns("person").show()
 // This will print out schema of CITY table.
 igniteSession.catalog.listColumns("city").show()
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 代码输出大体如下：
 ```
@@ -458,8 +468,8 @@ Ignite可以部署在Mesos集群上，具体细节请参见[Mesos部署](/doc/ja
 ### 4.3.Maven
 Ignite的Spark构件已经上传到[Maven中心库](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.ignite%22)，根据使用的Scala版本，引入下面的对应的依赖：
 
-<Tabs>
-<Tab name="Scala 2.11">
+<code-group>
+<code-block title="Scala 2.11">
 
 ```xml
 <dependency>
@@ -468,8 +478,9 @@ Ignite的Spark构件已经上传到[Maven中心库](http://search.maven.org/#sea
   <version>${ignite.version}</version>
 </dependency>
 ```
-</Tab>
-<Tab name="Scala 2.10">
+</code-block>
+
+<code-block title="Scala 2.10">
 
 ```xml
 <dependency>
@@ -478,26 +489,29 @@ Ignite的Spark构件已经上传到[Maven中心库](http://search.maven.org/#sea
   <version>${ignite.version}</version>
 </dependency>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.4.SBT
 如果在Scala应用中使用SBT作为构建工具，那么可以使用下面的一行命令，将Ignite的Spark构件加入`build.sbt`：
 
-<Tabs>
-<Tab name="Scala 2.11">
+<code-group>
+<code-block title="Scala 2.11">
 
 ```
 libraryDependencies += "org.apache.ignite" % "ignite-spark" % "ignite.version"
 ```
-</Tab>
-<Tab name="Scala 2.10">
+</code-block>
+
+<code-block title="Scala 2.10">
 
 ```
 libraryDependencies += "org.apache.ignite" % "ignite-spark_2.10" % "ignite.version"
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.5.类路径配置
 当使用IgniteRDD或者Ignite的DataFrame API时，要注意Spark的执行器以及驱动在它们的类路径中所有必需的Ignite的jar包都是可用的，Spark提供了若干种方式来修改驱动或者执行器进程的类路径。

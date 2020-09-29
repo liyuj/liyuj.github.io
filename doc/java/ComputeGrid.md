@@ -42,8 +42,8 @@ Ignite计算网格可以对集群或者集群组内的任何闭包进行广播�
 ### 2.2.broadcast方法
 所有的`broadcast(...)`方法会将一个给定的作业广播到所有的集群节点或者集群组。
 
-<Tabs>
-<Tab name="Java8广播">
+<code-group>
+<code-block title="Java8广播">
 
 ```java
 final Ignite ignite = Ignition.ignite();
@@ -55,8 +55,9 @@ IgniteCompute compute = ignite.compute(ignite.cluster().forRemotes());
 compute.broadcast(() -> System.out.println("Hello Node: " + Ignition.localIgnite().cluster().localNode().id()));
 
 ```
-</Tab>
-<Tab name="Java8异步广播">
+</code-block>
+
+<code-block title="Java8异步广播">
 
 ```java
 final Ignite ignite = Ignition.ignite();
@@ -72,8 +73,9 @@ ComputeTaskFuture<?> fut = compute.future():
 
 fut.listen(f -> System.out.println("Finished sending broadcast job."));
 ```
-</Tab>
-<Tab name="Java7广播">
+</code-block>
+
+<code-block title="Java7广播">
 
 ```java
 final Ignite ignite = Ignition.ignite();
@@ -91,8 +93,9 @@ compute.broadcast(
     }
 );
 ```
-</Tab>
-<Tab name="Java7异步广播">
+</code-block>
+
+<code-block title="Java7异步广播">
 
 ```java
 final Ignite ignite = Ignition.ignite();
@@ -119,14 +122,15 @@ fut.listen(new IgniteInClosure<? super ComputeTaskFuture<?>>() {
     }
 });
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.3.call和run方法
 所有的`call(...)`和`run(...)`方法都可以在集群或者集群组内既可以执行单独的作业也可以执行作业的集合。
 
-<Tabs>
-<Tab name="Java8：call">
+<code-group>
+<code-block title="Java8：call">
 
 ```java
 Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
@@ -141,8 +145,9 @@ Collection<Integer> res = ignite.compute().call(calls);
 // Add all the word lengths received from cluster nodes.
 int total = res.stream().mapToInt(Integer::intValue).sum();
 ```
-</Tab>
-<Tab name="Java8:run">
+</code-block>
+
+<code-block title="Java8:run">
 
 ```java
 IgniteCompute compute = ignite.compute();
@@ -153,8 +158,9 @@ for (String word : "Print words on different cluster nodes".split(" "))
     // Run on some cluster node.
     compute.run(() -> System.out.println(word));
 ```
-</Tab>
-<Tab name="Java8:异步call">
+</code-block>
+
+<code-block title="Java8:异步call">
 
 ```java
 Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
@@ -176,8 +182,9 @@ asyncCompute.future().listen(fut -> {
     System.out.println("Total number of characters: " + total);
 });
 ```
-</Tab>
-<Tab name="Java8:异步run">
+</code-block>
+
+<code-block title="Java8:异步run">
 
 ```java
 IgniteCompute asyncCompute = ignite.compute().withAsync();
@@ -196,8 +203,9 @@ for (String word : "Print words on different cluster nodes".split(" ")) {
 // Wait for completion of all futures.
 futs.stream().forEach(ComputeTaskFuture::get);
 ```
-</Tab>
-<Tab name="Java7:call">
+</code-block>
+
+<code-block title="Java7:call">
 
 ```java
 Collection<IgniteCallable<Integer>> calls = new ArrayList<>();
@@ -221,8 +229,9 @@ int total = 0;
 for (Integer i : res)
   total += i;
 ```
-</Tab>
-<Tab name="Java7:异步run">
+</code-block>
+
+<code-block title="Java7:异步run">
 
 ```java
 IgniteCompute asyncCompute = ignite.compute().withAsync();
@@ -246,14 +255,15 @@ for (String word : "Print words on different cluster nodes".split(" ")) {
 for (ComputeTaskFuture<?> f : futs)
   f.get();
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.4.apply方法
 闭包是一个代码块，它是把代码体和任何外部变量包装起来然后以一个函数对象的形式在内部使用它们，然后可以在任何传入一个变量的地方传递这样一个函数对象，然后执行。所有的apply方法都可以在集群内执行闭包。
 
-<Tabs>
-<Tab name="Java8：apply">
+<code-group>
+<code-block title="Java8：apply">
 
 ```java
 IgniteCompute compute  = ignite.compute();
@@ -267,8 +277,9 @@ Collection<Integer> res = compute.apply(
 // Add all the word lengths received from cluster nodes.
 int total = res.stream().mapToInt(Integer::intValue).sum();
 ```
-</Tab>
-<Tab name="Java8:异步apply">
+</code-block>
+
+<code-block title="Java8:异步apply">
 
 ```java
 // Enable asynchronous mode.
@@ -290,8 +301,9 @@ asyncCompute.future().listen(fut -> {
     System.out.println("Total number of characters: " + total);
 });
 ```
-</Tab>
-<Tab name="Java7:apply">
+</code-block>
+
+<code-block title="Java7:apply">
 
 ```java
 // Execute closure on all cluster nodes.
@@ -311,8 +323,9 @@ int sum = 0;
 for (int len : res)
     sum += len;
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 3.Executor Service
 IgniteCompute提供了一个方便的API以在集群内执行计算。虽然也可以直接使用JDK提供的标准`ExecutorService`接口，但是Ignite还提供了一个`ExecutorService`接口的分布式实现然后可以在集群内自动以负载平衡的模式执行所有计算。该计算具有容错性以及保证只要有一个节点处于活动状态就能保证计算得到执行，可以将其视为一个分布式的集群化线程池。
@@ -393,8 +406,8 @@ ExecutorService exec = ignite.executorService(workerGrp);
 ### 4.5.示例
 下面是一个`ComputeTask`和`ComputeJob`的示例：
 
-<Tabs>
-<Tab name="ComputeTaskSplitAdapter">
+<code-group>
+<code-block title="ComputeTaskSplitAdapter">
 
 ```java
 IgniteCompute compute = ignite.compute();
@@ -442,8 +455,9 @@ private static class CharacterCountTask extends ComputeTaskSplitAdapter<String, 
   }
 }
 ```
-</Tab>
-<Tab name="ComputeTaskAdapter">
+</code-block>
+
+<code-block title="ComputeTaskAdapter">
 
 ```java
 IgniteCompute compute = ignite.compute();
@@ -499,8 +513,9 @@ private static class CharacterCountTask extends ComputeTaskAdapter<String, Integ
     }
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.6.分布式任务会话
 每个任务执行时都会创建分布式任务会话，它是由`ComputeTaskSession`接口定义的。任务会话对于任务和其产生的所有作业都是可见的，因此一个作业或者一个任务设置的属性也可以被其它的作业访问。任务会话也可以在属性设置或者等待属性设置时接收通知。
@@ -627,8 +642,8 @@ assert res == 2;
 这个保证使得可以执行复杂的业务逻辑，因为作业执行的全过程中让数据一直位于同一个节点至关重要。比如，这个特性可以将执行*本地*SQL查询作为`affinityCall(...)`或者`affinityRun(...)`触发的作业的一部分，不用担心因为数据再平衡导致本地查询返回部分结果集。
 :::
 
-<Tabs>
-<Tab name="Java8:affinityRun">
+<code-group>
+<code-block title="Java8:affinityRun">
 
 ```java
 IgniteCache<Integer, String> cache = ignite.cache(CACHE_NAME);
@@ -644,8 +659,9 @@ for (int key = 0; key < KEY_CNT; key++) {
     });
 }
 ```
-</Tab>
-<Tab name="Java8:异步affinityRun">
+</code-block>
+
+<code-block title="Java8:异步affinityRun">
 
 ```java
 IgniteCache<Integer, String> cache = ignite.cache(CACHE_NAME);
@@ -668,8 +684,9 @@ for (int key = 0; key < KEY_CNT; key++) {
 // Wait for all futures to complete.
 futs.stream().forEach(IgniteFuture::get);
 ```
-</Tab>
-<Tab name="Java7:affinityRun">
+</code-block>
+
+<code-block title="Java7:affinityRun">
 
 ```java
 final IgniteCache<Integer, String> cache = ignite.cache(CACHE_NAME);
@@ -689,8 +706,9 @@ for (int i = 0; i < KEY_CNT; i++) {
     });
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 注意
 `affinityCall(...)`或者`affinityRun(...)`方法都有重载的版本，可以锁定分区，避免作业跨多个缓存执行时，分区的退出，要做的仅仅是将缓存的名字传递给上述方法。
@@ -742,8 +760,8 @@ Ignite将任务拆分成作业然后为了加快处理的速度将它们分配�
 |---|---|---|
 |`setMaximumFailoverAttempts(int)`|设置尝试将故障作业转移到其它节点的最大次数|5|
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="grid.custom.cfg" class="org.apache.ignite.IgniteConfiguration" singleton="true">
@@ -756,8 +774,9 @@ Ignite将任务拆分成作业然后为了加快处理的速度将它们分配�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 AlwaysFailoverSpi failSpi = new AlwaysFailoverSpi();
@@ -773,8 +792,9 @@ cfg.setFailoverSpi(failSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 8.负载平衡
 ### 8.1.概述
@@ -797,8 +817,8 @@ Ignite中负载平衡是通过`LoadBalancingSpi`实现的，它控制所有节�
 
 如果配置成全局模式，对于所有的任务都会维护一个节点的单一连续队列然后每次都会从队列中选择一个节点。这个模式中（不像每任务模式），当多个任务并发执行时，即使任务的拆分大小等同于节点的数量，同一个任务的某些作业仍然可能被赋予同一个节点。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="grid.custom.cfg" class="org.apache.ignite.IgniteConfiguration" singleton="true">
@@ -812,8 +832,9 @@ Ignite中负载平衡是通过`LoadBalancingSpi`实现的，它控制所有节�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 RoundRobinLoadBalancingSpi spi = new RoundRobinLoadBalancingSpi();
@@ -829,14 +850,15 @@ cfg.setLoadBalancingSpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 8.3.随机和加权负载平衡
 `WeightedRandomLoadBalancingSpi`会为作业的执行随机选择一个节点。也可以选择为节点赋予权值，这样有更高权重的节点最终会使将作业分配给它的机会更多。所有节点的权重默认值都是10。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean id="grid.custom.cfg" class="org.apache.ignite.IgniteConfiguration" singleton="true">
@@ -850,8 +872,9 @@ Ignition.start(cfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 WeightedRandomLoadBalancingSpi spi= new WeightedRandomLoadBalancingSpi();
@@ -870,8 +893,9 @@ cfg.setLoadBalancingSpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 8.4.磨洋工
 通常集群由很多计算机组成，这就可能存在配置不均衡的情况，这时开启`JobStealingCollisionSpi`就会有助于避免作业聚集在过载的节点，或者远离低利用率的节点。
@@ -882,8 +906,8 @@ Ignition.start(cfg);
 
 下面是配置`JobStealingCollisionSpi`的示例：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration" singleton="true">
@@ -911,8 +935,9 @@ Ignition.start(cfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
@@ -948,8 +973,9 @@ JobStealingCollisionSpi spi = new JobStealingCollisionSpi();
 
  cfg.setFailoverSpi(failoverSpi);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: warning 必要的配置
 注意`org.apache.ignite.spi.failover.jobstealing.JobStealingFailoverSpi`和`IgniteConfiguration.getMetricsUpdateFrequency()`都要开启，这样这个SPI才能正常工作，`JobStealingCollisionSpi`的其它配置参数都是可选的。
@@ -1036,8 +1062,8 @@ Ignite中，检查点功能是通过`CheckpointSpi`提供的，它直接支持�
 |---|---|---|
 |`setDirectoryPaths(Collection)`|设置检查点要保存的共享文件夹的目录路径。这个路径既可以是绝对的也可以是相对于`IGNITE_HOME`环境变量或者系统参数指定的路径|`IGNITE_HOME/work/cp/sharedfs`|
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration" singleton="true">
@@ -1056,8 +1082,9 @@ Ignite中，检查点功能是通过`CheckpointSpi`提供的，它直接支持�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -1079,8 +1106,9 @@ cfg.setCheckpointSpi(checkpointSpi);
 // Starts Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 9.6.缓存检查点配置
 `CacheCheckpointSpi`对于检查点SPI来说是一个基于缓存的实现，检查点数据会存储于Ignite数据网格中的一个预定义缓存中。
@@ -1114,8 +1142,8 @@ Ignition.start(cfg);
 
 [Apache DBCP](http://commons.apache.org/proper/commons-dbcp/)项目对于数据源和连接池提供了各种封装，可以通过Spring配置文件或者代码以spring bean的形式使用这些封装类来配置这个SPI，可以参照[Apache DBCP](http://commons.apache.org/proper/commons-dbcp/)来获得更多的信息。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration" singleton="true">
@@ -1133,8 +1161,9 @@ Ignition.start(cfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 JdbcCheckpointSpi checkpointSpi = new JdbcCheckpointSpi();
@@ -1154,8 +1183,9 @@ cfg.setCheckpointSpi(checkpointSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 9.8.Amazon S3 检查点配置
 `S3CheckpointSpi`使用S3存储来保存检查点，但是前提是要有一个S3 bucket（桶），具体请参见[http://aws.amazon.com/](http://aws.amazon.com/)。
@@ -1168,8 +1198,8 @@ Ignition.start(cfg);
 |`setClientConfiguration(Client)`|设置AWS客户端配置|`无`|
 |`setBucketNameSuffix(String)`|设置bucket名字后缀|`default-bucket`|
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration" singleton="true">
@@ -1187,8 +1217,9 @@ Ignition.start(cfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -1207,8 +1238,9 @@ cfg.setCheckpointSpi(cpSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 10.作业调度
 ### 10.1.概述
@@ -1222,8 +1254,8 @@ Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行�
 
 注意如果将`parallelJobsNumber`设置为1，可以保证所有作业同时只会执行一个，这样就没有任何两个作业并发执行。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration" singleton="true">
@@ -1237,8 +1269,9 @@ Ignite中，作业是在客户端侧的任务拆分初始化或者闭包执行�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 FifoQueueCollisionSpi colSpi = new FifoQueueCollisionSpi();
@@ -1255,8 +1288,9 @@ cfg.setCollisionSpi(colSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 10.3.优先级排序
 `PriorityQueueCollisionSpi`可以为每个作业设置一个优先级，因此高优先级的作业会比低优先级的作业先执行。
@@ -1296,8 +1330,8 @@ public class MyUrgentTask extends ComputeTaskSplitAdapter<Object, Object> {
 
 和FIFO排序一样，并行执行作业的数量是由`parallelJobsNumber`配置参数控制的。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration" singleton="true">
@@ -1314,8 +1348,9 @@ public class MyUrgentTask extends ComputeTaskSplitAdapter<Object, Object> {
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 PriorityQueueCollisionSpi colSpi = new PriorityQueueCollisionSpi();
@@ -1332,8 +1367,9 @@ cfg.setCollisionSpi(colSpi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 11.任务部署
 除了对等类加载之外，Ignite还有一个部署机制，它负责在运行时从不同的源中部署任务和类。
@@ -1396,8 +1432,8 @@ xyz.class
 
 下面的实例演示了可用的SPI是如何部署的，不同的协议也可以一起使用。
 
-<Tabs>
-<Tab name="File协议">
+<code-group>
+<code-block title="File协议">
 
 ```java
 // The example expects that you have a GAR file in
@@ -1416,8 +1452,9 @@ try(Ignite ignite = Ignition.start(cfg)) {
     ignite.compute().execute("myproject.HelloWorldTask", "my args");
 }
 ```
-</Tab>
-<Tab name="HTTP协议">
+</code-block>
+
+<code-block title="HTTP协议">
 
 ```java
 // The example expects that you have a HTMP under
@@ -1436,8 +1473,9 @@ try(Ignite ignite = Ignition.start(cfg)) {
     ignite.compute().execute("myproject.HelloWorldTask", "my args");
 }
 ```
-</Tab>
-<Tab name="XML配置">
+</code-block>
+
+<code-block title="XML配置">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -1455,8 +1493,9 @@ try(Ignite ignite = Ignition.start(cfg)) {
   </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 **配置**
 

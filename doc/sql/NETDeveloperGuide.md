@@ -4,8 +4,8 @@ C#/.NET开发者可以使用特定的SQL API来查询和修改数据库中的数
 ### 1.1.SqlFieldsQueries
 `SqlFieldsQuery`接受一个标准SQL作为其构造器的参数，下面是其执行查询的代码。可以只选定特定的字段，来最小化网络和序列化开销。
 
-<Tabs>
-<Tab name="SqlFieldsQuery">
+<code-group>
+<code-block title="SqlFieldsQuery">
 
 ```csharp
 var cache = ignite.GetOrCreateCache<int, Person>("personCache");
@@ -18,8 +18,9 @@ var sql = new SqlFieldsQuery(
 foreach (var fields in cache.QueryFields(sql))
     Console.WriteLine("Person Name = {0}", fields[0]);
 ```
-</Tab>
-<Tab name="带关联的SqlFieldsQuery">
+</code-block>
+
+<code-block title="带关联的SqlFieldsQuery">
 
 ```csharp
 // In this example, suppose Person objects are stored in a
@@ -38,44 +39,49 @@ var sql = new SqlFieldsQuery(
 foreach (IList fields in personCache.QueryFields(sql))
     Console.WriteLine("Person Name = {0}", fields[0]);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: warning 可查询字段定义
 在特定字段可以被`SqlFieldsQuery`访问之前，它们应做为SQL模式的一部分，使用标准的DDL命令，或者特定的.NET属性，或者`QueryEntity`配置，都可以进行字段的定义。
 :::
 通过`SqlFieldsQuery`，可以执行后续的DML命令来对数据进行修改：
 
-<Tabs>
-<Tab name="INSERT">
+<code-group>
+<code-block title="INSERT">
 
 ```csharp
 cache.QueryFields(new SqlFieldsQuery("INSERT INTO Person(id, firstName, " +
     "lastName) values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
-</Tab>
-<Tab name="MERGE">
+</code-block>
+
+<code-block title="MERGE">
 
 ```csharp
 cache.QueryFields(new SqlFieldsQuery("MERGE INTO Person(id, firstName, " +
     "lastName) values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
-</Tab>
-<Tab name="UPDATE">
+</code-block>
+
+<code-block title="UPDATE">
 
 ```csharp
 cache.QueryFields(new SqlFieldsQuery("UPDATE Person set lastName = ? " +
     "WHERE id >= ?", "Jones", 2L));
 ```
-</Tab>
-<Tab name="DELETE">
+</code-block>
+
+<code-block title="DELETE">
 
 ```csharp
 cache.QueryFields(new SqlFieldsQuery("DELETE FROM Person " +
     "WHERE id >= ?", 2));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 1.2.示例
 Ignite的二进制包中包含了可以直接运行的`QueryDmlExample`，[源代码](https://github.com/apache/ignite/tree/master/modules/platforms/dotnet/examples/Apache.Ignite.Examples/Datagrid)在这里，该示例演示了上述所有DML操作的用法。
@@ -224,8 +230,8 @@ public class Employee
 ### 2.2.基于QueryEntity的配置
 索引和字段也可以通过`Apache.Ignite.Core.Cache.Configuration.QueryEntity`进行配置，通过代码、app.config和Spring配置文件都可以。这个和上面的基于属性的配置是等价的，因为在内部属性最后也会被转换为QueryEntity。
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -266,8 +272,9 @@ var cfg = new IgniteConfiguration
     }
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <cacheConfiguration>
@@ -295,8 +302,9 @@ var cfg = new IgniteConfiguration
     </queryEntities>
 </cacheConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.CacheConfiguration">
@@ -338,8 +346,9 @@ var cfg = new IgniteConfiguration
     </property>
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 运行时修改索引和可查询字段
 如果需要在运行时管理索引或者使新的字段对SQL引擎可见，可以使用[ALTER TABLE, CREATE/DROP INDEX](/doc/sql/SQLReference.md#_2-数据定义语言（ddl）)命令。
@@ -386,8 +395,8 @@ Type属性是.NET类型，TypeName属性是Java类型名，Type属性自动配�
 :::
 不过一旦决定引入自定义复杂主键并在DML语句中引用其字段，就必须在`QueryEntity`配置中将`QueryField.IsKeyField`设置为`true`。使用基于属性的配置时，不需要任何额外的步骤，`QueryEntity.KeyType`中所有标有`[QuerySqlField]`的字段将被视为主键字段。当使用手动`QueryEntity`配置时，`IsKeyField`应显式配置。
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new CacheConfiguration("cars", new QueryEntity
@@ -403,8 +412,9 @@ var cfg = new CacheConfiguration("cars", new QueryEntity
 	}
 });
 ```
-</Tab>
-<Tab name="XML">
+</code-block>
+
+<code-block title="XML">
 
 ```xml
 <cacheConfiguration name="cars">
@@ -420,8 +430,9 @@ var cfg = new CacheConfiguration("cars", new QueryEntity
   </queryEntities>
 </cacheConfiguration>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: 自动GetHashCode和Equals实现
 如果对象可以序列化为二进制形式，则Ignite将在序列化期间计算其哈希值并将其写入最后的二进制数组。此外，Ignite还提供了Equals方法的自定义实现，以满足二进制对象的比较需求。这意味着无需覆盖自定义键和值的`GetHashCode`和`Equals`方法即可在Ignite中使用它们，具体请参见[序列化](/doc/net/README.md#_11-序列化)。

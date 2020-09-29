@@ -96,58 +96,63 @@ Ignite入门的最简单方式是使用每次版本发布生成的二进制压�
  - （可选）将`ignite-rest-http`文件夹从`{ignite}/libs/optional`移动到`{ignite}/libs`，这样开启Ignite的REST服务库后，就可以使用Ignite的Web控制台对集群进行管理和监控；
  - （可选）配置`IGNITE_HOME`环境变量指向Ignite的安装文件夹，路径不要以`/`（Windows为`\`）结尾，如果Ignite运行有问题，需要关注这个配置项；
 
-<Tabs>
-<Tab name="以XML格式配置工作目录">
+<code-group>
+<code-block title="以XML格式配置工作目录">
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
     <property name="workDirectory" value="/path/to/work/directory"/>
     <!-- other properties -->
 </bean>
 ```
-</Tab>
-<Tab name="以编程方式配置工作目录">
+</code-block>
+
+<code-block title="以编程方式配置工作目录">
 
 ```java
 IgniteConfiguration igniteCfg = new IgniteConfiguration();
 igniteCfg.setWorkDirectory("/path/to/work/directory");
 ```
-</Tab>
-</Tabs>
+</code-block>
+</code-group>
 
 ### 3.3.启动Ignite集群
 可以从命令行启动Ignite集群，或者使用默认的配置，或者传入一个自定义配置文件，可以同时启动任意多个节点，他们都会自动地相互发现。
 
 在命令行中转到Ignite安装文件夹的`bin`目录：
 
-<Tabs>
-<Tab name="Linux">
+<code-group>
+<code-block title="Linux">
 ```shell
 cd {ignite}/bin/
 ```
-</Tab>
-<Tab name="Windows">
+</code-block>
+
+<code-block title="Windows">
 
 ```batch
 cd {ignite}\bin\
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 向下面这样，将一个自定义配置文件作为参数传递给`ignite.sh|bat`，然后启动一个节点：
 
-<Tabs>
-<Tab name="Linux">
+<code-group>
+<code-block title="Linux">
 ```shell
 ./ignite.sh ../examples/config/example-ignite.xml
 ```
-</Tab>
-<Tab name="Windows">
+</code-block>
+
+<code-block title="Windows">
 
 ```batch
 ignite.bat ..\examples\config\example-ignite.xml
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 输出大致如下：
 ```
@@ -407,8 +412,8 @@ Ignite中，预定义的资源都是可以进行依赖注入的，同时支持�
 ### 6.2.基于属性和基于方法
 可以通过在一个属性或者方法上加注注解来注入资源。当加注在属性上时，Ignite只是在注入阶段简单地设置属性的值（不会理会该属性的访问修饰符）。如果在一个方法上加注了资源注解，它会访问一个与注入资源相对应的输入参数的类型，如果匹配，那么在注入阶段，就会将适当的资源作为输入参数，然后调用该方法。
 
-<Tabs>
-<Tab name="基于属性">
+<code-group>
+<code-block title="基于属性">
 
 ```java
 Ignite ignite = Ignition.ignite();
@@ -427,8 +432,9 @@ Collection<String> res = ignite.compute().broadcast(new IgniteCallable<String>()
   }
 });
 ```
-</Tab>
-<Tab name="基于方法">
+</code-block>
+
+<code-block title="基于方法">
 
 ```java
 public class MyClusterJob implements ComputeJob {
@@ -443,8 +449,9 @@ public class MyClusterJob implements ComputeJob {
     ...
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 ### 6.3.预定义的资源
 有很多的预定义资源可供注入：
 
@@ -494,8 +501,8 @@ Ignite的服务网格调用使用的是服务线程池，Ignite的服务和计�
 
 自定义线程池需要在`IgniteConfiguration`中进行定义，并且需要有一个唯一的名字：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 ```xml
 <bean id="grid.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
   ...
@@ -510,16 +517,18 @@ Ignite的服务网格调用使用的是服务线程池，Ignite的服务和计�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = ...;
 
 cfg.setExecutorConfiguration(new ExecutorConfiguration("myPool").setSize(16));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 这样，假定下面的计算任务由上面定义的`myPool`线程池中的线程执行：
 ```java
@@ -791,8 +800,8 @@ Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/c
 
 要使用Log4j进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -805,8 +814,9 @@ Ignite默认会使用`java.util.logging.Logger`（JUL），通过`$IGNITE_HOME/c
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -820,8 +830,9 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 在上面的配置中，`log4j.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
 ::: tip 注意
@@ -843,8 +854,8 @@ Log4j支持运行时配置，即配置文件的修改无需应用重启即可生
 
 要使用Log4j2进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -857,8 +868,9 @@ Log4j支持运行时配置，即配置文件的修改无需应用重启即可生
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -872,8 +884,9 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 在上面的配置中，`log4j2.xml`的路径要么是绝对路径，要么是相对路径，相对路径可以相对于`META-INF`，也可以相对于`IGNITE_HOME`。
 ::: tip 注意
@@ -894,8 +907,8 @@ Log4j2支持运行时配置，即配置文件的修改无需应用重启即可�
 
 要使用JCL进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -907,8 +920,9 @@ Log4j2支持运行时配置，即配置文件的修改无需应用重启即可�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -922,8 +936,9 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: tip 注意
 注意JCL只是简单地将日志消息转发给底层的日志系统，这需要正确的配置，具体请参见[JCL官方文档](https://commons.apache.org/proper/commons-logging/guide.html#Configuration)。比如要使用Log4j，类路径中需要添加必要的库文件。
@@ -943,8 +958,8 @@ ignite.log().info("Info Message Logged!");
 
 要使用JCL进行日志记录，需要配置`IgniteConfiguration`的`gridLogger`属性，如下所示：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -956,8 +971,9 @@ ignite.log().info("Info Message Logged!");
 
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -971,8 +987,9 @@ Ignite ignite = Ignition.start(cfg);
 
 ignite.log().info("Info Message Logged!");
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 要了解更多的信息，可以看[SLF4J手册](https://www.slf4j.org/docs.html)。
 ### 9.7.日志配置示例

@@ -55,8 +55,8 @@ class CacheEventListener : IEventListener<CacheEvent>
 ### 1.3.配置
 要接收集群中任何缓存或者任务的通知，必须配置`IgniteConfiguration`中的`includeEventTypes`属性：
 
-<Tabs>
-<Tab name="C#">
+<code-group>
+<code-block title="C#">
 
 ```csharp
 var cfg = new IgniteConfiguration
@@ -64,8 +64,9 @@ var cfg = new IgniteConfiguration
     IncludedEventTypes = {EventType.TaskFailed, EventType.JobFinished}
 };
 ```
-</Tab>
-<Tab name="app.config">
+</code-block>
+
+<code-block title="app.config">
 
 ```xml
 <igniteConfiguration>
@@ -75,8 +76,9 @@ var cfg = new IgniteConfiguration
     </includedEventTypes>
 </igniteConfiguration>
 ```
-</Tab>
-<Tab name="Spring XML">
+</code-block>
+
+<code-block title="Spring XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -88,8 +90,9 @@ var cfg = new IgniteConfiguration
   	...
 </bean>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 事件通知因为性能原因默认是关闭的。
 ::: tip 提示

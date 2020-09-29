@@ -21,8 +21,8 @@ Ignite支持数据定义语言(DDL)语句，可以在运行时创建和删除表
 
 如果希望从源代码入手，下面的示例代码会演示如果通过JDBC以及ODBC驱动来获得一个连接：
 
-<Tabs>
-<Tab name="JDBC">
+<code-group>
+<code-block title="JDBC">
 
 ```java
 // Register JDBC driver
@@ -32,8 +32,9 @@ Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
 Connection conn = DriverManager.getConnection(
     "jdbc:ignite:thin://127.0.0.1/");
 ```
-</Tab>
-<Tab name="ODBC">
+</code-block>
+
+<code-block title="ODBC">
 
 ```cpp
 // Combining connect string
@@ -46,8 +47,9 @@ SQLSMALLINT outstrlen;
 SQLRETURN ret = SQLDriverConnect(dbc, NULL, reinterpret_cast<SQLCHAR*>(&connectStr[0]), static_cast<SQLSMALLINT>(connectStr.size()),
 outstr, sizeof(outstr), &outstrlen, SQL_DRIVER_COMPLETE);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 JDBC连接会使用thin模式驱动然后接入本地主机（`127.0.0.1`），一定要确保`ignite-core.jar`位于应用或者工具的类路径中，具体信息可以查看`JDBC驱动`相关的章节。
 
@@ -55,38 +57,43 @@ ODBC连接也是接入本地localhost，端口是10800，具体可以查看`ODBC
 
 不管选择哪种方式，都需要打开一个命令行工具，然后转到`{apache-ignite-version}/bin`，然后执行`ignite.sh`或者`ignite.bat`脚本，这样可以启动一个或者多个节点，如果使用了Ignite.NET或者Ignite.C++，那么也可以使用对应的可执行文件启动一个节点。
 
-<Tabs>
-<Tab name="Linux">
+<code-group>
+<code-block title="Linux">
 
 ```bash
 ./ignite.sh
 ```
-</Tab>
-<Tab name="Windows">
+</code-block>
+
+<code-block title="Windows">
 
 ```batch
 ignite.bat
 ```
-</Tab>
-<Tab name=".NET">
+</code-block>
+
+<code-block title=".NET">
 
 ```batch
 platforms\dotnet\bin\Apache.Ignite.exe
 ```
-</Tab>
-<Tab name="C++ Windows">
+</code-block>
+
+<code-block title="C++ Windows">
 
 ```batch
 modules\platforms\cpp\project\vs\x64\Release\ignite.exe
 ```
-</Tab>
-<Tab name="C++ Linux">
+</code-block>
+
+<code-block title="C++ Linux">
 
 ```bash
 ./modules/platforms/cpp/ignite/ignite
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 如果节点是通过Java应用启动，要保证在Maven的`pom.xml`文件中包含`ignite-indexing`模块依赖：
 ```xml
@@ -101,8 +108,8 @@ modules\platforms\cpp\project\vs\x64\Release\ignite.exe
 
 下面的示例代码会创建City和Person表：
 
-<Tabs>
-<Tab name="SQL">
+<code-group>
+<code-block title="SQL">
 
 ```sql
 CREATE TABLE City (
@@ -113,8 +120,9 @@ CREATE TABLE Person (
   id LONG, name VARCHAR, city_id LONG, PRIMARY KEY (id, city_id))
   WITH "backups=1, affinityKey=city_id";
 ```
-</Tab>
-<Tab name="JDBC">
+</code-block>
+
+<code-block title="JDBC">
 
 ```java
 // Create database tables
@@ -132,8 +140,9 @@ try (Statement stmt = conn.createStatement()) {
     " WITH \"backups=1, affinityKey=city_id\"");
 }
 ```
-</Tab>
-<Tab name="ODBC">
+</code-block>
+
+<code-block title="ODBC">
 
 ```cpp
 SQLHSTMT stmt;
@@ -158,8 +167,9 @@ SQLSMALLINT queryLen2 = static_cast<SQLSMALLINT>(sizeof(query2));
 
 SQLExecDirect(stmt, query, queryLen);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 `CREATE TABLE`命令执行之后，会做如下的工作：
 
@@ -177,16 +187,17 @@ SQLExecDirect(stmt, query, queryLen);
 ### 2.4.创建索引
 定义索引可以加快查询的速度，下面是创建索引的示例：
 
-<Tabs>
-<Tab name="SQL">
+<code-group>
+<code-block title="SQL">
 
 ```sql
 CREATE INDEX idx_city_name ON City (name)
 
 CREATE INDEX idx_person_name ON Person (name)
 ```
-</Tab>
-<Tab name="JDBC">
+</code-block>
+
+<code-block title="JDBC">
 
 ```java
 // Create indexes
@@ -199,8 +210,9 @@ try (Statement stmt = conn.createStatement()) {
     stmt.executeUpdate("CREATE INDEX idx_person_name ON Person (name)");
 }
 ```
-</Tab>
-<Tab name="ODBC">
+</code-block>
+
+<code-block title="ODBC">
 
 ```cpp
 SQLHSTMT stmt;
@@ -222,14 +234,15 @@ SQLSMALLINT queryLen2 = static_cast<SQLSMALLINT>(sizeof(query2));
 
 ret = SQLExecDirect(stmt, query2, queryLen2);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.5.插入数据
 对数据进行查询之前，需要在两个表中加载部分数据，下面是如何往表中插入数据的示例：
 
-<Tabs>
-<Tab name="SQL">
+<code-group>
+<code-block title="SQL">
 
 ```sql
 INSERT INTO City (id, name) VALUES (1, 'Forest Hill');
@@ -241,8 +254,9 @@ INSERT INTO Person (id, name, city_id) VALUES (2, 'Jane Roe', 2);
 INSERT INTO Person (id, name, city_id) VALUES (3, 'Mary Major', 1);
 INSERT INTO Person (id, name, city_id) VALUES (4, 'Richard Miles', 2);
 ```
-</Tab>
-<Tab name="JDBC">
+</code-block>
+
+<code-block title="JDBC">
 
 ```java
 // Populate City table
@@ -287,8 +301,9 @@ conn.prepareStatement("INSERT INTO Person (id, name, city_id) VALUES (?, ?, ?)")
     stmt.executeUpdate();
 }
 ```
-</Tab>
-<Tab name="ODBC">
+</code-block>
+
+<code-block title="ODBC">
 
 ```cpp
 SQLHSTMT stmt;
@@ -340,8 +355,9 @@ strncpy(name, "Richard Miles", sizeof(name));
 city_id = 2;
 ret = SQLExecute(stmt);
 ```
-</Tab>
-<Tab name="Java API">
+</code-block>
+
+<code-block title="Java API">
 
 ```java
 // Connecting to the cluster.
@@ -370,14 +386,15 @@ personCache.query(query.setArgs(2, "Jane Roe", 2)).getAll();
 personCache.query(query.setArgs(3, "Mary Major", 1)).getAll();
 personCache.query(query.setArgs(4, "Richard Miles", 2)).getAll();
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.6.查询数据
 数据加载之后，就可以执行查询了。下面就是如何查询数据的示例，其中包括两个表之间的关联：
 
-<Tabs>
-<Tab name="SQL">
+<code-group>
+<code-block title="SQL">
 
 ```sql
 SELECT *
@@ -391,8 +408,9 @@ SELECT p.name, c.name
 FROM Person p, City c
 WHERE p.city_id = c.id;
 ```
-</Tab>
-<Tab name="JDBC">
+</code-block>
+
+<code-block title="JDBC">
 
 ```java
 // Get data using an SQL join sample.
@@ -410,8 +428,9 @@ try (Statement stmt = conn.createStatement()) {
     }
 }
 ```
-</Tab>
-<Tab name="ODBC">
+</code-block>
+
+<code-block title="ODBC">
 
 ```cpp
 SQLHSTMT stmt;
@@ -428,8 +447,9 @@ SQLSMALLINT queryLen = static_cast<SQLSMALLINT>(sizeof(query));
 
 SQLRETURN ret = SQLExecDirect(stmt, query, queryLen);
 ```
-</Tab>
-<Tab name="Java API">
+</code-block>
+
+<code-block title="Java API">
 
 ```java
 // Connecting to the cluster.
@@ -454,22 +474,24 @@ while (iterator.hasNext()) {
     System.out.println(">>>    " + row.get(0) + ", " + row.get(1));
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.7.修改数据
 有时数据是需要修改的，这时就可以执行修改操作来修改已有的数据，下面是如何修改数据的示例：
 
-<Tabs>
-<Tab name="SQL">
+<code-group>
+<code-block title="SQL">
 
 ```sql
 UPDATE City
 SET name = 'Foster City'
 WHERE id = 2;
 ```
-</Tab>
-<Tab name="JDBC">
+</code-block>
+
+<code-block title="JDBC">
 
 ```java
 // Update
@@ -479,8 +501,9 @@ try (Statement stmt = conn.createStatement()) {
     stmt.executeUpdate("UPDATE City SET name = 'Foster City' WHERE id = 2");
 }
 ```
-</Tab>
-<Tab name="ODBC">
+</code-block>
+
+<code-block title="ODBC">
 
 ```cpp
 SQLHSTMT stmt;
@@ -495,8 +518,9 @@ SQLSMALLINT queryLen = static_cast<SQLSMALLINT>(sizeof(query));
 
 SQLRETURN ret = SQLExecDirect(stmt, query, queryLen);
 ```
-</Tab>
-<Tab name="Java API">
+</code-block>
+
+<code-block title="Java API">
 
 ```java
 // Updating a city entry.
@@ -505,21 +529,23 @@ SqlFieldsQuery query = new SqlFieldsQuery(
 
 cityCache.query(query).getAll();
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.8.删除数据
 可能还需要从数据库中删除数据，下面是删除数据的示例：
 
-<Tabs>
-<Tab name="SQL">
+<code-group>
+<code-block title="SQL">
 
 ```sql
 DELETE FROM Person
 WHERE name = 'John Doe'
 ```
-</Tab>
-<Tab name="JDBC">
+</code-block>
+
+<code-block title="JDBC">
 
 ```java
 // Delete
@@ -529,8 +555,9 @@ try (Statement stmt = conn.createStatement()) {
     stmt.executeUpdate("DELETE FROM Person WHERE name = 'John Doe'");
 }
 ```
-</Tab>
-<Tab name="ODBC">
+</code-block>
+
+<code-block title="ODBC">
 
 ```cpp
 SQLHSTMT stmt;
@@ -545,8 +572,9 @@ SQLSMALLINT queryLen = static_cast<SQLSMALLINT>(sizeof(query));
 
 SQLRETURN ret = SQLExecDirect(stmt, query, queryLen);
 ```
-</Tab>
-<Tab name="Java API">
+</code-block>
+
+<code-block title="Java API">
 
 ```java
 // Removing a person.
@@ -555,8 +583,9 @@ SqlFieldsQuery query = new SqlFieldsQuery(
 
 personCache.query(query).getAll();
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.9.示例
 GitHub上有和这个入门文档有关的完整[代码](https://github.com/VeryFatBoy/Ignite-SQL-Getting-Started)。

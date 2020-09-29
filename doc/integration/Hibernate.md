@@ -34,8 +34,8 @@ Hibernate数据库映射对象的所有工作都是在一个会话中完成的�
 
 要在项目中添加Ignite-hibernate集成，需要将下面的依赖加入POM文件：
 
-<Tabs>
-<Tab name="Hibernate5">
+<code-group>
+<code-block title="Hibernate5">
 
 ```xml
 <dependency>
@@ -44,8 +44,9 @@ Hibernate数据库映射对象的所有工作都是在一个会话中完成的�
   <version>${ignite.version}</version>
 </dependency>
 ```
-</Tab>
-<Tab name="Hibernate4">
+</code-block>
+
+<code-block title="Hibernate4">
 
 ```xml
 <dependency>
@@ -54,8 +55,9 @@ Hibernate数据库映射对象的所有工作都是在一个会话中完成的�
   <version>${ignite.version}</version>
 </dependency>
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 **Hibernate配置示例**
 

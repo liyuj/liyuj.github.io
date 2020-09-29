@@ -3,8 +3,8 @@
 ### 1.1.SqlFieldsQueries
 `SqlFieldsQuery`接受一个标准SQL作为其构造器的参数，下面是其执行查询的代码。可以只选定特定的字段，来最小化网络和序列化开销。
 
-<Tabs>
-<Tab name="SqlFieldsQuery">
+<code-group>
+<code-block title="SqlFieldsQuery">
 
 ```cpp
 using namespace ignite;
@@ -34,8 +34,9 @@ while (cursor.HasNext())
             << row.GetNext<std::string>() << std::endl;
 }
 ```
-</Tab>
-<Tab name="带关联的SqlFieldsQuery">
+</code-block>
+
+<code-block title="带关联的SqlFieldsQuery">
 
 ```cpp
 using namespace ignite;
@@ -64,43 +65,48 @@ while (cursor.HasNext())
   std::cout << "Person name: " << row.GetNext<std::string>() << std::endl;
 }
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ::: warning 可查询字段定义
 在特定字段可以被`SqlFieldsQuery`访问之前，它们应做为SQL模式的一部分，使用标准的DDL命令，或者特定的.NET属性，或者`QueryEntity`配置，都可以进行字段的定义。
 :::
 通过`SqlFieldsQuery`，还可以使用DML命令进行数据的修改：
 
-<Tabs>
-<Tab name="INSERT">
+<code-group>
+<code-block title="INSERT">
 
 ```cpp
 cache.Query(SqlFieldsQuery("INSERT INTO Person(id, firstName, "
     "lastName) values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
-</Tab>
-<Tab name="MERGE">
+</code-block>
+
+<code-block title="MERGE">
 
 ```cpp
 cache.Query(SqlFieldsQuery("MERGE INTO Person(id, firstName, lastName)"
     "values (1, 'John', 'Smith'), (5, 'Mary', 'Jones')"));
 ```
-</Tab>
-<Tab name="UPDATE">
+</code-block>
+
+<code-block title="UPDATE">
 
 ```cpp
 cache.Query(SqlFieldsQuery(
     "UPDATE Person set lastName = 'Jones' WHERE id >= 2");
 ```
-</Tab>
-<Tab name="DELETE">
+</code-block>
+
+<code-block title="DELETE">
 
 ```cpp
 cache.Query(SqlFieldsQuery("DELETE FROM Person WHERE id >= 2"));
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ## 2.模式和索引
 除了常规的DDL命令，C++开发者还可以使用特定的SQL API进行模式和索引的定义。

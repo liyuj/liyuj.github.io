@@ -9,8 +9,8 @@ Ignite的固化内存可以通过`DataRegionMetrics`接口以及JMX Bean暴露�
 
 可以为希望收集指标的区域配置`DataRegionConfiguration.setMetricsEnabled(true)`，已开启指标收集：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -37,8 +37,9 @@ Ignite的固化内存可以通过`DataRegionMetrics`接口以及JMX Bean暴露�
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Ignite configuration.
@@ -65,8 +66,9 @@ storageCfg.setDataRegionConfigurations(regionCfg);
 // Apply the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 **获取指标**
 
@@ -117,8 +119,8 @@ Ignite还为原生持久化提供了一组指标，这些指标在`DataStorageMe
 
 通过配置`DataStorageConfiguration.setMetricsEnabled(true)`可以启用相关的指标收集，如下：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -136,8 +138,9 @@ Ignite还为原生持久化提供了一组指标，这些指标在`DataStorageMe
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 // Ignite configuration.
@@ -155,8 +158,9 @@ storageCfg.setMetricsEnabled(true);
 // Apply the new configuration.
 cfg.setDataStorageConfiguration(storageCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 **获取指标**
 
@@ -228,8 +232,8 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
 ### 2.1.启用缓存指标
 要启用缓存指标，可以将希望收集指标的缓存的`CacheConfiguration.setStatisticsEnabled(boolean)`配置为`true`，下面以名为`test-cache`的缓存为例：
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -245,8 +249,9 @@ JMX bean暴露了与`DataStorageMetrics`相同的指标集合，然后还有些�
   </property>
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 IgniteConfiguration cfg = new IgniteConfiguration();
@@ -259,8 +264,9 @@ cacheCfg.setStatisticsEnabled(true);
 // Start the node.
 Ignition.start(cfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 2.2.获取缓存指标
 通过如下方式可以获得一个特定缓存的最新指标快照：

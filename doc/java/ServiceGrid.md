@@ -372,8 +372,8 @@ svcs.deploy(cfg);
 ### 4.1.配置
 除了通过调用Ignite提供的`IgniteServices.deploy(...)`方法部署服务之外，还可以通过IgniteConfiguration的`serviceConfiguration`属性在**启动时自动地部署服务**。
 
-<Tabs>
-<Tab name="XML">
+<code-group>
+<code-block title="XML">
 
 ```xml
 <bean class="org.apache.ignite.IgniteConfiguration">
@@ -397,8 +397,9 @@ svcs.deploy(cfg);
   ...
 </bean>
 ```
-</Tab>
-<Tab name="Java">
+</code-block>
+
+<code-block title="Java">
 
 ```java
 ServiceConfiguration svcCfg1 = new ServiceConfiguration();
@@ -424,8 +425,9 @@ igniteCfg.setServiceConfiguration(svcCfg1, svcCfg2);
 // Start Ignite node.
 Ignition.start(gridCfg);
 ```
-</Tab>
-</Tabs>
+</code-block>
+
+</code-group>
 
 ### 4.2.启动后部署
 可以通过配置然后在节点启动之后部署服务，除了可以部署各种集群单例的一些方便的方法外，还可以通过定制的配置来创建和部署服务。
