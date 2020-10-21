@@ -233,7 +233,7 @@ dataset.close();
 要了解分区化的数据集在实践中是如何使用的，可以看这个[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/dataset/AlgorithmSpecificDatasetExample.java)，该示例也会随着每个Ignite二进制包进行发布。
 ## 4.线性回归
 ### 4.1.概述
-Ignite支持普通最小二乘线性回归算法，这是最基本也是最强大的机器学习算法之一，本文会说明该算法的工作方式以及Ignite是如何实现的。
+Ignite支持普通最小二乘线性回归算法，这是最基本也是最强大的机器学习算法之一，本章节会说明该算法的工作方式以及Ignite是如何实现的。
 
 线性回归算法的基本原理是，假定因变量y和自变量x有如下的关系：
 ![](https://files.readme.io/58d1de5-111.gif)
@@ -862,7 +862,7 @@ double prediction = mdl.apply(x);
 ## 9.k-NN分类
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
-本文会描述k-NN作为分类任务的解决方案。
+本章节会描述k-NN作为分类任务的解决方案。
 ### 9.1.模型
 K-NN算法是一种非参数方法，其输入由特征空间中的K-最近训练样本组成。
 
@@ -900,7 +900,7 @@ double prediction = knnMdl.apply(vectorizedData);
 ## 10.k-NN回归
 对于广泛使用的k-NN（k-最近邻）算法，Ignite支持它的两个版本，一个是分类任务，另一个是回归任务。
 
-本文会描述k-NN作为回归任务的解决方案。
+本章节会描述k-NN作为回归任务的解决方案。
 ### 10.1.模型
 K-NN算法是一种非参数方法，其输入由特征空间中的K-最近训练样本组成。每个训练样本具有与给定的训练样本相关联的数值形式的属性值。
 

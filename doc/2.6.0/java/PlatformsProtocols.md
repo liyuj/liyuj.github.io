@@ -259,7 +259,7 @@ http://host:port/ignite?cmd=cache&cacheName=partionedCache&destId=8daab5ea-af83-
 }|
 
 #### 2.3.7.cas
-**cas**命令在之前的值等于预期值时会在缓存中存储给定的键值对。
+**cas**命令在之前的值等于预期值时会在缓存中存储给定的键-值对。
 URL:
 ```
 http://host:port/ignite?cmd=cas&key=casKey&val2=casOldVal&val1=casNewVal&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
@@ -566,7 +566,7 @@ http://host:port/ignite?cmd=add&key=newKey&val=newValue&cacheName=partionedCache
 |response|boolean|true，如果成功存储，否则，false|true|
 
 #### 2.3.18.putall
-**putall**命令会在缓存中存储给定的键值对。
+**putall**命令会在缓存中存储给定的键-值对。
 URL:
 ```
 http://host:port/ignite?cmd=putall&k1=putKey1&k2=putKey2&k3=putKey3&v1=value1&v2=value2&v3=value3&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
@@ -649,7 +649,7 @@ http://host:port/ignite?cmd=getall&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=pa
 ```
 |名称|类型|描述|示例|
 |---|---|---|---|
-|response|jsonObject|键值对映射|{"key1": "value1","key2": "value2"}|
+|response|jsonObject|键-值对映射|{"key1": "value1","key2": "value2"}|
 
 #### 2.3.21.get
 **get**命令在缓存中获取给定的键对应的值。
@@ -752,7 +752,7 @@ http://host:port/ignite?cmd=conkeys&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=p
 |response|boolean|存在给定键对应的映射则为true|true|
 
 #### 2.3.24.getput
-**getput**命令在缓存中存储给定的键值对，如果之前存在该映射，则返回原值。
+**getput**命令在缓存中存储给定的键-值对，如果之前存在该映射，则返回原值。
 URL:
 ```
 http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCache
@@ -780,7 +780,7 @@ http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCach
 |response|jsonObject|给定键的原值|{"name": "bob"}|
 
 #### 2.3.25.putifabs
-**putifabs**命令只有在缓存中存在该映射，才会存储给定的键值对。
+**putifabs**命令只有在缓存中存在该映射，才会存储给定的键-值对。
 URL:
 ```
 http://host:port/ignite?cmd=putifabs&key=getKey&val=newVal&cacheName=partionedCache

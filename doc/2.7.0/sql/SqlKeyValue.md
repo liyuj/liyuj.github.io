@@ -2,7 +2,7 @@
 ## 1.SQL和键-值API的使用
 在Ignite中，即使表/缓存是通过SQL创建和预加载的，也可以同时使用SQL和键-值API访问缓存的数据，这就给用户带来了可以根据业务需要灵活使用两种方式的自由。
 
-本文中，会使用GitHub上的一个[样例工程](https://github.com/dmagda/ignite_world_demo)，演示如何同时使用SQL和键-值API查询集群中的数据。
+本章节中，会使用GitHub上的一个[样例工程](https://github.com/dmagda/ignite_world_demo)，演示如何同时使用SQL和键-值API查询集群中的数据。
 
 这个工程创建了包含了世界城市的模式，并且通过脚本注入了数据，然后：
 

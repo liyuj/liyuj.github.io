@@ -1,6 +1,6 @@
 # SQL参考
 ## 1.概述
-本文档描述了Apache Ignite支持的SQL语法，其中包括：
+本章节描述了Apache Ignite支持的SQL语法，其中包括：
 
  - 数据定义语言（DDL）
  - 数据操作语言（DML）
@@ -49,7 +49,7 @@ tableColumn := columnName columnType
  - 如果该列表示整个值则也无法删除；
 
 
-Ignite以键值对的形式存储数据，所有新增的列都属于值，键(`PRIMARY KEY`)所属的列是无法修改的。
+Ignite以键-值对的形式存储数据，所有新增的列都属于值，键(`PRIMARY KEY`)所属的列是无法修改的。
 
 `ALTER TABLE`语句在执行过程中，相同表的DDL和DML语句都会被阻塞一小段时间。
 

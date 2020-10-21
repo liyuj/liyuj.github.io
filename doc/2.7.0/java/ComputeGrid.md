@@ -801,10 +801,10 @@ cfg.setLoadBalancingSpi(spi);
 // Start Ignite node.
 Ignition.start(cfg);
 ```
-### 8.4.磨洋工
-通常集群由很多计算机组成，这就可能存在配置不均衡的情况，这时开启`JobStealingCollisionSpi`就会有助于避免作业聚集在过载的节点，或者远离低利用率的节点。
+### 8.4.作业窃取
+通常集群由很多计算机组成，这就可能存在配置不均衡的情况，这时开启`JobStealingCollisionSpi`就会有助于避免作业聚集在过载的节点，因为它们将被未充分利用的节点窃取。
 
-`JobStealingCollisionSpi`支持作业从高负载节点到低负载节点的移动，当部分作业完成得很快，而其它的作业还在高负载节点中排队时，这个SPI就会非常有用。这种情况下，等待作业就会被移动到低负载的节点。
+`JobStealingCollisionSpi`支持将作业从高负载节点移动到低负载节点，当部分作业完成得很快，而其它的作业还在高负载节点中排队时，这个SPI就会非常有用。这时等待作业就会被移动到低负载的节点。
 
 `JobStealingCollisionSpi`采用的是后负载技术，它可以在任务已经被调度在节点A执行后重新分配到节点B。
 

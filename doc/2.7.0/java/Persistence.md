@@ -83,7 +83,7 @@ Ignite的原生持久化可以将Ignite作为一个分布式的SQL数据库。
 
 在集群中执行SQL查询时是不需要在内存中保存所有的数据的，Ignite会在内存和磁盘上的所有数据中执行。另外，在集群重启后将所有的数据都预加载到内存中也是一个选择，这时当集群启动运行时，就可以执行SQL查询了。
 ### 1.5.Ignite持久化内部
-本文档提供了Ignite持久化的一个高层视图，如果想了解更多的技术细节，可以看下面的文档：
+本章节提供了Ignite持久化的一个高层视图，如果想了解更多的技术细节，可以看下面的文档：
 
  - [Ignite原生持久化设计](https://cwiki.apache.org/confluence/display/IGNITE/Persistent+Store+Overview)
  - [Ignite原生持久化架构](https://cwiki.apache.org/confluence/display/IGNITE/Persistent+Store+Architecture)

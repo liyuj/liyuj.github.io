@@ -33,7 +33,7 @@ Ignite还有一个`org.apache.ignite.cache.store.jdbc.CacheJdbcPojoStore`，这�
 ### 2.2.数据库模式导入
 在浏览器中打开部署在GridGain的Ignite[Web控制台实例](https://console.gridgain.com/)然后登录，或者也可以构建和部署一个自己的Web控制台实例。
 > **Web控制台部署和Logo**
-为了简化，使用了一个已经部署的Web控制台实例，这个实例部署在GridGain的基础设施上，并且将GridGain的logo嵌入作为主界面的一部分，在本文档的所有截图中，也会看到这个logo，注意可以将Web控制台部署到任意主机，也可以使用其它的logo。
+为了简化，使用了一个已经部署的Web控制台实例，这个实例部署在GridGain的基础设施上，并且将GridGain的logo嵌入作为主界面的一部分，在本章节的所有截图中，也会看到这个logo，注意可以将Web控制台部署到任意主机，也可以使用其它的logo。
 
 **1.配置Ignite集群**
 

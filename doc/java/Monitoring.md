@@ -1,0 +1,52 @@
+# 监控
+## 1.介绍
+## 2.集群ID和标签
+## 3.集群状态
+## 4.指标
+### 4.1.配置指标
+### 4.2.JMX指标
+#### 4.2.1.概述
+#### 4.2.2.理解MBean的ObjectName
+#### 4.2.3.数据量监控
+#### 4.2.4.检查点操作监控
+#### 4.2.5.再平衡监控
+#### 4.2.6.拓扑监控
+#### 4.2.7.缓存监控
+#### 4.2.8.事务监控
+#### 4.2.9.客户端连接监控
+#### 4.2.10.消息队列监控
+## 5.新指标系统
+## 6.系统视图
+### 6.1.查询系统视图
+### 6.2.CHCHES
+### 6.3.CACHE_GROUPS
+### 6.4.TASKS
+### 6.5.JOBS
+### 6.6.SERVICES
+### 6.7.TRANSACTIONS
+### 6.8.NODES
+### 6.9.NODE_ATTRIBUTES
+### 6.10.BASELINE_NODES
+### 6.11.CLIENT_CONNECTIONS
+### 6.12.STRIPED_THREADPOOL_QUEUE
+### 6.13.DATASTREAM_THREADPOOL_QUEUE
+### 6.14.SCAN_QUERIES
+### 6.15.CONTINUOUS_QUERIES
+### 6.16.SQL_QUERIES
+### 6.17.SQL_QUERIES_HISTORY
+### 6.18.SCHEMAS
+### 6.19.NODE_METRICS
+### 6.20.TABLES
+### 6.21.TABLE_COLUMNS
+### 6.22.VIEWS
+### 6.23.VIEW_COLUMNS
+### 6.24.INDEXES
+### 6.25.PAGE_LISTS
+### 6.25.1.CACHE_GROUP_PAGE_LISTS
+### 6.25.2.DATA_REGION_PAGE_LISTS
+### 6.26.PARTITION_STATES
+
+
+## 7.跟踪
+
+<RightPane/>

@@ -1523,7 +1523,7 @@ Ignite直接支持如下的映射器实现：
 
 如果使用Java、.Net或者C++，默认是不需要任何配置的，只有当需要平台协同、名字转换复杂的情况下，才需要配置映射器。
 ## 11.日志
-Ignite支持各种日志库和框架，可以直接使用[Log4j](https://logging.apache.org/log4j/2.x/)、[Log4j2](https://logging.apache.org/log4j/2.x/)、[JCL](https://commons.apache.org/proper/commons-logging/guide.html)和[SLF4J](https://www.slf4j.org/manual.html)，本文会描述如何使用它们。
+Ignite支持各种日志库和框架，可以直接使用[Log4j](https://logging.apache.org/log4j/2.x/)、[Log4j2](https://logging.apache.org/log4j/2.x/)、[JCL](https://commons.apache.org/proper/commons-logging/guide.html)和[SLF4J](https://www.slf4j.org/manual.html)，本章节会描述如何使用它们。
 ### 11.1.Log4j
 如果在启动独立集群节点时要使用Log4j模块，需要在执行`ignite.{sh|bat}`脚本前，将`optional/ignite-log4j`文件夹移动到Ignite二进制包的`lib`目录下，这时这个模块目录中的内容会被添加到类路径。
 

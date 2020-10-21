@@ -1,6 +1,6 @@
 # 工具和分析
 ## 1.SQL工具
-Ignite的JDBC和ODBC驱动使得从SQL工具接入集群然后处理存储在其中的数据成为可能，需要做的仅仅是为SQL工具配置JDBC或者ODBC驱动。在本文中会以DBeaver为例，一步步演示如何进行这些基本的配置。
+Ignite的JDBC和ODBC驱动使得从SQL工具接入集群然后处理存储在其中的数据成为可能，需要做的仅仅是为SQL工具配置JDBC或者ODBC驱动。在本章节中会以DBeaver为例，一步步演示如何进行这些基本的配置。
 ### 1.1.安装和配置
 [DBeaver](https://dbeaver.jkiss.org/)作为一个示例，是一个针对开发者和数据库管理员的免费开源的统一数据库工具，它支持包括Ignite在内的所有常见数据库。
 
@@ -145,7 +145,7 @@ WHERE p.city_id = c.id
 ![](https://files.readme.io/20a5727-Screen_Shot_2017-08-16_at_1.26.55_PM.png)
 
 ## 2.SQLLine
-Ignite提供了一个[SQLLine](http://sqlline.sourceforge.net/)工具，它是一个接入关系数据库然后执行SQL命令的基于命令行的工具，它是Ignite中用于SQL连接的默认命令行工具。本文会描述如何用SQLLine接入Ignite集群，以及Ignite支持的各种SQLLine命令。
+Ignite提供了一个[SQLLine](http://sqlline.sourceforge.net/)工具，它是一个接入关系数据库然后执行SQL命令的基于命令行的工具，它是Ignite中用于SQL连接的默认命令行工具。本章节会描述如何用SQLLine接入Ignite集群，以及Ignite支持的各种SQLLine命令。
 ### 2.1.接入集群
 在`IGNITE_HOME/bin`目录中，执行`sqlline.sh -u jdbc:ignite:thin:[host]`命令就可以使用SQLLine接入集群，注意要将`[host]`替换为实际的值，比如：
 

@@ -12,22 +12,23 @@ module.exports = {
         ['link', {rel: 'shortcut icon',type: "image/x-icon",href: `/favicon.ico`}],
         ['script', {src: 'https://hm.baidu.com/hm.js?9d04fe7543c80b1f04c5f9571193ac90'}]
     ],
-    markdown: {
-        lineNumbers: true,
+    markdown: {        
         externalLinks: {
             target: '_self'
         },
     },
     locales: {
         '/': {},
+        '/doc/2.8.0/': {},
         '/doc/2.7.0/':{},
-        '/doc/2.6.0/': {}
+        '/doc/2.6.0/': {}        
     },
     evergreen: true,
     plugins: ['@dovyp/vuepress-plugin-clipboard-copy','@vuepress/back-to-top','@vuepress/nprogress'],
     themeConfig: {
         lastUpdated: '最后更新时间：',
-        search: false,
+        search: true,
+        searchMaxSuggestions: 10,
         serviceWorker: {
             updatePopup: {
                 message: "内容有更新。",
@@ -37,8 +38,8 @@ module.exports = {
         sidebarDepth: 2,
         locales: {
             '/': {
-                selectText: '2.8.0',
-                label: '2.8.0',
+                selectText: '最新版本',
+                label: '2.9.0',
                 nav: [{
                     text: '首页',
                     link: '/'
@@ -48,32 +49,8 @@ module.exports = {
                     link: '/Service'
                 },
                 {
-                    text: 'Java',
+                    text: '文档',
                     link: '/doc/java/'
-                },
-                {
-                    text: 'C++',
-                    link: '/doc/cpp/'
-                },
-                {
-                    text: 'C#/.NET',
-                    link: '/doc/net/'
-                },
-                {
-                    text: 'SQL',
-                    link: '/doc/sql/'
-                },
-                {
-                    text: '集成',
-                    link: '/doc/integration/'
-                },
-                {
-                    text: 'Ignite&Spark',
-                    link: '/doc/spark/'
-                },
-                {
-                    text: '工具',
-                    link: '/doc/tools/'
                 },
                 {
                     text: '博客',
@@ -85,6 +62,90 @@ module.exports = {
                 }],
                 sidebar: {
                     '/doc/java/': [
+                        '',
+                        'QuickStartGuide',
+                        'Installation',
+                        'SettingUp',
+                        'StartingNodes',
+                        'Clustering',
+                        'ThinClients',
+                        'DataModeling',
+                        'ConfiguringMemory',
+                        'Persistence',
+                        'ConfiguringCaches',
+                        'DataRebalancing',
+                        'DataStreaming',
+                        'UsingKeyValueApi',
+                        'Transactions',                        
+                        'WorkingwithSQL',
+                        'SQLReference',
+                        'DistributedComputing',
+                        'CodeDeployment',
+                        'MachineLearning',
+                        'UsingServices',
+                        'RESTAPI',
+                        'DotnetSpecific',
+                        'CppSpecific',
+                        'Monitoring',
+                        'WorkingwithEvents',
+                        'Tools',
+                        'Security',
+                        'ExtensionsIntegrations',
+                        'PerformanceTroubleshooting',
+                        'Legal'
+                    ],
+                    '/confluent/':[
+                        '',
+                        'Kafka-ConvertersSerialization',
+                        'Kafka-ErrorHandlingDeadLetterQueues',
+                        `Kafka-CreateDynamicConnectors`,
+                        `Kafka-SingleMessageTransformation`,
+                        'Kafka-ConnectImprovementsIn-2-3',
+                        'Kafka-FastestMessagingSystem',
+                        'SecureKafkaDeploymentBestPractices'
+                    ],
+                    '/': [
+                        ''
+                    ]
+                }
+            },
+            '/doc/2.8.0/': {
+                selectText: '2.8.0',
+                label: '2.8.0',
+                nav: [{
+                    text: '首页',
+                    link: '/doc/2.8.0/'
+                },
+                {
+                    text: 'Java',
+                    link: '/doc/2.8.0/java/'
+                },
+                {
+                    text: 'C++',
+                    link: '/doc/2.8.0/cpp/'
+                },
+                {
+                    text: 'C#/.NET',
+                    link: '/doc/2.8.0/net/'
+                },
+                {
+                    text: 'SQL',
+                    link: '/doc/2.8.0/sql/'
+                },
+                {
+                    text: '集成',
+                    link: '/doc/2.8.0/integration/'
+                },
+                {
+                    text: 'Ignite&Spark',
+                    link: '/doc/2.8.0/spark/'
+                },
+                {
+                    text: '工具',
+                    link: '/doc/2.8.0/tools/'
+                }],
+                sidebar: {
+                    '/doc/2.8.0/java/': [
                         '',
                         'BasicConcepts',
                         'InstallAndDeployment',
@@ -108,7 +169,7 @@ module.exports = {
                         'ProductionReadiness',
                         'Legal'
                     ],
-                    '/doc/cpp/': [
+                    '/doc/2.8.0/cpp/': [
                         '',
                         'Clustering',
                         'Key-ValueDataGrid',
@@ -117,7 +178,7 @@ module.exports = {
                         'DurableMemory',
                         'Persistence'
                     ],
-                    '/doc/net/': [
+                    '/doc/2.8.0/net/': [
                         '',
                         'Clustering',
                         'DataGrid',
@@ -130,7 +191,7 @@ module.exports = {
                         `Persistence`,
                         'ThirdPartyIntegrations'
                     ],
-                    '/doc/sql/': [
+                    '/doc/2.8.0/sql/': [
                         '',
                         'SQLReference',
                         'Architecture',
@@ -144,7 +205,7 @@ module.exports = {
                         'ManagementMonitoring',
                         'SqlKeyValue'
                     ],
-                    '/doc/integration/': [
+                    '/doc/2.8.0/integration/': [
                         '',
                         'Clustering',
                         'WebSessionClustering',
@@ -155,26 +216,16 @@ module.exports = {
                         'Hibernate',
                         'MyBatis'
                     ],
-                    '/doc/spark/': [
+                    '/doc/2.8.0/spark/': [
                         '',
                         'IgniteForSpark'
                     ],
-                    '/doc/tools/': [
+                    '/doc/2.8.0/tools/': [
                         '',
                         'ControlScript',
                         'Informatica'
                     ],
-                    '/confluent/':[
-                        '',
-                        'Kafka-ConvertersSerialization',
-                        'Kafka-ErrorHandlingDeadLetterQueues',
-                        `Kafka-CreateDynamicConnectors`,
-                        `Kafka-SingleMessageTransformation`,
-                        'Kafka-ConnectImprovementsIn-2-3',
-                        'Kafka-FastestMessagingSystem',
-                        'SecureKafkaDeploymentBestPractices'
-                    ],
-                    '/': [
+                    '/doc/2.8.0/': [
                         ''
                     ]
                 }

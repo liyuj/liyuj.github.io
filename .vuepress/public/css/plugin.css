@@ -4143,7 +4143,7 @@ h6 {
   font-size: 12px;
 }
 p {
-  margin: 0 0 10px;
+  margin: 5px 0 5px 5px;
 }
 .lead {
   margin-bottom: 20px;
@@ -4422,6 +4422,7 @@ pre {
   word-break: break-all;
   word-wrap: break-word;
   background-color: #f5f5f5;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
 pre code {

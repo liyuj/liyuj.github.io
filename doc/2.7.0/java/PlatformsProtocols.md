@@ -285,7 +285,7 @@ http://host:port/ignite?cmd=cache&cacheName=partionedCache&destId=8daab5ea-af83-
 }|
 
 #### 2.3.7.cas
-**cas**命令在之前的值等于预期值时会在缓存中存储给定的键值对。
+**cas**命令在之前的值等于预期值时会在缓存中存储给定的键-值对。
 
 URL:
 ```
@@ -614,7 +614,7 @@ http://host:port/ignite?cmd=add&key=newKey&val=newValue&cacheName=partionedCache
 |response|boolean|true，如果成功存储，否则，false|true|
 
 #### 2.3.18.putall
-**putall**命令会在缓存中存储给定的键值对。
+**putall**命令会在缓存中存储给定的键-值对。
 
 URL:
 ```
@@ -703,7 +703,7 @@ http://host:port/ignite?cmd=getall&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=pa
 ```
 |名称|类型|描述|示例|
 |---|---|---|---|
-|response|jsonObject|键值对映射|{"key1": "value1","key2": "value2"}|
+|response|jsonObject|键-值对映射|{"key1": "value1","key2": "value2"}|
 
 ::: tip 数组形式输出
 要获得数组形式的输出，需要配置系统属性`IGNITE_REST_GETALL_AS_ARRAY`为`true`，如果配置了这个属性，那么`getall`命令的输出格式为：`{“successStatus”:0,“affinityNodeId”:null,“error”:null,“sessionToken”:null,“response”:[{“key”:“key1”,“value”:“value1”},{“key”:“key2”,“value”:“value2”}]}`
@@ -816,7 +816,7 @@ http://host:port/ignite?cmd=conkeys&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=p
 |response|boolean|存在给定键对应的映射则为true|true|
 
 #### 2.3.24.getput
-**getput**命令在缓存中存储给定的键值对，如果之前存在该映射，则返回原值。
+**getput**命令在缓存中存储给定的键-值对，如果之前存在该映射，则返回原值。
 
 URL:
 ```
@@ -846,7 +846,7 @@ http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCach
 |response|jsonObject|给定键的原值|{"name": "bob"}|
 
 #### 2.3.25.putifabs
-**putifabs**命令只有在缓存中存在该映射时才会存储给定的键值对。
+**putifabs**命令只有在缓存中存在该映射时才会存储给定的键-值对。
 
 URL:
 ```

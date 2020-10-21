@@ -1169,7 +1169,7 @@ int resTypeCode = readByteLittleEndian(in);
 int value = readIntLittleEndian(in);
 ```
 #### 2.3.3.OP_CACHE_GET_ALL
-从一个缓存中获得多个键值对。
+从一个缓存中获得多个键-值对。
 
 |请求类型|描述|
 |---|---|
@@ -1183,7 +1183,7 @@ int value = readIntLittleEndian(in);
 |---|---|
 |头信息|响应头|
 |int|结果数量|
-|键对象+值对象|返回的键值对，不包含缓存中没有的条目，重复多次，次数为前一个参数返回的值|
+|键对象+值对象|返回的键-值对，不包含缓存中没有的条目，重复多次，次数为前一个参数返回的值|
 
 请求：
 ```java
@@ -1231,7 +1231,7 @@ for (int i = 0; i < resCount; i++) {
 }
 ```
 #### 2.3.4.OP_CACHE_PUT
-往缓存中写入给定的键值对（会覆盖已有的值）。
+往缓存中写入给定的键-值对（会覆盖已有的值）。
 
 |请求类型|描述|
 |---|---|
@@ -1275,15 +1275,15 @@ DataInputStream in = new DataInputStream(socket.getInputStream());
 readResponseHeader(in);
 ```
 #### 2.3.5.OP_CACHE_PUT_ALL
-往缓存中写入给定的多个键值对（会覆盖已有的值）。
+往缓存中写入给定的多个键-值对（会覆盖已有的值）。
 
 |请求类型|描述|
 |---|---|
 |头信息|请求头|
 |int|缓存ID，Java风格的缓存名的哈希值|
 |byte|0，该字段被废弃，未来会删除|
-|int|键值对数量|
-|键对象+值对象|键值对，重复多次，次数为前一个参数传递的值|
+|int|键-值对数量|
+|键对象+值对象|键-值对，重复多次，次数为前一个参数传递的值|
 
 |响应类型|描述|
 |---|---|
@@ -1427,7 +1427,7 @@ readResponseHeader(in);
 boolean res = readBooleanLittleEndian(in);
 ```
 #### 2.3.8.OP_CACHE_GET_AND_PUT
-往缓存中插入一个键值对，并且返回与该键对应的原值，如果缓存中没有该键，则会创建一个新的条目并返回`null`。
+往缓存中插入一个键-值对，并且返回与该键对应的原值，如果缓存中没有该键，则会创建一个新的条目并返回`null`。
 
 |请求类型|描述|
 |---|---|
@@ -2128,7 +2128,7 @@ int statusCode = readIntLittleEndian(in);
 
 注意上面提到的操作代码，是请求头的一部分，具体可以看[头信息](#_2-1-3-消息格式)的相关内容。
 #### 2.4.2.OP_QUERY_SQL
-在集群存储的数据中执行SQL查询，查询会返回所有的结果集（键值对）。
+在集群存储的数据中执行SQL查询，查询会返回所有的结果集（键-值对）。
 
 |请求类型|描述|
 |---|---|
@@ -2152,7 +2152,7 @@ int statusCode = readIntLittleEndian(in);
 |头信息|响应头|
 |long|游标ID，可以被`OP_RESOURSE_CLOSE`关闭|
 |int|第一页的行数|
-|键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
+|键数据对象+值数据对象|键-值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SQL_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
 请求：
@@ -2234,7 +2234,7 @@ boolean moreResults = readBooleanLittleEndian(in);
 |头信息|响应头|
 |long|游标ID|
 |int|行数|
-|键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
+|键数据对象+值数据对象|键-值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SQL_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
 请求：
@@ -2453,7 +2453,7 @@ boolean moreResults = readBooleanLittleEndian(in);
 |头信息|响应头|
 |long|游标ID|
 |int|行数|
-|键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
+|键数据对象+值数据对象|键-值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SCAN_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
 请求：
@@ -2518,7 +2518,7 @@ boolean moreResults = readBooleanLittleEndian(in);
 |头信息|响应头|
 |long|游标ID|
 |int|行数|
-|键数据对象+值数据对象|键值对形式的记录，重复多次，次数为前一个参数返回的行数值|
+|键数据对象+值数据对象|键-值对形式的记录，重复多次，次数为前一个参数返回的行数值|
 |bool|指示是否有更多结果可通过`OP_QUERY_SCAN_CURSOR_GET_PAGE`获取。如果为false，则查询游标将自动关闭。|
 
 #### 2.4.8.OP_RESOURCE_CLOSE
@@ -3069,7 +3069,7 @@ boolean copyOnRead = readBooleanLittleEndian(in);
 
 配置参数的个数没有要求，但是`Name`必须提供。
 
-缓存的配置数据是以键值对的形式提供的，这里键是`short`类型的属性ID，而值是与键对应的数据，下表描述了所有可用的参数：
+缓存的配置数据是以键-值对的形式提供的，这里键是`short`类型的属性ID，而值是与键对应的数据，下表描述了所有可用的参数：
 
 |属性代码|属性类型|描述|
 |---|---|---|
@@ -3647,7 +3647,7 @@ node CachePutGetExample.js
 Node.js瘦客户端有完整的直接可用的[示例](https://github.com/apache/ignite/tree/master/modules/platforms/nodejs/examples)，它们可以演示客户端的行为。
 :::
 ### 4.2.初始化和配置
-本文会描述使用Node.js瘦客户端与Ignite集群进行交互的基本步骤。
+本章节会描述使用Node.js瘦客户端与Ignite集群进行交互的基本步骤。
 
 在用Node.js瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
 
@@ -4381,7 +4381,7 @@ $ cd IGNITE_HOME/platforms/python/examples
 $ python get_and_put.py
 ```
 ### 5.2.初始化和配置
-本文会描述使用Python瘦客户端与Ignite集群进行交互的基本步骤。
+本章节会描述使用Python瘦客户端与Ignite集群进行交互的基本步骤。
 
 在用Python瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
 
@@ -5287,7 +5287,7 @@ client.close()
 Ignite服务端必须配置为保护二进制协议端口，服务端配置过程可以分为以下若干个基本步骤：
 
  1. 使用Java的[keytool](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html)创建密钥存储和信任存储。创建信任存储时，可能需要客户端X.509证书。还需要导出服务端X.509证书以包含在客户端信任链中；
- 2. 根据本文档：[保护节点之间的连接](/doc/2.7.0/java/Security.md#_1-1-保护节点间的连接)，打开Ignite集群的`SSLContextFactory`；
+ 2. 根据本章节：[保护节点之间的连接](/doc/2.7.0/java/Security.md#_1-1-保护节点间的连接)，打开Ignite集群的`SSLContextFactory`；
  3. 通知Ignite使用[ClientConnectorConfiguration](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/configuration/ClientConnectorConfiguration.html)的配置在其瘦客户端端口上加密数据。如果只想加密连接，而不是验证客户端的证书，请将`sslClientAuth`属性设置为`false`。不过，还是需要在步骤1中设置信任存储。
 
 客户端SSL设置的总结在[这里](https://apache-ignite-binary-protocol-client.readthedocs.io/en/latest/source/pyignite.client.html#pyignite.client.Client)。
@@ -5402,7 +5402,7 @@ cd IGNITE_HOME/platforms/php/examples
 php CachePutGetExample.php
 ```
 ### 6.2.初始化和配置
-本文会描述使用PHP瘦客户端与Ignite集群进行交互的基本步骤。
+本章节会描述使用PHP瘦客户端与Ignite集群进行交互的基本步骤。
 
 在用PHP瘦客户端接入Ignite之前，需要启动至少一个Ignite服务端节点，比如，可以使用`ignite.sh`脚本：
 

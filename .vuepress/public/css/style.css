@@ -1767,13 +1767,16 @@ fieldset {
   .tabs-component-tab-a:hover {
     color:rgb(60, 212, 88);
   }
+  .tabs-component-panel {      
+      color: #FFF;
+  }
   
   @media (min-width: 700px) {
     .tabs-component-panels {
       border-top-left-radius: 0;
       background-color: #282c34;
       border: solid 1px #282c34;
-      padding: 0px;    
+      padding: 0px;
       box-shadow: 0 0 10px rgba(0, 0, 0, .05);    
     }
   }

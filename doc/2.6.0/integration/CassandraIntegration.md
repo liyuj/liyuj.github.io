@@ -13,11 +13,11 @@
  2. 对于CacheStore的批量操作`loadAll()`,`writeAll()`,`deleteAll()`，使用Cassandra的[异步查询](http://www.datastax.com/dev/blog/java-driver-async-queries) ，可以提供非常高的性能；
  3. 如果Cassandra中不存在会自动创建所有必要的表（以及键空间），也会为将存储为POJOs的Ignite键值自动检测所有必要的字段，并且创建相应的表结构。因此无需关注Cassandra的表创建DDL语法以及Java到Cassandra的类型映射细节。也可以使用`@QuerySqlField`注解为Cassandra表列提供配置（列名、索引、排序）；
  4. 可以有选择地为将创建的Cassandra表和键空间指定配置（复制因子、复制策略、Bloom过滤器等）；
- 5. 组合BLOB和POJO存储的功能，可以根据喜好存储从Ignite缓存来的键值对（作为BLOB或者POJO）；
+ 5. 组合BLOB和POJO存储的功能，可以根据喜好存储从Ignite缓存来的键-值对（作为BLOB或者POJO）；
  6. 对于键值支持[Java](https://docs.oracle.com/javase/tutorial/jndi/objects/serial.html)和[Kryo](https://github.com/EsotericSoftware/kryo)序列化，它会以BLOB形式存储于Cassandra；
  7. 通过为特定的Ignite缓存指定持久化配置，或者通过使用`@QuerySqlField(index = true)`注解自动进行配置的检测，支持Cassandra的[第二索引](http://docs.datastax.com/en/cql/3.0/cql/cql_reference/create_index_r.html)（包括定制索引）;
  8. 通过持久化配置，或者通过使用`@QuerySqlField(descending = true)`注解自动进行配置的检测，支持Cassandra集群键字段的排序；
- 9. 对于POJO的键类，如果它的属性之一加注了`@AffinityKeyMapped`注解，也会支持关联并置，这时，Ignite缓存中存储在某个节点上的键值对，也会存储（并置）于Cassandra中的同一个节点上。
+ 9. 对于POJO的键类，如果它的属性之一加注了`@AffinityKeyMapped`注解，也会支持关联并置，这时，Ignite缓存中存储在某个节点上的键-值对，也会存储（并置）于Cassandra中的同一个节点上。
 
 ## 2.基本概念
 要将Cassandra设置为一个持久化存储，需要将Ignite缓存的`CacheStoreFactory`设置为`org.apache.ignite.cache.store.cassandra.CassandraCacheStoreFactory`。
@@ -251,8 +251,8 @@ Attributes:
 
 |属性|必需|描述|
 |---|---|---|
-|keyspace|是|存储键值对的Cassandra表的键空间，如果键空间不存在会创建它（如果指定的Cassandra账户持有正确的权限）。|
-|table|否|存储键值对的Cassandra表，如果表不存在会创建它（如果指定的Cassandra账户持有正确的权限）。|
+|keyspace|是|存储键-值对的Cassandra表的键空间，如果键空间不存在会创建它（如果指定的Cassandra账户持有正确的权限）。|
+|table|否|存储键-值对的Cassandra表，如果表不存在会创建它（如果指定的Cassandra账户持有正确的权限）。|
 |ttl|否|表数据行的到期时间（秒），要了解有关Cassandra ttl的详细信息，可以参照[到期数据](http://docs.datastax.com/en/cql/3.1/cql/cql_using/use_expire_c.html)。|
 
 **keyspaceOptions**

@@ -2,7 +2,7 @@
 ## 1.Kubernetes部署
 Ignite集群可以容易地在[Kubernetes](https://kubernetes.io/)环境中部署和维护，Kubernetes是一个开源的系统，可以自动化地部署、伸缩以及管理容器化的应用。
 
-本文档会引导用户将Ignite部署进Kubernetes环境，还会涉及一些与Ignite有关的特殊性内容。
+本章节会引导用户将Ignite部署进Kubernetes环境，还会涉及一些与Ignite有关的特殊性内容。
 首先要确定Ignite的开发和使用方式：
 
  - 如果使用纯内存方式或者作为第三方数据库（RDBMS, NoSQL）的缓存层，那么需要遵照`无状态部署`的相关文档；
@@ -425,7 +425,7 @@ kubectl config set-context $(kubectl config current-context) --namespace=ignite
 ### 2.4.Ignite服务
 Ignite服务用于Ignite节点的自动发现，还有做为要接入集群的外部应用的负载平衡器。
 
-本文描述如何配置和部署Ignite服务。
+本章节描述如何配置和部署Ignite服务。
 #### 2.4.1.Ignite服务部署
 Ignite的`KubernetesIPFinder`需要用户配置和部署一个特定的Kubernetes服务，它会维护一个所有有效的Ignite配置组的IP地址列表。
 
@@ -475,7 +475,7 @@ kubectl create -f ignite-service.yaml
 
 也可以考虑Amazon AWS IP探测器、Google Compute Engine IP探测器或者JClouds IP探测器，但是Kubernetes必须部署在这些云环境中。另外，也可以使用共享文件系统或者关系型数据库用于节点的自动发现，但是必须单独维护数据库或者共享文件系统。
 
-本文会描述有关针对使用Kubernetes技术容器化的Ignite节点，专门开发的IP探测器，该IP探测器会自动搜索所有在线的Ignite配置组的IP地址，它是通过与一个持有所有最新端点的Kubernetes服务进行通信实现的。
+本章节会描述有关针对使用Kubernetes技术容器化的Ignite节点，专门开发的IP探测器，该IP探测器会自动搜索所有在线的Ignite配置组的IP地址，它是通过与一个持有所有最新端点的Kubernetes服务进行通信实现的。
 #### 2.5.2.基于Kubernetes服务的发现
 如果要开启Kubernetes环境的节点自动发现，需要在下面的配置中使用`TcpDiscoveryKubernetesIpFinder`：
 
@@ -565,7 +565,7 @@ spec:
  - [通过Azure门户部署AKS集群](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal)
  - [通过Azure命令行部署AKS集群](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
 
-本文中会讲解如何使用Azure门户进行AKS部署。
+本章节中会讲解如何使用Azure门户进行AKS部署。
 
 **AKS配置**
 
@@ -708,7 +708,7 @@ SELECT country.name, city.name, MAX(city.population) as max_pop FROM country
 
  - [创建集群](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-cluster)
 
-在本文中，会使用Google云控制台进行GKE的部署。
+在本章节中，会使用Google云控制台进行GKE的部署。
 
 **GKE配置**
 

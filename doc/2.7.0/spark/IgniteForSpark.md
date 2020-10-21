@@ -355,7 +355,7 @@ CITY table description:
 |`OPTION_CREATE_TABLE_PRIMARY_KEY_FIELDS`|逗号分隔的主键字段的列表。|
 |`OPTION_STREAMER_ALLOW_OVERWRITE`|如果为`true`，那么已有的行会被DataFrame的内容覆写，如果为`false`并且表中对应的主键已经存在，那么后续该行会被忽略。|
 |`OPTION_STREAMER_FLUSH_FREQUENCY`|自动刷新频率，这是流处理器尝试提交所有附加数据到远程节点的时间间隔。|
-|`OPTION_STREAMER_PER_NODE_BUFFER_SIZE`|每节点的缓冲区大小。每个节点键值对缓冲区的大小。|
+|`OPTION_STREAMER_PER_NODE_BUFFER_SIZE`|每节点的缓冲区大小。每个节点键-值对缓冲区的大小。|
 |`OPTION_STREAMER_PER_NODE_PARALLEL_OPERATIONS`|每节点的缓冲区大小。每个节点进行并行流处理的最大数量。|
 
 ### 3.8.示例
@@ -555,7 +555,7 @@ shareRDD: org.apache.ignite.spark.IgniteRDD[Integer,Integer] = IgniteRDD[0] at R
 ```
 注意RDD的创建是一个本地的操作，并不会在Ignite集群上创建缓存。
 
-**4.这时可以用RDD让Spark做一些事情，比如，获取值小于10的所有键值对**
+**4.这时可以用RDD让Spark做一些事情，比如，获取值小于10的所有键-值对**
 ```scala
 sharedRDD.filter(_._2 < 10).collect()
 ```

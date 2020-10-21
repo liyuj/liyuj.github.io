@@ -349,7 +349,7 @@ dataStreamer.close();
 ```
 ## 5.MQTT流处理器
 ### 5.1.概述
-该流处理器使用[Eclipse Paho](https://eclipse.org/paho/)作为MQTT客户端，从一个MQTT主题消费消息，然后将键值对提供给`IgniteDataStreamer`实例。
+该流处理器使用[Eclipse Paho](https://eclipse.org/paho/)作为MQTT客户端，从一个MQTT主题消费消息，然后将键-值对提供给`IgniteDataStreamer`实例。
 
 必须提供一个流的元组提取器(不管是单条目的，还是多条目的提取器)来处理传入的消息，然后提取元组以插入缓存。
 ### 5.2.特性
@@ -474,7 +474,7 @@ finally {
 ```
 可以参考ignite-flink模块的javadoc来了解可用选项的详细信息。
 ## 8.Twitter流处理器
-Ignite的Twitter流处理器模块会从Twitter消费微博然后将转换后的键值对<tweetId, text>注入Ignite缓存。
+Ignite的Twitter流处理器模块会从Twitter消费微博然后将转换后的键-值对<tweetId, text>注入Ignite缓存。
 要将来自Twitter的数据流注入Ignite缓存，需要：
 
  - 在Maven工程里导入Ignite的twitter模块；
