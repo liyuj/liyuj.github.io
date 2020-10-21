@@ -37,7 +37,7 @@
               <br/>
               <button class="white-btn" onclick="window.location.href='/Service.html'">GridGain技术支持服务</button>
               <button class="white-btn" onclick="window.location.href='/Service.html'">本土咨询顾问服务</button>
-              <button class="white-btn" onclick="window.location.href='/Service.html'">付费开发者服务</button>
+              <button class="white-btn" onclick="window.location.href='/Service.html'">远程技术支持服务</button>
               <button class="white-btn" onclick="window.location.href='/Service.html'">免费开发者服务</button>
             </div>
           </div>
