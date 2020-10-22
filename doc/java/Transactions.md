@@ -1,4 +1,4 @@
-# 执行事务
+# Ignite事务
 ## 1.事务
 ### 1.1.概述
 要为特定的缓存开启事务支持，需要在缓存配置中将`atomicityMode`设置为`TRANSACTIONAL`，具体请参见[原子化模式](/doc/java/ConfiguringCaches.md#_4-原子化模式)。
