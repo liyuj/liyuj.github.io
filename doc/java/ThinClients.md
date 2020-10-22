@@ -125,6 +125,7 @@ var ignite = Ignition.Start(cfg);
 Java瘦客户端是一个使用标准套接字连接接入集群的轻量级的Ignite客户端，它不会成为集群拓扑的一部分，也不持有任何数据，也不会参与计算。它所做的只是简单地建立一个与标准Ignite节点的套接字连接，并通过该节点执行所有操作。
 ### 2.2.配置
 如果使用Maven或者Gradle，需要向应用中添加`ignite-core`依赖：
+
 <Tabs>
 <Tab title="Maven">
 

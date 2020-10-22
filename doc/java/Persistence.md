@@ -1133,7 +1133,6 @@ cfg.setCacheConfiguration(cacheCfg);
 Ignite ignite = Ignition.start(cfg);
 ```
 </Tab>
-
 </Tabs>
 
 ### 6.1.支持的算法
@@ -1306,6 +1305,7 @@ Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页�
 :::
 
 下面的示例显示了如何开启页面写入限流：
+
 <Tabs>
 <Tab title="XML">
 

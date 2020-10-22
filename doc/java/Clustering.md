@@ -929,14 +929,6 @@ cfg.setDiscoverySpi(spi);
 Ignition.start(cfg);
 ```
 </Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
 </Tabs>
 
 ### 4.2.Amazon S3 IP探测器
@@ -995,14 +987,6 @@ cfg.setDiscoverySpi(spi);
 Ignition.start(cfg);
 ```
 </Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
 </Tabs>
 
 还可以使用AWS凭据提供者的**Instance Profile**：
@@ -1053,14 +1037,6 @@ cfg.setDiscoverySpi(spi);
 // Start a node.
 Ignition.start(cfg);
 ```
-</Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
 </Tab>
 </Tabs>
 
@@ -1123,14 +1099,6 @@ cfg.setDiscoverySpi(spi);
 Ignition.start(cfg);
 ```
 </Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
 </Tabs>
 
 ### 4.4.Google Compute发现
@@ -1188,14 +1156,6 @@ cfg.setDiscoverySpi(spi);
 Ignition.start(cfg);
 ```
 </Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
 </Tabs>
 
 ## 5.网络配置
@@ -1232,14 +1192,6 @@ TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi().setLocalPort(8300);
 cfg.setDiscoverySpi(discoverySpi);
 Ignite ignite = Ignition.start(cfg);
 ```
-</Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
 </Tab>
 </Tabs>
 
@@ -1307,11 +1259,6 @@ Ignite ignite = Ignition.start(cfg);
 Ignition.Start(cfg);
 ```
 </Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
-
-</Tab>
 </Tabs>
 
 下面是`TcpCommunicationSpi`的一些重要参数，完整的参数请参见[TcpCommunicationSpi](https://ignite.apache.org/releases/2.9.0/javadoc/org/apache/ignite/spi/communication/tcp/TcpCommunicationSpi.html)的javadoc。
@@ -1362,16 +1309,6 @@ cfg.setFailureDetectionTimeout(5_000);
 
 cfg.setClientFailureDetectionTimeout(10_000);
 ```
-</Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
-
 </Tab>
 </Tabs>
 
@@ -1429,16 +1366,6 @@ discoverySpi.setClientReconnectDisabled(true);
 
 cfg.setDiscoverySpi(discoverySpi);
 ```
-</Tab>
-
-<Tab title="C#/.NET">
-.NET目前还不支持这个API，需要使用基于XML的配置。
-
-</Tab>
-
-<Tab title="C++">
-C++目前还不支持这个API，需要使用基于XML的配置。
-
 </Tab>
 </Tabs>
 
