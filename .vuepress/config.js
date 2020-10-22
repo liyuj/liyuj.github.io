@@ -84,6 +84,9 @@ module.exports = {
                         'MachineLearning',
                         'ContinuousQueries',
                         'Service',
+                        'Messaging',
+                        'DataStructures',
+                        'DistributedLocks',
                         'RESTAPI',
                         'DotnetSpecific',
                         'CppSpecific',
@@ -92,6 +95,7 @@ module.exports = {
                         'Tools',
                         'Security',
                         'ExtensionsIntegrations',
+                        'Plugins',
                         'PerformanceTroubleshooting',
                         'Legal'
                     ],

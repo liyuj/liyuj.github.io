@@ -30,7 +30,7 @@
           <h4><span>服务报价：</span><span style="font-weight:normal">按年度订阅，GridGain服务包（按GCU计费，全款预付）+ 中国服务商服务包（标准远程服务10万元，驻场服务3000元/核算日，可分期付款）</span></h4>
 				</div>
         <div class="col-sm-6 text-left scroll-animated-from-bottom">
-          <h3 style="color:red;font-size:30px;margin:0 0 30px 0"><span class="fa fa-battery-2"></span>  本土咨询顾问服务</h3>
+          <h3 style="color:red;font-size:30px;margin:0 0 30px 0"><span class="fa fa-battery-2"></span>  技术咨询顾问服务</h3>
           <h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查、Ignite专题介绍/远程培训、协助POC/业务原型开发/Ignite定制化（驻场）、技术架构咨询/规划/评审、协助解决具体的测试/生产问题、系统性能/扩展性优化等</span></h4>
           <h4><span>服务方式：</span><span style="font-weight:normal">远程（远程接入、网络会议、即时通信软件、电话、邮件）/驻场</span></h4>
           <h4><span>服务报价：</span><span style="font-weight:normal">远程（6千元/半月，1万元/月，2.5万元/季，5万元/半年，10万元/年），驻场（3000元/核算日，5万元/月，长期合作面议）</span></h4>
