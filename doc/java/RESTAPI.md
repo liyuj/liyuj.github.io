@@ -1,23 +1,131 @@
 # REST API
 Ignite提供了一个HTTP REST客户端，可以以REST的方式通过HTTP或者HTTPS协议与集群进行通信。REST API可以用于执行不同的操作，比如对缓存进行读/写，执行任务，获取各种指标等等。
-## 1.入门
-要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在二进制包中，这意味着将其从`IGNITE_HOME/libs/optional/`拷贝到`IGNITE_HOME/libs`中。
 
-不需要显式地进行配置，连接器就会自动启动，然后监听`8080`端口，可以通过`curl`检测其是否工作正常。
+从内部来说，Ignite使用Jetty来提供HTTP服务，关于如何配置Jetty，请参见下面的[配置](#_1-1-配置)章节的介绍。
+# 1.入门
+要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在二进制包中，这意味着将其从`IGNITE_HOME/libs/optional/`拷贝到`IGNITE_HOME/libs`中，具体请参见[启用模块](/doc/java/SettingUp.md#_2-7-启用模块)章节的介绍。
+
+不需要特别的配置，连接器就会自动启动，然后监听`8080`端口，可以通过`curl`检测其是否工作正常：
 ```shell
 curl 'http://localhost:8080/ignite?cmd=version'
 ```
-请求参数可以通过URL传递，也可以通过表单的POST提交方式传递：
+请求参数可以通过URL传递，也可以通过表单数据提交方式传递：
 ```bash
 curl 'http://localhost:8080/ignite?cmd=put&cacheName=myCache' -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'key=testKey&val=testValue'
 ```
-**安全**
+### 1.1.配置
+修改HTTP服务器参数的方法如下：
 
-通过REST协议，可以与集群建立安全的连接，怎么做呢，首先要通过`IgniteConfiguration.setAuthenticationEnabled(true)`方法开启集群的认证功能，注意目前只有开启持久化时认证功能才可用。
-::: tip 开启认证
-Ignite节点的[认证](/doc/java/Security.md#_1-认证)可以通过`IgniteConfiguration.setAuthenticationEnabled(true)`方法开启，目前，只有开启Ignite的原生持久化之后才支持认证，这个限制未来的版本可能会放宽。
-:::
-服务端开启认证之后，就可以在REST连接串中提供`ignite.login=[user]&ignite.password=[password]`参数进行用户认证了，成功之后会生成一个会话令牌，该令牌可以在该会话的任意命令中使用。
+<Tabs>
+<Tab title="XML">
+
+```xml
+<bean class="org.apache.ignite.configuration.IgniteConfiguration" id="ignite.cfg">
+    <property name="connectorConfiguration">
+        <bean class="org.apache.ignite.configuration.ConnectorConfiguration">
+            <property name="jettyPath" value="jetty.xml"/>
+        </bean>
+    </property>
+</bean>
+```
+</Tab>
+
+<Tab title="Java">
+
+```java
+IgniteConfiguration cfg = new IgniteConfiguration();
+cfg.setConnectorConfiguration(new ConnectorConfiguration().setJettyPath("jetty.xml"));
+```
+</Tab>
+</Tabs>
+
+下表列出了`ConnectorConfiguration`中和HTTP服务器有关的参数：
+
+|参数名|描述|可选|默认值|
+|---|---|---|---|
+|`setSecretKey(String)`|定义用于客户端认证的密钥，如果进行了设定，客户端请求必须包含HTTP头`X-Signature`，值为：`[1]:[2]`，这里`[1]`为毫秒值的时间戳，`[2]`为密钥的Base64格式的SHA1哈希值。|是|null|
+|`setPortRange(int)`|Jetty服务的端口范围，如果在Jetty配置文件中或者`IGNITE_JETTY_PORT`系统属性中配置的端口已被占用，Ignite会将该端口加1然后再做一次绑定直到设定的范围上限。|是|100|
+|`setJettyPath(String)`|Jetty配置文件的路径，要么是绝对路径，要么是相对于`IGNITE_HOME`，如果未指定，Ignite会用简单的HTTP连接器启动Jetty服务，这个连接器会分别使用`IGNITE_JETTY_HOST`和`IGNITE_JETTY_PORT`系统参数作为主机和端口，如果`IGNITE_JETTY_HOST`未设定，会使用localhost，如果`IGNITE_JETTY_PORT`未设定，默认会使用8080。|是|null|
+|`setMessageInterceptor(ConnectorMessageInterceptor)`|转换通过REST协议进行交换的所有对象的拦截器。比如在客户端使用自定义的序列化，那么可以写一个拦截器来将从客户端收到的二进制数据转换为Java对象，然后就可以直接访问。|是|null|
+
+**Jetty XML示例配置**
+
+配置文件的路径通过`ConnectorConfiguration.setJettyPath(String)`设定，如上所述：
+
+```xml
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+    <Arg name="threadPool">
+        <!-- Default queued blocking thread pool -->
+        <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+            <Set name="minThreads">20</Set>
+            <Set name="maxThreads">200</Set>
+        </New>
+    </Arg>
+    <New id="httpCfg" class="org.eclipse.jetty.server.HttpConfiguration">
+        <Set name="secureScheme">https</Set>
+        <Set name="securePort">8443</Set>
+        <Set name="sendServerVersion">true</Set>
+        <Set name="sendDateHeader">true</Set>
+    </New>
+    <Call name="addConnector">
+        <Arg>
+            <New class="org.eclipse.jetty.server.ServerConnector">
+                <Arg name="server"><Ref refid="Server"/></Arg>
+                <Arg name="factories">
+                    <Array type="org.eclipse.jetty.server.ConnectionFactory">
+                        <Item>
+                            <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                                <Ref refid="httpCfg"/>
+                            </New>
+                        </Item>
+                    </Array>
+                </Arg>
+                <Set name="host">
+                  <SystemProperty name="IGNITE_JETTY_HOST" default="localhost"/>
+                </Set>
+                <Set name="port">
+                  <SystemProperty name="IGNITE_JETTY_PORT" default="8080"/>
+                </Set>
+                <Set name="idleTimeout">30000</Set>
+                <Set name="reuseAddress">true</Set>
+            </New>
+        </Arg>
+    </Call>
+    <Set name="handler">
+        <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+            <Set name="handlers">
+                <Array type="org.eclipse.jetty.server.Handler">
+                    <Item>
+                        <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+                    </Item>
+                </Array>
+            </Set>
+        </New>
+    </Set>
+    <Set name="stopAtShutdown">false</Set>
+</Configure>
+```
+
+## 1.2.安全
+当集群配置认证后，所有的REST API访问都需要提供凭据来做认证，认证成功后会返回一个会话令牌，该令牌可以在该会话的任意命令中使用。
 
 请求认证有两种方式：
 
@@ -29,9 +137,9 @@ https://[host]:[port]/ignite?cmd=authenticate&ignite.login=[user]&ignite.passwor
 ```
   http://[host]:[port]/ignite?cmd=version&ignite.login=[user]&ignite.password=[password]
 ```
-上面的例子中，需要将`[host]`、`[port]`、`[user]`和`[password]`替换为实际值。
+上面的示例中，需要将`[host]`、`[port]`、`[user]`和`[password]`替换为实际值。
 
-在浏览器中执行上面的字符串都会返回一个会话令牌，大概向下面这样：
+在浏览器中执行上面的字符串都会返回一个会话令牌，如下所示：
 ```json
 {"successStatus":0,"error":null,"sessionToken":"EF6013FF590348CE91DEAE9870183BEF","response":true}
 ```
@@ -39,19 +147,25 @@ https://[host]:[port]/ignite?cmd=authenticate&ignite.login=[user]&ignite.passwor
 ```
 http://[host]:[port]/ignite?cmd=top&sessionToken=[sessionToken]
 ```
-上面的例子中，需要将`[host]`, `[port]`, `[sessionToken]`替换为实际值。
+上面的示例中，需要将`[host]`、`[port]`、`[sessionToken]`替换为实际值。
 
 ::: warning 注意
 如果服务端开启了认证，那么用户的凭据或者令牌就是必须的，如果既不提供`sessionToken`，也不提供`user`和`password`会出错：`{"successStatus":2,"sessionToken":null,"error":"Failed to handle request - session token not found or invalid","response":null}`。
 :::
 
 ::: tip 会话令牌过期
-会话令牌有效期只有**30秒**，如果使用一个过期的令牌会报错：`{"successStatus":1,"error":"Failed to handle request - unknown session token (maybe expired session) [sesTok=12FFFD4827D149068E9FFF59700E5FDA]","sessionToken":null,"response":null}`。如果要自定义过期时间，可以配置`IGNITE_REST_SESSION_TIMEOUT`系统参数，单位为秒。<br>
+会话令牌有效期只有**30秒**，如果使用一个过期的令牌会报错：`{"successStatus":1,"error":"Failed to handle request - unknown session token (maybe expired session) [sesTok=12FFFD4827D149068E9FFF59700E5FDA]","sessionToken":null,"response":null}`。
+如果要自定义过期时间，可以配置`IGNITE_REST_SESSION_TIMEOUT`系统参数，单位为秒。
+
 比如：`-DIGNITE_REST_SESSION_TIMEOUT=3600`
 :::
 
 ## 2.数据类型
-对于**put/get**操作，REST API还可以通过`keyType`和`valueType`参数支持Java的内置类型，注意除非显式指定了下面提到的数据类型，REST协议会将键-值数据转换为`String`类型，这意味着集群中对数据的读写都是作为`String`的。
+REST API默认以`String`格式交换查询参数，集群也是按照`String`对象来处理参数。
+
+如果一个参数的类型不是`String`，可以使用`keyType`或`valueType`来指定参数的真实类型，REST API同时支持Java类型和自定义类型：
+
+### 2.1.Java类型
 
 |REST键类型/值类型|对应的Java类型|
 |---|---|
@@ -72,107 +186,71 @@ http://[host]:[port]/ignite?cmd=top&sessionToken=[sessionToken]
 ```
 http://[host]:[port]/ignite?cmd=put&key=1&val=2018-01-01&cacheName=myCache&keyType=int&valueType=date
 ```
-对应的`get`命令为：
+类似的带有`keyType=int`和`valueType=date`参数的`get`命令为：
 ```
 http://[host]:[port]/ignite?cmd=get&key=1&cacheName=myCache&keyType=int&valueType=date
 ```
+### 2.2.自定义类型
+通过Ignite的REST协议，JSON格式可以用于交换复杂的自定义对象。
+
+比如，假定有一个`Person`类，下面是要发给集群的实例对象的JSON表示：
+
+```json
+ {
+  "uid": "7e51118b",
+  "name": "John Doe",
+  "orgId": 5678901,
+  "married": false,
+  "salary": 156.1
+ }
+```
+下一步，使用下面的REST请求，通过配置`valueType`参数为`Person`，`val`参数为JSON对象，来将对象写入集群：
+
+```
+http://[host]:[port]/ignite?cacheName=testCache&cmd=put&keyType=int&key=1&valueType=Person
+&val=%7B%0A+++++%22uid%22%3A+%227e51118b%22%2C%0A+++++%22name%22%3A+%22John+Doe%22%2C%0A+++++%22orgId%22%3A+5678901%2C%0A+++++%22married%22%3A+false%2C%0A+++++%22salary%22%3A+156.1%0A++%7D&
+```
+服务端接收到这个请求后，将按照以下转换过程将对象从JSON转换为内部[二进制对象](/doc/java/DataModeling.md#_1-3-二进制对象格式)格式：
+
+ - 如果`Person`类存在并且在服务端的类路径上可用，则JSON对象将解析为`Person`类的实例；
+ - 如果`Person`类在服务端的类路径上不可用，但是有一个`QueryEntity`对象定义了`Person`，则将JSON对象解析为`Person`类型的二进制对象；
+ - 否则，将按照常规JSON约定解析JSON对象的字段类型：
+
+```
+"uid": "7e51118b",   // string
+"name": "John Doe",  // string
+"orgId": 5678901,    // int
+"married": false,    // boolean
+"salary": 156.1      // double
+```
+当通过Ignite的REST协议的`keyType`参数配置自定义键类型时，同样的转换规则也适用。
+
 ## 3.返回值
 HTTP REST请求返回一个JSON对象，每一个命令都有一个类似的结构，这个对象有如下的结构：
 
 |名字|类型|描述|示例|
 |---|---|---|---|
-|affinityNodeId|string|关联节点ID|2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37|
-|error|string|如果服务器无法处理请求，出现的错误的描述|每个命令单独指定|
-|sessionToken|String|如果服务端开启认证，该字段包含了在会话有效期内可以用于其它命令的会话令牌，如果关闭认证，该字段为空。|如果认证打开，EF6013FF590348CE91DEAE9870183BEF，否则为空|
-|response|jsonObject|该命令包含命令执行结果|每个命令单独指定|
-|successStatus|Integer|返回状态码：<br>成功：0<br>失败：1<br>授权失败：2<br>安全检查失败：3|0|
+|`affinityNodeId`|string|关联节点ID|2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37|
+|`error`|string|如果服务器无法处理请求，出现的错误的描述|每个命令单独指定|
+|`sessionToken`|String|如果服务端开启认证，该字段包含了在会话有效期内可以用于其它命令的会话令牌，如果关闭认证，该字段为空。|如果认证打开，EF6013FF590348CE91DEAE9870183BEF，否则为空|
+|`response`|jsonObject|该命令包含命令执行结果|每个命令单独指定|
+|`successStatus`|Integer|返回状态码：<br>成功：0<br>失败：1<br>授权失败：2<br>安全检查失败：3|0|
 
 ## 4.REST API参考
 ### 4.1.version
-### 4.2.state
-### 4.3.setstate
-### 4.4.incr
-### 4.5.decr
-### 4.6.cache
-### 4.7.size
-### 4.8.metadata
-### 4.9.cas
-### 4.10.append
-### 4.11.prepend
-### 4.12.rep
-### 4.13.get
-### 4.14.getall
-### 4.15.getrmv
-### 4.16.getput
-### 4.17.getputifabs
-### 4.18.getrep
-### 4.19.repval
-### 4.20.rmv
-### 4.21.rmvall
-### 4.22.rmvval
-### 4.23.add
-### 4.24.put
-### 4.25.putall
-### 4.26.putifabs
-### 4.27.conkey
-### 4.28.conkeys
-### 4.29.getorcreate
-### 4.30.destcache
-### 4.31.node
-### 4.32.log
-### 4.33.top
-### 4.34.exe
-### 4.35.res
-### 4.36.qryexe
-### 4.37.qryfldexe
-### 4.38.qryscanexe
-### 4.39.qryfetch
-### 4.40.qrycls
-
-
-
-### 4.2.log
-**log**命令显示服务器的日志。
-
-URL:
-```
-http://host:port/ignite?cmd=log&from=10&to=100&path=/var/log/ignite.log
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**log**，小写||
-|from|integer|是|开始的行号，如果传入了**to**参数，该参数为必须|0|
-|path|string|是|日志文件的路径，如果未提供会使用默认值|/log/cache_server.log|
-|to|integer|是|结束的行号，如果传入了**from**参数，该参数为必须|1000|
-
-**响应示例**
-```json
-{
-  "error": "",
-  "response": ["[14:01:56,626][INFO ][test-runner][GridDiscoveryManager] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.8GB]"],
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|string|日志|["[14:01:56,626][INFO ][test-runner][GridDiscoveryManager] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.8GB]"]|
-
-### 4.3.version
 **version**命令显示当前Ignite的版本。
 
 URL:
 ```
 http://host:port/ignite?cmd=version
 ```
-**请求参数**
+**请求**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
 |cmd|string|否|**version**，小写||
 
-**响应示例**
+**响应**
 ```json
 {
   "error": "",
@@ -183,45 +261,58 @@ http://host:port/ignite?cmd=version
 |名称|类型|描述|示例|
 |---|---|---|---|
 |response|string|Ignite版本|1.0.0|
+### 4.2.state
+返回当前集群的[状态](/doc/java/Monitoring.md#_3-集群状态)。
 
-### 4.4.decr
-**decr**命令减去然后获得给定原子性Long类型的当前值。
+**请求：**
 
-URL:
 ```
-http://host:port/ignite?cmd=decr&cacheName=partionedCache&key=decrKey&init=15&delta=10
+http://host:port/ignite?cmd=state
 ```
-**请求参数**
+**响应：**
 
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**decr**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|原子性Long类型的名称|counter|
-|init|long|是|初始值|15|
-|delta|long|否|减去的值|42|
+如果集群为激活状态则返回`true`，否则返回`false`。
 
-**响应示例**
 ```json
 {
-  "affinityNodeId": "e05839d5-6648-43e7-a23b-78d7db9390d5",
-  "error": "",
-  "response": -42,
-  "successStatus": 0
+  "successStatus":0,
+  "error":null,
+  "sessionToken":null,
+  "response": "ACTIVE_READ_ONLY"
 }
 ```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|long|操作之后的值|-42|
+### 4.3.setstate
+`setstate`命令会修改集群的[状态](/doc/java/Monitoring.md#_3-集群状态)。
 
-### 4.5.incr
+**请求：**
+
+```
+http://host:port/ignite?cmd=setstate&state={new_state}
+```
+
+|参数|类型|描述|
+|---|---|---|
+|`state`|String|新的集群状态，下面值之一：<br> - `ACTIVE`：激活状态；<br> - `ACTIVE_READ_ONLY`：只读状态；<br> - `INACTIVE`：冻结集群|
+
+**响应：**
+
+```json
+{
+  "successStatus":0,
+  "error":null,
+  "sessionToken":null,
+  "response":"setstate done"
+}
+```
+
+### 4.4.incr
 **incr**命令增加然后获得给定原子性Long类型的当前值。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=incr&cacheName=partionedCache&key=incrKey&init=15&delta=10
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -231,7 +322,8 @@ http://host:port/ignite?cmd=incr&cacheName=partionedCache&key=incrKey&init=15&de
 |init|long|是|初始值|15|
 |delta|long|否|增加的值|42|
 
-**响应示例**
+**响应**
+响应包括了操作后的值。
 ```json
 {
   "affinityNodeId": "e05839d5-6648-43e7-a23b-78d7db9390d5",
@@ -240,18 +332,41 @@ http://host:port/ignite?cmd=incr&cacheName=partionedCache&key=incrKey&init=15&de
   "successStatus": 0
 }
 ```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|long|操作之后的值|42|
+### 4.5.decr
+**decr**命令减去然后获得给定原子性Long类型的当前值。
 
+**请求**
+
+```
+http://host:port/ignite?cmd=decr&cacheName=partionedCache&key=decrKey&init=15&delta=10
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**decr**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|原子性Long类型的名称|counter|
+|init|long|是|初始值|15|
+|delta|long|否|减去的值|42|
+
+**响应**
+响应包括了操作后的值。
+```json
+{
+  "affinityNodeId": "e05839d5-6648-43e7-a23b-78d7db9390d5",
+  "error": "",
+  "response": -42,
+  "successStatus": 0
+}
+```
 ### 4.6.cache
 **cache**命令可以获得Ignite缓存的指标。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=cache&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -259,7 +374,8 @@ http://host:port/ignite?cmd=cache&cacheName=partionedCache&destId=8daab5ea-af83-
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
+
 ```json
 {
   "affinityNodeId": "",
@@ -280,15 +396,106 @@ http://host:port/ignite?cmd=cache&cacheName=partionedCache&destId=8daab5ea-af83-
 |---|---|---|---|
 |response|jsonObject|JSON对象包含了缓存的指标，比如创建时间，读计数等|{"createTime": 1415179251551, "hits": 0, "misses": 0, "readTime":1415179251551, "reads": 0,"writeTime": 1415179252198, "writes": 2
 }|
+### 4.7.size
+**size**命令返回指定缓存的总条目的数量。
 
-### 4.7.cas
+**请求**
+
+```
+http://host:port/ignite?cmd=size&cacheName=partionedCache
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**size**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+
+**响应**
+```json
+{
+  "affinityNodeId": "",
+  "error": "",
+  "response": 1,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|number|给定缓存的总条目数量|5|
+
+### 4.8.metadata
+**metadata**命令返回指定缓存的元数据。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=metadata&cacheName=partionedCache
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**metadata**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+
+**响应**
+
+```json
+{
+  "error": "",
+  "response": {
+    "cacheName": "partionedCache",
+    "types": [
+      "Person"
+    ],
+    "keyClasses": {
+      "Person": "java.lang.Integer"
+    },
+    "valClasses": {
+      "Person": "org.apache.ignite.Person"
+    },
+    "fields": {
+      "Person": {
+        "_KEY": "java.lang.Integer",
+        "_VAL": "org.apache.ignite.Person",
+        "ID": "java.lang.Integer",
+        "FIRSTNAME": "java.lang.String",
+        "LASTNAME": "java.lang.String",
+        "SALARY": "double"
+      }
+    },
+    "indexes": {
+      "Person": [
+        {
+          "name": "ID_IDX",
+          "fields": [
+            "id"
+          ],
+          "descendings": [],
+          "unique": false
+        },
+        {
+          "name": "SALARY_IDX",
+          "fields": [
+            "salary"
+          ],
+          "descendings": [],
+          "unique": false
+        }
+      ]
+    }
+  },
+  "sessionToken": "",
+  "successStatus": 0
+}
+```
+### 4.9.cas
 **cas**命令在之前的值等于预期值时会在缓存中存储给定的键-值对。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=cas&key=casKey&val2=casOldVal&val1=casNewVal&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -299,7 +506,9 @@ http://host:port/ignite?cmd=cas&key=casKey&val2=casOldVal&val1=casNewVal&cacheNa
 |val2|string|否|预期值|Bob|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
+
+如果替换发生则为`true`，否则为`false`。
 ```json
 {
   "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
@@ -308,48 +517,14 @@ http://host:port/ignite?cmd=cas&key=casKey&val2=casOldVal&val1=casNewVal&cacheNa
   "successStatus": 0
 }
 ```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|如果替换发生则为true，否则false|true|
-
-### 4.8.prepend
-**prepend**命令为给定的键关联的值增加一个前缀。
-
-URL:
-```
-http://host:port/ignite?cmd=prepend&key=prependKey&val=prefix_&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**prepend**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要保存的键值|name|
-|val|string|否|为当前值要增加的前缀|Name_|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|如果替换发生则为true，否则false|true|
-
-### 4.9.append
+### 4.10.append
 **append**命令为给定的键关联的值增加一个后缀。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=append&key=appendKey&val=_suffix&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -359,7 +534,8 @@ http://host:port/ignite?cmd=append&key=appendKey&val=_suffix&cacheName=partioned
 |val|string|否|为当前值要增加的后缀|Jack|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
+
 ```json
 {
   "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
@@ -372,14 +548,44 @@ http://host:port/ignite?cmd=append&key=appendKey&val=_suffix&cacheName=partioned
 |---|---|---|---|
 |response|boolean|如果替换发生则为true，否则false|true|
 
-### 4.10.rep
+### 4.11.prepend
+**prepend**命令为给定的键关联的值增加一个前缀。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=prepend&key=prependKey&val=prefix_&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**prepend**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内要保存的键值|name|
+|val|string|否|为当前值要增加的前缀|Name_|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|如果替换发生则为true，否则false|true|
+
+### 4.12.rep
 **rep**命令为给定的键存储一个新值。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=rep&key=repKey&val=newValue&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -389,7 +595,10 @@ http://host:port/ignite?cmd=rep&key=repKey&val=newValue&cacheName=partionedCache
 |val|string|否|与给定键关联的新值|Jack|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
+
+如果替换发生则为`true`，否则为`false`。
+
 ```json
 {
   "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
@@ -398,286 +607,45 @@ http://host:port/ignite?cmd=rep&key=repKey&val=newValue&cacheName=partionedCache
   "successStatus": 0
 }
 ```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|如果替换发生则为true，否则false|true|
 
-### 4.11.getrep
-**getrep**命令为给定的键存储一个新值,然后返回原值。
+### 4.13.get
+**get**命令在缓存中获取给定的键对应的值。
 
-URL:
+**请求**
+
 ```
-http://host:port/ignite?cmd=getrep&key=repKey&val=newValue&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+http://host:port/ignite?cmd=get&key={getKey}&cacheName={cacheName}&destId={nodeId}
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
-|cmd|string|否|**getrep**，小写||
+|cmd|string|否|**get**，小写||
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要保存的键值|name|
-|val|string|否|与给定键关联的新值|Jack|
+|key|string|否|要返回的值对应的键|testKey|
+|keyType|Java内置类型|是|具体可以看上面的[数据类型](#_2-2-数据类型)章节。||
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
 ```json
 {
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
   "error": "",
-  "response": oldValue,
+  "response": "value from cache",
   "successStatus": 0
 }
 ```
 |名称|类型|描述|示例|
 |---|---|---|---|
-|response|jsonObject|给定键的原值|{"name": "Bob"}|
+|response|jsonObject|给定键的值|{"name": "Alex","id":1,"salary":2000}|
 
-### 4.12.repval
-**repval**命令在之前的值等于预期值时会替换给定键的值。
-
-URL:
-```
-http://host:port/ignite?cmd=repval&key=repKey&val=newValue&val2=oldVal&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**repval**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内的键值|name|
-|val|string|否|与给定键对应的值|Jack|
-|val2|string|否|预期值|oldValue|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|如果替换发生则为true，否则false|true|
-
-### 4.13.rmvall
-**rmvall**命令会从缓存中删除给定键的数据。
-
-URL:
-```
-http://host:port/ignite?cmd=rmvall&k1=rmKey1&k2=rmKey2&k3=rmKey3&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**rmvall**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|k1...kN|string|否|要从缓存中删除的键|name|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|如果删除发生则为true，否则false|true|
-
-### 4.14.rmvval
-**rmvval**命令当当前值等于预期值时在缓存中删除给定键对应的映射。
-
-URL:
-```
-http://host:port/ignite?cmd=rmvval&key=rmvKey&val=rmvVal&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**rmvval**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要删除的键值|name|
-|val|string|否|与给定键关联的期望值|oldValue|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|false，如果没有映射的键|true|
-
-### 4.15.rmv
-**rmv**命令在缓存中删除给定键对应的映射。
-
-URL:
-```
-http://host:port/ignite?cmd=rmv&key=rmvKey&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**rmv**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要删除的键值|name|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|true,如果删除发生，否则，false|true|
-
-### 4.16.getrmv
-**getrmv**命令在缓存中删除给定键的映射,然后返回原值。
-
-URL:
-```
-http://host:port/ignite?cmd=getrmv&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647&key=name
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**getrep**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要删除的键值|name|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": value,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|给定键的原值|{"name": "Bob"}|
-
-### 4.17.add
-**add**命令当缓存中不存在该映射时存储该映射。
-
-URL:
-```
-http://host:port/ignite?cmd=add&key=newKey&val=newValue&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**add**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要存储的键值|name|
-|val|string|否|与给定键关联的值|Jack|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|true，如果成功存储，否则，false|true|
-
-### 4.18.putall
-**putall**命令会在缓存中存储给定的键-值对。
-
-URL:
-```
-http://host:port/ignite?cmd=putall&k1=putKey1&k2=putKey2&k3=putKey3&v1=value1&v2=value2&v3=value3&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**putall**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|k1...kN|string|否|要在缓存中保存的键|name|
-|v1...vN|string|否|与给定键关联的值|Jack|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|如果成功保存则为true，否则false|true|
-
-### 4.19.put
-**put**命令在缓存中存储该映射。
-
-URL:
-```
-http://host:port/ignite?cmd=put&key=newKey&val=newValue&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**put**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要存储的键值|name|
-|val|string|否|与给定键关联的值|Jack|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|true，如果成功存储，否则，false|true|
-
-### 4.20.getall
+### 4.14.getall
 **getall**命令会从缓存中获取给定键的数据。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=getall&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -686,7 +654,7 @@ http://host:port/ignite?cmd=getall&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=pa
 |k1...kN|string|否|要从缓存中获取的值对应的键|key1, key2, ..., keyN|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
 ```json
 {
   "affinityNodeId": "",
@@ -705,121 +673,43 @@ http://host:port/ignite?cmd=getall&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=pa
 ::: tip 数组形式输出
 要获得数组形式的输出，需要配置系统属性`IGNITE_REST_GETALL_AS_ARRAY`为`true`，如果配置了这个属性，那么`getall`命令的输出格式为：`{“successStatus”:0,“affinityNodeId”:null,“error”:null,“sessionToken”:null,“response”:[{“key”:“key1”,“value”:“value1”},{“key”:“key2”,“value”:“value2”}]}`
 :::
-### 4.21.get
-**get**命令在缓存中获取给定的键对应的值。
+### 4.15.getrmv
+**getrmv**命令在缓存中删除给定键的映射,然后返回原值。
 
-URL:
-```
-http://host:port/ignite?cmd=get&key=getKey&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
-```
-也可以获取通过API或者SQL插入的数据，比如，如果缓存中有一个`Person`对象，可以通过如下方式获取：
+**请求**
 
-URL：
 ```
-# If the entry in cache was inserted via API, for example
-# cache.put(1, new Person(1, Alex, 300));
-# you can use the following REST command to get the value
-
-http://host:port/ignite?cmd=get&cacheName=myCacheName&keyType=int&key=1
+http://host:port/ignite?cmd=getrmv&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647&key=name
 ```
-SQL：
-```
-# If the entry in cache was inserted via SQL, for example -
-# create table person(id integer primary key, name varchar(100), salary integer);
-# insert into person(id, name, salary) values (1, Alex, 300);
-# you can use the following REST command to get the value
-
-http://host:port/ignite?cmd=get&cacheName=SQL_PUBLIC_PERSON&keyType=int&key=1
-```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
-|cmd|string|否|**get**，小写||
+|cmd|string|否|**getrep**，小写||
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|要返回的值对应的键|testKey|
-|keyType|Java内置类型|是|具体可以看上面的[数据类型](#_2-2-数据类型)章节。||
+|key|string|否|缓存内要删除的键值|name|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
 ```json
 {
-  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
   "error": "",
-  "response": "value from cache",
+  "response": value,
   "successStatus": 0
 }
 ```
 |名称|类型|描述|示例|
 |---|---|---|---|
-|response|jsonObject|给定键的值|{"name": "Alex","id":1,"salary":2000}|
+|response|jsonObject|给定键的原值|{"name": "Bob"}|
 
-### 4.22.conkey
-**conkey**命令在缓存中检测是否有给定键对应的条目。
-
-URL:
-```
-http://host:port/ignite?cmd=conkey&key=getKey&cacheName=partionedCache
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**conkey**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|在缓存中检测是否存在的键|testKey|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|存在给定键对应的映射则为true|true|
-
-### 4.23.conkeys
-**conkeys**命令在缓存中检测是否有给定键对应的条目。
-
-URL:
-```
-http://host:port/ignite?cmd=conkeys&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=partionedCache
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**rmvall**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|k1...kN|string|否|在缓存中检测是否存在的键|key1, key2, ..., keyN|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|存在给定键对应的映射则为true|true|
-
-### 4.24.getput
+### 4.16.getput
 **getput**命令在缓存中存储给定的键-值对，如果之前存在该映射，则返回原值。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCache
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -829,12 +719,12 @@ http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCach
 |val|string|否|与给定键关联的值|Jack|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
 ```json
 {
   "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
   "error": "",
-  "response": "value",
+  "response": {"name": "bob"},
   "successStatus": 0
 }
 ```
@@ -842,44 +732,14 @@ http://host:port/ignite?cmd=getput&key=getKey&val=newVal&cacheName=partionedCach
 |---|---|---|---|
 |response|jsonObject|给定键的原值|{"name": "bob"}|
 
-### 4.25.putifabs
-**putifabs**命令只有在缓存中存在该映射时才会存储给定的键-值对。
-
-URL:
-```
-http://host:port/ignite?cmd=putifabs&key=getKey&val=newVal&cacheName=partionedCache
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**putifabs**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-|key|string|否|缓存内要存储的键|name|
-|val|string|否|与给定键关联的值|Jack|
-|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
-
-**响应示例**
-```json
-{
-  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
-  "error": "",
-  "response": true,
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|成功存储则为true|true|
-
-### 4.26.getputifabs
+### 4.17.getputifabs
 **getputifabs**命令只有在缓存中不存在该映射时才会进行存储，否则会返回对应该键的原值。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=getputifabs&key=getKey&val=newVal&cacheName=partionedCache
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -889,7 +749,7 @@ http://host:port/ignite?cmd=getputifabs&key=getKey&val=newVal&cacheName=partione
 |val|string|否|与给定键关联的值|Jack|
 |destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
 ```json
 {
   "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
@@ -902,41 +762,341 @@ http://host:port/ignite?cmd=getputifabs&key=getKey&val=newVal&cacheName=partione
 |---|---|---|---|
 |response|jsonObject|给定键对应的原值|{"name": "bob"}|
 
-### 4.27.size
-**size**命令返回指定缓存的总条目的数量。
+### 4.18.getrep
+**getrep**命令为给定的键存储一个新值,然后返回原值。
 
-URL:
+**请求**
+
 ```
-http://host:port/ignite?cmd=size&cacheName=partionedCache
+http://host:port/ignite?cmd=getrep&key=repKey&val=newValue&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
-|cmd|string|否|**size**，小写||
+|cmd|string|否|**getrep**，小写||
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内要保存的键值|name|
+|val|string|否|与给定键关联的新值|Jack|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 
-**响应示例**
+**响应**
 ```json
 {
-  "affinityNodeId": "",
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
   "error": "",
-  "response": 1,
+  "response": oldValue,
   "successStatus": 0
 }
 ```
 |名称|类型|描述|示例|
 |---|---|---|---|
-|response|number|给定缓存的总条目数量|5|
+|response|jsonObject|给定键的原值|{"name": "Bob"}|
 
-### 4.28.getorcreate
+### 4.19.repval
+**repval**命令在之前的值等于预期值时会替换给定键的值。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=repval&key=repKey&val=newValue&val2=oldVal&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**repval**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内的键值|name|
+|val|string|否|与给定键对应的值|Jack|
+|val2|string|否|预期值|oldValue|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|如果替换发生则为true，否则false|true|
+
+### 4.20.rmv
+**rmv**命令在缓存中删除给定键对应的映射。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=rmv&key=rmvKey&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**rmv**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内要删除的键值|name|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|true,如果删除发生，否则，false|true|
+
+### 4.21.rmvall
+**rmvall**命令会从缓存中删除给定键的数据。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=rmvall&k1=rmKey1&k2=rmKey2&k3=rmKey3&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**rmvall**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|k1...kN|string|否|要从缓存中删除的键|name|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|如果删除发生则为true，否则false|true|
+
+### 4.22.rmvval
+**rmvval**命令当当前值等于预期值时在缓存中删除给定键对应的映射。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=rmvval&key=rmvKey&val=rmvVal&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**rmvval**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内要删除的键值|name|
+|val|string|否|与给定键关联的期望值|oldValue|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|false，如果没有映射的键|true|
+
+### 4.23.add
+**add**命令当缓存中不存在该映射时存储该映射。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=add&key=newKey&val=newValue&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**add**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内要存储的键值|name|
+|val|string|否|与给定键关联的值|Jack|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|true，如果成功存储，否则，false|true|
+
+### 4.24.put
+**put**命令在缓存中存储该映射。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=put&key=newKey&val=newValue&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**put**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内要存储的键值|name|
+|val|string|否|与给定键关联的值|Jack|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|true，如果成功存储，否则，false|true|
+
+### 4.25.putall
+**putall**命令会在缓存中存储给定的键-值对。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=putall&k1=putKey1&k2=putKey2&k3=putKey3&v1=value1&v2=value2&v3=value3&cacheName=partionedCache&destId=8daab5ea-af83-4d91-99b6-77ed2ca06647
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**putall**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|k1...kN|string|否|要在缓存中保存的键|name|
+|v1...vN|string|否|与给定键关联的值|Jack|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "1bcbac4b-3517-43ee-98d0-874b103ecf30",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|如果成功保存则为true，否则false|true|
+
+### 4.26.putifabs
+**putifabs**命令只有在缓存中存在该映射时才会存储给定的键-值对。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=putifabs&key=getKey&val=newVal&cacheName=partionedCache
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**putifabs**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|缓存内要存储的键|name|
+|val|string|否|与给定键关联的值|Jack|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|成功存储则为`true`，否则为`false`|true|
+
+### 4.27.conkey
+**conkey**命令在缓存中检测是否有给定键对应的条目。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=conkey&key=getKey&cacheName=partionedCache
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**conkey**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|key|string|否|在缓存中检测是否存在的键|testKey|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|存在给定键对应的映射则为true|true|
+
+### 4.28.conkeys
+**conkeys**命令在缓存中检测是否有给定键对应的条目。
+
+**请求**
+
+```
+http://host:port/ignite?cmd=conkeys&k1=getKey1&k2=getKey2&k3=getKey3&cacheName=partionedCache
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**rmvall**，小写||
+|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
+|k1...kN|string|否|在缓存中检测是否存在的键|key1, key2, ..., keyN|
+|destId|string|是|要返回指标的节点Id|8daab5ea-af83-4d91-99b6-77ed2ca06647|
+
+**响应**
+```json
+{
+  "affinityNodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",
+  "error": "",
+  "response": true,
+  "successStatus": 0
+}
+```
+|名称|类型|描述|示例|
+|---|---|---|---|
+|response|boolean|存在给定键对应的映射则为true|true|
+
+### 4.29.getorcreate
 **getorcreate**命令如果不存在给定名字的缓存，则会进行缓存的创建。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=getorcreate&cacheName=myPartionedCache
 ```
-**请求参数**
 
 |名称|类型|可选|描述|
 |---|---|---|---|
@@ -944,11 +1104,11 @@ http://host:port/ignite?cmd=getorcreate&cacheName=myPartionedCache
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|
 |backups|int|是|缓存数据的备份数量，默认值为0|
 |dataRegion|string|是|缓存所属的内存区的名字|
-|templateName|string|是|Ignite中注册的用作缓存配置的缓存模板名，具体可以看[缓存模板](/doc/java/ConfiguringCaches.md#_1-2-缓存模板)|
+|templateName|string|是|Ignite中注册的用作缓存配置的缓存模板名，具体可以看[缓存模板](/doc/2.8.0/java/Key-ValueDataGrid.md#_3-5-缓存模板)|
 |cacheGroup|string|是|缓存所属的缓存组名|
 |writeSynchronizationMode|string|是|配置缓存的写同步模式：`FULL_SYNC`、`FULL_ASYNC`和`PRIMARY_SYNC`|
 
-**响应示例**
+**响应**
 ```json
 {
   "error": "",
@@ -956,22 +1116,21 @@ http://host:port/ignite?cmd=getorcreate&cacheName=myPartionedCache
   "successStatus": 0
 }
 ```
-
-### 4.29.destcache
+### 4.30.destcache
 **destcache**命令删除给定名字的缓存。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=destcache&cacheName=partionedCache
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
 |cmd|string|否|**destcache**，小写||
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
 
-**响应示例**
+**响应**
 ```json
 {
   "error": "",
@@ -979,15 +1138,14 @@ http://host:port/ignite?cmd=destcache&cacheName=partionedCache
   "successStatus": 0
 }
 ```
-
-### 4.30.node
+### 4.31.node
 **node**命令获取一个节点的信息。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=node&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70f93a4cd241
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -998,7 +1156,7 @@ http://host:port/ignite?cmd=node&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-7
 |id|string|是|如果传递了ip参数该参数为可选的。返回值包含了指定节点id对应的节点信息|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 |caches|boolean|是|如果配置为`true`，`node`返回的缓存信息会包括：缓存名、缓存模式和SQL模式。如果配置为`false`，`node`命令的返回结果不包含任何缓存信息，默认值为`true`。|true|
 
-**响应示例**
+**响应**
 ```json
 {
   "error": "",
@@ -1018,18 +1176,39 @@ http://host:port/ignite?cmd=node&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-7
 }
 ```
 
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|一个节点的信息|{"attributes": null,"caches": {},"consistentId": "127.0.0.1:47500","defaultCacheMode": "REPLICATED","metrics": null,"nodeId": "2d0d6510-6fed-4fa3-b813-20f83ac4a1a9","replicaCount": 128,"tcpAddresses": ["127.0.0.1"],"tcpHostNames": [""],"tcpPort": 11211}|
+### 4.32.log
+**log**命令显示服务器的日志。
 
-### 4.31.top
+**请求**
+
+```
+http://host:port/ignite?cmd=log&from=10&to=100&path=/var/log/ignite.log
+```
+
+|名称|类型|可选|描述|示例|
+|---|---|---|---|---|
+|cmd|string|否|**log**，小写||
+|from|integer|是|开始的行号，如果传入了**to**参数，该参数为必须|0|
+|path|string|是|日志文件的路径，如果未提供会使用默认值|/log/cache_server.log|
+|to|integer|是|结束的行号，如果传入了**from**参数，该参数为必须|1000|
+
+**响应**
+```json
+{
+  "error": "",
+  "response": ["[14:01:56,626][INFO ][test-runner][GridDiscoveryManager] Topology snapshot [ver=1, nodes=1, CPUs=8, heap=1.8GB]"],
+  "successStatus": 0
+}
+```
+
+### 4.33.top
 **top**命令获取一个拓扑的信息。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=top&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70f93a4cd241
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -1039,7 +1218,8 @@ http://host:port/ignite?cmd=top&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70
 |ip|string|是|如果传递了id参数该参数是可选的。返回值包含了指定IP对应的节点信息|192.168.0.1|
 |id|string|是|如果传递了ip参数该参数为可选的。返回值包含了指定节点id对应的节点信息|8daab5ea-af83-4d91-99b6-77ed2ca06647|
 |caches|boolean|是|如果配置为`true`，`top`返回的缓存信息会包括：缓存名、缓存模式和SQL模式。如果配置为`false`，`top`命令的返回结果不包含任何缓存信息，默认值为`true`。|true|
-**响应示例**
+
+**响应**
 ```json
 {
   "error": "",
@@ -1093,19 +1273,14 @@ http://host:port/ignite?cmd=top&attr=true&mtr=true&id=c981d2a1-878b-4c67-96f6-70
   "successStatus": 0
 }
 ```
-
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|一个拓扑的信息|[{"attributes": {...},"caches": [{name: "",mode: "PARTITIONED"},{name: "partionedCache",mode: "PARTITIONED",sqlSchema: "partionedCache"}],"consistentId": "127.0.0.1:47500","REPLICATED","metrics": {...},"nodeId": "96baebd6-dedc-4a68-84fd-f804ee1ed995",..."tcpPort": 11211},{"attributes": {...},"caches": [{name: "",mode: "REPLICATED"}],"consistentId": "127.0.0.1:47501","metrics": {...},"nodeId": "2bd7b049-3fa0-4c44-9a6d-b5c7a597ce37",..."tcpPort": 11212}]|
-
-### 4.32.exe
+### 4.34.exe
 **exe**命令在集群中执行给定的任务。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=exe&name=taskName&p1=param1&p2=param2&async=true
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -1114,7 +1289,9 @@ http://host:port/ignite?cmd=exe&name=taskName&p1=param1&p2=param2&async=true
 |p1...pN|string|是|任务执行的参数|arg1...argN|
 |async|boolean|是|任务异步执行的标志|true|
 
-**响应示例**
+**响应**
+
+响应中包含了与错误有关的信息，任务的唯一标识，计算的结果和状态。
 ```json
 {
   "error": "",
@@ -1127,26 +1304,23 @@ http://host:port/ignite?cmd=exe&name=taskName&p1=param1&p2=param2&async=true
   "successStatus": 0
 }
 ```
-
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|JSON对象，包含了与错误有关的信息，任务的唯一标识，计算的结果和状态|{"error": "","finished": true,"id":"~ee2d1688-2605-4613-8a57-6615a8cbcd1b","result": 4}|
-
-### 4.33.res
+### 4.35.res
 **res**命令获取指定任务的计算结果。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=res&id=8daab5ea-af83-4d91-99b6-77ed2ca06647
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
 |cmd|string|否|**res**，小写||
 |id|string|否|要返回结果的任务id|69ad0c48941-4689aae0-6b0e-4d52-8758-ce8fe26f497d~4689aae0-6b0e-4d52-8758-ce8fe26f497d|
 
-**响应示例**
+**响应**
+
+响应中包含了与错误有关的信息，任务的唯一标识，计算的结果和状态。
 ```json
 {
   "error": "",
@@ -1159,19 +1333,14 @@ http://host:port/ignite?cmd=res&id=8daab5ea-af83-4d91-99b6-77ed2ca06647
   "successStatus": 0
 }
 ```
-
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|JSON对象，包含了与错误有关的信息，任务的唯一标识，计算的结果和状态|{"error": "","finished": true,"id":"~ee2d1688-2605-4613-8a57-6615a8cbcd1b","result": 4}|
-
-### 4.34.qryexe
+### 4.36.qryexe
 **qryexe**命令在缓存中执行指定的查询。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=qryexe&type=Person&pageSize=10&cacheName=Person&arg1=1000&arg2=2000&qry=salary+%3E+%3F+and+salary+%3C%3D+%3F
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -1182,7 +1351,9 @@ http://host:port/ignite?cmd=qryexe&type=Person&pageSize=10&cacheName=Person&arg1
 |arg1...argN|string|否|查询的参数|1000,2000|
 |qry|string|否|编码后的sql|salary+%3E+%3F+and+salary+%3C%3D+%3F|
 
-**响应示例**
+**响应**
+
+响应中包含了查询的结果集，字段查询的元数据，最后页的标识以及查询的id。
 ```json
 {
   "error":"",
@@ -1196,19 +1367,14 @@ http://host:port/ignite?cmd=qryexe&type=Person&pageSize=10&cacheName=Person&arg1
   "successStatus":0
 }
 ```
-
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|JSON对象，包含了查询的结果集，最后页的标识以及查询的id|{"fieldsMetadata":[],"items":[{"key":3,"value":{"name":"Jane","id":3,salary":2000}},{"key":0,"value":{"name":"John","id":0,"salary":2000}}],"last":true,"queryId":0}|
-
-### 4.35.qryfldexe
+### 4.37.qryfldexe
 **qryfldexe**命令在缓存中执行指定的有字段的查询。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=qryfldexe&pageSize=10&cacheName=Person&qry=select+firstName%2C+lastName+from+Person
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -1218,7 +1384,9 @@ http://host:port/ignite?cmd=qryfldexe&pageSize=10&cacheName=Person&qry=select+fi
 |arg1...argN|string|否|查询的参数|1000,2000|
 |qry|string|否|编码后的sql|select+firstName%2C+lastName+from+Person|
 
-**响应示例**
+**响应**
+
+响应中包含了查询的结果集，字段查询的元数据，最后页的标识以及查询的id。
 ```json
 {
   "error":"",
@@ -1230,146 +1398,14 @@ http://host:port/ignite?cmd=qryfldexe&pageSize=10&cacheName=Person&qry=select+fi
   },
   "successStatus":0}
 ```
-
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|JSON对象，包含了查询的结果集，字段查询的元数据，最后页的标识以及查询的id|{"fieldsMetadata":[{"fieldName":"FIRSTNAME","fieldTypeName":"java.lang.String","schemaName":"person","typeName":"PERSON"},...],"items":[["Jane","Doe"],["John","Doe"]],"last":true,"queryId":0}|
-
-### 4.36.qryfetch
-**qryfetch**命令获取指定查询的下一页数据。
-
-URL:
-```
-http://host:port/ignite?cmd=qryfetch&pageSize=10&qryId=5
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**qryfetch**，小写||
-|pageSize|number|否|查询的每页大小|3|
-|qryId|number|否|qryexe,qryfldexe,qryfetch命令执行返回的查询id|0|
-
-**响应示例**
-```json
-{
-  "error":"",
-  "response":{
-    "fieldsMetadata":[],
-    "items":[["Jane","Doe"],["John","Doe"]],
-    "last":true,
-    "queryId":0
-  },
-  "successStatus":0}
-```
-
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|JSON对象，包含了查询的结果集，最后页的标识以及查询的id|{"fieldsMetadata":[],"items":[["Jane","Doe"],["John","Doe"]],"last":true,"queryId":0}|
-
-### 4.37.qrycls
-**qrycls**命令关闭查询占用的资源。
-
-URL:
-```
-http://host:port/ignite?cmd=qrycls&qryId=5
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**qrycls**，小写||
-|qryId|number|否|qryexe,qryfldexe,qryfetch命令执行返回的查询id|0|
-
-**响应示例**
-```json
-{
-  "error":"",
-  "response":true,
-  "successStatus":0
-}
-```
-
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|boolean|如果成功关闭则为true|true|
-
-### 4.38.metadata
-**metadata**命令返回指定缓存的元数据。
-
-URL:
-```
-http://host:port/ignite?cmd=metadata&cacheName=partionedCache
-```
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string|否|**metadata**，小写||
-|cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|partionedCache|
-
-**响应示例**
-```json
-{
-  "error": "",
-  "response": {
-    "cacheName": "partionedCache",
-    "types": [
-      "Person"
-    ],
-    "keyClasses": {
-      "Person": "java.lang.Integer"
-    },
-    "valClasses": {
-      "Person": "org.apache.ignite.Person"
-    },
-    "fields": {
-      "Person": {
-        "_KEY": "java.lang.Integer",
-        "_VAL": "org.apache.ignite.Person",
-        "ID": "java.lang.Integer",
-        "FIRSTNAME": "java.lang.String",
-        "LASTNAME": "java.lang.String",
-        "SALARY": "double"
-      }
-    },
-    "indexes": {
-      "Person": [
-        {
-          "name": "ID_IDX",
-          "fields": [
-            "id"
-          ],
-          "descendings": [],
-          "unique": false
-        },
-        {
-          "name": "SALARY_IDX",
-          "fields": [
-            "salary"
-          ],
-          "descendings": [],
-          "unique": false
-        }
-      ]
-    }
-  },
-  "sessionToken": "",
-  "successStatus": 0
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|给定缓存的元数据|{"cacheName": "partionedCache","types": ["Person"],"keyClasses": {"Person":"java.lang.Integer"},"valClasses": {"Person":"org.apache.ignite.Person"},"fields": {"Person": {"_KEY":"java.lang.Integer","_VAL": "org.apache.ignite.Person","ID":"java.lang.Integer","FIRSTNAME":"java.lang.String","LASTNAME": "java.lang.String","SALARY": "double"}},"indexes": {"Person": [{"name": "ID_IDX","fields": ["id"],"descendings": [],"unique": false},{"name": "SALARY_IDX","fields": ["salary"],"descendings": [],"unique": false}]}}|
-
-### 4.39.qryscanexe
+### 4.38.qryscanexe
 **qryscanexe**命令在缓存中执行扫描查询。
 
-URL:
+**请求**
+
 ```
 http://host:port/ignite?cmd=qryscanexe&pageSize=10&cacheName=Person&className=org.apache.ignite.filters.PersonPredicate
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
@@ -1378,7 +1414,9 @@ http://host:port/ignite?cmd=qryscanexe&pageSize=10&cacheName=Person&className=or
 |cacheName|string|是|缓存名称，如果未提供，会使用默认的缓存|testCache|
 |className|string|是|扫描查询的谓词类名，应该实现`IgniteBiPredicate `接口|org.apache.ignite.filters.PersonPredicate|
 
-**响应示例**
+**响应**
+
+响应中包含了扫描查询的结果集，字段查询的元数据，最后页的标识以及查询的id。
 ```json
 {
   "error": "",
@@ -1423,91 +1461,58 @@ http://host:port/ignite?cmd=qryscanexe&pageSize=10&cacheName=Person&className=or
   "successStatus": 0
 }
 ```
+### 4.39.qryfetch
+**qryfetch**命令获取指定查询的下一页数据。
 
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|jsonObject|JSON对象，包含了扫描查询的结果集，字段查询的元数据，最后页的标识以及查询的id|{"fieldsMetadata":[{"fieldName":"key","fieldTypeName":"", "schemaName":"","typeName":""},{"fieldName":"value","fieldTypeName":"","schemaName":"","typeName":""}],"items":[{"key":1,"value":{"firstName":"Jane","id":1,"lastName":"Doe","salary":1000}},{"key":3,"value":{"firstName":"Jane","id":3,"lastName":"Smith","salary":2000}}],"last":true,"queryId":0}|
+**请求**
 
-### 4.40.activate
-**activate**命令针对开启持久化的集群开始集群激活过程。
-
-URL：
 ```
-http://host:port/ignite?cmd=activate
+http://host:port/ignite?cmd=qryfetch&pageSize=10&qryId=5
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
-|cmd|string||**activate**，小写||
+|cmd|string|否|**qryfetch**，小写||
+|pageSize|number|否|查询的每页大小|3|
+|qryId|number|否|qryexe,qryfldexe,qryfetch命令执行返回的查询id|0|
 
-**响应示例**
+**响应**
 
+响应中包含了查询的结果集，最后页的标识以及查询的id。
 ```json
 {
-  "successStatus":0,
-  "error":null,
-  "sessionToken":null,
-  "response":"activate started"
-}
+  "error":"",
+  "response":{
+    "fieldsMetadata":[],
+    "items":[["Jane","Doe"],["John","Doe"]],
+    "last":true,
+    "queryId":0
+  },
+  "successStatus":0}
 ```
+### 4.40.qrycls
+**qrycls**命令关闭查询占用的资源。
 
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|string|开始集群的激活|activate started|
+**请求**
 
-### 4.41.deactivate
-**deactivate**命令针对开启持久化的集群开始集群冻结过程。
-
-URL：
 ```
-http://host:port/ignite?cmd=deactivate
+http://host:port/ignite?cmd=qrycls&qryId=5
 ```
-**请求参数**
 
 |名称|类型|可选|描述|示例|
 |---|---|---|---|---|
-|cmd|string||**deactivate**，小写||
+|cmd|string|否|**qrycls**，小写||
+|qryId|number|否|qryexe,qryfldexe,qryfetch命令执行返回的查询id|0|
 
-**响应示例**
+**响应**
 
+如果成功关闭则返回`true`。
 ```json
 {
-  "successStatus":0,
-  "error":null,
-  "sessionToken":null,
-  "response":"deactivate started"
-}
-```
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|string|开始集群的冻结|deactivate started|
-
-### 4.42.currentstate
-**currentstate**命令用于显示当前集群的状态（激活/冻结）。
-
-URL：
-```
-http://host:port/ignite?cmd=currentstate
-```
-
-**请求参数**
-
-|名称|类型|可选|描述|示例|
-|---|---|---|---|---|
-|cmd|string||**currentstate**，小写||
-
-**响应示例**
-
-```json
-{
-  "successStatus":0,
-  "error":null,
-  "sessionToken":null,
-  "response":true
+  "error":"",
+  "response":true,
+  "successStatus":0
 }
 ```
 
-|名称|类型|描述|示例|
-|---|---|---|---|
-|response|string|集群为激活状态则为`true`，否则为`false`。|true|
+<RightPane/>
