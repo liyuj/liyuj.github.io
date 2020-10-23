@@ -1,6 +1,5 @@
-# 服务
-## 1.服务
-### 1.1.概述
+# Ignite服务
+## 1.概述
 服务是可以部署到Ignite集群并执行特定操作的一部分功能，在一个或多个节点上可以有一个服务的多个实例。
 
 Ignite服务具有以下功能：
@@ -25,17 +24,17 @@ Ignite服务可以用作基于微服务的解决方案或应用的基础，从�
 
 Ignite的[代码库](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/servicegrid)中，也有服务的示例实现。
 
-### 1.2.实现服务
+## 2.实现服务
 服务需要实现[Service](https://ignite.apache.org/releases/2.9.0/javadoc/org/apache/ignite/services/Service.html)接口，该`Service`接口具有3个方法：
 
  - `init(ServiceContext)`：该方法是在服务部署之前被Ignite调用的（`execute()`方法被调用之前）；
  - `execute(ServiceContext)`：服务的执行方法；
  - `cancel(ServiceContext)`：取消服务执行的方法。
 
-### 1.3.部署服务
+## 3.部署服务
 可以在运行时以编程方式部署服务，也可以通过服务配置作为节点配置的一部分来部署服务，后者会在集群启动时部署服务。
 
-#### 1.3.1.运行时部署服务
+### 3.1.运行时部署服务
 可以通过`IgniteServices`的实例在运行时部署服务，该实例可以通过Ignite实例调用`Ignite.services()`方法获得。
 
 `IgniteServices`接口有多种用于部署服务的方法：
@@ -69,7 +68,7 @@ serviceCfg.setService(new MyCounterServiceImpl());
 
 ignite.services().deploy(serviceCfg);
 ```
-#### 1.3.2.节点启动时部署服务
+### 3.2.节点启动时部署服务
 可以将服务指定为节点配置的一部分，然后与节点一起启动。如果服务是节点单例，则该服务将在集群的每个节点上启动。如果服务是集群单例，则在第一个集群节点中启动该服务，如果第一个节点终止，则将其重新部署到其他节点中的一个。该服务必须在每个节点的类路径上可用。
 
 以下是配置集群单例服务的示例：
@@ -116,11 +115,11 @@ Ignite ignite = Ignition.start(igniteCfg);
 </Tab>
 </Tabs>
 
-### 1.4.部署到节点子集
+## 4.部署到节点子集
 当通过调用`ignite.services()`拿到`IgniteServices`接口实例后，`IgniteServices`实例是与所有服务端节点关联的。这意味着Ignite会从所有的服务端节点集合中选择将服务部署到何处，但是可以使用下面描述的各种方法来修改用于服务部署的节点集。
-#### 1.4.1.集群单例
+### 4.1.集群单例
 集群单例是一种部署策略，这时集群中该服务只有一个实例，Ignite会保证该实例的持续可用性。如果服务所在的集群节点故障或者停止，Ignite会自动将服务重新部署到其他的节点。
-#### 1.4.2.集群组
+### 4.2.集群组
 可以使用`ClusterGroup`接口将服务部署到集群的一个子集，如果服务是节点单例的，服务会部署到子集的所有节点上，如果服务是集群单例的，其会部署到子集中的某个节点上。
 ```java
 Ignite ignite = Ignition.start();
@@ -128,7 +127,7 @@ Ignite ignite = Ignition.start();
 //deploy the service to the nodes that host the cache named "myCache"
 ignite.services(ignite.cluster().forCacheNodes("myCache"));
 ```
-#### 1.4.3.节点过滤器
+### 4.3.节点过滤器
 可以使用节点属性来定义用于服务部署的节点子集，这是通过节点过滤器来实现的。节点过滤器是`IgnitePredicate<ClusterNode>`的实例，Ignite为与`IgniteService`接口关联的每个节点调用该过滤器，如果某个节点的谓词返回`true`，则会包含该节点。
 
 ::: warning 警告
@@ -166,7 +165,7 @@ IgniteServices services = ignite.services();
 // Deploying the service.
 services.deploy(serviceCfg);
 ```
-#### 1.4.4.缓存键
+### 4.4.缓存键
 基于关联的部署可以将服务部署到缓存的某个键对应的主节点上，具体请参见[关联并置](/doc/java/DataModeling.md#_3-关联并置)章节的介绍。对于基于关联的部署，需要在服务配置中指定对应的缓存和键。缓存不必包含该键，节点由关联函数确定。如果因为集群拓扑发生变化导致该键被重新分配到了其他的节点，该服务也会被重新部署到该节点。
 
 ```java
@@ -193,7 +192,7 @@ IgniteServices services = ignite.services();
 // Deploying the service.
 services.deploy(serviceCfg);
 ```
-### 1.5.访问服务
+## 5.访问服务
 在运行时通过服务代理可以访问服务，代理既可以是*粘性*的也可以是*非粘性*的。粘性的代理总是会访问同一个集群节点的服务，非粘性的代理会在服务部署的所有集群节点内对远程服务的调用进行负载平衡。
 
 以下代码片段获取服务的非粘性代理后调用服务的方法：
@@ -206,12 +205,12 @@ MyCounterService counterService = ignite.services().serviceProxy("myCounterServi
 //call a service method
 counterService.increment();
 ```
-### 1.6.卸载服务
+## 6.卸载服务
 使用`IgniteServices.cancel(serviceName)`或`IgniteServices.cancelAll()`方法可以卸载服务。
 ```java
 services.cancel("myCounterService");
 ```
-### 1.7.重新部署服务
+## 7.重新部署服务
 如果希望更新服务的实现但是又不希望停止集群，可以通过Ignite的[DeploymentSPI](/doc/java/CodeDeployment.md)配置实现。
 
 重新部署服务的过程如下：

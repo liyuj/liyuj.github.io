@@ -446,7 +446,7 @@ Ignite支持3种原子化模式，如下表所示：
 |原子化模式|描述|
 |---|---|
 |`ATOMIC`|默认模式，所有操作都会原子化地执行，一次一个，不支持事务。`ATOMIC`模式通过避免事务锁，提供了最好的性能，同时为每个单个操作提供了数据原子性和一致性。比如`putAll(…​)`以及`removeAll(…​)`方法这样的批量操作，并不以事务方式执行，可能部分失败，如果发生了这种情况，会抛出`CachePartialUpdateException`异常，其中包含了更新失败的键列表。|
-|`TRANSACTIONAL`|在键-值API层面开启了符合ACID的事务支持，但是SQL不支持事务。该模式的事务支持不同的[并发模型和隔离级别](/doc/java/Transactions.md#_1-3-并发模型和隔离级别)。如果确实需要符合ACID操作才建议开启这个模式，因为事务会导致性能下降。具体请参见[执行事务](/doc/java/Transactions.md)。|
+|`TRANSACTIONAL`|在键-值API层面开启了符合ACID的事务支持，但是SQL不支持事务。该模式的事务支持不同的[并发模型和隔离级别](/doc/java/Transactions.md#_3-并发模型和隔离级别)。如果确实需要符合ACID操作才建议开启这个模式，因为事务会导致性能下降。具体请参见[执行事务](/doc/java/Transactions.md)。|
 |`TRANSACTIONAL_SNAPSHOT`|多版本并发控制（MVCC）的试验性实现。其同时支持键-值事务和SQL事务，更多的信息以及限制，请参见[多版本并发控制](/doc/java/WorkingwithSQL.md#_11-多版本并发控制)。**注意：**MVCC实现目前还处于测试阶段，不建议用于生产。|
 
 可以在缓存配置中为缓存开启事务支持：

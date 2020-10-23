@@ -143,7 +143,7 @@ export JVM_OPTS="$JVM_OPTS -Xmx6G -DIGNITE_TO_STRING_INCLUDE_SENSITIVE=false"; $
 ```shell
 ./ignite.sh -J-Xmx6G -J-DIGNITE_TO_STRING_INCLUDE_SENSITIVE=false
 ```
-### 5.节点生命周期事件
+## 5.节点生命周期事件
 生命周期事件使开发者有机会在节点生命周期的不同阶段执行自定义代码。
 
 共有4个生命周期事件：

@@ -2,7 +2,7 @@
 Ignite提供了一个HTTP REST客户端，可以以REST的方式通过HTTP或者HTTPS协议与集群进行通信。REST API可以用于执行不同的操作，比如对缓存进行读/写，执行任务，获取各种指标等等。
 
 从内部来说，Ignite使用Jetty来提供HTTP服务，关于如何配置Jetty，请参见下面的[配置](#_1-1-配置)章节的介绍。
-# 1.入门
+## 1.入门
 要启用HTTP连接，确保在类路径中包含`ignite-rest-http`模块，在二进制包中，这意味着将其从`IGNITE_HOME/libs/optional/`拷贝到`IGNITE_HOME/libs`中，具体请参见[启用模块](/doc/java/SettingUp.md#_2-7-启用模块)章节的介绍。
 
 不需要特别的配置，连接器就会自动启动，然后监听`8080`端口，可以通过`curl`检测其是否工作正常：
@@ -124,7 +124,7 @@ cfg.setConnectorConfiguration(new ConnectorConfiguration().setJettyPath("jetty.x
 </Configure>
 ```
 
-## 1.2.安全
+### 1.2.安全
 当集群配置认证后，所有的REST API访问都需要提供凭据来做认证，认证成功后会返回一个会话令牌，该令牌可以在该会话的任意命令中使用。
 
 请求认证有两种方式：

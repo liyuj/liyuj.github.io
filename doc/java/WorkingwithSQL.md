@@ -3162,7 +3162,7 @@ CREATE TABLE Person WITH "ATOMICITY=TRANSACTIONAL_SNAPSHOT"
 </Tabs>
 
 ::: tip 提示
-`TRANSACTIONAL_SNAPSHOT`模式只支持默认的并发模型（`PESSIMISTIC`）和默认的隔离级别（`REPEATABLE_READ`），具体可以看上面的[并发模型和隔离级别](/doc/java/Transactions.md#_1-3-并发模型和隔离级别)章节。
+`TRANSACTIONAL_SNAPSHOT`模式只支持默认的并发模型（`PESSIMISTIC`）和默认的隔离级别（`REPEATABLE_READ`），具体可以看上面的[并发模型和隔离级别](/doc/java/Transactions.md#_3-并发模型和隔离级别)章节。
 :::
 ### 11.4.并发更新
 在一个事务中，如果一个条目先被读取然后被更新，那么就有一种可能性，即另一个事务可能在两个操作之间切入然后首先更新该条目，这时，当第一个事务试图更新该条目时就会抛出异常，然后该事务会被标记为`只能回滚`，这时开发者就需要进行事务重试。
