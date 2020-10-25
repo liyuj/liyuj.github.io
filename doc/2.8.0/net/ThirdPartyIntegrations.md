@@ -48,7 +48,7 @@ Ignite缓存可用作ASP.NET的输出缓存，这对于在Web服务器之间共�
 ```
 在接收任何请求之前，应该先启动Ignite的实例，通常这是在`Global.asax`的`Application_Start`方法中实现的。
 
-对于和Web环境尤其是和`IGNITE_HOME`有关的内容，请参见[ASP.NET部署](/doc/2.8.0/net/#_14-4-asp-net部署)，
+对于和Web环境尤其是和`IGNITE_HOME`有关的内容，请参见[ASP.NET部署](/doc/2.8.0/net/#_14-4-asp-net部署)。
 ## 2.ASP.NET会话状态缓存
 会话状态的值和信息默认存储在ASP.NET进程的内存中，而会话状态缓存旨在将用户会话数据存储在不同的源中。
 
@@ -91,7 +91,7 @@ Ignite.NET实现了一个会话状态存储，其会将会话数据存储在Igni
 
 关于在ASP.NET应用中启用Ignite的更多信息，请参见[ASP.NET输出缓存](#_1-asp-net输出缓存)。
 
-对于和Web环境尤其是和`IGNITE_HOME`有关的内容，请参见[ASP.NET部署](/doc/2.8.0/net/#_14-4-asp-net部署)，
+对于和Web环境尤其是和`IGNITE_HOME`有关的内容，请参见[ASP.NET部署](/doc/2.8.0/net/#_14-4-asp-net部署)。
 ## 3.Entity Framework二级缓存
 Entity Framework像大多数其他ORM一样，可以在多个层级上使用缓存。
 
@@ -430,4 +430,5 @@ var igniteConfig = new IgniteConfiguration
 };
 Ignition.Start(igniteConfig);
 ```
+
 <RightPane/>

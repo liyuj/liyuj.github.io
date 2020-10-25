@@ -400,7 +400,7 @@ Ignition.Start(new IgniteConfiguration
 在二进制包的`Apache.Ignite.Core.dll`旁边，以及`Apache.Ignite.Schema`NuGet包中，可以找到`IgniteConfigurationSection.xsd`架构文件。在配置文件中编辑`IgniteConfigurationSection`时，将其包含在项目中并且构建动作为`None`，可以在Visual Studio中启用IntelliSense。
 
 ::: tip 提示
-要将`IgniteConfigurationSection.xsd`架构文件添加到Visual Studio项目中，可以转到`Projects`菜单，然后单击`Add Existing Item...`菜单项，之后找到`IgniteConfigurationSection.xsd`并且选中。
+要将`IgniteConfigurationSection.xsd`模式文件添加到Visual Studio项目中，可以转到`Projects`菜单，然后单击`Add Existing Item...`菜单项，之后找到`IgniteConfigurationSection.xsd`并且选中。
 
 或者，安装NuGet软件包：`Install-Package Apache.Ignite.Schema`，这将自动将xsd文件添加到项目中。
 
