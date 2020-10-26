@@ -843,7 +843,7 @@ spec:
 
 下一页中，可以配置应用的标签，然后点击`Review + create`按钮，再次检查配置参数之后，点击`Create`按钮。
 
-转到`All Resources` -> `IgniteCluster`，Azure部署集群需要点时间：
+转到`All Resources` ⇒ `IgniteCluster`，Azure部署集群需要点时间：
 
 ![](https://files.readme.io/6e31786-Screen_Shot_2018-06-28_at_3.00.06_PM.png)
 

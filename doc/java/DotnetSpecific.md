@@ -84,7 +84,7 @@ var ignite = Ignition.StartFromApplicationConfiguration("igniteConfiguration");
 
 或者，安装NuGet软件包：`Install-Package Apache.Ignite.Schema`，这将自动将xsd文件添加到项目中。
 
-为了改善编辑体验，需要在`Tools -> Options -> Text Editor -> XML`中启用了`Statement Completion`选项。
+为了改善编辑体验，需要在`Tools ⇒ Options ⇒ Text Editor ⇒ XML`中启用了`Statement Completion`选项。
 :::
 #### 1.3.1.Ignite配置段语法
 Ignite的配置段直接映射到`IgniteConfiguration`类。

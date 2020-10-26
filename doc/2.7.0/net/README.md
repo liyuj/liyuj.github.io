@@ -261,7 +261,7 @@ bin\ignitevisorcmd.bat
 Apache Ignite.NET NuGet软件包包括LINQPad示例。
 
  - 参考NuGet软件包：F4->添加NuGet ...；
- - 转到Samples选项卡 -> nuget -> Apache.Ignite；
+ - 转到Samples选项卡 ⇒ nuget ⇒ Apache.Ignite；
 
 更多的信息可以参见：[在LINQPad中使用Apache Ignite.NET](https://ptupitsyn.github.io/Using-Apache-Ignite-Net-in-LINQPad/)。
 ## 4.跨平台支持

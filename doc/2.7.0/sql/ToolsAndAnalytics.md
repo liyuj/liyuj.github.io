@@ -262,7 +262,7 @@ Ignite有自己的ODBC实现，这样就使从Tableau端接入Ignite成为可能
 上述步骤完成后，就可以接入集群然后分析数据了。
 ### 3.3.接入集群
 
- 1. 启动Tableau应用，然后在`Connect` -> `To a Server` -> `More...`窗口中找到`Other Databases (ODBC)`配置；
+ 1. 启动Tableau应用，然后在`Connect` ⇒ `To a Server` ⇒ `More...`窗口中找到`Other Databases (ODBC)`配置；
 ![](https://files.readme.io/c1c6321-choosing_driver_01.png)
  2. 点击`Edit connection`链接；
 ![](https://files.readme.io/65f14b7-edit_connection.png)
