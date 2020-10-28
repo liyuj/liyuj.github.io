@@ -550,7 +550,7 @@ Ignition.Start(cfg);
 ## 8.事务监控
 和事务相关的指标信息，请参见[事务监控](/doc/java/Monitoring.md#_4-2-8-事务监控)章节的介绍。
 
-关于如何跟踪事务的信息，请参见[跟踪](/doc/java/Monitoring.md#_7-跟踪)章节的介绍。
+关于如何追踪事务的信息，请参见[追踪](/doc/java/Monitoring.md#_7-追踪)章节的介绍。
 
 另外，还可以通过[控制脚本](/doc/java/Tools.md#_1-控制脚本)获取事务的信息，或者取消集群中正在执行的事务。
 
