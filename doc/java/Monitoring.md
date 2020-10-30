@@ -595,7 +595,7 @@ group=Clients,name=ClientListenerProcessor
 ```
 |属性|类型|描述|作用域|
 |---|---|---|---|
-|Connections|java.util.List<String>|字符串列表，每个字符串都包含了和连接有关的信息。|节点|
+|Connections|`java.util.List<String>`|字符串列表，每个字符串都包含了和连接有关的信息。|节点|
 
 |操作|描述|
 |---|---|
