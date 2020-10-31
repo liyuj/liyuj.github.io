@@ -943,7 +943,7 @@ SELECT p.name, c.name FROM Person p, City c WHERE p.city_id = c.id;
 ### 6.4.下一步
 
  - 关于Ignite和[SQL](/doc/java/WorkingwithSQL.md)的更多介绍；
- - 使用[SQLLine](/doc/java/Tools.md#_4-sqlline)的更多介绍。
+ - 使用[SQLLine](/doc/java/Tools.md#_3-sqlline)的更多介绍。
 
 ## 7.PHP
 本章节介绍运行Ignite的系统要求，如何安装，启动一个集群，然后使用PHP瘦客户端运行一个简单的HelloWorld示例。

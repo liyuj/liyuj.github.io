@@ -776,7 +776,7 @@ INSERT INTO City(ID, Name, CountryCode, District, Population) VALUES (5,'Amsterd
 
 **示例**
 
-作为示例，可以使用最新的Ignite二进制包自带的`world.sql`文件，该文件位于`[IGNITE_HOME]/examples/sql/`目录。可以执行[SQLLine](/doc/java/Tools.md#_4-sqlline)的`run`命令，如下：
+作为示例，可以使用最新的Ignite二进制包自带的`world.sql`文件，该文件位于`[IGNITE_HOME]/examples/sql/`目录。可以执行[SQLLine](/doc/java/Tools.md#_3-sqlline)的`run`命令，如下：
 ```bash
 !run /apache_ignite_version/examples/sql/world.sql
 ```
