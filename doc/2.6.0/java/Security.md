@@ -93,14 +93,14 @@ igniteCfg.setSslContextFactory(factory);
 
 |setter方法|描述|默认值|
 |---|---|---|
-|setKeyAlgorithm|设置key管理器算法，用于创建key管理器。注意，大多数情况下默认值即可，但是在Android平台需要设置成`X509`.|SunX509|
-|setKeyStoreFilePath|keystore文件路径，该参数为必须参数，否则SSL上下文无法初始化|无|
-|setKeyStorePassword|keystore密码|无|
-|setKeyStoreType|用于上下文初始化的keystore类型|JKS|
+|setKeyAlgorithm|设置密钥管理器算法，用于创建密钥管理器。注意，大多数情况下默认值即可，但是在Android平台需要设置成`X509`.|SunX509|
+|setKeyStoreFilePath|密钥库文件路径，该参数为必须参数，否则SSL上下文无法初始化|无|
+|setKeyStorePassword|密钥库密码|无|
+|setKeyStoreType|用于上下文初始化的密钥库类型|JKS|
 |setProtocol|安全传输协议|TLS|
-|setTrustStoreFilePath|truststore文件路径|无|
-|setTrustStorePassword|truststore密码|无|
-|setTrustStoreType|用于上下文初始化的truststore类型|JKS|
+|setTrustStoreFilePath|信任库文件路径|无|
+|setTrustStorePassword|信任库密码|无|
+|setTrustStoreType|用于上下文初始化的信任库类型|JKS|
 |setTrustManagers|设置配置好的信任管理器|无|
 
 ## 2.高级安全
