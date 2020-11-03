@@ -1043,8 +1043,10 @@ spark.sparkContext.addJar(MAVEN_HOME + "/com/h2database/h2/1.4.195/h2-1.4.195.ja
 ### 2.6.发现并解决的问题
 
  - **在IgniteRDD上调用任何活动时Spark应用或者Spark shell没有响应**
+    
     如果在客户端模式（默认模式）下创建`IgniteContext`然后又没有任何Ignite服务端节点启动时，就会发生这种情况，这时Ignite客户端会一直等待服务端节点启动或者超过集群连接超时时间后失败。当在客户端节点使用`IgniteContext`时应该启动至少一个服务端节点。
  - **当使用IgniteContext时，抛出了` java.lang.ClassNotFoundException`和`org.apache.ignite.logger.java.JavaLoggerFileHandler`**
+    
     在类路径中没有任何日志实现然后Ignite会试图使用标准的Java日志时，这个问题就会发生。Spark默认会使用单独的类加载器加载用户的所有jar文件，而Java日志框架是使用应用级类加载器来初始化日志处理器。要解决这个问题，可以将`ignite-log4j`模块加入使用的jar列表以使Ignite使用log4J作为日志记录器，或者就像[安装](#_2-4-安装)章节中描述的那样修改Spark的默认类路径。
 
 ## 3.Hibernate二级缓存
