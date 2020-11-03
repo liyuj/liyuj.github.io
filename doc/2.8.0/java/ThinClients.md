@@ -5487,7 +5487,7 @@ class Person(metaclass=GenericObjectMeta, schema=OrderedDict([
 ])):
     pass
 ```
-注意`Person`类是如何定义的。`schema`是`GenericObjectMeta`元类参数。另一个重要的`GenericObjectMeta`参数是一个类型名，但它是可选的，并且默认为类名（在我们的示例中是`person`）。
+注意`Person`类是如何定义的。`schema`是`GenericObjectMeta`元类参数。另一个重要的`GenericObjectMeta`参数是一个类型名，但它是可选的，并且默认为类名（在示例中是`person`）。
 
 还要注意，这个`Person`不需要定义自己的属性、方法，尽管这是完全可能的。
 

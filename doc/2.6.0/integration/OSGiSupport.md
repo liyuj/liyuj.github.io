@@ -75,7 +75,7 @@ Error executing command: Resource has no uri
 
 Apache Karaf捆绑了[Pax Logging](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging),它是一个从其它组件收集和汇总日志输出（通过不同的框架输出，比如slf4j，log4j，JULI，commons-logging等）然后用一个典型的log4j配置处理的框架。
 
-`ignite-log4j `模块依赖于log4j，Pax Logging默认不输出它，因此我们开发了一个OSGi片段，SymbolicName为`ignite-osgi-paxlogging`，它加入了`ignite-core`然后输出了缺失的包。
+`ignite-log4j `模块依赖于log4j，Pax Logging默认不输出它，因此开发了一个OSGi片段，SymbolicName为`ignite-osgi-paxlogging`，它加入了`ignite-core`然后输出了缺失的包。
 
 `ignite-log4j`特性也安装了这个片段，但是需要用`org.ops4j.pax.logging.pax-logging-api`这个名字强制刷新：
 ```bash
@@ -186,7 +186,7 @@ public class MyActivator extends IgniteAbstractOsgiContextActivator {
  - `CONTAINER_SWEEP`：与`BUNDLE_DELEGATING`一样，但是在类仍然找不到时最终会搜索所有的组件。
 
 > **未来的OSGi类加载策略**
-我们可能会考虑在以后的版本中增加其它的类加载策略，比如使用Service Locator机制来定位通过一个文件自发地希望向Ignite的编组器暴露包的组件，类似于JAXB规范中的jaxb.index。
+可能会考虑在以后的版本中增加其它的类加载策略，比如使用Service Locator机制来定位通过一个文件自发地希望向Ignite的编组器暴露包的组件，类似于JAXB规范中的jaxb.index。
 
 确保将`Bundle-Activator`OSGi清单头加入组件，这样才能使OSGi容器在组件启动时调用Activator。
 

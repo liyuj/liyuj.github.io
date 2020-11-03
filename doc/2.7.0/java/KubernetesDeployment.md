@@ -240,7 +240,7 @@ Kubernetes环境可能需要一段时间来分配需要的持久化存储，从�
 
 **WAL使用独立磁盘**
 
-为了确保WAL存储在不同的磁盘上，需要求Kuberenetes提供一个专用的存储类。依赖于Kubernetes环境，存储类将有所不同。在本章节中，我们为Amazon AWS、Google Compute Engine和Microsoft Azure提供存储类模板。
+为了确保WAL存储在不同的磁盘上，需要求Kuberenetes提供一个专用的存储类。依赖于Kubernetes环境，存储类将有所不同。在本章节中会为Amazon AWS、Google Compute Engine和Microsoft Azure提供存储类模板。
 
 使用以下模板为WAL请求存储类：
 

@@ -169,15 +169,15 @@ strm.close();
  - 一个AWS SQS队列；
  - 其它的；
 
-这个流处理器支持两种摄取模式，**直接摄取**和**间接摄取**。
+这个流处理器支持两种提取模式，**直接提取**和**间接提取**。
 
 > **一个Ignite Camel组件**
 还有一个camel-ignite[组件](https://camel.apache.org/ignite.html)，通过该组件，可以与Ignite缓存、计算、事件、消息等进行交互。
 
 ![Ignite Camel流处理器架构视图](https://files.readme.io/e07582b-dTjcpt5TkCO88MSVTAdg_Screen-Shot-2016-01-28-at-18-04-41.png)
 
-### 3.2.直接摄取
-直接摄取使得通过一个提取器元组的帮助可以从任意Camel端点获得消息然后直接进入Ignite，这个被称为**直接摄取**。
+### 3.2.直接提取
+直接提取使得通过一个提取器元组的帮助可以从任意Camel端点获得消息然后直接进入Ignite，这个被称为**直接提取**。
 
 下面是一个代码示例：
 ```java
@@ -209,8 +209,8 @@ streamer.setSingleTupleExtractor(new StreamSingleTupleExtractor<Exchange, String
 // Start the streamer.
 streamer.start();
 ```
-### 3.3.间接摄取
-多于更多的复杂场景，也可以创建一个Camel route在输入的消息上执行复杂的处理，比如转换、验证、拆分、聚合、幂等、重新排序、富集等，然后只是将结果注入Ignite缓存，这个被称为间接摄取。
+### 3.3.间接提取
+多于更多的复杂场景，也可以创建一个Camel route在输入的消息上执行复杂的处理，比如转换、验证、拆分、聚合、幂等、重新排序、富集等，然后只是将结果注入Ignite缓存，这个被称为间接提取。
 ```java
 // Create a CamelContext with a custom route that will:
 //  (1) consume from our Jetty endpoint.

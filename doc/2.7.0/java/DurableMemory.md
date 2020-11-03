@@ -57,7 +57,7 @@ Ignite在内存和磁盘上维护了同样的二进制格式，这样就不需�
 基于性能的考虑，需要尽可能地将操作型数据保持在内存中，这时需要配置多个内存区。
 
 比如，假设有*Person*、*Purchases*和*Records*实体，它们分别存储于*PersonsCache*、*PurchasesCache*和*RecordsCache*缓存中。Person和Purchases的数据是操作型的，即这些数据会被频繁访问，而Records是访问量较少的历史数据。
-假定我们只有200GB的可用内存空间，那么在这个场景中，会按照如下方式分配物理内存：
+假定只有200GB的可用内存空间，那么在这个场景中，会按照如下方式分配物理内存：
 
  - 对于像Persons以及Purchases这样的操作型或者频繁访问的数据，分配190GB的内存区，这样PersonsCache和PurchasesCache在整个集群中会有最大的性能；
  - 对于像RecordsCache这样的历史数据或者访问量较少的数据分配10GB的内存区，它的数据大部分会位于磁盘上。

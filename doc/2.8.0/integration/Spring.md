@@ -425,7 +425,7 @@ ignite-client:
     }
     ```
  2. 通过Spring Boot配置自定义`ClientConfiguration`：
-   如果希望自定义通过Spring Boot配置文件创建的`ClientConfiguration`，那么需要在应用的上下文中提供一个`IgniteClientConfigurer`的实现。
+    如果希望自定义通过Spring Boot配置文件创建的`ClientConfiguration`，那么需要在应用的上下文中提供一个`IgniteClientConfigurer`的实现。
 
     首先，`ClientConfiguration`会被Spring Boot加载，然后其实例会被传入配置器：
     ```java

@@ -591,7 +591,7 @@ ConcurrentMap<String, Integer> nodeLocalMap = cluster.nodeLocalMap();
 ```
 节点局部变量类似于非分布式的线程局部变量，它只会保持在本地节点上。节点局部变量可以用于计算任务在不同的执行中共享状态，也可以用于部署的服务。
 ### 5.2.示例
-作为一个示例，创建一个作业，每次当它在某个节点上执行时都会使节点局部的计数器增加，这样，每个节点的节点局部计数器都会告诉我们一个作业在那个节点上执行了多少次。
+作为一个示例，创建一个作业，每次当它在某个节点上执行时都会使节点局部的计数器增加，这样，每个节点的节点局部计数器都会通知某作业在那个节点上执行了多少次。
 ```java
 IgniteCallable<Long> job = new IgniteCallable<Long>() {
   @IgniteInstanceResource
