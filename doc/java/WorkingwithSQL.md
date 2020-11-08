@@ -25,13 +25,13 @@ Ignite具有若干默认模式，并支持创建自定义模式。
 
 默认两个模式可用：
 
- - `SYS`模式：其中包含许多和集群各种信息有关的系统视图，不能在此模式中创建表，更多信息请参阅[系统视图](/doc/java/Monitoring.md#_6-系统视图)章节的介绍；
+ - `SYS`模式：其中包含许多和集群各种信息有关的系统视图，不能在此模式中创建表，更多信息请参见[系统视图](/doc/java/Monitoring.md#_6-系统视图)章节的介绍；
  - `PUBLIC`模式：未指定模式时的默认模式。
 
 在以下场景中，可以创建自定义模式：
 
- - 可以在集群配置中指定自定义模式，请参阅[自定义模式](#_2-3-自定义模式)；
- - Ignite为通过编程接口或XML配置创建的每个缓存创建一个模式，具体请参阅[缓存和模式名](#_2-4-缓存和模式名)。
+ - 可以在集群配置中指定自定义模式，请参见[自定义模式](#_2-3-自定义模式)；
+ - Ignite为通过编程接口或XML配置创建的每个缓存创建一个模式，具体请参见[缓存和模式名](#_2-4-缓存和模式名)。
 
 ### 2.2.PUBLIC模式
 如果需要且未指定模式时，默认会使用`PUBLIC`模式。例如，当通过JDBC接入集群而未显式设置模式时，就会使用`PUBLIC`模式。
@@ -448,7 +448,7 @@ SqlFieldsQuery qry = new SqlFieldsQuery("SELECT id, name FROM Person" + "WHERE i
 如果希望运行时管理索引或者对象字段的可见性，需要使用[CREATE/DROP INDEX](/doc/java/SQLReference.md#_2-4-create-index)命令。
 :::
 ### 3.4.配置索引内联值
-正确的索引内联值有助于增加索引字段上的查询速度，关于如何选择正确的内联值，请参见[增加索引内联值](/doc/java/PerformanceTroubleshooting.md#_4-7-增加索引内联值)章节的介绍。
+正确的索引内联值有助于增加索引字段上的查询速度，关于如何选择正确的内联值，请参见[增加索引内联值](/doc/java/PerformanceTroubleshooting.md#_4-8-增加索引内联值)章节的介绍。
 
 大多数情况下，只需要为可变长度字段的索引设置内联值，比如字符串或者数组，默认值是10。
 
@@ -1701,7 +1701,7 @@ Class.forName("org.apache.ignite.IgniteJdbcDriver");
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/config/ignite-jdbc.xml");
 ```
 ::: tip 安全连接
-关于如何保护JDBC客户端驱动的更多信息，请参阅[高级安全](/doc/java/Security.md#_2-ssl-tls)的相关文档。
+关于如何保护JDBC客户端驱动的更多信息，请参见[高级安全](/doc/java/Security.md#_2-ssl-tls)的相关文档。
 :::
 
 #### 9.1.1.支持的参数

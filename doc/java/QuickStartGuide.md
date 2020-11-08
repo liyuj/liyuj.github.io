@@ -778,7 +778,7 @@ performCacheKeyValueOperations();
 要做到这一点，可以使用`sqlline`工具（位于Ignite二进制包里面的`/bin`文件夹）。
 
 ::: tip 提示
-此示例仅显示了一种简单的方法，可以快速将数据加载到Ignite中，以进行演示。对于更大的生产级负载，建议用户使用更可靠的数据加载方法（IgniteDataStreamer、Spark、高级SQL等），关于如何从RDBMS加载数据的更多信息，请参阅[外部存储](/doc/java/Persistence.md#_2-外部存储)章节。
+此示例仅显示了一种简单的方法，可以快速将数据加载到Ignite中，以进行演示。对于更大的生产级负载，建议用户使用更可靠的数据加载方法（IgniteDataStreamer、Spark、高级SQL等），关于如何从RDBMS加载数据的更多信息，请参见[外部存储](/doc/java/Persistence.md#_2-外部存储)章节。
 :::
 ### 6.1.安装Ignite
 Ignite入门的最简单方式是使用每次版本发布生成的二进制压缩包：

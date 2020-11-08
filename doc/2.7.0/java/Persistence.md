@@ -746,7 +746,7 @@ public class Person implements Serializable {
 </bean>
 ```
 ### 4.6.NoSQL集成
-Ignite可以与NoSQL数据库（比如Cassandra）集成。具体请参阅[Cassandra集成](/doc/2.7.0/integration/CassandraIntegration.md#_1-ignite和apache-cassandra)的相关文档，以了解如何将Cassandra用作Ignite持久化存储。对于其它NoSQL数据库，Ignite不提供任何现成的实现，开发者可以实现自己的`CacheStore`。
+Ignite可以与NoSQL数据库（比如Cassandra）集成。具体请参见[Cassandra集成](/doc/2.7.0/integration/CassandraIntegration.md#_1-ignite和apache-cassandra)的相关文档，以了解如何将Cassandra用作Ignite持久化存储。对于其它NoSQL数据库，Ignite不提供任何现成的实现，开发者可以实现自己的`CacheStore`。
 
 注意，虽然Ignite支持分布式事务，但如果将NoSQL数据库用作Ignite的持久层，Ignite也不会使其具有事务性。除非，NoSQL数据库直接支持事务。比如，在Ignite缓存上执行的事务不会传播到Cassandra。
 ### 4.7.自定义CacheStore

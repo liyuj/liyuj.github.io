@@ -1128,7 +1128,7 @@ private static String readString(DataInputStream in) throws IOException {
 ### 2.3.键-值查询
 本章节会描述可以对缓存进行的键值操作，该键值操作等同于Ignite原生的缓存操作，具体可以看[IgniteCache](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/IgniteCache.html)的文档，每个操作都会有一个[头信息](#_2-1-3-消息格式)及与该操作对应的数据。
 
-在[数据格式](#_2-2-数据格式)章节，可以参阅可用的数据类型和数据格式规范的清单。
+关于可用的数据类型和数据格式规范的清单，可以参见[数据格式](#_2-2-数据格式)章节的介绍。
 
 #### 2.3.1.操作代码
 与Ignite服务端节点成功握手后，客户端可以通过发送带有特定操作代码的请求（参见下面的请求/响应结构）来开始执行各种键值操作：
@@ -4898,7 +4898,7 @@ my_cache = client.create_cache('my cache')
 #### 5.2.3.配置缓存
 `prop_codes`模块包含表示各种缓存设置的顺序值列表。
 
-与缓存同步、再平衡、关联和其它与缓存配置相关的详细信息，可以参阅[数据网格](/doc/2.8.0/java/Key-ValueDataGrid.md)的相关文档。
+与缓存同步、再平衡、关联和其它与缓存配置相关的详细信息，可以参见[数据网格](/doc/2.8.0/java/Key-ValueDataGrid.md)的相关文档。
 
 通过`create_cache()`或`get_or_create_cache()`,下面的缓存属性可用于对缓存进行配置：
 

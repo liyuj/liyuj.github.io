@@ -111,7 +111,7 @@ igniteCfg.setSslContextFactory(factory);
 
 密钥库必须包含节点的证书，包括其私钥。信任库必须包含所有其他集群节点的信任证书。
 
-可以定义其他的属性，例如密钥算法，密钥存储类型或信任管理器，具体请参阅[SslContextFactory属性](#_2-6-sslcontextfactory属性)章节的介绍。
+可以定义其他的属性，例如密钥算法，密钥存储类型或信任管理器，具体请参见[SslContextFactory属性](#_2-6-sslcontextfactory属性)章节的介绍。
 
 启动节点后，应该在日志中看到以下消息：
 ```
@@ -122,7 +122,7 @@ Ignite对所有客户端（包括瘦客户端和JDBC/ODBC连接）使用相同�
 
 要为客户端连接启用SSL/TLS，需要将`sslEnabled`属性设置为`true`并在客户端连接器配置中提供`SslContextFactory`。节点配置的`SSLContextFactory`可以重用，也可以配置仅用于客户端连接的`SSLContext`工厂。
 
-然后，以相同方式在客户端上配置SSL，具体请参阅特定客户端的文档。
+然后，以相同方式在客户端上配置SSL，具体请参见特定客户端的文档。
 
 下面是在客户端连接设置中配置`SslContextFactory`的示例：
 

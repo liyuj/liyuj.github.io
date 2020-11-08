@@ -1298,7 +1298,7 @@ ModelsComposition rf = trainer.fit(
 要了解如何在实践中使用随机森林分类器，可以尝试这个GitHub上的[示例](https://github.com/apache/ignite/blob/master/examples/src/main/java/org/apache/ignite/examples/ml/tree/randomforest/RandomForestClassificationExample.java)，它也会随着每个Ignite版本一起发布。在这个例子中，使用了一个葡萄酒识别数据集，该数据集和数据的描述可从[UCI机器学习存储库](https://archive.ics.uci.edu/ml/datasets/wine)获得。
 ## 16.梯度增强
 ### 16.1.概述
-梯度增强是一种产生弱预测模型[集合形式](https://en.wikipedia.org/wiki/Ensemble_learning)预测模型的机器学习算法。梯度增强算法试图解决函数空间中每个函数都是模型的学习样本的最小化误差问题。这个组合中的每个模型都试图预测特征空间中点的误差梯度，并且这些预测将用一些权重求和以建模答案。该算法可用于回归和分类问题。更多信息可以参阅[维基百科](https://en.wikipedia.org/wiki/Gradient_boosting)。
+梯度增强是一种产生弱预测模型[集合形式](https://en.wikipedia.org/wiki/Ensemble_learning)预测模型的机器学习算法。梯度增强算法试图解决函数空间中每个函数都是模型的学习样本的最小化误差问题。这个组合中的每个模型都试图预测特征空间中点的误差梯度，并且这些预测将用一些权重求和以建模答案。该算法可用于回归和分类问题。更多信息可以参见[维基百科](https://en.wikipedia.org/wiki/Gradient_boosting)。
 
 在Ignite的机器学习中有一个通用`GDB`算法和`GDB-on-tree`算法的实现。通用`GDB`（`GDBRegressionTrainer`和`GDBBinaryClassifierTrainer`）允许任何训练器对每个模型进行组合训练。`GDB-on-trees`使用一些特定于树的优化，例如索引，以避免在决策树构建阶段进行排序。
 ### 16.2.模型

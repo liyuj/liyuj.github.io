@@ -276,8 +276,8 @@ select SUM(salary) from Person
 SELECT * FROM Person USE INDEX(index_age)
   WHERE salary > 150000 AND age < 35;
 ```
-### 5.8.分区修剪
-分区修剪是一种在WHERE条件中使用关联键来对查询进行优化的技术。当执行这样的查询时，Ignite将只扫描存储请求数据的那些分区。这将减少查询时间，因为查询将只发送到存储所请求分区的节点。要了解有关分区分布的更多信息，请参阅[分区和复制](/doc/2.8.0/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
+### 5.8.分区精简
+分区精简是一种在WHERE条件中使用关联键来对查询进行优化的技术。当执行这样的查询时，Ignite将只扫描存储请求数据的那些分区。这将减少查询时间，因为查询将只发送到存储所请求分区的节点。要了解有关分区分布的更多信息，请参见[分区和复制](/doc/2.8.0/java/Key-ValueDataGrid.md#_3-1-分区和复制)。
 
 在下面的示例中，Employee对象通过`id`字段并置处理（如果未指定关联键，则Ignite将使用主键来并置数据）：
 ```sql

@@ -242,9 +242,7 @@ Ignition.start(cfg);
 如果使用了原生持久化，建议将`MaxDirectMemorySize`配置为`<walSegmentSize * 4 >`，对于默认的WAL配置，该值为256MB。
 ### 4.2.与原生持久化有关的调优
 本章节包含了开启Ignite原生持久化之后的建议。
-
 #### 4.2.1.页面大小
-
 Ignite的页面大小（`DataStorageConfiguration.pageSize`）不要小于存储设备（SSD、闪存等）的页面大小以及操作系统缓存页面的大小。
 
 操作系统的缓存页面大小很容易就可以通过[系统工具和参数](https://unix.stackexchange.com/questions/128213/how-is-page-size-determined-in-virtual-address-space)获取到。
@@ -365,9 +363,7 @@ WAL段的默认大小（64MB）在高负载情况下可能是低效的，因为�
 
 #### 4.2.5.WAL冻结
 有些场景中[禁用WAL](/doc/2.8.0/java/Persistence.md#_2-3-wal激活和冻结)可以提高性能。
-
-#### 4.2.6.页面写入优化
-
+#### 4.2.6.页面写入限流
 Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页面。这个进程在后台进行，对应用没有影响。
 
 但是，如果由检查点进程调度的一个脏页面，在写入磁盘前被更新，它之前的状态会被复制进一个特定的区域，叫做检查点缓冲区。如果这个缓冲区溢出，那么在检查点处理过程中，Ignite会停止所有的更新。因此，写入性能可能降为0，如下图所示：
@@ -376,13 +372,13 @@ Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页�
 
 当检查点处理正在进行中时，如果脏页面数达到阈值，同样的情况也会发生，这会使Ignite强制安排一个新的检查点执行，并停止所有的更新操作直到第一个检查点执行完成。
 
-当磁盘较慢或者更新过于频繁时，这两种情况都会发生，要减少或者防止这样的性能下降，可以考虑启用页面写入优化算法。这个算法会在检查点缓冲区填充过快或者脏页面占比过高时，将更新操作的性能降低到磁盘的速度。
+当磁盘较慢或者更新过于频繁时，这两种情况都会发生，要减少或者防止这样的性能下降，可以考虑启用页面写入限流算法。这个算法会在检查点缓冲区填充过快或者脏页面占比过高时，将更新操作的性能降低到磁盘的速度。
 
-::: tip 页面写入优化剖析
+::: tip 页面写入限流剖析
 要了解更多的信息，可以看相关专家维护的[Wiki页面](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-PagesWriteThrottling)。
 :::
 
-下面的示例显示了如何开启页面写入优化：
+下面的示例显示了如何开启页面写入限流：
 
 <Tabs>
 <Tab title="XML">
@@ -417,11 +413,9 @@ storeCfg.setWriteThrottlingEnabled(true);
 Ignition.start(cfg);
 ```
 </Tab>
-
 </Tabs>
 
 #### 4.2.7.检查点缓冲区大小
-
 前述章节中描述的检查点缓冲区大小，是检查点处理的触发器之一。
 
 缓冲区的默认大小是根据内存区大小计算的。
@@ -432,7 +426,7 @@ Ignition.start(cfg);
 |`1GB ~ 8GB`|数据区大小/4|
 |`> 8GB`|2GB|
 
-默认的缓冲区大小并没有为写密集型应用进行优化，因为在大小接近标称值时，页面写入优化算法会降低写入的性能，因此在正在进行检查点处理时，可以考虑增加`DataRegionConfiguration.checkpointPageBufferSize`，并且开启写入优化来阻止性能的下降：
+默认的缓冲区大小并没有为写密集型应用进行优化，因为在大小接近标称值时，页面写入限流算法会降低写入的性能，因此在正在进行检查点处理时，可以考虑增加`DataRegionConfiguration.checkpointPageBufferSize`，并且开启写入限流来阻止性能的下降：
 
 <Tabs>
 <Tab title="XML">
@@ -488,7 +482,7 @@ Ignition.start(cfg);
 在上例中，默认内存区的检查点缓冲区大小配置为1GB。
 
 ::: tip 检查点处理何时触发？
-当脏页面数超过`总页数*2/3`或者达到`DataRegionConfiguration.checkpointPageBufferSize`时，检查点处理就会被触发。但是如果使用了页面写入优化，`DataRegionConfiguration.checkpointPageBufferSize`就会失效，因为算法的原因，不会达到这个值。
+当脏页面数超过`总页数*2/3`或者达到`DataRegionConfiguration.checkpointPageBufferSize`时，检查点处理就会被触发。但是如果使用了页面写入限流，`DataRegionConfiguration.checkpointPageBufferSize`就会失效，因为算法的原因，不会达到这个值。
 :::
 
 #### 4.2.8.启用直接I/O
@@ -504,15 +498,10 @@ Ignite中的直接I/O插件用于检查点进程，它的作用是将内存中�
 要禁用直接I/O，可以将`IGNITE_DIRECT_IO_ENABLED`系统属性配置为`false`。
 
 相关的[Wiki页面](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-DirectI/O)有更多的细节。
-
 #### 4.2.9.购买产品级的SSD
-
 限于[SSD的操作特性](http://codecapsule.com/2014/02/12/coding-for-ssds-part-2-architecture-of-an-ssd-and-benchmarking/)，在经历几个小时的高强度写入负载之后，Ignite原生持久化的性能可能会下降，因此需要考虑购买快速的产品级SSD来保证长时间高水平的性能。
-
 #### 4.2.10.SSD预留空间
-
 由于SSD[预留空间](http://www.seagate.com/ru/ru/tech-insights/ssd-over-provisioning-benefits-master-ti/)的原因，50%使用率的磁盘的随机写性能要好于90%使用率的磁盘，因此需要考虑购买高预留空间比率的SSD，然后还要确保厂商能提供工具来进行相关的调整。
-
 ::: tip Intel 3D XPoint
 考虑使用3D XPoint驱动器代替常规SSD，以避免由SSD级别上的低过度供应设置和恒定垃圾收集造成的瓶颈。具体可以看[这里](http://dmagda.blogspot.com/2017/10/3d-xpoint-outperforms-ssds-verified-on.html)。
 :::

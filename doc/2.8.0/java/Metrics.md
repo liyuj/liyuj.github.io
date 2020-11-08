@@ -294,7 +294,7 @@ System.out.println("Avg get time: " + cm.getAverageGetTime());
 查看[CacheMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/CacheMetricsMXBean.html)的javadoc，可以了解完整的可用指标列表。
 
 ### 2.4.缓存大小计算
-要了解如何计算缓存的大小，可以参阅[内存使用量计算](#_1-3-内存使用量计算)。
+要了解如何计算缓存的大小，可以参见[内存使用量计算](#_1-3-内存使用量计算)。
 
 ## 3.指标体系
 Ignite的2.8.0版本引入了新的指标子系统，它使用户能够使用几个独立的、可插拔的指标导出器，用于和不同的第三方监控工具集成。

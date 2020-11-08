@@ -251,7 +251,7 @@ Class.forName("org.apache.ignite.IgniteJdbcDriver");
 Connection conn = DriverManager.getConnection("jdbc:ignite:cfg://file:///etc/config/ignite-jdbc.xml");
 ```
 ::: tip 安全连接
-关于如何保护JDBC客户端驱动的更多信息，请参阅[高级安全](/doc/2.7.0/java/Security.md#_2-高级安全)的相关文档。
+关于如何保护JDBC客户端驱动的更多信息，请参见[高级安全](/doc/2.7.0/java/Security.md#_2-高级安全)的相关文档。
 :::
 它支持如下的参数：
 

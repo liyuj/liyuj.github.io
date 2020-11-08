@@ -288,16 +288,16 @@ storeCfg.setWalArchivePath("/wal/archive");
 // Starting the node.
 Ignition.start(cfg);
 ```
-**页面写入优化**
+**页面写入限流**
 Ignite会定期地启动检查点进程，以在内存和磁盘间同步脏页面。这个进程在后台进行，对应用没有影响。
 但是，如果由检查点进程调度的一个脏页面，在写入磁盘前被更新，它之前的状态会被复制进一个特定的区域，叫做检查点缓冲区。如果这个缓冲区溢出，那么在检查点处理过程中，Ignite会停止所有的更新。因此，写入性能可能降为0，如下图所示：
 ![](https://files.readme.io/802c00c-image.png)
 当检查点处理正在进行中时，如果脏页面数达到阈值，同样的情况也会发生，这会使Ignite强制安排一个新的检查点执行，并停止所有的更新操作直到第一个检查点执行完成。
-当磁盘较慢或者更新过于频繁时，这两种情况都会发生，要减少或者防止这样的性能下降，可以考虑启用页面写入优化算法。这个算法会在检查点缓冲区填充过快或者脏页面占比过高时，将更新操作的性能降低到磁盘的速度。
->**页面写入优化剖析**
+当磁盘较慢或者更新过于频繁时，这两种情况都会发生，要减少或者防止这样的性能下降，可以考虑启用页面写入限流算法。这个算法会在检查点缓冲区填充过快或者脏页面占比过高时，将更新操作的性能降低到磁盘的速度。
+>**页面写入限流剖析**
 要了解更多的信息，可以看相关专家维护的[Wiki页面](https://cwiki.apache.org/confluence/display/IGNITE/Ignite+Persistent+Store+-+under+the+hood#IgnitePersistentStore-underthehood-PagesWriteThrottling)。
 
-下面的示例显示了如何开启页面写入优化：
+下面的示例显示了如何开启页面写入限流：
 XML：
 ```
 <bean class="org.apache.ignite.configuration.IgniteConfiguration">
@@ -327,7 +327,7 @@ Ignition.start(cfg);
 ```
 **检查点缓冲区大小**
 前述章节中描述的检查点缓冲区大小，是检查点处理的触发器之一。
-缓冲区大小预定义为256MB，它并没有为写密集型应用进行优化，因为在大小接近标称值时，页面写入优化算法会降低写入的性能，因此在正在进行检查点处理时，可以考虑增加`DataRegionConfiguration.checkpointPageBufferSize`，并且开启写入优化来阻止性能的下
+缓冲区大小预定义为256MB，它并没有为写密集型应用进行优化，因为在大小接近标称值时，页面写入限流算法会降低写入的性能，因此在正在进行检查点处理时，可以考虑增加`DataRegionConfiguration.checkpointPageBufferSize`，并且开启写入限流来阻止性能的下
 降：
 XML：
 ```
@@ -373,7 +373,7 @@ Ignition.start(cfg);
 ```
 在上例中，默认内存区的检查点缓冲区大小配置为1GB。
 >**检查点处理何时触发？**
-当脏页面数超过`总页数*2/3`或者达到`DataRegionConfiguration.checkpointPageBufferSize`时，检查点处理就会被触发。但是如果使用了页面写入优化，`DataRegionConfiguration.checkpointPageBufferSize`就会失效，因为算法的原因，不会达到这个值。
+当脏页面数超过`总页数*2/3`或者达到`DataRegionConfiguration.checkpointPageBufferSize`时，检查点处理就会被触发。但是如果使用了页面写入限流，`DataRegionConfiguration.checkpointPageBufferSize`就会失效，因为算法的原因，不会达到这个值。
 
 **启用直接I/O**
 通常当应用访问磁盘上的数据时，操作系统拿到数据后会将其写入一个文件缓冲区缓存，写操作也是同样，操作系统首先将数据写入缓存，然后才会传输到磁盘，要消除这个过程，可以打开直接IO，这时数据会忽略文件缓冲区缓存，直接从磁盘进行读写。

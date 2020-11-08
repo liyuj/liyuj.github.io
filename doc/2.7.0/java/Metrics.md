@@ -265,4 +265,4 @@ System.out.println("Avg get time: " + cm.getAverageGetTime());
 查看[CacheMetricsMXBean](https://ignite.apache.org/releases/latest/javadoc/org/apache/ignite/mxbean/CacheMetricsMXBean.html)的javadoc，可以了解完整的可用指标列表。
 
 ### 2.4.缓存大小计算
-要了解如何计算缓存的大小，可以参阅[内存使用量计算](/doc/2.7.0/java/Metrics.md#_1-3-内存使用量计算)。
+要了解如何计算缓存的大小，可以参见[内存使用量计算](/doc/2.7.0/java/Metrics.md#_1-3-内存使用量计算)。

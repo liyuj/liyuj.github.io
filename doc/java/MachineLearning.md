@@ -1489,7 +1489,7 @@ ModelsComposition rfModel = trainer.fit(
 
 在IgniteML库中是以梯度提升（最流行的提升实现）的形式提供提升功能的。
 #### 10.4.1.概述
-梯度提升是一种产生弱预测模型[集合形式](https://en.wikipedia.org/wiki/Ensemble_learning)预测模型的机器学习算法。梯度提升算法试图解决函数空间中每个函数都是模型的学习样本的最小化误差问题。这个组合中的每个模型都试图预测特征空间中点的误差梯度，并且这些预测将用一些权重求和以建模答案。该算法可用于回归和分类问题。更多信息可以参阅[维基百科](https://en.wikipedia.org/wiki/Gradient_boosting)。
+梯度提升是一种产生弱预测模型[集合形式](https://en.wikipedia.org/wiki/Ensemble_learning)预测模型的机器学习算法。梯度提升算法试图解决函数空间中每个函数都是模型的学习样本的最小化误差问题。这个组合中的每个模型都试图预测特征空间中点的误差梯度，并且这些预测将用一些权重求和以建模答案。该算法可用于回归和分类问题。更多信息可以参见[维基百科](https://en.wikipedia.org/wiki/Gradient_boosting)。
 
 在IgniteML中有一个通用`GDB`算法和`GDB-on-tree`算法的实现。通用`GDB`（`GDBRegressionTrainer`和`GDBBinaryClassifierTrainer`）允许任何训练器对每个模型进行组合训练。`GDB-on-trees`使用一些特定于树的优化，例如索引，以避免在决策树构建阶段进行排序。
 #### 10.4.2.模型

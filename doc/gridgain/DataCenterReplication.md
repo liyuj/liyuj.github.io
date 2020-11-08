@@ -77,7 +77,7 @@ GridGainCacheConfiguration cachePluginCfg = new GridGainCacheConfiguration().set
 
 CacheConfiguration cacheCfg = new CacheConfiguration<>().setPluginConfigurations(cachePluginCfg);
 ```
-如果使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)命令创建缓存，则指定发送方组名的唯一方法是使用预定义的缓存模板。可以使用所需的发送方组（以及其他和复制相关的属性）创建缓存模板，然后将其作为参数传递给CREATE TABLE命令，这样创建的缓存将具有指定模板的属性。有关如何使用缓存模板的更多信息和示例，请参阅[缓存模板](/doc/java/Key-ValueDataGrid.md#_3-5-缓存模板)文档。
+如果使用[CREATE TABLE](/doc/sql/SQLReference.md#_2-3-create-table)命令创建缓存，则指定发送方组名的唯一方法是使用预定义的缓存模板。可以使用所需的发送方组（以及其他和复制相关的属性）创建缓存模板，然后将其作为参数传递给CREATE TABLE命令，这样创建的缓存将具有指定模板的属性。有关如何使用缓存模板的更多信息和示例，请参见[缓存模板](/doc/java/Key-ValueDataGrid.md#_3-5-缓存模板)文档。
 
 2）在将接收复制数据的远程数据中心中创建类似的缓存；
 

@@ -268,7 +268,7 @@ mvn clean install -DskipTests -Plgpl -pl modules/hibernate -am
 |`ignite-kubernetes`|Ignite Kubernetes模块提供了一个基于TCP发现的IP探测器，其使用专用的Kubernetes服务来查找由Kubernetes容器化的Ignite配置组的IP地址。|
 |`ignite-log4j`|支持log4j。|
 |`ignite-log4j2`|支持log4j2。|
-|`ignite-ml`|Ignite的机器学习模块，其提供了机器学习功能以及线性代数的相关数据结构和方法，包括堆内和堆外，密集和稀疏，本地和分布式实现。详细信息请参阅[机器学习](/doc/java/MachineLearning.md)文档。|
+|`ignite-ml`|Ignite的机器学习模块，其提供了机器学习功能以及线性代数的相关数据结构和方法，包括堆内和堆外，密集和稀疏，本地和分布式实现。详细信息请参见[机器学习](/doc/java/MachineLearning.md)文档。|
 |`ignite-osgi`|该模块提供了桥接组件，以使Ignite可以在OSGi容器（例如Apache Karaf）内无缝运行。|
 |`ignite-osgi-karaf`|该模块包含功能特性库，以方便将Ignite安装到Apache Karaf容器中。|
 |`ignite-rest-http`|该模块在节点内启动了一个基于Jetty的服务器，该服务器可用于在集群中使用基于HTTP的RESTful API执行任务和/或缓存命令。|
@@ -542,7 +542,7 @@ C++目前还不支持这个API，需要使用基于XML的配置。
 ```shell
 ./ignite.sh -J-DIGNITE_TO_STRING_INCLUDE_SENSITIVE=false
 ```
-请参阅[配置JVM选项](/doc/java/StartingNodes.md#_4-配置jvm选项)以了解设置系统属性的不同方式。
+请参见[配置JVM选项](/doc/java/StartingNodes.md#_4-配置jvm选项)以了解设置系统属性的不同方式。
 ### 3.8.日志配置示例
 下面的步骤可以指导开发者配置日志的过程，这个过程会适用大多数场景。
 
