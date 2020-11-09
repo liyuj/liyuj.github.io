@@ -51,7 +51,7 @@
 
 ![](https://ignite.apache.org/docs/2.9.0/images/partitionawareness02.png)
 
-::: warning 警告
+::: danger 警告
 注意目前需要在连接属性中提供所有服务端节点的地址。这意味着如果新的服务端节点加入集群，则应将新服务端的地址添加到连接属性中，然后重新连接。否则，瘦客户端将无法向该服务端发送直接请求，正式发布之后将解决此限制。
 :::
 #### 1.2.3.认证
@@ -192,7 +192,7 @@ try (IgniteClient client = Ignition.startClient(new ClientConfiguration().setAdd
 
 ![](https://ignite.apache.org/docs/2.9.0/images/partitionawareness02.png)
 
-::: warning 警告
+::: danger 警告
 注意目前需要在连接属性中提供所有服务端节点的地址。这意味着如果新的服务端节点加入集群，则应将新服务端的地址添加到连接属性中，然后重新连接。否则，瘦客户端将无法向该服务端发送直接请求，正式发布之后将解决此限制。
 :::
 下面的示例介绍了Java瘦客户端中分区感知功能的使用方法：
@@ -875,7 +875,7 @@ void TestClient()
 
 ![](https://ignite.apache.org/docs/2.9.0/images/partitionawareness02.png)
 
-::: warning 警告
+::: danger 警告
 注意目前需要在连接属性中提供所有服务端节点的地址。这意味着如果新的服务端节点加入集群，则应将新服务端的地址添加到连接属性中，然后重新连接。否则，瘦客户端将无法向该服务端发送直接请求，正式发布之后将解决此限制。
 :::
 
@@ -971,8 +971,1168 @@ void TestClientWithAuth()
 }
 ```
 ## 5.Python瘦客户端
+### 5.1.环境要求
+Python 3.4版本及以上
+### 5.2.安装
+可以使用`pip`或者zip压缩包来安装Python瘦客户端。
+#### 5.2.1.使用PIP
+Python的瘦客户端包名为`pyignite`，可以使用下面的命令安装它：
+
+<Tabs>
+<Tab title="pip3">
+
+```shell
+pip3 install pyignite
+```
+</Tab>
+
+<Tab title="pip">
+
+```shell
+pip install pyignite
+```
+</Tab>
+</Tabs>
+
+#### 5.2.2.使用ZIP压缩包
+瘦客户端可以从zip压缩包安装：
+
+ - 下载Ignite的[二进制包](https://ignite.apache.org/download.cgi#binaries)；
+ - 解压压缩包然后转到其根目录；
+ - 使用如下的命令安装瘦客户端：
+
+<Tabs>
+<Tab title="pip3">
+
+```shell
+pip3 install .
+```
+</Tab>
+
+<Tab title="pip">
+
+```shell
+pip install .
+```
+</Tab>
+</Tabs>
+
+这将以所谓的`develop`或者`editable`模式安装`pyignite`，关于该模式的更多信息，请参见[官方文档](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs)。
+
+检查`requirements`文件夹，然后根据需要安装，安装时可使用下面的命令：
+
+<Tabs>
+<Tab title="pip3">
+
+```shell
+pip3 install -r requirements/<your task>.txt
+```
+</Tab>
+
+<Tab title="pip">
+
+```shell
+pip install -r requirements/<your task>.txt
+```
+</Tab>
+</Tabs>
+
+关于`setup.py`使用方面的细节，请参见[配置工具手册](https://setuptools.readthedocs.io/en/latest/)。
+### 5.3.接入集群
+二进制包中包含了可运行的示例，演示了Python瘦客户端的基本使用场景，这些示例位于`{ROOT_FOLDER}/examples`文件夹。
+
+下面的代码片段显示了如何从Python瘦客户端接入集群：
+
+```python
+from pyignite import Client
+
+## Open a connection
+client = Client()
+client.connect('127.0.0.1', 10800)
+```
+### 5.4.客户端故障转移
+如果到当前节点的连接故障或者超时，可以配置客户端自动故障转移到另一个节点。
+
+当连接故障时，客户端会传播初始异常（`OSError`或`SocketError`），但是会保持构造参数不变，然后尝试透明地重建连接。如果重连失败，会抛出`ReconnectError`异常。
+
+在下面的示例中，为客户端提供了3个节点的地址：
+```python
+from pyignite import Client
+from pyignite.datatypes.cache_config import CacheMode
+from pyignite.datatypes.prop_codes import *
+from pyignite.exceptions import SocketError
+
+nodes = [
+    ('127.0.0.1', 10800),
+    ('217.29.2.1', 10800),
+    ('200.10.33.1', 10800),
+]
+
+client = Client(timeout=40.0)
+client.connect(nodes)
+print('Connected to {}'.format(client))
+
+my_cache = client.get_or_create_cache({
+    PROP_NAME: 'my_cache',
+    PROP_CACHE_MODE: CacheMode.REPLICATED,
+})
+my_cache.put('test_key', 0)
+
+# Abstract main loop
+while True:
+    try:
+        # Do the work
+        test_value = my_cache.get('test_key')
+        my_cache.put('test_key', test_value + 1)
+    except (OSError, SocketError) as e:
+        # Recover from error (repeat last command, check data
+        # consistency or just continue − depends on the task)
+        print('Error: {}'.format(e))
+        print('Last value: {}'.format(my_cache.get('test_key')))
+        print('Reconnected to {}'.format(client))
+```
+### 5.5.分区感知
+分区感知使得瘦客户端可以将请求直接发给待处理数据所在的节点。
+
+在没有分区感知时，通过瘦客户端接入集群的应用，实际是通过某个作为代理的服务端节点执行所有查询和操作，然后将这些操作重新路由到数据所在的节点，这会导致瓶颈，可能会限制应用的线性扩展能力。
+
+![](https://ignite.apache.org/docs/2.9.0/images/partitionawareness01.png)
+
+注意查询必须通过代理服务端节点，然后路由到正确的节点。
+
+有了分区感知之后，瘦客户端可以将查询和操作直接路由到持有待处理数据的主节点，这消除了瓶颈，使应用更易于扩展。
+
+![](https://ignite.apache.org/docs/2.9.0/images/partitionawareness02.png)
+
+::: danger 警告
+注意目前需要在连接属性中提供所有服务端节点的地址。这意味着如果新的服务端节点加入集群，则应将新服务端的地址添加到连接属性中，然后重新连接。否则，瘦客户端将无法向该服务端发送直接请求，正式发布之后将解决此限制。
+:::
+要启用分区感知，需要在连接的构造函数中将`partition_aware`配置为`true`，然后在连接串中提供所有服务端节点的地址：
+```python
+client = Client(partition_aware=True)
+nodes = [
+    ('127.0.0.1', 10800),
+    ('217.29.2.1', 10800),
+    ('200.10.33.1', 10800),
+]
+
+client.connect(nodes)
+```
+### 5.6.创建缓存
+可以使用下面的方法之一获取一个缓存的实例：
+
+ - `get_cache(settings)`：通过给定的名字或者参数配置创建一个本地缓存对象，该缓存必须在集群中存在，否则当在该缓存上执行操作时会抛出异常；
+ - `create_cache(settings)`：通过给定的名字或者参数配置创建一个缓存；
+ - `get_or_create_cache(settings)`：返回一个已有的缓存，或者在其不存在时创建它。
+
+每个方法接收一个缓存名，或者表示缓存配置的参数列表。
+```python
+from pyignite import Client
+
+# Open a connection
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+# Create a cache
+my_cache = client.create_cache('myCache')
+```
+下面是通过一组参数创建缓存的示例：
+```python
+from collections import OrderedDict
+
+from pyignite import Client, GenericObjectMeta
+from pyignite.datatypes import *
+from pyignite.datatypes.prop_codes import *
+
+# Open a connection
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+cache_config = {
+    PROP_NAME: 'my_cache',
+    PROP_BACKUPS_NUMBER: 2,
+    PROP_CACHE_KEY_CONFIGURATION: [
+        {
+            'type_name': 'PersonKey',
+            'affinity_key_field_name': 'companyId'
+        }
+    ]
+}
+
+my_cache = client.create_cache(cache_config)
+
+
+class PersonKey(metaclass=GenericObjectMeta, type_name='PersonKey', schema=OrderedDict([
+    ('personId', IntObject),
+    ('companyId', IntObject),
+])):
+    pass
+
+
+personKey = PersonKey(personId=1, companyId=1)
+my_cache.put(personKey, 'test')
+
+print(my_cache.get(personKey))
+```
+#### 5.6.1.缓存配置
+可以配置的属性列表已在`prop_codes`模块中提供。
+
+|属性名|类型|描述|
+|---|---|---|
+|`PROP_NAME`|str|缓存名，这是唯一必需的参数|
+|`PROP_CACHE_MODE`|int|缓存模式|
+|`PROP_CACHE_ATOMICITY_MODE`|int|缓存原子化模式|
+|`PROP_BACKUPS_NUMBER`|int|备份分区数量|
+|`PROP_WRITE_SYNCHRONIZATION_MODE`|int|写同步模式|
+|`PROP_COPY_ON_READ`|bool|读拷贝标志，默认值为`true`|
+|`PROP_READ_FROM_BACKUP`|bool|是否尽可能从本地备份分区读取条目的标志，或者总是从主分区请求数据，默认值为`true`|
+|`PROP_DATA_REGION_NAME`|str|数据区名|
+|`PROP_IS_ONHEAP_CACHE_ENABLED`|bool|是否开启缓存的堆内缓存|
+|`PROP_QUERY_ENTITIES`|list|查询实体列表|
+|`PROP_QUERY_PARALLELISM`|int|查询并行度|
+|`PROP_QUERY_DETAIL_METRIC_SIZE`|int|查询详细指标列表|
+|`PROP_SQL_SCHEMA`|str|SQL模式名|
+|`PROP_SQL_INDEX_INLINE_MAX_SIZE`|int|SQL索引内联最大值|
+|`PROP_SQL_ESCAPE_ALL`|bool|是否打开SQL转义|
+|`PROP_MAX_QUERY_ITERATORS`|int|查询迭代器的最大数量|
+|`PROP_REBALANCE_MODE`|int|再平衡模式|
+|`PROP_REBALANCE_DELAY`|int|再平衡延迟（毫秒）|
+|`PROP_REBALANCE_TIMEOUT`|int|再平衡超时（毫秒）|
+|`PROP_REBALANCE_BATCH_SIZE`|int|再平衡批次大小|
+|`PROP_REBALANCE_BATCHES_PREFETCH_COUNT`|int|再平衡预取计数|
+|`PROP_REBALANCE_ORDER`|int|再平衡顺序|
+|`PROP_REBALANCE_THROTTLE`|int|再平衡限流（毫秒）|
+|`PROP_GROUP_NAME`|str|缓存组名|
+|`PROP_CACHE_KEY_CONFIGURATION`|list|缓存键配置|
+|`PROP_DEFAULT_LOCK_TIMEOUT`|int|默认锁超时|
+|`PROP_MAX_CONCURRENT_ASYNC_OPERATIONS`|int|最大并发异步操作数|
+|`PROP_PARTITION_LOSS_POLICY`|int|分区丢失策略|
+|`PROP_EAGER_TTL`|bool|是否开启热生存时间|
+|`PROP_STATISTICS_ENABLED`|bool|是否开启统计|
+
+##### 5.6.1.1.查询实体
+查询实体是描述[可查询字段](/doc/java/WorkingwithSQL.md#_4-1-配置可查询字段)的对象，可查询字段是指缓存中可以使用SQL进行查询的字段。
+
+ - `table_name`：SQL表名；
+ - `key_field_name`：键字段名；
+ - `key_type_name`：键类型名（Java类型或者复杂对象）；
+ - `value_field_name`：值字段名；
+ - `value_type_name`：值类型名；
+ - `field_name_aliases`：字段别名列表；
+ - `query_fields`：可查询字段名列表；
+ - `query_indexes`：查询索引列表。
+
+**字段名别名**
+
+字段名别名用于给完整的属性名定义一个简称（`object.name` → `objectName`）。
+
+ - `field_name`：字段名；
+ - `alias`：别名。
+
+**可查询字段**
+
+定义可查询的字段：
+
+ - `name`：字段名；
+ - `type_name`：Java类型名或者复杂对象名；
+ - `is_key_field`：（可选）布尔值，默认为`False`；
+ - `is_notnull_constraint_field`：布尔值；
+ - `default_value`：（可选）可以转换为`type_name`类型的任何内容，默认为空（Null）；
+ - `precision`：（可选）数值精度。数值中的位数总数，默认为-1（使用集群默认值），非数值SQL类型会被忽略（`java.math.BigDecimal`除外）；
+ - `scale`：（可选）数值标度。小数点后的位数，默认为-1（使用集群默认值），非数值SQL类型会被忽略。
+
+**查询索引**
+
+定义创建索引的字段。
+
+ - `index_name`：索引名；
+ - `index_type`：索引类型代码，为无符号字节范围内的整数值；
+ - `inline_size`：索引内联值，整数；
+ - `fields`：索引字段列表。
+
+**字段**
+
+ - `name`：字段名；
+ - `is_descending`：（可选）布尔值，默认为`False`。
+
+**缓存键**
+
+ - `type_name`：复杂类型名；
+ - `affinity_key_field_name`：关联键字段名。
+
+### 5.7.使用键-值API
+`pyignite.cache.Cache`类提供了通过键-值操作处理缓存条目的方法，比如`put`、`put_all`、`get`、`get_all`、`replace`等，下面是一个示例：
+```python
+from pyignite import Client
+
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+# Create cache
+my_cache = client.create_cache('my cache')
+
+# Put value in cache
+my_cache.put('my key', 42)
+
+# Get value from cache
+result = my_cache.get('my key')
+print(result)  # 42
+
+result = my_cache.get('non-existent key')
+print(result)  # None
+
+# Get multiple values from cache
+result = my_cache.get_all([
+    'my key',
+    'non-existent key',
+    'other-key',
+])
+print(result)  # {'my key': 42}
+```
+#### 5.7.1.使用类型提示
+处理单个值或键的`pyignite`方法具有一个附加的可选参数`value_hint`或`key_hint`，该参数接受一个解析器/构造器类。几乎任何结构化元素（在`dict`或`list`内部）都可以替换为2元组(元素，类型提示)。
+```python
+from pyignite import Client
+from pyignite.datatypes import CharObject, ShortObject
+
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+my_cache = client.get_or_create_cache('my cache')
+
+my_cache.put('my key', 42)
+# Value ‘42’ takes 9 bytes of memory as a LongObject
+
+my_cache.put('my key', 42, value_hint=ShortObject)
+# Value ‘42’ takes only 3 bytes as a ShortObject
+
+my_cache.put('a', 1)
+# ‘a’ is a key of type String
+
+my_cache.put('a', 2, key_hint=CharObject)
+# Another key ‘a’ of type CharObject is created
+
+value = my_cache.get('a')
+print(value)  # 1
+
+value = my_cache.get('a', key_hint=CharObject)
+print(value)  # 2
+
+# Now let us delete both keys at once
+my_cache.remove_keys([
+    'a',  # a default type key
+    ('a', CharObject),  # a key of type CharObject
+])
+```
+### 5.8.扫描查询
+缓存对象的`scan()`方法可以用于获取缓存的所有对象。它返回一个生成`(key,value)`元组的生成器，可以按以下步骤遍历生成的键-值对：
+```python
+from pyignite import Client
+
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+my_cache = client.create_cache('myCache')
+
+my_cache.put_all({'key_{}'.format(v): v for v in range(20)})
+# {
+#     'key_0': 0,
+#     'key_1': 1,
+#     'key_2': 2,
+#     ... 20 elements in total...
+#     'key_18': 18,
+#     'key_19': 19
+# }
+
+result = my_cache.scan()
+
+for k, v in result:
+    print(k, v)
+# 'key_17' 17
+# 'key_10' 10
+# 'key_6' 6,
+# ... 20 elements in total...
+# 'key_16' 16
+# 'key_12' 12
+
+
+result = my_cache.scan()
+print(dict(result))
+# {
+#     'key_17': 17,
+#     'key_10': 10,
+#     'key_6': 6,
+#     ... 20 elements in total...
+#     'key_16': 16,
+#     'key_12': 12
+# }
+
+```
+或者，可以一次性将生成器转换为字典：
+```python
+result = my_cache.scan()
+print(dict(result))
+# {
+#     'key_17': 17,
+#     'key_10': 10,
+#     'key_6': 6,
+#     ... 20 elements in total...
+#     'key_16': 16,
+#     'key_12': 12
+# }
+```
+::: tip 提示
+注意：如果缓存中包含大量数据，则字典可能会消耗过多的内存。
+:::
+### 5.9.执行SQL语句
+Python瘦客户端支持所有Ignite支持的[SQL命令](/doc/java/SQLReference.md)，该命令通过缓存对象的`sql()`方法执行，`sql()`方法会返回一个可以生产结果行的生成器：
+```python
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from pyignite import Client
+
+client = Client()
+client.connect('127.0.0.1', 10800)
+
+CITY_CREATE_TABLE_QUERY = '''CREATE TABLE City (
+    ID INT(11),
+    Name CHAR(35),
+    CountryCode CHAR(3),
+    District CHAR(20),
+    Population INT(11),
+    PRIMARY KEY (ID, CountryCode)
+) WITH "affinityKey=CountryCode"'''
+
+client.sql(CITY_CREATE_TABLE_QUERY)
+
+CITY_CREATE_INDEX = '''CREATE INDEX idx_country_code ON city (CountryCode)'''
+
+client.sql(CITY_CREATE_INDEX)
+
+CITY_INSERT_QUERY = '''INSERT INTO City(
+    ID, Name, CountryCode, District, Population
+) VALUES (?, ?, ?, ?, ?)'''
+
+CITY_DATA = [
+    [3793, 'New York', 'USA', 'New York', 8008278],
+    [3794, 'Los Angeles', 'USA', 'California', 3694820],
+    [3795, 'Chicago', 'USA', 'Illinois', 2896016],
+    [3796, 'Houston', 'USA', 'Texas', 1953631],
+    [3797, 'Philadelphia', 'USA', 'Pennsylvania', 1517550],
+    [3798, 'Phoenix', 'USA', 'Arizona', 1321045],
+    [3799, 'San Diego', 'USA', 'California', 1223400],
+    [3800, 'Dallas', 'USA', 'Texas', 1188580],
+]
+
+for row in CITY_DATA:
+    client.sql(CITY_INSERT_QUERY, query_args=row)
+
+CITY_SELECT_QUERY = "SELECT * FROM City"
+
+cities = client.sql(CITY_SELECT_QUERY)
+for city in cities:
+    print(*city)
+```
+注意如果将`include_field_names`参数配置为`True`，则该`sql()`方法将在第一个`yield`中生成一个列名列表。可以使用Python的`next`函数访问该字段名称：
+```python
+field_names = client.sql(CITY_SELECT_QUERY, include_field_names=True).__next__()
+print(field_names)
+```
+### 5.10.安全
+#### 5.10.1.SSL/TLS
+要在瘦客户端和集群之间使用加密的通信，必须在集群配置和客户端配置中都启用SSL/TLS。有关集群配置的说明，请参见[为瘦客户端启用SSL/TLS](/doc/java/Security.md#_2-3-瘦客户端和jdbc-odbc的ssl-tls)章节的介绍。
+
+下面是在瘦客户端中启用SSL的示例配置：
+```python
+from pyignite import Client
+import ssl
+
+client = Client(
+                use_ssl=True,
+                ssl_cert_reqs=ssl.CERT_REQUIRED,
+                ssl_keyfile='/path/to/key/file',
+                ssl_certfile='/path/to/client/cert',
+                ssl_ca_certfile='/path/to/trusted/cert/or/chain',
+)
+
+client.connect('localhost', 10800)
+```
+支持的参数：
+
+|参数|描述|
+|---|---|
+|`use_ssl`|在客户端启用SSL/TLS可以配置为`True`|
+|`ssl_keyfile`|密钥库文件路径|
+|`ssl_certfile`|包含SSL证书的文件路径|
+|`ssl_ca_certfile`|受信证书文件路径|
+|`ssl_cert_reqs`|`ssl.CERT_NONE`：远程证书被忽略（默认）；<br>`ssl.CERT_OPTIONAL`：如果提供，将验证远程证书；<br>`ssl.CERT_REQUIRED`：需要有效的远程证书|
+|`ssl_version`||
+|`ssl_ciphers`||
+
+#### 5.10.2.认证
+配置[集群端的认证](/doc/java/Security.md#_1-认证)后，需要在客户端的配置中提供有效的用户名和密码：
+```python
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from pyignite import Client
+import ssl
+
+
+client = Client(
+                ssl_cert_reqs=ssl.CERT_REQUIRED,
+                ssl_keyfile='/path/to/key/file',
+                ssl_certfile='/path/to/client/cert',
+                ssl_ca_certfile='/path/to/trusted/cert/or/chain',
+                username='ignite',
+                password='ignite',)
+
+client.connect('localhost', 10800)
+```
+注意提供凭据会自动打开SSL，这是因为通过不安全的通道发送凭据不是最佳实践，因此强烈建议不要这样做。如果仍要使用认证而不保护连接，只需在创建客户端对象时禁用SSL：
+```python
+client = Client(username='ignite', password='ignite', use_ssl=False)
+```
 ## 6.PHP瘦客户端
+### 6.1.环境要求
+
+ - [PHP版本7.2及以上](http://php.net/manual/en/install.php)以及[Composer依赖管理器](https://getcomposer.org/download)；
+ - `php-xml`模块；
+ - [PHP Multibyte String扩展](http://php.net/manual/en/mbstring.installation.php)，根据PHP的配置，可能需要对其进行额外的安装/配置。
+
+### 6.2.安装
+瘦客户端可通过zip压缩包进行安装：
+
+ - 下载Ignite的[二进制包](https://ignite.apache.org/download.cgi#binaries)；
+ - 解压该压缩包然后转到`{IGNITE_HOME}/platforms/php`文件夹；
+ - 使用如下命令进行安装：
+
+```shell
+composer install --no-dev
+```
+要在应用中使用该客户端，需要在源代码中引入由`Composer`生成的`vendor/autoload.php`文件：
+```php
+require_once "<php_client_root_dir>/vendor/autoload.php";
+```
+### 6.3.创建客户端实例
+PHP瘦客户端的所有操作都是通过`Client`实例执行的，可以根据需要创建任意数量的`Client`实例，他们之间相互独立：
+```php
+use Apache\Ignite\Client;
+
+$client = new Client();
+```
+### 6.4.接入集群
+要接入集群，需使用必要的连接参数定义`ClientConfiguration`对象，然后使用`Client.connect(…​)`方法。
+
+```php
+use Apache\Ignite\Client;
+use Apache\Ignite\ClientConfiguration;
+use Apache\Ignite\Exception\ClientException;
+
+function connectClient(): void
+{
+    $client = new Client();
+    try {
+        $clientConfiguration = new ClientConfiguration(
+            '127.0.0.1:10800', '127.0.0.1:10801', '127.0.0.1:10802');
+        // Connect to Ignite node
+        $client->connect($clientConfiguration);
+    } catch (ClientException $e) {
+        echo($e->getMessage());
+    }
+}
+
+connectClient();
+```
+`ClientConfiguration`的构造函数接收节点端点的列表。必须至少指定一个端点，如果指定了多个，瘦客户端将在端点之间[故障转移](#_1-2-1-客户端连接故障转移)。
+
+如果客户端无法接入集群， 则在尝试执行任何远程操作时会抛出`NoConnectionException`异常。
+
+如果客户端在操作之前/操作期间意外断开连接，则会抛出`OperationStatusUnknownException`异常，这时不知道该操作是否已在集群中实际执行。当应用调用下一个操作时，客户端将尝试重连配置中指定的下一个节点。
+
+调用`disconnect()`方法可以关闭连接。
+### 6.5.使用键-值API
+#### 6.5.1.获取/创建缓存实例
+客户端实例提供3个方法用于获取缓存的实例：
+
+ - `getCache(name)`：通过名字获取一个已有的缓存，该方法不会验证缓存在集群中是否存在，而是尝试在缓存上执行任意操作时会抛出异常；
+ - `getOrCreateCache(name, config)`：通过名字获取一个已有的缓存，或者使用提供的配置创建一个新的缓存；
+ - `createCache(name, config)`：通过提供的名字和参数创建一个新的缓存。
+
+下面是创建缓存的方法：
+```php
+$cacheCfg = new CacheConfiguration();
+$cacheCfg->setCacheMode(CacheConfiguration::CACHE_MODE_REPLICATED);
+$cacheCfg->setWriteSynchronizationMode(CacheConfiguration::WRITE_SYNC_MODE_FULL_SYNC);
+
+$cache = $client->getOrCreateCache('References', $cacheCfg);
+```
+#### 6.5.2.基本键-值操作
+下面的代码片段演示了如何通过缓存实例进行基本的键-值操作：
+```php
+$val = array();
+$keys = range(1, 100);
+foreach ($keys as $number) {
+    $val[] = new CacheEntry($number, strval($number));
+}
+$cache->putAll($val);
+
+$replace = $cache->replaceIfEquals(1, '2', '3');
+echo $replace ? 'true' : 'false'; //false
+echo "\r\n";
+
+$value = $cache->get(1);
+echo $value; //1
+echo "\r\n";
+
+$replace = $cache->replaceIfEquals(1, "1", 3);
+echo $replace ? 'true' : 'false'; //true
+echo "\r\n";
+
+$value = $cache->get(1);
+echo $value; //3
+echo "\r\n";
+
+$cache->put(101, '101');
+
+$cache->removeKeys($keys);
+$sizeIsOne = $cache->getSize() == 1;
+echo $sizeIsOne ? 'true' : 'false'; //true
+echo "\r\n";
+
+$value = $cache->get(101);
+echo $value; //101
+echo "\r\n";
+
+$cache->removeAll();
+$sizeIsZero = $cache->getSize() == 0;
+echo $sizeIsZero ? 'true' : 'false'; //true
+echo "\r\n";
+```
+### 6.6.扫描查询
+`Cache.query(ScanQuery)`方法可用于从缓存中获取所有的条目，它会使用标准的PHP迭代器接口返回一个游标对象，使用此游标可以以延迟加载模式一个一个在结果集中迭代，另外，游标也有方法可以一次性获得全部结果集。
+```php
+$cache = $client->getOrCreateCache('personCache');
+
+$cache->put(1, new Person(1, 'John Smith'));
+$cache->put(1, new Person(1, 'John Johnson'));
+
+$qry = new ScanQuery();
+$cache->query(new ScanQuery());
+```
+### 6.7.执行SQL语句
+PHP瘦客户端支持所有Ignite支持的[SQL命令](/doc/java/SQLReference.md)，SQL语句是通过缓存对象的`query(SqlFieldQuery)`方法执行的。该方法接受一个表示SQL语句的`SqlFieldsQuery`，`query()`方法会使用标准的PHP迭代器接口返回一个游标对象，使用此游标可以以延迟加载模式一个一个在结果集中迭代，另外，游标也有方法可以一次性获得全部结果集。
+```php
+$create_table = new SqlFieldsQuery(
+    sprintf('CREATE TABLE IF NOT EXISTS Person (id INT PRIMARY KEY, name VARCHAR) WITH "VALUE_TYPE=%s"', Person::class)
+);
+$create_table->setSchema('PUBLIC');
+$cache->query($create_table)->getAll();
+
+$key = 1;
+$val = new Person(1, 'Person 1');
+
+$insert = new SqlFieldsQuery('INSERT INTO Person(id, name) VALUES(?, ?)');
+$insert->setArgs($val->id, $val->name);
+$insert->setSchema('PUBLIC');
+$cache->query($insert)->getAll();
+
+$select = new SqlFieldsQuery('SELECT name FROM Person WHERE id = ?');
+$select->setArgs($key);
+$select->setSchema('PUBLIC');
+$cursor = $cache->query($select);
+// Get the results; the `getAll()` methods closes the cursor; you do not have to call cursor.close();
+$results = $cursor->getAll();
+
+if (sizeof($results) != 0) {
+    echo 'name = ' . $results[0][0];
+    echo "\r\n";
+}
+```
+### 6.8.安全
+#### 6.8.1.SSL/TLS
+要在瘦客户端和集群之间使用加密通信，需要在双方的配置中开启它，具体请参见集群配置中[为瘦客户端启用SSL/TLS](/doc/java/Security.md#_2-3-瘦客户端和jdbc-odbc的ssl-tls)章节的介绍。
+
+下面是在瘦客户端中开启SSL的示例配置：
+```php
+$tlsOptions = [
+    'local_cert' => '/path/to/client/cert',
+    'cafile' => '/path/to/ca/file',
+    'local_pk' => '/path/to/key/file'
+];
+
+$config = new ClientConfiguration('localhost:10800');
+$config->setTLSOptions($tlsOptions);
+
+$client = new Client();
+$client->connect($config);
+```
+#### 6.8.2.认证
+配置[集群端的认证](/doc/java/Security.md#_1-认证)后，需要在瘦客户端的配置中提供有效的用户名和密码：
+```php
+$config = new ClientConfiguration('localhost:10800');
+$config->setUserName('ignite');
+$config->setPassword('ignite');
+//$config->setTLSOptions($tlsOptions);
+
+$client = new Client();
+$client->connect($config);
+```
 ## 7.Node.js瘦客户端
+### 7.1.环境要求
+
+ - Node.js 版本8.0及以上，可以下载Node.js对应平台的[二进制包](https://nodejs.org/en/download/)，或者通过[包管理器](https://nodejs.org/en/download/package-manager)安装Node.js。
+
+`node`和`npm`安装之后，就可以进行下面的安装了。
+### 7.2.安装
+Node.js瘦客户端以`npm`软件包和zip压缩包的形式提供，在自己的环境中可以使用任意方法安装该客户端。
+#### 7.2.1.使用NPM
+使用下面的命令可以从NPM仓库中安装该客户端：
+```shell
+npm install -g apache-ignite-client
+```
+#### 7.2.2.使用ZIP压缩包
+该瘦客户端也可以通过从Ignite网站上下载的压缩包进行安装：
+
+ - 下载Ignite的[二进制包](https://ignite.apache.org/download.cgi#binaries)；
+ - 解压该压缩包，然后转到`{IGNITE_HOME}/platforms/nodejs`文件夹；
+ - 执行下面的命令完成安装：
+
+```shell
+npm link apache-ignite-client
+```
+### 7.3.创建客户端实例
+`IgniteClient`类提供了瘦客户端的API，可以通过如下方式获取该客户端的实例：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+
+const igniteClient = new IgniteClient(onStateChanged);
+
+function onStateChanged(state, reason) {
+    if (state === IgniteClient.STATE.CONNECTED) {
+        console.log('Client is started');
+    }
+    else if (state === IgniteClient.STATE.DISCONNECTED) {
+        console.log('Client is stopped');
+        if (reason) {
+            console.log(reason);
+        }
+    }
+}
+```
+构造器会接收一个表示回调函数的可选参数，每次连接状态发生变更时，都会调用该函数。
+
+可以根据需要创建任意数量的`IgniteClient`实例，他们之间相互独立。
+### 7.4.接入集群
+使用`IgniteClient.connect()`方法，可以将客户端接入集群。该方法会接收一个表示连接参数的`IgniteClientConfiguration`类对象，该连接参数必须包含一组用于[故障转移](#_1-2-1-客户端连接故障转移)目的的节点列表（`host:port`格式）。
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+async function connectClient() {
+    const igniteClient = new IgniteClient(onStateChanged);
+    try {
+        const igniteClientConfiguration = new IgniteClientConfiguration(
+            '127.0.0.1:10800', '127.0.0.1:10801', '127.0.0.1:10802');
+        // Connect to Ignite node
+        await igniteClient.connect(igniteClientConfiguration);
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+}
+
+function onStateChanged(state, reason) {
+    if (state === IgniteClient.STATE.CONNECTED) {
+        console.log('Client is started');
+    }
+    else if (state === IgniteClient.STATE.CONNECTING) {
+        console.log('Client is connecting');
+    }
+    else if (state === IgniteClient.STATE.DISCONNECTED) {
+        console.log('Client is stopped');
+        if (reason) {
+            console.log(reason);
+        }
+    }
+}
+
+connectClient();
+```
+该客户端有3个连接状态：`CONNECTING`、`CONNECTED`、`DISCONNECTED`。可以在客户端配置对象上指定一个回调函数，每次连接状态发生变更时都会调用该函数。
+
+只有在`CONNECTED`状态时才可以与集群进行交互。如果客户端断开了连接，它会自动切换到`CONNECTING`状态，然后尝试通过[故障转移机制](#_1-2-1-客户端连接故障转移)进行重连。如果无法连接列表中提供的所有端点，客户端会切换到`DISCONNECTED`状态。
+
+可以调用`disconnect()`方法关闭连接，他会将客户端切换至`DISCONNECTED`状态。
+### 7.5.分区感知
+分区感知使得瘦客户端可以将请求直接发给待处理数据所在的节点。
+
+在没有分区感知时，通过瘦客户端接入集群的应用，实际是通过某个作为代理的服务端节点执行所有查询和操作，然后将这些操作重新路由到数据所在的节点，这会导致瓶颈，可能会限制应用的线性扩展能力。
+
+![](https://ignite.apache.org/docs/2.9.0/images/partitionawareness01.png)
+
+注意查询必须通过代理服务端节点，然后路由到正确的节点。
+
+有了分区感知之后，瘦客户端可以将查询和操作直接路由到持有待处理数据的主节点，这消除了瓶颈，使应用更易于扩展。
+
+![](https://ignite.apache.org/docs/2.9.0/images/partitionawareness02.png)
+
+::: danger 警告
+注意目前需要在连接属性中提供所有服务端节点的地址。这意味着如果新的服务端节点加入集群，则应将新服务端的地址添加到连接属性中，然后重新连接。否则，瘦客户端将无法向该服务端发送直接请求，正式发布之后将解决此限制。
+:::
+要启用分区感知，需要将`partitionAwareness`参数配置为`true`，如下所示：
+```javascript
+const ENDPOINTS = ['127.0.0.1:10800', '127.0.0.1:10801', '127.0.0.1:10802'];
+let cfg = new IgniteClientConfiguration(...ENDPOINTS);
+const useTls = false;
+const partitionAwareness = true;
+
+cfg.setConnectionOptions(useTls, null, partitionAwareness);
+await igniteClient.connect(cfg);
+```
+### 7.6.启用调试
+```javascript
+const IgniteClient = require('apache-ignite-client');
+
+const igniteClient = new IgniteClient();
+igniteClient.setDebug(true);
+```
+### 7.7.启用键-值API
+#### 7.7.1.获取缓存实例
+键-值API通过缓存的实例提供，瘦客户端提供了若干方法用于获取缓存的实例：
+
+ - 通过名字获取缓存；
+ - 通过指定的名字以及可选的缓存配置创建缓存；
+ - 获取或创建缓存，销毁缓存等。
+
+可以按需获取任意数量的缓存实例（相同的缓存和不同的缓存都可以），都可以并行地处理。
+
+下面的示例显示如何通过名字获取缓存，之后又销毁它：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+async function getOrCreateCacheByName() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        // Get or create cache by name
+        const cache = await igniteClient.getOrCreateCache('myCache');
+
+        // Perform cache key-value operations
+        // ...
+
+        // Destroy cache
+        await igniteClient.destroyCache('myCache');
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+getOrCreateCacheByName();
+```
+#### 7.7.2.缓存配置
+创建一个新缓存时，可以提供一个缓存配置的实例：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const CacheConfiguration = IgniteClient.CacheConfiguration;
+
+async function createCacheByConfiguration() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        // Create cache by name and configuration
+        const cache = await igniteClient.createCache(
+            'myCache',
+            new CacheConfiguration().setSqlSchema('PUBLIC'));
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+createCacheByConfiguration();
+```
+#### 7.7.3.类型映射配置
+Node.js类型并不总是唯一地映射到Java类型，有时可能需要在缓存配置中显式指定键和值类型。在执行读/写缓存操作时，客户端将使用这些类型在Java/JavaScript数据类型之间转换键和值对象。
+
+如果未指定类型，则客户端将使用[默认的映射](#_7-7-4-2-默认映射)，这是类型映射的示例：
+```javascript
+const cache = await igniteClient.getOrCreateCache('myCache');
+// Set cache key/value types
+cache.setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER)
+    .setValueType(new MapObjectType(
+        MapObjectType.MAP_SUBTYPE.LINKED_HASH_MAP,
+        ObjectType.PRIMITIVE_TYPE.SHORT,
+        ObjectType.PRIMITIVE_TYPE.BYTE_ARRAY));
+```
+#### 7.7.4.数据类型
+客户端以2种方式支持Ignite类型和JavaScript类型之间的映射：
+
+ - 显式映射；
+ - 默认映射。
+
+##### 7.7.4.1.显式映射
+每当应用通过客户端的API进行字段的读写时，就会发生映射。这里的字段是存储在Ignite中的任何数据：Ignite数据条目的整个键或值、数组或集合的元素、复杂对象的字段等。
+
+通过使用客户端的API方法，应用可以为特定字段显式指定Ignite类型。客户端在读/写操作期间使用此信息将字段从JavaScript转换为Java类型（或反之）。对于读操作，该字段将转换为JavaScript类型，而在写入时则会验证相应的JavaScript类型。
+
+如果应用未为字段明确指定Ignite类型，则客户端将在字段读/写操作期间使用默认映射。
+##### 7.7.4.2.默认映射
+默认映射的说明在[这里](https://www.gridgain.com/sdk/nodejs-thin-client/latest/ObjectType.html)。
+#### 7.7.5.基本键-值操作
+`CacheClient`类提供了通过键-值操作处理缓存条目的方法，`put`、`get`、`getAll`、`putAll`等，如下所示：
+```javascript
+const IgniteClient = require('apache-ignite-client');
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+const ObjectType = IgniteClient.ObjectType;
+const CacheEntry = IgniteClient.CacheEntry;
+
+async function performCacheKeyValueOperations() {
+    const igniteClient = new IgniteClient();
+    try {
+        await igniteClient.connect(new IgniteClientConfiguration('127.0.0.1:10800'));
+        const cache = (await igniteClient.getOrCreateCache('myCache')).
+        setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER);
+        // Put and get value
+        await cache.put(1, 'abc');
+        const value = await cache.get(1);
+        console.log(value);
+
+        // Put and get multiple values using putAll()/getAll() methods
+        await cache.putAll([new CacheEntry(2, 'value2'), new CacheEntry(3, 'value3')]);
+        const values = await cache.getAll([1, 2, 3]);
+        console.log(values.flatMap(val => val.getValue()));
+
+        // Removes all entries from the cache
+        await cache.clear();
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+    finally {
+        igniteClient.disconnect();
+    }
+}
+
+performCacheKeyValueOperations();
+```
+### 7.8.扫描查询
+`IgniteClient.query(scanquery)`方法可用于获取缓存的所有数据，它会返回一个游标对象，可以以延迟加载的方式迭代结果集，也可以一次性获取所有的结果集。
+
+要执行扫描查询，需要创建一个`ScanQuery`对象，然后调用`IgniteClient.query(scanquery)`：
+```javascript
+const cache = (await igniteClient.getOrCreateCache('myCache')).
+    setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER);
+
+// Put multiple values using putAll()
+await cache.putAll([
+    new CacheEntry(1, 'value1'),
+    new CacheEntry(2, 'value2'),
+    new CacheEntry(3, 'value3')]);
+
+// Create and configure scan query
+const scanQuery = new ScanQuery().
+    setPageSize(1);
+// Obtain scan query cursor
+const cursor = await cache.query(scanQuery);
+// Get all cache entries returned by the scan query
+for (let cacheEntry of await cursor.getAll()) {
+    console.log(cacheEntry.getValue());
+}
+```
+### 7.9.执行SQL查询
+Node.js瘦客户端支持Ignite支持的所有[SQL命令](/doc/java/SQLReference.md)，该命令通过缓存对象的`query(SqlFieldQuery)`方法执行，该方法会接收一个表示SQL语句的`SqlFieldsQuery`实例，然后返回一个`SqlFieldsCursor`类的实例，通过该游标可以迭代结果集或者一次性获得所有的结果集。
+```javascript
+// Cache configuration required for sql query execution
+const cacheConfiguration = new CacheConfiguration().
+    setQueryEntities(
+        new QueryEntity().
+            setValueTypeName('Person').
+            setFields([
+                new QueryField('name', 'java.lang.String'),
+                new QueryField('salary', 'java.lang.Double')
+            ]));
+const cache = (await igniteClient.getOrCreateCache('sqlQueryPersonCache', cacheConfiguration)).
+    setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER).
+    setValueType(new ComplexObjectType({ 'name' : '', 'salary' : 0 }, 'Person'));
+
+// Put multiple values using putAll()
+await cache.putAll([
+    new CacheEntry(1, { 'name' : 'John Doe', 'salary' : 1000 }),
+    new CacheEntry(2, { 'name' : 'Jane Roe', 'salary' : 2000 }),
+    new CacheEntry(3, { 'name' : 'Mary Major', 'salary' : 1500 })]);
+
+// Create and configure sql query
+const sqlQuery = new SqlQuery('Person', 'salary > ? and salary <= ?').
+    setArgs(900, 1600);
+// Obtain sql query cursor
+const cursor = await cache.query(sqlQuery);
+// Get all cache entries returned by the sql query
+for (let cacheEntry of await cursor.getAll()) {
+    console.log(cacheEntry.getValue());
+}
+```
+### 7.10.安全
+#### 7.10.1.SSL/TLS
+要在瘦客户端和集群之间使用加密通信，需要在双方的配置中开启它，具体请参见集群配置中[为瘦客户端启用SSL/TLS](/doc/java/Security.md#_2-3-瘦客户端和jdbc-odbc的ssl-tls)章节的介绍。
+
+下面是在瘦客户端中开启SSL的示例配置：
+```javascript
+const tls = require('tls');
+
+const FS = require('fs');
+const IgniteClient = require("apache-ignite-client");
+const ObjectType = IgniteClient.ObjectType;
+const IgniteClientConfiguration = IgniteClient.IgniteClientConfiguration;
+
+const ENDPOINT = 'localhost:10800';
+const USER_NAME = 'ignite';
+const PASSWORD = 'ignite';
+
+const TLS_KEY_FILE_NAME = __dirname + '/certs/client.key';
+const TLS_CERT_FILE_NAME = __dirname + '/certs/client.crt';
+const TLS_CA_FILE_NAME = __dirname + '/certs/ca.crt';
+
+const CACHE_NAME = 'AuthTlsExample_cache';
+
+// This example demonstrates how to establish a secure connection to an Ignite node and use username/password authentication,
+// as well as basic Key-Value Queries operations for primitive types:
+// - connects to a node using TLS and providing username/password
+// - creates a cache, if it doesn't exist
+//   - specifies key and value type of the cache
+// - put data of primitive types into the cache
+// - get data from the cache
+// - destroys the cache
+class AuthTlsExample {
+
+    async start() {
+        const igniteClient = new IgniteClient(this.onStateChanged.bind(this));
+        igniteClient.setDebug(true);
+        try {
+            const connectionOptions = {
+                'key' : FS.readFileSync(TLS_KEY_FILE_NAME),
+                'cert' : FS.readFileSync(TLS_CERT_FILE_NAME),
+                'ca' : FS.readFileSync(TLS_CA_FILE_NAME)
+            };
+            await igniteClient.connect(new IgniteClientConfiguration(ENDPOINT).
+            setUserName(USER_NAME).
+            setPassword(PASSWORD).
+            setConnectionOptions(true, connectionOptions));
+
+            const cache = (await igniteClient.getOrCreateCache(CACHE_NAME)).
+            setKeyType(ObjectType.PRIMITIVE_TYPE.INTEGER).
+            setValueType(ObjectType.PRIMITIVE_TYPE.SHORT_ARRAY);
+
+            await this.putGetData(cache);
+
+            await igniteClient.destroyCache(CACHE_NAME);
+        }
+        catch (err) {
+            console.log('ERROR: ' + err.message);
+        }
+        finally {
+            igniteClient.disconnect();
+        }
+    }
+
+    async putGetData(cache) {
+        let keys = [1, 2, 3];
+        let values = keys.map(key => this.generateValue(key));
+
+        // Put multiple values in parallel
+        await Promise.all([
+            await cache.put(keys[0], values[0]),
+            await cache.put(keys[1], values[1]),
+            await cache.put(keys[2], values[2])
+        ]);
+        console.log('Cache values put successfully');
+
+        // Get values sequentially
+        let value;
+        for (let i = 0; i < keys.length; i++) {
+            value = await cache.get(keys[i]);
+            if (!this.compareValues(value, values[i])) {
+                console.log('Unexpected cache value!');
+                return;
+            }
+        }
+        console.log('Cache values get successfully');
+    }
+
+    compareValues(array1, array2) {
+        return array1.length === array2.length &&
+            array1.every((value1, index) => value1 === array2[index]);
+    }
+
+    generateValue(key) {
+        const length = key + 5;
+        const result = new Array(length);
+        for (let i = 0; i < length; i++) {
+            result[i] = key * 10 + i;
+        }
+        return result;
+    }
+
+    onStateChanged(state, reason) {
+        if (state === IgniteClient.STATE.CONNECTED) {
+            console.log('Client is started');
+        }
+        else if (state === IgniteClient.STATE.DISCONNECTED) {
+            console.log('Client is stopped');
+            if (reason) {
+                console.log(reason);
+            }
+        }
+    }
+}
+
+const authTlsExample = new AuthTlsExample();
+authTlsExample.start().then();
+```
+#### 7.10.2.认证
+配置[集群端的认证](/doc/java/Security.md#_1-认证)后，需要在瘦客户端的配置中提供有效的用户名和密码：
+```javascript
+const ENDPOINT = 'localhost:10800';
+const USER_NAME = 'ignite';
+const PASSWORD = 'ignite';
+
+const igniteClientConfiguration = new IgniteClientConfiguration(
+    ENDPOINT).setUserName(USER_NAME).setPassword(PASSWORD);
+```
 ## 8.二进制客户端协议
 ### 8.1.二进制客户端协议
 #### 8.1.1.概述
