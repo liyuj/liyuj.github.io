@@ -1825,7 +1825,7 @@ fieldset {
 }
 .main-btn, .white-btn, .outline-btn {
     display: inline-block;
-    padding: 10px 35px;
+    padding: 10px 15px;
     margin: 3px;
     border: 2px solid transparent;
     border-radius: 3px;
