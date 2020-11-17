@@ -69,6 +69,10 @@ Ignite ignite = Ignition.start(cfg);
 ### 2.2.节点的SSL/TLS
 要为集群节点启用SSL/TLS，需要在节点配置中配置`SSLContext`工厂。可以使用默认的工厂类`org.apache.ignite.ssl.SslContextFactory`，该工厂使用可配置的密钥库初始化SSL上下文。
 
+::: warning 警告
+确认使用的JVM版本解决了[SSL连接中可能出现死锁](https://bugs.openjdk.java.net/browse/JDK-8219658)的问题，如果JVM受到了该问题的影响但无法更新，则需将`TcpDiscoverySpi.soLinger`参数设置为非负值。
+:::
+
 以下是`SslContextFactory`配置示例：
 
 <Tabs>

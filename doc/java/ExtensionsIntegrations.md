@@ -264,7 +264,7 @@ System.out.println("\n>>> Top Person with surname 'Smith': " +
 		topPerson.getValue());
 ```
 #### 1.2.6.示例
-[GitHub](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/springdata)上有完整的示例。
+[GitHub](https://github.com/apache/ignite-extensions/tree/master/modules/spring-data-2.0-ext/examples/main)上有完整的示例。
 ### 1.3.Spring缓存
 #### 1.3.1.概述
 Ignite提供了一个`SpringCacheManager`，一个[Spring缓存抽象](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html)的实现。它提供了基于注解的方式来启用Java方法的缓存，这样方法的执行结果就会存储在Ignite缓存中。如果之后同一个方法通过同样的参数集被调用，结果会直接从缓存中获得而不是实际执行这个方法。

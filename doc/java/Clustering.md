@@ -1202,6 +1202,7 @@ Ignite ignite = Ignition.start(cfg);
 |`localAddress`|设置用于发现的本地主机地址|节点默认使用它找到的第一个非回环地址。如果没有可用的非回环地址，则使用`java.net.InetAddress.getLocalHost()`。|
 |`localPort`|设置节点绑定的端口，如果设置为非默认值，其他节点必须知道该端口以发现该节点。|47500|
 |`localPortRange`|如果`localPort`被占用，节点会尝试绑定下一个端口（加1），并且会持续这个过程直到找到可用的端口。`localPortRange`属性定义了节点会尝试的端口数量（从`localPort`开始）。|`100`|
+|`soLinger`|指定Discovery SPI使用的TCP套接字的关闭延迟超时。有关如何调整此设置的详细信息，请参见Java的`Socket.setSoLinger`API。在Ignite中，超时默认为非负值，以防止[SSL连接潜在的死锁](https://bugs.openjdk.java.net/browse/JDK-8219658)，但是副作用是可能会延长集群节点的故障检测。或者将JRE版本更新为已修复SSL问题的版本，并相应地调整此设置。|`0`|
 |`reconnectCount`|节点尝试与其他节点建立连接的次数。|`10`|
 |`networkTimeout`|网络操作的最大网络超时时间（毫秒）。|`5000`|
 |`socketTimeout`|套接字超时时间，这个超时时间用于限制连接时间和写套接字时间。|`5000`|
