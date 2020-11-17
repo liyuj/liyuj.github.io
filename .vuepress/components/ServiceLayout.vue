@@ -43,7 +43,7 @@
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
-          <span class="fa fa-battery-2" style="font-size:36px;margin:10px 0 10px 0"></span>
+          <span class="fa fa-battery-3" style="font-size:36px;margin:10px 0 10px 0"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">技术咨询顾问服务</h3>
           <h4>面向企业</h4>
 				</div>
@@ -62,7 +62,7 @@
 			<div class="client-feedback-item row">
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
-          <span class="fa fa-battery-1" style="font-size:36px;margin:15px 0 10px 0"></span>
+          <span class="fa fa-battery-2" style="font-size:36px;margin:15px 0 10px 0"></span>
 					<h3 style="font-size:18px;margin:0 0 10px 0">远程技术支持服务</h3>
           <h4>面向企业</h4>
 				</div>

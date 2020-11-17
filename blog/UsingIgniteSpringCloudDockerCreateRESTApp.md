@@ -34,7 +34,7 @@ spring:
 ```
 ### 添加Ignite依赖
 可以从[Maven中央仓库](https://mvnrepository.com/artifact/org.apache.ignite/ignite-core)获得Ignite的最新版本，然后将其添加到构建配置文件中：
-```gradle
+```
 implementation 'org.apache.ignite:ignite-spring-data_2.2:2.8.1'
 compile group: 'org.apache.ignite', name: 'ignite-core', version: '2.8.1'
 implementation 'org.apache.ignite:ignite-spring-boot-autoconfigure-ext:1.0.0'
@@ -62,13 +62,13 @@ public class IgniteConfig {
 }
 ```
 在编译应用之前，需要解决一些问题。Ignite不支持Spring Data的H2版本。因此必须在构建配置中重置H2的版本（无论是Gradle还是Maven）：
-```gradle
+```
 ext {
         set('h2.version', '1.4.197')
  }
 ```
 另外，Spring Cloud Consul和hystrix还有已知的问题，因此需要将其排除：
-```gradle
+```
 implementation ('org.springframework.cloud:spring-cloud-starter-consul-discovery') {
         exclude group: 'org.springframework.cloud', module: 'spring-cloud-netflix-hystrix'
  }
