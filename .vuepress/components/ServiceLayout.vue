@@ -69,7 +69,7 @@
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:2px dashed #777">
-					<h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查，Ignite功能讲解/答疑，指导POC/应用开发，指导解决具体的测试/生产问题、系统性能/扩展性优化等</span></h4>
+					<h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查，Ignite功能讲解/答疑，指导POC/应用开发，指导解决具体的测试/生产问题（需配合提供完整日志等必要的信息）、系统性能/扩展性优化等</span></h4>
           <h4><span>服务方式：</span><span style="font-weight:normal">远程（即时通信软件、电话、邮件）</span></h4>
           <h4><span>服务时间：</span><span style="font-weight:normal">8:30～21:30</span></h4>
           <h4><span>服务报价：</span><span style="font-weight:normal">200元/半月/人，300元/月/人，600元/季/人，1000元/半年/人，1800元/年/人</span></h4>

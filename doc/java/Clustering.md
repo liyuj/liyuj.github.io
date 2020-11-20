@@ -1197,9 +1197,13 @@ Ignite ignite = Ignition.start(cfg);
 
 下表介绍了`TcpDiscoverySpi`最重要的参数，完整参数可以参见[TcpDiscoverySpi](https://ignite.apache.org/releases/2.9.0/javadoc/org/apache/ignite/spi/discovery/tcp/TcpDiscoverySpi.html)的javadoc。
 
+::: warning 警告
+应该使用将用于节点间通信的IP地址初始化`IgniteConfiguration.localHost`或`TcpDiscoverySpi.localAddress`参数。节点默认会绑定并监听其运行的主机上所有的可用IP地址，如果某些地址无法从其他集群节点访问，则会延长节点故障的检测时间。
+:::
+
 |属性|描述|默认值|
 |---|---|---|
-|`localAddress`|设置用于发现的本地主机地址|节点默认使用它找到的第一个非回环地址。如果没有可用的非回环地址，则使用`java.net.InetAddress.getLocalHost()`。|
+|`localAddress`|设置用于发现的本地主机地址，配置该参数后，会覆盖`IgniteConfiguration.localHost`的配置。|节点默认会绑定到所有可用的网络地址，如果有可用的非回环地址，则使用`java.net.InetAddress.getLocalHost()`。|
 |`localPort`|设置节点绑定的端口，如果设置为非默认值，其他节点必须知道该端口以发现该节点。|47500|
 |`localPortRange`|如果`localPort`被占用，节点会尝试绑定下一个端口（加1），并且会持续这个过程直到找到可用的端口。`localPortRange`属性定义了节点会尝试的端口数量（从`localPort`开始）。|`100`|
 |`soLinger`|指定Discovery SPI使用的TCP套接字的关闭延迟超时。有关如何调整此设置的详细信息，请参见Java的`Socket.setSoLinger`API。在Ignite中，超时默认为非负值，以防止[SSL连接潜在的死锁](https://bugs.openjdk.java.net/browse/JDK-8219658)，但是副作用是可能会延长集群节点的故障检测。或者将JRE版本更新为已修复SSL问题的版本，并相应地调整此设置。|`0`|
@@ -1266,7 +1270,7 @@ Ignition.Start(cfg);
 
 |属性|描述|默认值|
 |---|---|---|
-|`localAddress`|通信SPI绑定的本地主机地址||
+|`localAddress`|通信SPI绑定的本地主机地址，配置该参数后，会覆盖`IgniteConfiguration.localHost`的配置||
 |`localPort`|节点用于通信的本地端口|`47100`|
 |`localPortRange`|节点尝试按顺序绑定的端口范围，直到找到可用的端口为止。|`100`|
 |`tcpNoDelay`|设置套接字选项`TCP_NODELAY`的值，每个创建或者接收的套接字都会使用这个值，它应该设置为`true`（默认），以减少通过TCP协议进行通讯期间请求/响应的时间。大多数情况下不建议改变这个选项。|`true`|
