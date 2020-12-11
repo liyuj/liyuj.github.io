@@ -534,7 +534,7 @@ control.bat --change-tag <new-tag>
 
 ## 2.Visor终端
 ### 2.1.摘要
-Visor命令行接口（CMD）是一个用于Ignite集群监控的命令行工具，它提供有关集群节点、缓存和计算任务的基本统计信息，还可以通过启动或停止节点来管理群集的大小。
+Visor命令行接口（CMD）是一个用于Ignite集群监控的命令行工具，它提供有关集群节点、缓存和计算任务的基本统计信息，还可以通过启动或停止节点来管理集群的大小。
 
 ![](https://ignite.apache.org/docs/2.9.0/images/tools/visor-cmd.png)
 

@@ -1000,7 +1000,7 @@ Google云SDK CLI安装完之后，可以按照下面的步骤操作。
 
 转到`Kubernetes Engine` > `Clusters`，然后点击集群的`Connect`按钮。
 
-然后按照指令访问您的集群：
+然后按照指令访问集群：
 
 ![](https://files.readme.io/e900a2a-cluster_access.png)
 

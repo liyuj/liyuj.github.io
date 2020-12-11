@@ -486,7 +486,7 @@ UUID uuid = events.remoteListen(new IgniteBiPredicate<UUID, JobEvent>() {
 |EVT_NODE_FAILED|集群检测到某节点非正常离开集群|集群中所有剩余的节点|
 |EVT_NODE_SEGMENTED|节点发生分区|被分割的节点|
 |EVT_CLIENT_NODE_DISCONNECTED|客户端断开了与集群的连接|与集群断开连接的客户端节点|
-|EVT_CLIENT_NODE_RECONNECTED|客户端节点与集群重连|重新连接到群集的客户端节点|
+|EVT_CLIENT_NODE_RECONNECTED|客户端节点与集群重连|重连到集群的客户端节点|
 
 ### 2.8.任务执行事件
 任务执行事件与[任务执行](/doc/java/DistributedComputing.md#_4-mapreduce-api)的不同阶段相关。执行[简单的闭包](/doc/java/DistributedComputing.md#_1-分布式计算api)时也会生成事件，因为在内部将闭包视为生成单个作业的任务。
