@@ -1392,7 +1392,7 @@ Apache Ignite的Kafka流处理器模块提供了从Kafka到Ignite缓存的流处
     http://node1:8080/ignite?cmd=size&cacheName=cache1
     ```
 #### 5.1.3.使用Ignite的Kafka流处理器模块的数据流
-如果使用Maven来管理项目的依赖，首先要像下面这样添加Kafka流处理器的模块依赖(将'${ignite.version}'替换为实际的版本号)：
+如果使用Maven来管理项目的依赖，首先要像下面这样添加Kafka流处理器的模块依赖(将`${ignite-kafka-ext.version}`替换为实际的版本号)：
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1403,8 +1403,8 @@ Apache Ignite的Kafka流处理器模块提供了从Kafka到Ignite缓存的流处
         ...
         <dependency>
             <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-kafka</artifactId>
-            <version>${ignite.version}</version>
+            <artifactId>ignite-kafka-ext</artifactId>
+            <version>${ignite-kafka-ext.version}</version>
         </dependency>
         ...
     </dependencies>
@@ -1467,12 +1467,12 @@ strm.close();
 还有一个[camel-ignite组件](https://camel.apache.org/ignite.html)，通过该组件，可以与Ignite缓存、计算、事件、消息等进行交互。
 :::
 #### 5.2.2.Maven依赖
-要使用`ignite-camel`流处理器，需要添加下面的依赖：
+要使用`ignite-camel-ext`流处理器，需要添加下面的依赖：
 ```xml
 <dependency>
     <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-camel</artifactId>
-    <version>${ignite.version}</version>
+    <artifactId>ignite-camel-ext</artifactId>
+    <version>${ignite-camel-ext.version}</version>
 </dependency>
 ```
 它也将`camel-core`作为传递依赖引入。
@@ -1546,7 +1546,7 @@ Apache Ignite Flink接收器模块是一个流处理连接器，它可以将Flin
 
 通过如下步骤，可以开启到Ignite缓存的数据注入：
 
- 1. 在Maven工程中导入Ignite的Flink接收器模块。如果使用Maven来进行项目依赖管理，可以像下面这样添加Flink模块依赖（将`${ignite.version}`替换为实际使用的版本）；
+ 1. 在Maven工程中导入Ignite的Flink接收器模块。如果使用Maven来进行项目依赖管理，可以像下面这样添加Flink模块依赖（将`${ignite-flink-ext.version}`替换为实际使用的版本）；
     ```xml
     <project xmlns="http://maven.apache.org/POM/4.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1557,8 +1557,8 @@ Apache Ignite Flink接收器模块是一个流处理连接器，它可以将Flin
             ...
             <dependency>
                 <groupId>org.apache.ignite</groupId>
-                <artifactId>ignite-flink</artifactId>
-                <version>${ignite.version}</version>
+                <artifactId>ignite-flink-ext</artifactId>
+                <version>${ignite-flink-ext.version}</version>
             </dependency>
             ...
         </dependencies>
@@ -1589,7 +1589,7 @@ Apache Ignite Flink接收器模块是一个流处理连接器，它可以将Flin
     }
     ```
 
-可以参考`ignite-flink`模块的javadoc来了解可用选项的详细信息。
+可以参考`ignite-flink-ext`模块的javadoc来了解可用选项的详细信息。
 ### 5.4.Flume流处理器
 #### 5.4.1.概述
 Apache Flume是一个高效的收集、汇总以及移动大量的日志数据的分布式的、高可靠和高可用的服务（[https://github.com/apache/flume](https://github.com/apache/flume)）。
@@ -1611,7 +1611,7 @@ IgniteSink是一个Flume接收器，它会从相对应的Flume通道中提取事
     `-- libext
         |-- cache-api-1.0.0.jar
         |-- ignite-core-x.x.x.jar
-        |-- ignite-flume-x.x.x.jar <-- IgniteSink
+        |-- ignite-flume-ext-x.x.x.jar <-- IgniteSink
         |-- ignite-spring-x.x.x.jar
         |-- spring-aop-4.1.0.RELEASE.jar
         |-- spring-beans-4.1.0.RELEASE.jar
@@ -1723,8 +1723,8 @@ dataStreamer.close();
 ```xml
 <dependency>
     <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-jms11</artifactId>
-    <version>${ignite.version}</version>
+    <artifactId>ignite-jms11-ext</artifactId>
+    <version>${ignite-jms11-ext.version}</version>
 </dependency>
 ```
 ### 5.6.MQTT流处理器
@@ -1774,13 +1774,13 @@ streamer.setTopics(Arrays.asList("def", "ghi", "jkl", "mno"));
 // Start the MQTT Streamer.
 streamer.start();
 ```
-要了解有关选项的更多信息，可以参考`ignite-mqtt`模块的javadoc。
+要了解有关选项的更多信息，可以参考`ignite-mqtt-ext`模块的javadoc。
 ### 5.7.RocketMQ流处理器
 这个流处理器模块提供了从[Apache RocketMQ](https://github.com/apache/incubator-rocketmq)到Ignite的流化处理功能。
 
 如果要使用Ignite的RocketMQ流处理器模块：
 
- 1. 将其导入自己的Maven工程，如果使用Maven管理项目的依赖，需要添加RocketMQ的模块依赖（将`${ignite.version}`替换为实际使用的Ignite版本），如下所示：
+ 1. 将其导入自己的Maven工程，如果使用Maven管理项目的依赖，需要添加RocketMQ的模块依赖（将`${ignite-rocketmq-ext.version}`替换为实际使用的版本），如下所示：
     ```xml
     <project xmlns="http://maven.apache.org/POM/4.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1791,8 +1791,8 @@ streamer.start();
             ...
             <dependency>
                 <groupId>org.apache.ignite</groupId>
-                <artifactId>ignite-rocketmq</artifactId>
-                <version>${ignite.version}</version>
+                <artifactId>ignite-rocketmq-ext</artifactId>
+                <version>${ignite-rocketmq-ext.version}</version>
             </dependency>
             ...
         </dependencies>
@@ -1834,7 +1834,7 @@ Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处
 
 通过如下步骤可以将数据注入Ignite缓存：
 
- 1. 在Maven工程中导入Ignite的Storm流处理器模块。如果使用Maven来管理项目的依赖，可以添加Storm模块依赖（将`${ignite.version}`替换为实际使用的版本），如下所示：
+ 1. 在Maven工程中导入Ignite的Storm流处理器模块。如果使用Maven来管理项目的依赖，可以添加Storm模块依赖（将`${ignite-storm-ext.version}`替换为实际使用的版本），如下所示：
     ```xml
     <project xmlns="http://maven.apache.org/POM/4.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1845,8 +1845,8 @@ Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处
             ...
             <dependency>
                 <groupId>org.apache.ignite</groupId>
-                <artifactId>ignite-storm</artifactId>
-                <version>${ignite.version}</version>
+                <artifactId>ignite-storm-ext</artifactId>
+                <version>${ignite-storm-ext.version}</version>
             </dependency>
             ...
         </dependencies>
@@ -1862,16 +1862,17 @@ Apache Ignite的Storm流处理器模块提供了从Storm到Ignite缓存的流处
 
 ### 5.9.ZeroMQ流处理器
 Ignite的ZeroMQ流处理器模块具有将[ZeroMQ](http://zeromq.org/)数据流注入Ignite缓存的功能。
+
 要将数据流注入Ignite缓存，需要按照如下步骤操作：
 
- 1. 将Ignite的ZeroMQ流处理器模块加入Maven依赖，如果使用Maven来管理项目的依赖，那么需要添加如下的ZeroMQ模块依赖(注意将`${ignite.version}`替换为实际使用的版本号)：
+ 1. 将Ignite的ZeroMQ流处理器模块加入Maven的`pom.xml`文件：
     ```xml
     <dependencies>
         ...
         <dependency>
             <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-zeromq</artifactId>
-            <version>${ignite.version}</version>
+            <artifactId>ignite-zeromq-ext</artifactId>
+            <version>${ignite-zeromq-ext.version}</version>
         </dependency>
         ...
     </dependencies>
@@ -1900,12 +1901,12 @@ Ignite的ZeroMQ流处理器模块具有将[ZeroMQ](http://zeromq.org/)数据流�
 Ignite的Twitter流处理器模块会从Twitter消费微博然后将转换后的键-值对`<tweetId, text>`注入Ignite缓存。
 要将来自Twitter的数据流注入Ignite缓存，需要：
 
- 1. 在Maven工程里导入Ignite的twitter模块，如果使用maven来管理项目的依赖，则需要添加如下的依赖，并将`${ignite.version}`替换为实际使用的Ignite版本：
+ 1. 在Maven工程里导入Ignite的twitter模块，如果使用maven来管理项目的依赖，则需要添加如下的依赖，并将`${ignite-twitter-ext.version}`替换为实际使用的版本：
     ```xml
     <dependency>
-    <groupId>org.apache.ignite</groupId>
-    <artifactId>ignite-twitter</artifactId>
-    <version>${ignite.version}</version>
+        <groupId>org.apache.ignite</groupId>
+        <artifactId>ignite-twitter-ext</artifactId>
+        <version>${ignite-twitter-ext.version}</version>
     </dependency>
     ```
  2. 在代码中配置必要的参数，然后启动流处理器，比如：
