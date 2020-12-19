@@ -52,7 +52,7 @@
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:3px dashed #777">
 					<h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查，Ignite专题介绍/远程培训，协助POC/业务原型开发/Ignite定制化（驻场）、技术架构咨询/规划/评审，协助解决具体的测试/生产问题、Ignite问题确认并提供折衷方案、系统性能/扩展性优化等。</span></h4>
           <h4><span>服务方式：</span><span style="font-weight:normal">远程（远程接入/网络会议/电话/即时通信软件/邮件）/驻场</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">远程（6千元/半月，1万元/月，2.5万元/季，5万元/半年，10万元/年），驻场（3000元/核算日，5万元/月，长期合作面议）</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">远程（6千元/半月，1万元/月，2.5万元/季，5万元/半年，10万元/年），驻场（3000元/核算日，4.5万元/月，长期合作面议）</span></h4>
 				</div>
 				<!-- /COLUMN -->
 			</div>

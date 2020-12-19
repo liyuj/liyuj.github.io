@@ -164,7 +164,7 @@ Ignite的原生持久化可以将Ignite作为一个分布式的SQL数据库。
 ### 1.7.性能提示
 在[固化内存调优](/doc/2.8.0/java/ProductionReadiness.md#_4-固化内存调优)章节中有关于性能方面的建议。
 ### 1.8.示例
-要了解Ignite的原生持久化在实践中的应用，可以看Github中的这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/persistentstore)。
+要了解Ignite的原生持久化在实践中的应用，可以看GitHub上的这个[示例](https://github.com/apache/ignite/tree/master/examples/src/main/java/org/apache/ignite/examples/persistentstore)。
 ## 2.预写日志(WAL)
 ### 2.1.概述
 Ignite的持久化会为节点的每个分区创建和维护一个专有文件，但是当内存中的页面更新时，更新是不会直接写入对应的分区文件的，因为会严重影响性能，而是将数据写入预写日志的尾部（WAL）。

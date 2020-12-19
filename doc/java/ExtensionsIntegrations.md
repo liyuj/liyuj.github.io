@@ -1300,7 +1300,7 @@ Ignite可以作为MyBatis的二级缓存使用，从而在整个集群中分布�
   <cache type="org.mybatis.caches.ignite.IgniteCacheAdapter" />
 </mapper>
 ```
-然后在`config/default-config.xml`中配置Ignite缓存（可以简单地参考下[github](https://github.com/mybatis/ignite-cache/tree/master/config)中的配置）。
+然后在`config/default-config.xml`中配置Ignite缓存（可以简单地参考下[GitHub](https://github.com/mybatis/ignite-cache/tree/master/config)中的配置）。
 ## 5.流处理
 ### 5.1.Kafka流处理器
 #### 5.1.1.概述

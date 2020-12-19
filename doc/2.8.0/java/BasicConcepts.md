@@ -283,7 +283,7 @@ public class IgniteHelloWorld {
 通过学习技术文档以及运行二进制包附带的示例代码，可以进一步学习Ignite，该示例文件夹位于`{ignite}\examples`目录下。
 
 ::: tip 提示
-如果更方便，这些示例代码可以Ignite的Github代码库的如下[位置](https://github.com/apache/ignite/tree/master/examples)中找到。
+如果更方便，这些示例代码可以Ignite的GitHub代码库的如下[位置](https://github.com/apache/ignite/tree/master/examples)中找到。
 :::
 
 ### 3.10.在Java11及以后的版本中使用Ignite
