@@ -72,7 +72,7 @@
 					<h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查、Ignite功能讲解/答疑、指导POC/应用开发、基于Ignite的技术集成架构设计咨询、指导解决具体的测试/生产问题（需配合提供完整日志等必要的信息）、Ignite问题确认并提供折衷方案、系统性能/扩展性优化等。</span></h4>
           <h4><span>服务方式：</span><span style="font-weight:normal">语音（优先）/即时通信软件/电子邮件</span></h4>
           <h4><span>服务时间：</span><span style="font-weight:normal">8:30～21:30</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">200元/半月/人，300元/月/人，600元/季/人，1000元/半年/人，1800元/年/人</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">200元/半月/人，300元/月/人，600元/季/人，1200元/半年/人，2400元/年/人</span></h4>
 				</div>
 				<!-- /COLUMN -->
 			</div>
