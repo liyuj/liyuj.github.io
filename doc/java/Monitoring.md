@@ -1609,6 +1609,25 @@ try (IgniteClient igniteClient = Ignition.startClient(cfg)) {
 |`STATE`|String|分区状态。可能值：`MOVING`：分区正在从另一个节点加载到该节点；`OWNING`：该节点是主/备所有者；`RENTING`：此节点不是主/备所有者（当前正在被驱逐）；`EVICTED`：分区已被驱逐；`LOST`：分区状态无效，不应使用该分区|
 |`IS_PRIMARY`|boolean|主分区标志|
 
+### 6.27.BINARY_METADATA
+
+|列名|数据类型|描述|
+|---|---|---|
+|`TYPE_ID`|int|类型ID|
+|`TYPE_NAME`|String|类型名字|
+|`AFF_KEY_FIELD_NAME`|String|关联键字段名|
+|`FIELDS_COUNT`|int|字段数量|
+|`FIELDS`|String|记录对象字段|
+|`SCHEMAS_IDS`|String|该类型注册的模式ID|
+|`IS_ENUM`|boolean|是否为枚举类型|
+
+### 6.28.METASTORAGE
+
+|列名|数据类型|描述|
+|---|---|---|
+|`NAME`|String|名称|
+|`VALUE`|String|元素的字符串或原始二进制（如果由于某种原因无法反序列化数据）表示形式|
+
 ## 7.追踪
 ::: danger 警告
 这是一个试验性API。
