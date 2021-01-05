@@ -4,7 +4,17 @@
 Apache Ignite是一个分布式数据库，支持以内存级的速度处理PB级的数据。
 
 本文档会介绍Ignite的核心功能，展示了特定功能的用法、如何对集群进行调优以及问题的排查方法。如果是新手，可以从[快速入门](/doc/java/QuickStartGuide.md)开始，然后5-10分钟就可以搭建第一个应用。
+## 快速入门向导
+通过下面的向导，可以在几分钟内构建出第一个应用：
 
+ - [Java](/doc/java/QuickStartGuide.md#_1-java)；
+ - [SQL](/doc/java/QuickStartGuide.md#_6-sql-通过命令行)；
+ - [REST API](/doc/java/QuickStartGuide.md#_8-rest-api)；
+ - [C#/.NET](/doc/java/QuickStartGuide.md#_2-c-net)；
+ - [C++](/doc/java/QuickStartGuide.md#_3-c)；
+ - [Python](/doc/java/QuickStartGuide.md#_4-python)；
+ - [Node.js](/doc/java/QuickStartGuide.md#_5-node-js)；
+ - [PHP](/doc/java/QuickStartGuide.md#_7-php)。
 ## 示例
 Ignite的GitHub仓库中包含了很多可以直接运行的示例：
 

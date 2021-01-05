@@ -418,7 +418,7 @@ public void updateSalary(Employee e) {
 :::
 ## 2.Ignite和Spark
 ### 2.1.概述
-Ignite作为一个分布式的内存数据库和缓存平台，对于Spark用户可以实现如下的功能：
+Ignite作为一个分布式的内存数据库，对于Spark用户可以实现如下的功能：
 
  - 获得真正的可扩展的内存级性能，避免数据源和Spark工作节点和应用之间的数据移动；
  - 提升DataFrame和SQL的性能；
