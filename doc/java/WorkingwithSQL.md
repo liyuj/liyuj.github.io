@@ -1196,52 +1196,52 @@ Ignite默认将每个关联查询都视为并置关联，并按照并置的模�
 
 要强制使用哈希关联：
 
-**使用enforceJoinOrder选项：**
+ 1. 使用`enforceJoinOrder`选项：
 
-<Tabs>
-<Tab title="Java API">
+    <Tabs>
+    <Tab title="Java API">
 
-```java
-SqlFieldsQuery query = new SqlFieldsQuery(
-        "SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX)"
-                + " WHERE TABLE_A.column1 = TABLE_B.column2").setEnforceJoinOrder(true);
-```
-</Tab>
+    ```java
+    SqlFieldsQuery query = new SqlFieldsQuery(
+            "SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX)"
+                    + " WHERE TABLE_A.column1 = TABLE_B.column2").setEnforceJoinOrder(true);
+    ```
+    </Tab>
 
-<Tab title="JDBC">
+    <Tab title="JDBC">
 
-```java
-Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
+    ```java
+    Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
 
-// Open the JDBC connection.
-Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1?enforceJoinOrder=true");
-```
-</Tab>
+    // Open the JDBC connection.
+    Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1?enforceJoinOrder=true");
+    ```
+    </Tab>
 
-<Tab title="C#/.NET">
+    <Tab title="C#/.NET">
 
-```csharp
-var query = new SqlFieldsQuery("SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX) WHERE TABLE_A.column1 = TABLE_B.column2")
-{
-    EnforceJoinOrder = true
-};
-```
-</Tab>
+    ```csharp
+    var query = new SqlFieldsQuery("SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX) WHERE TABLE_A.column1 = TABLE_B.column2")
+    {
+        EnforceJoinOrder = true
+    };
+    ```
+    </Tab>
 
-<Tab title="C++">
+    <Tab title="C++">
 
-```cpp
-SqlFieldsQuery query = SqlFieldsQuery("SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX) WHERE TABLE_A.column1 = TABLE_B.column2");
-query.SetEnforceJoinOrder(true);
-```
-</Tab>
-</Tabs>
+    ```cpp
+    SqlFieldsQuery query = SqlFieldsQuery("SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX) WHERE TABLE_A.column1 = TABLE_B.column2");
+    query.SetEnforceJoinOrder(true);
+    ```
+    </Tab>
+    </Tabs>
 
-**在表上指定USE INDEX(HASH_JOIN_IDX)：**
+ 2. 在要为其创建哈希关联索引的表上指定`USE INDEX（HASH_JOIN_IDX）`：
 
-```sql
-SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX) WHERE TABLE_A.column1 = TABLE_B.column2
-```
+    ```sql
+    SELECT * FROM TABLE_A, TABLE_B USE INDEX(HASH_JOIN_IDX) WHERE TABLE_A.column1 = TABLE_B.column2
+    ```
 ## 6.SQL事务
 ::: warning 警告
 支持[SQL事务](#_11-多版本并发控制)当前处于测试阶段，生产环境建议使用键-值事务。
