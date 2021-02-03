@@ -1,4 +1,0 @@
----
-layout: HomeLayout
-sidebar: false
----

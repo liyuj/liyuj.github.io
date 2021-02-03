@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>插件 | Apache Ignite技术服务</title>
+    <meta name="generator" content="VuePress 1.8.0">
+    <link rel="stylesheet" href="/css/plugin.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <script src="https://hm.baidu.com/hm.js?76e2d8c51e8068e025053bc59d51045b"></script>
+    <meta name="description" content="apache ignite,ignite中文,ignite官网,内存数据库,分布式数据库">
+    <meta name="keywords" content="apache ignite,ignite中文,ignite官网,内存数据库,分布式数据库">
+    <meta http-equiv="cache-control" content="no-store,no-cache,must-revalidate">
+    <meta http-equiv="expires" content="0">
+    
+    <link rel="preload" href="/assets/css/0.styles.82258027.css" as="style"><link rel="preload" href="/assets/js/app.6025dbc7.js" as="script"><link rel="preload" href="/assets/js/3.6721bcbc.js" as="script"><link rel="preload" href="/assets/js/1.510e8afb.js" as="script"><link rel="preload" href="/assets/js/243.435d46d4.js" as="script"><link rel="preload" href="/assets/js/8.ab7d75ff.js" as="script"><link rel="prefetch" href="/assets/js/10.b578944b.js"><link rel="prefetch" href="/assets/js/100.70991962.js"><link rel="prefetch" href="/assets/js/101.0f86504a.js"><link rel="prefetch" href="/assets/js/102.ad132ab7.js"><link rel="prefetch" href="/assets/js/103.9ec77ef7.js"><link rel="prefetch" href="/assets/js/104.0579fe95.js"><link rel="prefetch" href="/assets/js/105.c40fa0b2.js"><link rel="prefetch" href="/assets/js/106.35942fb4.js"><link rel="prefetch" href="/assets/js/107.d5d051c1.js"><link rel="prefetch" href="/assets/js/108.aba7ec12.js"><link rel="prefetch" href="/assets/js/109.336c3b00.js"><link rel="prefetch" href="/assets/js/11.852a8354.js"><link rel="prefetch" href="/assets/js/110.7dd10179.js"><link rel="prefetch" href="/assets/js/111.2a96590b.js"><link rel="prefetch" href="/assets/js/112.3dbc03be.js"><link rel="prefetch" href="/assets/js/113.5b846d36.js"><link rel="prefetch" href="/assets/js/114.88b7bc2e.js"><link rel="prefetch" href="/assets/js/115.7ecefdc8.js"><link rel="prefetch" href="/assets/js/116.dd816933.js"><link rel="prefetch" href="/assets/js/117.33fa1ec4.js"><link rel="prefetch" href="/assets/js/118.b840fbfc.js"><link rel="prefetch" href="/assets/js/119.aeacf857.js"><link rel="prefetch" href="/assets/js/12.8163e94c.js"><link rel="prefetch" href="/assets/js/120.c72fc079.js"><link rel="prefetch" href="/assets/js/121.3ca46814.js"><link rel="prefetch" href="/assets/js/122.299e8736.js"><link rel="prefetch" href="/assets/js/123.0ef29068.js"><link rel="prefetch" href="/assets/js/124.69ee8b05.js"><link rel="prefetch" href="/assets/js/125.6594de58.js"><link rel="prefetch" href="/assets/js/126.76720bb3.js"><link rel="prefetch" href="/assets/js/127.4c952a53.js"><link rel="prefetch" href="/assets/js/128.d5cf3685.js"><link rel="prefetch" href="/assets/js/129.d81d2dbb.js"><link rel="prefetch" href="/assets/js/13.ed7d854d.js"><link rel="prefetch" href="/assets/js/130.47ac42b3.js"><link rel="prefetch" href="/assets/js/131.7964c73a.js"><link rel="prefetch" href="/assets/js/132.b70c4118.js"><link rel="prefetch" href="/assets/js/133.c1941590.js"><link rel="prefetch" href="/assets/js/134.7bca8d07.js"><link rel="prefetch" href="/assets/js/135.0f182096.js"><link rel="prefetch" href="/assets/js/136.e5a7b4d2.js"><link rel="prefetch" href="/assets/js/137.4cc68978.js"><link rel="prefetch" href="/assets/js/138.41a076cb.js"><link rel="prefetch" href="/assets/js/139.87149c38.js"><link rel="prefetch" href="/assets/js/14.3f5cd2f1.js"><link rel="prefetch" href="/assets/js/140.33c859d1.js"><link rel="prefetch" href="/assets/js/141.46cdf9da.js"><link rel="prefetch" href="/assets/js/142.19f143d7.js"><link rel="prefetch" href="/assets/js/143.dd12c9cb.js"><link rel="prefetch" href="/assets/js/144.a8894332.js"><link rel="prefetch" href="/assets/js/145.2a9ef16e.js"><link rel="prefetch" href="/assets/js/146.93790ef4.js"><link rel="prefetch" href="/assets/js/147.502ecd02.js"><link rel="prefetch" href="/assets/js/148.fd73fdab.js"><link rel="prefetch" href="/assets/js/149.873c8ea8.js"><link rel="prefetch" href="/assets/js/15.afe5041b.js"><link rel="prefetch" href="/assets/js/150.99e77f9f.js"><link rel="prefetch" href="/assets/js/151.9bd72a59.js"><link rel="prefetch" href="/assets/js/152.4b8f635a.js"><link rel="prefetch" href="/assets/js/153.d38be2c9.js"><link rel="prefetch" href="/assets/js/154.31f45943.js"><link rel="prefetch" href="/assets/js/155.71640d7f.js"><link rel="prefetch" href="/assets/js/156.63fb0170.js"><link rel="prefetch" href="/assets/js/157.9c9ba19e.js"><link rel="prefetch" href="/assets/js/158.98a6dfd3.js"><link rel="prefetch" href="/assets/js/159.f089c7bf.js"><link rel="prefetch" href="/assets/js/16.a7f6f356.js"><link rel="prefetch" href="/assets/js/160.3308826a.js"><link rel="prefetch" href="/assets/js/161.8a8e22a9.js"><link rel="prefetch" href="/assets/js/162.f2ff83bd.js"><link rel="prefetch" href="/assets/js/163.31f4e844.js"><link rel="prefetch" href="/assets/js/164.616027b3.js"><link rel="prefetch" href="/assets/js/165.729edc1c.js"><link rel="prefetch" href="/assets/js/166.52dc064a.js"><link rel="prefetch" href="/assets/js/167.f4c921f7.js"><link rel="prefetch" href="/assets/js/168.36f7e5df.js"><link rel="prefetch" href="/assets/js/169.91908980.js"><link rel="prefetch" href="/assets/js/17.82c3218e.js"><link rel="prefetch" href="/assets/js/170.20ad470c.js"><link rel="prefetch" href="/assets/js/171.70c23420.js"><link rel="prefetch" href="/assets/js/172.b00b33be.js"><link rel="prefetch" href="/assets/js/173.55e8cc45.js"><link rel="prefetch" href="/assets/js/174.8bb4331c.js"><link rel="prefetch" href="/assets/js/175.9bac7663.js"><link rel="prefetch" href="/assets/js/176.dd25f46f.js"><link rel="prefetch" href="/assets/js/177.75b1d303.js"><link rel="prefetch" href="/assets/js/178.e0528e2f.js"><link rel="prefetch" href="/assets/js/179.351fedab.js"><link rel="prefetch" href="/assets/js/18.eb023b23.js"><link rel="prefetch" href="/assets/js/180.dea01737.js"><link rel="prefetch" href="/assets/js/181.9cdc12be.js"><link rel="prefetch" href="/assets/js/182.3c8a8428.js"><link rel="prefetch" href="/assets/js/183.b2d7445b.js"><link rel="prefetch" href="/assets/js/184.61f3093f.js"><link rel="prefetch" href="/assets/js/185.0a64a6a1.js"><link rel="prefetch" href="/assets/js/186.d7e80cf8.js"><link rel="prefetch" href="/assets/js/187.e1f5a489.js"><link rel="prefetch" href="/assets/js/188.f7e5d763.js"><link rel="prefetch" href="/assets/js/189.68b9465b.js"><link rel="prefetch" href="/assets/js/19.928c0468.js"><link rel="prefetch" href="/assets/js/190.d1d0cbc6.js"><link rel="prefetch" href="/assets/js/191.1ffccf35.js"><link rel="prefetch" href="/assets/js/192.c164bf64.js"><link rel="prefetch" href="/assets/js/193.199ba5a4.js"><link rel="prefetch" href="/assets/js/194.6c68ef2f.js"><link rel="prefetch" href="/assets/js/195.a0d44a66.js"><link rel="prefetch" href="/assets/js/196.aa1cd1be.js"><link rel="prefetch" href="/assets/js/197.f0d0f774.js"><link rel="prefetch" href="/assets/js/198.ea722ac3.js"><link rel="prefetch" href="/assets/js/199.b2ffa3da.js"><link rel="prefetch" href="/assets/js/20.ff3ce5ce.js"><link rel="prefetch" href="/assets/js/200.37520bf7.js"><link rel="prefetch" href="/assets/js/201.469d6cd1.js"><link rel="prefetch" href="/assets/js/202.66d0a225.js"><link rel="prefetch" href="/assets/js/203.676d84df.js"><link rel="prefetch" href="/assets/js/204.11ab0105.js"><link rel="prefetch" href="/assets/js/205.9e422478.js"><link rel="prefetch" href="/assets/js/206.6b04d92a.js"><link rel="prefetch" href="/assets/js/207.c40e6bb2.js"><link rel="prefetch" href="/assets/js/208.65f3f0ae.js"><link rel="prefetch" href="/assets/js/209.03e12a60.js"><link rel="prefetch" href="/assets/js/21.c47cea3c.js"><link rel="prefetch" href="/assets/js/210.1956592d.js"><link rel="prefetch" href="/assets/js/211.fb1b1978.js"><link rel="prefetch" href="/assets/js/212.f37d9e6e.js"><link rel="prefetch" href="/assets/js/213.8f036eb0.js"><link rel="prefetch" href="/assets/js/214.27c5eefb.js"><link rel="prefetch" href="/assets/js/215.fd67c706.js"><link rel="prefetch" href="/assets/js/216.817f63ad.js"><link rel="prefetch" href="/assets/js/217.78279c49.js"><link rel="prefetch" href="/assets/js/218.67a1d638.js"><link rel="prefetch" href="/assets/js/219.e6c1fc75.js"><link rel="prefetch" href="/assets/js/22.d312a52c.js"><link rel="prefetch" href="/assets/js/220.cdc9e91b.js"><link rel="prefetch" href="/assets/js/221.b697e55d.js"><link rel="prefetch" href="/assets/js/222.4060fb62.js"><link rel="prefetch" href="/assets/js/223.3501621f.js"><link rel="prefetch" href="/assets/js/224.5f21b2f1.js"><link rel="prefetch" href="/assets/js/225.04873e2c.js"><link rel="prefetch" href="/assets/js/226.94c65bc5.js"><link rel="prefetch" href="/assets/js/227.479058fa.js"><link rel="prefetch" href="/assets/js/228.4bba1030.js"><link rel="prefetch" href="/assets/js/229.8696001a.js"><link rel="prefetch" href="/assets/js/23.61daf323.js"><link rel="prefetch" href="/assets/js/230.6f91ea23.js"><link rel="prefetch" href="/assets/js/231.08467ece.js"><link rel="prefetch" href="/assets/js/232.5ccd379b.js"><link rel="prefetch" href="/assets/js/233.1db7ad1c.js"><link rel="prefetch" href="/assets/js/234.36cf683c.js"><link rel="prefetch" href="/assets/js/235.6c0fadc7.js"><link rel="prefetch" href="/assets/js/236.ba8e7ec7.js"><link rel="prefetch" href="/assets/js/237.2a6b862b.js"><link rel="prefetch" href="/assets/js/238.43cc4e28.js"><link rel="prefetch" href="/assets/js/239.19613b0b.js"><link rel="prefetch" href="/assets/js/24.f988985c.js"><link rel="prefetch" href="/assets/js/240.db9cc383.js"><link rel="prefetch" href="/assets/js/241.059bdaf3.js"><link rel="prefetch" href="/assets/js/242.566315fc.js"><link rel="prefetch" href="/assets/js/244.d8f7d01e.js"><link rel="prefetch" href="/assets/js/245.13d72f33.js"><link rel="prefetch" href="/assets/js/246.93924e4e.js"><link rel="prefetch" href="/assets/js/247.e8b70e3f.js"><link rel="prefetch" href="/assets/js/248.3348bac0.js"><link rel="prefetch" href="/assets/js/249.70237265.js"><link rel="prefetch" href="/assets/js/25.73082383.js"><link rel="prefetch" href="/assets/js/250.7598d93a.js"><link rel="prefetch" href="/assets/js/251.4d55a258.js"><link rel="prefetch" href="/assets/js/252.61c07bf1.js"><link rel="prefetch" href="/assets/js/253.a945ab05.js"><link rel="prefetch" href="/assets/js/254.b459f260.js"><link rel="prefetch" href="/assets/js/255.897e4bf1.js"><link rel="prefetch" href="/assets/js/256.a23bd234.js"><link rel="prefetch" href="/assets/js/257.d0c984da.js"><link rel="prefetch" href="/assets/js/26.54881ec6.js"><link rel="prefetch" href="/assets/js/27.c38cb8f2.js"><link rel="prefetch" href="/assets/js/28.f70205cd.js"><link rel="prefetch" href="/assets/js/29.509ce626.js"><link rel="prefetch" href="/assets/js/30.57bf00d2.js"><link rel="prefetch" href="/assets/js/31.2c5779b8.js"><link rel="prefetch" href="/assets/js/32.a815a0b5.js"><link rel="prefetch" href="/assets/js/33.6a3c952f.js"><link rel="prefetch" href="/assets/js/34.6f309377.js"><link rel="prefetch" href="/assets/js/35.810a840c.js"><link rel="prefetch" href="/assets/js/36.6ca37ad0.js"><link rel="prefetch" href="/assets/js/37.539b9b16.js"><link rel="prefetch" href="/assets/js/38.50d45883.js"><link rel="prefetch" href="/assets/js/39.a0acdb51.js"><link rel="prefetch" href="/assets/js/4.51a792b3.js"><link rel="prefetch" href="/assets/js/40.35cee3b0.js"><link rel="prefetch" href="/assets/js/41.469578e5.js"><link rel="prefetch" href="/assets/js/42.057dc905.js"><link rel="prefetch" href="/assets/js/43.31155b77.js"><link rel="prefetch" href="/assets/js/44.51ec7df7.js"><link rel="prefetch" href="/assets/js/45.fdaa888f.js"><link rel="prefetch" href="/assets/js/46.1921ed59.js"><link rel="prefetch" href="/assets/js/47.61c6b437.js"><link rel="prefetch" href="/assets/js/48.954a4133.js"><link rel="prefetch" href="/assets/js/49.5ca33481.js"><link rel="prefetch" href="/assets/js/5.b531fa70.js"><link rel="prefetch" href="/assets/js/50.5dc29b81.js"><link rel="prefetch" href="/assets/js/51.3dd17a90.js"><link rel="prefetch" href="/assets/js/52.7a3351fb.js"><link rel="prefetch" href="/assets/js/53.472c78d4.js"><link rel="prefetch" href="/assets/js/54.73db88bd.js"><link rel="prefetch" href="/assets/js/55.b34f8a7d.js"><link rel="prefetch" href="/assets/js/56.38e2be25.js"><link rel="prefetch" href="/assets/js/57.aa389068.js"><link rel="prefetch" href="/assets/js/58.72d101ac.js"><link rel="prefetch" href="/assets/js/59.6252c6c9.js"><link rel="prefetch" href="/assets/js/6.e6630ebf.js"><link rel="prefetch" href="/assets/js/60.631d9400.js"><link rel="prefetch" href="/assets/js/61.64b6ccc0.js"><link rel="prefetch" href="/assets/js/62.0b3a2f62.js"><link rel="prefetch" href="/assets/js/63.6be00f6d.js"><link rel="prefetch" href="/assets/js/64.a88c7a8d.js"><link rel="prefetch" href="/assets/js/65.79d6e5a3.js"><link rel="prefetch" href="/assets/js/66.db375008.js"><link rel="prefetch" href="/assets/js/67.2c733c3c.js"><link rel="prefetch" href="/assets/js/68.add9f95b.js"><link rel="prefetch" href="/assets/js/69.74263a37.js"><link rel="prefetch" href="/assets/js/7.8054f95e.js"><link rel="prefetch" href="/assets/js/70.c9f335db.js"><link rel="prefetch" href="/assets/js/71.6c7ee4a7.js"><link rel="prefetch" href="/assets/js/72.844d3419.js"><link rel="prefetch" href="/assets/js/73.b48daf16.js"><link rel="prefetch" href="/assets/js/74.57492184.js"><link rel="prefetch" href="/assets/js/75.b61fe865.js"><link rel="prefetch" href="/assets/js/76.9c69505a.js"><link rel="prefetch" href="/assets/js/77.903def11.js"><link rel="prefetch" href="/assets/js/78.6402d824.js"><link rel="prefetch" href="/assets/js/79.d7a072eb.js"><link rel="prefetch" href="/assets/js/80.826032b7.js"><link rel="prefetch" href="/assets/js/81.13f2e1b6.js"><link rel="prefetch" href="/assets/js/82.590ddc1e.js"><link rel="prefetch" href="/assets/js/83.6170cd33.js"><link rel="prefetch" href="/assets/js/84.e6be4774.js"><link rel="prefetch" href="/assets/js/85.7ba30661.js"><link rel="prefetch" href="/assets/js/86.8da8006e.js"><link rel="prefetch" href="/assets/js/87.7490a9bd.js"><link rel="prefetch" href="/assets/js/88.29ca56ec.js"><link rel="prefetch" href="/assets/js/89.84ca1d2e.js"><link rel="prefetch" href="/assets/js/9.a2002425.js"><link rel="prefetch" href="/assets/js/90.ebab1467.js"><link rel="prefetch" href="/assets/js/91.e7994b4b.js"><link rel="prefetch" href="/assets/js/92.e28ea63b.js"><link rel="prefetch" href="/assets/js/93.c4328000.js"><link rel="prefetch" href="/assets/js/94.980be817.js"><link rel="prefetch" href="/assets/js/95.734d48a4.js"><link rel="prefetch" href="/assets/js/96.b0ea9bb8.js"><link rel="prefetch" href="/assets/js/97.366874b8.js"><link rel="prefetch" href="/assets/js/98.49ccc0ca.js"><link rel="prefetch" href="/assets/js/99.306b1089.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.82258027.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Apache Ignite技术服务</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  首页
+</a></div><div class="nav-item"><a href="/Service.html" class="nav-link">
+  服务&amp;报价
+</a></div><div class="nav-item"><a href="/doc/java/" class="nav-link router-link-active">
+  文档
+</a></div><div class="nav-item"><a href="https://my.oschina.net/liyuj" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  博客
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="/confluent/" class="nav-link">
+  Confluent平台
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Select language" class="dropdown-title"><span class="title">最新版本</span> <span class="arrow down"></span></button> <button type="button" aria-label="Select language" class="mobile-dropdown-title"><span class="title">最新版本</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/doc/java/Plugins.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  2.9.0
+</a></li><li class="dropdown-item"><!----> <a href="/doc/2.8.0/" class="nav-link">
+  2.8.0
+</a></li><li class="dropdown-item"><!----> <a href="/doc/2.7.0/" class="nav-link">
+  2.7.0
+</a></li><li class="dropdown-item"><!----> <a href="/doc/2.6.0/" class="nav-link">
+  2.6.0
+</a></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  首页
+</a></div><div class="nav-item"><a href="/Service.html" class="nav-link">
+  服务&amp;报价
+</a></div><div class="nav-item"><a href="/doc/java/" class="nav-link router-link-active">
+  文档
+</a></div><div class="nav-item"><a href="https://my.oschina.net/liyuj" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  博客
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="/confluent/" class="nav-link">
+  Confluent平台
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Select language" class="dropdown-title"><span class="title">最新版本</span> <span class="arrow down"></span></button> <button type="button" aria-label="Select language" class="mobile-dropdown-title"><span class="title">最新版本</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/doc/java/Plugins.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  2.9.0
+</a></li><li class="dropdown-item"><!----> <a href="/doc/2.8.0/" class="nav-link">
+  2.8.0
+</a></li><li class="dropdown-item"><!----> <a href="/doc/2.7.0/" class="nav-link">
+  2.7.0
+</a></li><li class="dropdown-item"><!----> <a href="/doc/2.6.0/" class="nav-link">
+  2.6.0
+</a></li></ul></div></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/doc/java/" aria-current="page" class="sidebar-link">前言</a></li><li><a href="/doc/java/QuickStartGuide.html" class="sidebar-link">快速入门</a></li><li><a href="/doc/java/Installation.html" class="sidebar-link">安装</a></li><li><a href="/doc/java/SettingUp.html" class="sidebar-link">Ignite配置入门</a></li><li><a href="/doc/java/StartingNodes.html" class="sidebar-link">启动和停止节点</a></li><li><a href="/doc/java/Clustering.html" class="sidebar-link">集群化</a></li><li><a href="/doc/java/ThinClients.html" class="sidebar-link">瘦客户端</a></li><li><a href="/doc/java/DataModeling.html" class="sidebar-link">数据建模</a></li><li><a href="/doc/java/ConfiguringMemory.html" class="sidebar-link">配置内存</a></li><li><a href="/doc/java/Persistence.html" class="sidebar-link">配置持久化</a></li><li><a href="/doc/java/ConfiguringCaches.html" class="sidebar-link">配置缓存</a></li><li><a href="/doc/java/DataRebalancing.html" class="sidebar-link">数据再平衡</a></li><li><a href="/doc/java/DataStreaming.html" class="sidebar-link">数据流处理</a></li><li><a href="/doc/java/UsingKeyValueApi.html" class="sidebar-link">键-值API</a></li><li><a href="/doc/java/Transactions.html" class="sidebar-link">Ignite事务</a></li><li><a href="/doc/java/WorkingwithSQL.html" class="sidebar-link">使用SQL</a></li><li><a href="/doc/java/SQLReference.html" class="sidebar-link">SQL参考</a></li><li><a href="/doc/java/DistributedComputing.html" class="sidebar-link">分布式计算</a></li><li><a href="/doc/java/CodeDeployment.html" class="sidebar-link">代码部署</a></li><li><a href="/doc/java/MachineLearning.html" class="sidebar-link">机器学习</a></li><li><a href="/doc/java/ContinuousQueries.html" class="sidebar-link">Ignite持续查询</a></li><li><a href="/doc/java/Service.html" class="sidebar-link">Ignite服务</a></li><li><a href="/doc/java/Messaging.html" class="sidebar-link">Ignite消息</a></li><li><a href="/doc/java/DataStructures.html" class="sidebar-link">Ignite分布式数据结构</a></li><li><a href="/doc/java/DistributedLocks.html" class="sidebar-link">Ignite分布式锁</a></li><li><a href="/doc/java/RESTAPI.html" class="sidebar-link">REST API</a></li><li><a href="/doc/java/DotnetSpecific.html" class="sidebar-link">Ignite.NET</a></li><li><a href="/doc/java/CppSpecific.html" class="sidebar-link">Ignite C++</a></li><li><a href="/doc/java/Monitoring.html" class="sidebar-link">监控</a></li><li><a href="/doc/java/WorkingwithEvents.html" class="sidebar-link">Ignite事件</a></li><li><a href="/doc/java/Tools.html" class="sidebar-link">工具</a></li><li><a href="/doc/java/Security.html" class="sidebar-link">安全</a></li><li><a href="/doc/java/ExtensionsIntegrations.html" class="sidebar-link">扩展和集成</a></li><li><a href="/doc/java/Plugins.html" aria-current="page" class="active sidebar-link">插件</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/doc/java/Plugins.html#_1-插件" class="sidebar-link">1.插件</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/doc/java/Plugins.html#_1-1-概述" class="sidebar-link">1.1.概述</a></li><li class="sidebar-sub-header"><a href="/doc/java/Plugins.html#_1-2-插件示例" class="sidebar-link">1.2.插件示例</a></li></ul></li></ul></li><li><a href="/doc/java/PerformanceTroubleshooting.html" class="sidebar-link">性能和故障排除</a></li><li><a href="/doc/java/Legal.html" class="sidebar-link">法律条款</a></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="插件"><a href="#插件" class="header-anchor">#</a> 插件</h1> <h2 id="_1-插件"><a href="#_1-插件" class="header-anchor">#</a> 1.插件</h2> <h3 id="_1-1-概述"><a href="#_1-1-概述" class="header-anchor">#</a> 1.1.概述</h3> <p>Ignite的插件系统使得开发者可以扩展Ignite的核心功能。插件可以访问不同的内部Ignite组件，例如安全处理器和其他组件，并且可以扩展Ignite的编程API。</p> <p>添加自定义插件需要实现<code>PluginProvider</code>接口并在节点配置中注册，以下是创建插件所涉及步骤的概述：</p> <ul><li>实施<code>PluginProvider</code>接口，这是创建插件的主要接口；</li> <li>实现<code>IgnitePlugin</code>接口。如果插件添加了要由用户触发的功能，则应向此类添加公共方法。运行时用户可以通过<code>Ignite.plugin(String pluginName)</code>使用此类的实例；</li> <li>通过<code>IgniteConfiguration.setPluginProviders(…​)</code>方法以编程方式或通过XML配置方式注册插件；</li> <li>如果插件具有公共API，在运行时调用<code>MyPlugin plugin = Ignite.plugin(pluginName)</code>然后即可执行特定的方法。</li></ul> <p>以下章节会提供一个插件的示例，并详细介绍插件在Ignite中的工作方式。</p> <h3 id="_1-2-插件示例"><a href="#_1-2-插件示例" class="header-anchor">#</a> 1.2.插件示例</h3> <p>下面会创建一个简单的Ignite插件，该插件在每个节点上定期向控制台输出有关每个缓存中条目数量的信息。此外，它公开了一个公共方法，用户可以在其应用中根据需要调用该方法，以输出缓存大小信息。该插件具有一个配置参数：输出缓存大小信息的时间间隔。</p> <h4 id="_1-2-1-实现pluginprovider"><a href="#_1-2-1-实现pluginprovider" class="header-anchor">#</a> 1.2.1.实现PluginProvider</h4> <p><code>PluginProvider</code>是用于创建Ignite插件的主要接口，Ignite在初始化期间会初始化每个注册的插件实现。</p> <p>以下方法必须返回非空值，其他方法是可选的。</p> <ul><li><code>name()</code>：返回插件名称；</li> <li><code>plugin()</code>：返回插件类的对象。</li></ul> <p>下面是一个插件实现的示例代码，其在<code>initExtensions()</code>方法中创建了<code>MyPlugin</code>类的对象（见下一步），Ignite将<code>PluginContext</code>对象作为参数传递给该方法。<code>PluginContext</code>可以访问Ignite的API和节点的配置。更多信息将参见<a href="https://ignite.apache.org/releases/2.9.0/javadoc/org/apache/ignite/plugin/PluginContext.html" target="_self" rel="noopener noreferrer">PluginContext</a>的javadoc。在本例中，只需将<code>PluginContext</code>和时间间隔传递给<code>MyPlugin</code>的构造函数。</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token comment">/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the &quot;License&quot;); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+<span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>snippets<span class="token punctuation">.</span>plugin</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>io</span><span class="token punctuation">.</span><span class="token class-name">Serializable</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util</span><span class="token punctuation">.</span>UUID<span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite</span><span class="token punctuation">.</span><span class="token class-name">IgniteCheckedException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>cluster</span><span class="token punctuation">.</span><span class="token class-name">ClusterNode</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">CachePluginContext</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">CachePluginProvider</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">ExtensionRegistry</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">PluginConfiguration</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">PluginContext</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">PluginProvider</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">PluginValidationException</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>jetbrains<span class="token punctuation">.</span>annotations</span><span class="token punctuation">.</span><span class="token class-name">Nullable</span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyPluginProvider</span> <span class="token keyword">implements</span> <span class="token class-name">PluginProvider</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">PluginConfiguration</span><span class="token punctuation">&gt;</span></span> <span class="token punctuation">{</span>
+
+    <span class="token comment">/**
+     * The time interval in seconds for printing cache size information.
+     */</span>
+    <span class="token keyword">private</span> <span class="token keyword">long</span> interval <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> <span class="token class-name">MyPlugin</span> plugin<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">MyPluginProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     *
+     * @param interval Time interval in seconds
+     */</span>
+    <span class="token keyword">public</span> <span class="token class-name">MyPluginProvider</span><span class="token punctuation">(</span><span class="token keyword">long</span> interval<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>interval <span class="token operator">=</span> interval<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">//the name of the plugin</span>
+        <span class="token keyword">return</span> <span class="token string">&quot;MyPlugin&quot;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">version</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">&quot;1.0&quot;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">copyright</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">&quot;MyCompany&quot;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">MyPlugin</span> <span class="token function">plugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> plugin<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">initExtensions</span><span class="token punctuation">(</span><span class="token class-name">PluginContext</span> ctx<span class="token punctuation">,</span> <span class="token class-name">ExtensionRegistry</span> registry<span class="token punctuation">)</span>
+            <span class="token keyword">throws</span> <span class="token class-name">IgniteCheckedException</span> <span class="token punctuation">{</span>
+        plugin <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MyPlugin</span><span class="token punctuation">(</span>interval<span class="token punctuation">,</span> ctx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onIgniteStart</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IgniteCheckedException</span> <span class="token punctuation">{</span>
+        <span class="token comment">//start the plugin when Ignite is started</span>
+        plugin<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onIgniteStop</span><span class="token punctuation">(</span><span class="token keyword">boolean</span> cancel<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">//stop the plugin</span>
+        plugin<span class="token punctuation">.</span><span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * The time interval (in seconds) for printing cache size information
+     * @return
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">getInterval</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> interval<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * Sets the time interval (in seconds) for printing cache size information
+     * @param interval
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token keyword">long</span> interval<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>interval <span class="token operator">=</span> interval<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// other no-op methods of PluginProvider</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>其<code>onIgniteStart()</code>方法在Ignite启动时调用， 这里通过调用<code>MyPlugin.start()</code>启动该插件，该插件只是简单地定期执行输出缓存大小信息的任务。</p> <h4 id="_1-2-2-实现igniteplugin"><a href="#_1-2-2-实现igniteplugin" class="header-anchor">#</a> 1.2.2.实现IgnitePlugin</h4> <p>通过<code>Ignite.plugin(String pluginName)</code>方法，用户可以获得<code>PluginProvider</code>中返回的<code>IgnitePlugin</code>实现类。如果想向最终用户提供公共API，则应在实现<code>IgnitePlugin</code>的类中公开该API。</p> <p>严格来说，如果插件未提供公共API，则无需执行此步骤。插件功能可以在<code>PluginProvider</code>的实现类中实现和初始化，<code>PluginProvider.plugin()</code>方法只返回<code>IgnitePlugin</code>接口的空实现即可。</p> <p>在本案例中，将插件功能封装在<code>MyPlugin</code>类中，并提供一个公共方法（<code>MyPlugin.printCacheInfo()</code>），该<code>MyPlugin</code>实现了<code>Runnable</code>接口，其<code>start()</code>和<code>stop()</code>方法会调度缓存大小信息的输出。</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token comment">/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the &quot;License&quot;); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */</span>
+<span class="token keyword">package</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>snippets<span class="token punctuation">.</span>plugin</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent</span><span class="token punctuation">.</span><span class="token class-name">Executors</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent</span><span class="token punctuation">.</span><span class="token class-name">ScheduledExecutorService</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent</span><span class="token punctuation">.</span><span class="token class-name">TimeUnit</span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite</span><span class="token punctuation">.</span><span class="token class-name">IgniteCache</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">IgnitePlugin</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token namespace">org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ignite<span class="token punctuation">.</span>plugin</span><span class="token punctuation">.</span><span class="token class-name">PluginContext</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ *
+ * The plugin prints cache size information to console
+ *
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyPlugin</span> <span class="token keyword">implements</span> <span class="token class-name">IgnitePlugin</span><span class="token punctuation">,</span> <span class="token class-name">Runnable</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">ScheduledExecutorService</span> scheduler <span class="token operator">=</span> <span class="token class-name">Executors</span><span class="token punctuation">.</span><span class="token function">newScheduledThreadPool</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> <span class="token class-name">PluginContext</span> context<span class="token punctuation">;</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">long</span> interval<span class="token punctuation">;</span>
+
+    <span class="token comment">/**
+     *
+     * @param context
+     */</span>
+    <span class="token keyword">public</span> <span class="token class-name">MyPlugin</span><span class="token punctuation">(</span><span class="token keyword">long</span> interval<span class="token punctuation">,</span> <span class="token class-name">PluginContext</span> context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>interval <span class="token operator">=</span> interval<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>context <span class="token operator">=</span> context<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">print0</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token class-name">StringBuilder</span> sb <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token string">&quot;\nCache Information: \n&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">//get the names of all caches</span>
+        context<span class="token punctuation">.</span><span class="token function">grid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">cacheNames</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>cacheName <span class="token operator">-&gt;</span> <span class="token punctuation">{</span>
+            <span class="token comment">//get the specific cache</span>
+            <span class="token class-name">IgniteCache</span> cache <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">grid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">cache</span><span class="token punctuation">(</span>cacheName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>cache <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                sb<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">&quot;  cacheName=&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>cacheName<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">&quot;, size=&quot;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>cache<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">&quot;\n&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">print</span><span class="token punctuation">(</span>sb<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/**
+     * Prints the information about caches to console.
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">printCacheInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">print0</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">print0</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">void</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        scheduler<span class="token punctuation">.</span><span class="token function">scheduleAtFixedRate</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> interval<span class="token punctuation">,</span> interval<span class="token punctuation">,</span> <span class="token class-name">TimeUnit</span><span class="token punctuation">.</span>SECONDS<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">void</span> <span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        scheduler<span class="token punctuation">.</span><span class="token function">shutdownNow</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h4 id="_1-2-3-注册插件"><a href="#_1-2-3-注册插件" class="header-anchor">#</a> 1.2.3.注册插件</h4> <p>编程方式：</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token class-name">IgniteConfiguration</span> cfg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">IgniteConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">//register a plugin that prints the cache size information every 100 seconds</span>
+cfg<span class="token punctuation">.</span><span class="token function">setPluginProviders</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">MyPluginProvider</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">//start the node</span>
+<span class="token class-name">Ignite</span> ignite <span class="token operator">=</span> <span class="token class-name">Ignition</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span>cfg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><p>通过XML配置方式：</p> <p>编译插件的源代码然后将类文件添加到每个节点的类路径中，然后插件注册方式如下：</p> <div class="language-xml extra-class"><pre class="language-xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>org.apache.ignite.configuration.IgniteConfiguration<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>pluginProviders<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>org.apache.ignite.snippets.plugin.MyPluginProvider<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+           <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>interval<span class="token punctuation">&quot;</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>100<span class="token punctuation">&quot;</span></span><span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><p>启动节点之后，会在控制台看到如下的信息：</p> <div class="language- extra-class"><pre class="language-text"><code>[11:00:49] Initial heap size is 248MB (should be no less than 512MB, use -Xms512m -Xmx512m).
+[11:00:49] Configured plugins:
+[11:00:49]   ^-- MyPlugin 1.0
+[11:00:49]   ^-- MyCompany
+[11:00:49]
+</code></pre></div><h4 id="_1-2-4-运行时访问插件"><a href="#_1-2-4-运行时访问插件" class="header-anchor">#</a> 1.2.4.运行时访问插件</h4> <p>通过调用<code>Ignite.plugin(pluginName)</code>方法可以访问插件的实例，该<code>pluginName</code>参数必须等于<code>MyPluginProvider.name()</code>中返回的插件名：</p> <div class="language-java extra-class"><pre class="language-java"><code><span class="token comment">//get an instance of the plugin</span>
+<span class="token class-name">MyPlugin</span> p <span class="token operator">=</span> ignite<span class="token punctuation">.</span><span class="token function">plugin</span><span class="token punctuation">(</span><span class="token string">&quot;MyPlugin&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">//print the cache size information</span>
+p<span class="token punctuation">.</span><span class="token function">printCacheInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><div class="right-pale"><div class="right-content"><div class="bbox tell-box"><button class="btn btn-circle btn-success right-tell"><i class="fa fa-lg fa-phone"></i></button> <p class="tell-hide">
+            18624049226
+        </p></div> <div class="bbox weixin-box"><button class="btn btn-circle btn-success right-weixin"><i class="fa fa-weixin"></i></button> <p class="tell-hide" style="padding:5px;"><img src="/img/weixin.jpg"></p></div></div></div></div> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">最后更新时间：:</span> <span class="time">11/3/2020, 8:50:40 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/doc/java/ExtensionsIntegrations.html" class="prev">
+        扩展和集成
+      </a></span> <span class="next"><a href="/doc/java/PerformanceTroubleshooting.html">
+        性能和故障排除
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"><!----></div></div>
+    <script src="/assets/js/app.6025dbc7.js" defer></script><script src="/assets/js/3.6721bcbc.js" defer></script><script src="/assets/js/1.510e8afb.js" defer></script><script src="/assets/js/243.435d46d4.js" defer></script><script src="/assets/js/8.ab7d75ff.js" defer></script>
+  </body>
+</html>
