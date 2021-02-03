@@ -24,16 +24,21 @@
 			<!-- CLIENT FEEDBACK ITEM -->
 			<div class="client-feedback-item row">
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
-          <span class="fa fa-battery-4" style="font-size:36px;margin:20px 0 10px 0"></span>
-					<h3 style="font-size:18px;margin:0 0 10px 0">GridGain社区版服务</h3>
-          <h4>面向企业</h4>
+          <span class="fa fa-battery-4" style="font-size:36px;margin:110px 0 10px 0"></span>
+					<h3 style="font-size:24px;margin:0 0 10px 0">GridGain产品&支持服务</h3>
+          <h4 style="font-size:18px;">面向企业</h4>
 				</div>
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:4px dashed #777">
-          <h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查、Ignite专题介绍/远程培训、协助POC/业务原型开发/Ignite定制化（驻场），基于Ignite的技术集成架构设计咨询/规划/评审、协助解决具体的测试/生产问题（远程服务需配合提供完整日志等必要的信息或接入技术手段）、系统性能/扩展性优化等，GridGain基础版服务（社区版版本更新），GridGain标准版服务（社区版版本更新+紧急修复补丁）</span></h4>
-          <h4><span>服务方式：</span><span style="font-weight:normal">中国服务商实施（远程/驻场），GridGain远程（基础版/标准版服务）</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">按年度订阅，GridGain服务包（按GCU计费，全款预付）+ 中国服务商服务包（标准远程服务10万元，驻场服务3000元/核算日，可分期付款）</span></h4>
+          <h3><span style="font-size:20px;">GridGain控制中心：</span></h3>
+          <h4><span>服务内容：</span><span style="font-weight:normal">GridGain控制中心软件销售及对应技术支持服务（软件安装、使用培训、日常运维支持、GridGain软件升级+补丁更新+工单服务）</span></h4>
+          <h4><span>服务方式：</span><span style="font-weight:normal">中国服务商标准远程服务（语音/即时通信软件/电子邮件）/个性化服务 +  GridGain远程服务代理</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">年度订阅制全款预付，GridGain服务包（按节点数计费）+ 中国服务商服务包（标准远程服务6千元/年，个性化服务价格参见咨询顾问服务报价）</span></h4>
+          <h3><span style="font-size:20px;">GridGain社区版：</span></h3>
+          <h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查、Ignite专题介绍/远程培训、协助POC/业务原型开发/Ignite定制化（驻场），基于Ignite的技术集成架构设计咨询/规划/评审、协助解决具体的测试/生产问题（远程服务需配合提供完整日志等必要的信息或接入技术手段）、系统性能/扩展性优化等，GridGain基础版服务（社区版版本更新），GridGain标准版服务（社区版版本更新+紧急修复补丁+工单服务）</span></h4>
+          <h4><span>服务方式：</span><span style="font-weight:normal">中国服务商实施（远程/驻场） +  GridGain远程服务代理</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">年度订阅制，GridGain服务包（按GCU计费，全款预付）+ 中国服务商服务包（标准远程服务10万元，驻场服务3000元/核算日，可分期付款）</span></h4>
 				</div>
 				<!-- /COLUMN -->
 			</div>
@@ -44,15 +49,15 @@
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
           <span class="fa fa-battery-3" style="font-size:36px;margin:20px 0 10px 0"></span>
-					<h3 style="font-size:18px;margin:0 0 10px 0">技术咨询顾问服务</h3>
-          <h4>面向企业</h4>
+					<h3 style="font-size:24px;margin:0 0 10px 0">技术咨询顾问服务</h3>
+          <h4 style="font-size:18px;">面向企业</h4>
 				</div>
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
 				<div class="col-sm-9 text-left scroll-animated-from-bottom" style="padding-top:10px;border-left:3px dashed #777">
 					<h4><span>服务内容：</span><span style="font-weight:normal">初始技术调查、Ignite专题介绍/远程培训、协助POC/业务原型开发/Ignite定制化（驻场）、基于Ignite的技术集成架构设计咨询/规划/评审、协助解决具体的测试/生产问题（远程服务需配合提供完整日志等必要的信息或接入技术手段）、Ignite问题确认并提供折衷方案、系统性能/扩展性优化、基于开源代码库维护Ignite版本等。</span></h4>
           <h4><span>服务方式：</span><span style="font-weight:normal">远程（远程接入/网络会议/电话/即时通信软件/邮件）/驻场</span></h4>
-          <h4><span>服务报价：</span><span style="font-weight:normal">远程（4千元/周，6千元/半月，1万元/月，2.5万元/季，5万元/半年，10万元/年），驻场（3000元/核算日，4.5万元/月，长期合作面议）</span></h4>
+          <h4><span>服务报价：</span><span style="font-weight:normal">远程（500元/2小时，4千元/周，6千元/半月，1万元/月，2.5万元/季，5万元/半年，10万元/年），驻场（3000元/核算日，4.5万元/月，长期合作面议）</span></h4>
 				</div>
 				<!-- /COLUMN -->
 			</div>
@@ -63,8 +68,8 @@
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom"  style="color:red">
           <span class="fa fa-battery-2" style="font-size:36px;margin:25px 0 10px 0"></span>
-					<h3 style="font-size:18px;margin:0 0 10px 0">远程技术支持服务</h3>
-          <h4>面向企业</h4>
+					<h3 style="font-size:24px;margin:0 0 10px 0">远程技术支持服务</h3>
+          <h3>面向企业</h3>
 				</div>
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
@@ -81,8 +86,8 @@
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom" style="color:red">
           <span class="fa fa-battery-1" style="font-size:36px;margin:20px 0 10px 0"></span>
-					<h3 style="font-size:18px;margin:0 0 10px 0">付费开发者服务</h3>
-          <h4>面向开发者</h4>
+					<h3 style="font-size:24px;margin:0 0 10px 0">付费开发者服务</h3>
+          <h4 style="font-size:18px;">面向开发者</h4>
 				</div>
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
@@ -98,8 +103,8 @@
 				<!-- COLUMN -->
 				<div class="col-sm-3 text-center scroll-animated-from-bottom" style="color:red">
           <span class="fa fa-battery-0" style="font-size:36px;margin:10px 0 10px 0"></span>
-					<h3 style="font-size:18px;margin:0 0 10px 0">免费开发者服务</h3>
-          <h4>面向开发者</h4>
+					<h3 style="font-size:24px;margin:0 0 10px 0">免费开发者服务</h3>
+          <h4 style="font-size:18px;">面向开发者</h4>
 				</div>
 				<!-- /COLUMN -->
 				<!-- COLUMN -->
